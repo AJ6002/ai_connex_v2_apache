@@ -1,6 +1,6 @@
 {
-    "algorithm": "Logistic Regression",
-    "variant": "Cross-validated",
+    "algorithm": "AdaBoost",
+    "variant": "Hybrid",
     "validation_metrics": [
         "accuracy",
         "f1",
@@ -8,8 +8,7 @@
         "recall"
     ],
     "hyperparameters": {
-        "penalty": "l2",
-        "C": 1.0,
-        "solver": "lbfgs"
+        "fit_intercept": true,
+        "alpha": 1.0
     }
 }

@@ -1,6 +1,6 @@
 {
-    "algorithm": "SVM",
-    "variant": "Weighted",
+    "algorithm": "Exploration",
+    "variant": "UCB",
     "validation_metrics": [
         "accuracy",
         "f1",
@@ -8,8 +8,7 @@
         "recall"
     ],
     "hyperparameters": {
-        "C": 1.0,
-        "kernel": "rbf",
-        "gamma": "scale"
+        "fit_intercept": true,
+        "alpha": 1.0
     }
 }

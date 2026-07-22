@@ -1,13 +1,14 @@
 {
-    "algorithm": "ElasticNet",
-    "variant": "Bayesian",
+    "algorithm": "XGBoost",
+    "variant": "Quantile",
     "validation_metrics": [
-        "r2",
-        "rmse",
-        "mae"
+        "accuracy",
+        "f1",
+        "precision",
+        "recall"
     ],
     "hyperparameters": {
-        "n_estimators": 50,
-        "max_depth": 6
+        "fit_intercept": true,
+        "alpha": 1.0
     }
 }

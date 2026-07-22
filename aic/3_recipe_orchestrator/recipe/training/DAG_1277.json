@@ -1,12 +1,13 @@
 {
-    "algorithm": "Model-Based RL",
-    "variant": "MuZero",
+    "algorithm": "Vector Autoregression",
+    "variant": "Seasonal",
     "validation_metrics": [
-        "accuracy",
-        "f1"
+        "r2",
+        "rmse",
+        "mae"
     ],
     "hyperparameters": {
-        "n_estimators": 50,
-        "max_depth": 6
+        "fit_intercept": true,
+        "alpha": 1.0
     }
 }

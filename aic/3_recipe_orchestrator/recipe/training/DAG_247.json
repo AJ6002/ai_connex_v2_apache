@@ -1,10 +1,11 @@
 {
-    "algorithm": "Linear Regression",
-    "variant": "Quantile",
+    "algorithm": "SVM",
+    "variant": "Bayesian",
     "validation_metrics": [
-        "r2",
-        "rmse",
-        "mae"
+        "accuracy",
+        "f1",
+        "precision",
+        "recall"
     ],
     "hyperparameters": {
         "fit_intercept": true,

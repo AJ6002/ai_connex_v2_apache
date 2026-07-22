@@ -1,10 +1,11 @@
 {
-    "algorithm": "Linear Regression",
-    "variant": "Multi-output",
+    "algorithm": "SVM",
+    "variant": "Feature-selected",
     "validation_metrics": [
-        "r2",
-        "rmse",
-        "mae"
+        "accuracy",
+        "f1",
+        "precision",
+        "recall"
     ],
     "hyperparameters": {
         "fit_intercept": true,

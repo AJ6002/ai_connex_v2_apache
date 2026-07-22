@@ -4,5 +4,5 @@
     "scale_method": "standard",
     "encode_strategy": "one-hot",
     "text_clean": false,
-    "time_align": false
+    "time_align": true
 }

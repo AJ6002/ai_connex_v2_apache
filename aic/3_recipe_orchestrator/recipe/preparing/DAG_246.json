@@ -1,5 +1,5 @@
 {
-    "impute_strategy": "median",
+    "impute_strategy": "mean",
     "outlier_method": "none",
     "scale_method": "standard",
     "encode_strategy": "one-hot",

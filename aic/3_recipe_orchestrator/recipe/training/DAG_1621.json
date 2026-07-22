@@ -1,5 +1,5 @@
 {
-    "algorithm": "Object Tracking",
+    "algorithm": "Hybrid",
     "variant": "Standard",
     "validation_metrics": [
         "accuracy",
@@ -8,7 +8,7 @@
         "recall"
     ],
     "hyperparameters": {
-        "n_estimators": 50,
-        "max_depth": 6
+        "fit_intercept": true,
+        "alpha": 1.0
     }
 }

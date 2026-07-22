@@ -1,0 +1,14 @@
+{
+    "algorithm": "CNN",
+    "variant": "DenseNet",
+    "validation_metrics": [
+        "accuracy",
+        "f1",
+        "precision",
+        "recall"
+    ],
+    "hyperparameters": {
+        "fit_intercept": true,
+        "alpha": 1.0
+    }
+}

@@ -1,10 +1,11 @@
 {
-    "algorithm": "Lasso Regression",
-    "variant": "Fused",
+    "algorithm": "XGBoost",
+    "variant": "Grid search",
     "validation_metrics": [
-        "r2",
-        "rmse",
-        "mae"
+        "accuracy",
+        "f1",
+        "precision",
+        "recall"
     ],
     "hyperparameters": {
         "fit_intercept": true,

@@ -1,14 +1,13 @@
 {
-    "algorithm": "ARIMA",
-    "variant": "Changepoint",
+    "algorithm": "Linear Regression",
+    "variant": "Median",
     "validation_metrics": [
         "r2",
         "rmse",
         "mae"
     ],
     "hyperparameters": {
-        "p": 1,
-        "d": 1,
-        "q": 1
+        "fit_intercept": true,
+        "alpha": 1.0
     }
 }

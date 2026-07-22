@@ -1,15 +1,14 @@
 {
-    "algorithm": "One-class SVM",
-    "variant": "Online",
+    "algorithm": "Ensemble AD",
+    "variant": "Contextual",
     "validation_metrics": [
+        "accuracy",
         "f1",
         "precision",
-        "recall",
-        "auc_roc"
+        "recall"
     ],
     "hyperparameters": {
-        "C": 1.0,
-        "kernel": "rbf",
-        "gamma": "scale"
+        "fit_intercept": true,
+        "alpha": 1.0
     }
 }

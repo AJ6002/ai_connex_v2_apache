@@ -1,14 +1,14 @@
 {
-    "algorithm": "Random Forest",
-    "variant": "Many trees",
+    "algorithm": "Spectral",
+    "variant": "Sparse",
     "validation_metrics": [
-        "mape",
-        "rmse",
-        "mae"
+        "accuracy",
+        "f1",
+        "precision",
+        "recall"
     ],
     "hyperparameters": {
-        "n_estimators": 100,
-        "max_depth": 10,
-        "min_samples_split": 2
+        "fit_intercept": true,
+        "alpha": 1.0
     }
 }

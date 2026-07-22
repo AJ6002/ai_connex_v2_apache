@@ -1,13 +1,13 @@
 {
-    "algorithm": "CatBoost",
-    "variant": "Hybrid",
+    "algorithm": "Prophet",
+    "variant": "Multi-output",
     "validation_metrics": [
         "r2",
         "rmse",
         "mae"
     ],
     "hyperparameters": {
-        "n_estimators": 50,
-        "max_depth": 6
+        "fit_intercept": true,
+        "alpha": 1.0
     }
 }

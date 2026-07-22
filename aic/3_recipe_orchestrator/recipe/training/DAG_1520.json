@@ -1,6 +1,6 @@
 {
-    "algorithm": "Word Embedding",
-    "variant": "Domain-adapted",
+    "algorithm": "Model-Based RL",
+    "variant": "Distributed",
     "validation_metrics": [
         "accuracy",
         "f1",
@@ -8,7 +8,7 @@
         "recall"
     ],
     "hyperparameters": {
-        "n_estimators": 50,
-        "max_depth": 6
+        "fit_intercept": true,
+        "alpha": 1.0
     }
 }

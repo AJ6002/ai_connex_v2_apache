@@ -1,10 +1,11 @@
 {
-    "algorithm": "Ridge Regression",
-    "variant": "Adaptive",
+    "algorithm": "SVM",
+    "variant": "Streaming",
     "validation_metrics": [
-        "r2",
-        "rmse",
-        "mae"
+        "accuracy",
+        "f1",
+        "precision",
+        "recall"
     ],
     "hyperparameters": {
         "fit_intercept": true,

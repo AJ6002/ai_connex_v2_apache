@@ -20,11 +20,16 @@ if sys.stdout.encoding and sys.stdout.encoding.lower() != 'utf-8':
         pass
 
 # ── sklearn models ────────────────────────────────────────────────────────────
-from sklearn.linear_model import LogisticRegression, LinearRegression, HuberRegressor, Ridge, Lasso
+from sklearn.linear_model import LogisticRegression, LinearRegression, HuberRegressor, Ridge, Lasso, ElasticNet
 from sklearn.ensemble import (
     RandomForestClassifier, RandomForestRegressor,
     GradientBoostingClassifier, GradientBoostingRegressor,
+    AdaBoostClassifier, AdaBoostRegressor,
+    ExtraTreesClassifier, ExtraTreesRegressor
 )
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
+from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
+from sklearn.svm import SVC, SVR
 from sklearn.ensemble import IsolationForest
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
@@ -258,15 +263,33 @@ def _resolve_model(algo_lower: str, var_lower: str, hyperparams: dict, is_regres
         return LogisticRegression(penalty=penalty, solver=solver, l1_ratio=l1_ratio,
                                    class_weight=class_weight, max_iter=1000, random_state=42)
 
-    # 2. Linear Regression / Huber / Ridge / Lasso
+    # 2. Linear Regression / Huber / Ridge / Lasso / ElasticNet
     if "linear regression" in algo_lower:
         return HuberRegressor(max_iter=1000) if "huber" in var_lower else LinearRegression(fit_intercept=hyperparams.get("fit_intercept", True))
     if "ridge" in algo_lower:
         return Ridge(alpha=hyperparams.get("alpha", 1.0), random_state=42)
     if "lasso" in algo_lower:
         return Lasso(alpha=hyperparams.get("alpha", 1.0), random_state=42)
+    if "elastic" in algo_lower or "net" in algo_lower:
+        return ElasticNet(alpha=hyperparams.get("alpha", 1.0), l1_ratio=hyperparams.get("l1_ratio", 0.5), random_state=42)
 
-    # 3. Random Forest
+    # 3. Gradient Boosting & AdaBoost & ExtraTrees
+    if "gradient boosting" in algo_lower:
+        n, lr, d = hyperparams.get("n_estimators", 100), hyperparams.get("learning_rate", 0.1), hyperparams.get("max_depth", 3)
+        return GradientBoostingRegressor(n_estimators=n, learning_rate=lr, max_depth=d, random_state=42) if is_regression \
+               else GradientBoostingClassifier(n_estimators=n, learning_rate=lr, max_depth=d, random_state=42)
+
+    if "adaboost" in algo_lower:
+        n, lr = hyperparams.get("n_estimators", 50), hyperparams.get("learning_rate", 1.0)
+        return AdaBoostRegressor(n_estimators=n, learning_rate=lr, random_state=42) if is_regression \
+               else AdaBoostClassifier(n_estimators=n, learning_rate=lr, random_state=42)
+
+    if "extra tree" in algo_lower or "extratrees" in algo_lower:
+        n, d = hyperparams.get("n_estimators", 100), hyperparams.get("max_depth", None)
+        return ExtraTreesRegressor(n_estimators=n, max_depth=d, random_state=42) if is_regression \
+               else ExtraTreesClassifier(n_estimators=n, max_depth=d, random_state=42)
+
+    # 4. Random Forest & Decision Tree
     if "random forest" in algo_lower:
         n, d = hyperparams.get("n_estimators", 100), hyperparams.get("max_depth", None)
         if is_regression:
@@ -274,7 +297,21 @@ def _resolve_model(algo_lower: str, var_lower: str, hyperparams: dict, is_regres
         cw = "balanced" if any(k in var_lower for k in ("weighted", "balanced")) else None
         return RandomForestClassifier(n_estimators=n, max_depth=d, class_weight=cw, random_state=42)
 
-    # 4. XGBoost (with GradientBoosting fallback)
+    if "decision tree" in algo_lower or "tree" in algo_lower:
+        d = hyperparams.get("max_depth", None)
+        return DecisionTreeRegressor(max_depth=d, random_state=42) if is_regression \
+               else DecisionTreeClassifier(max_depth=d, random_state=42)
+
+    # 5. SVR / Support Vector Machines & KNN
+    if "support vector" in algo_lower or "svm" in algo_lower or "svr" in algo_lower or "svc" in algo_lower:
+        C_val = hyperparams.get("C", 1.0)
+        return SVR(C=C_val) if is_regression else SVC(C=C_val, probability=True, random_state=42)
+
+    if "k-neighbor" in algo_lower or "knn" in algo_lower or "nearest neighbor" in algo_lower:
+        k_val = hyperparams.get("n_neighbors", 5)
+        return KNeighborsRegressor(n_neighbors=k_val) if is_regression else KNeighborsClassifier(n_neighbors=k_val)
+
+    # 5. XGBoost (with GradientBoosting fallback)
     if "xgboost" in algo_lower:
         lr, n, d = hyperparams.get("learning_rate", 0.1), hyperparams.get("n_estimators", 100), hyperparams.get("max_depth", 3)
         try:
@@ -285,31 +322,37 @@ def _resolve_model(algo_lower: str, var_lower: str, hyperparams: dict, is_regres
             return GradientBoostingRegressor(n_estimators=n, learning_rate=lr, max_depth=d, random_state=42) if is_regression \
                    else GradientBoostingClassifier(n_estimators=n, learning_rate=lr, max_depth=d, random_state=42)
 
-    # 5. LightGBM (with RandomForest fallback)
+    # 6. LightGBM (with GradientBoosting fallback)
     if "lightgbm" in algo_lower:
         n, lr = hyperparams.get("n_estimators", 100), hyperparams.get("learning_rate", 0.1)
         try:
             import lightgbm as lgb
-            return lgb.LGBMRegressor(n_estimators=n, learning_rate=lr, random_state=42) if is_regression \
-                   else lgb.LGBMClassifier(n_estimators=n, learning_rate=lr, random_state=42)
+            return lgb.LGBMRegressor(n_estimators=n, learning_rate=lr, random_state=42, verbose=-1) if is_regression \
+                   else lgb.LGBMClassifier(n_estimators=n, learning_rate=lr, random_state=42, verbose=-1)
         except ImportError:
-            return RandomForestRegressor(n_estimators=n, random_state=42) if is_regression \
-                   else RandomForestClassifier(n_estimators=n, random_state=42)
+            return GradientBoostingRegressor(n_estimators=n, learning_rate=lr, random_state=42) if is_regression \
+                   else GradientBoostingClassifier(n_estimators=n, random_state=42)
 
-    # 6. Anomaly Detection
+    # 7. Anomaly Detection
     if "isolation forest" in algo_lower or "anomaly" in algo_lower:
         return IsolationForest(contamination=hyperparams.get("contamination", "auto"), random_state=42)
 
-    # 7. Clustering
+    # 8. Clustering
     if "k-means" in algo_lower or "clustering" in algo_lower:
         return KMeans(n_clusters=hyperparams.get("n_clusters", 3), random_state=42)
 
-    # 8. Time-series / ARIMA fallback
-    if any(k in algo_lower for k in ("arima", "prophet", "time-series")):
-        return LinearRegression()
+    # 9. Time-series / ARIMA / Prophet
+    if any(k in algo_lower for k in ("arima", "prophet", "time-series", "sarima", "var")):
+        try:
+            import lightgbm as lgb
+            return lgb.LGBMRegressor(n_estimators=100, learning_rate=0.1, random_state=42, verbose=-1) if is_regression \
+                   else lgb.LGBMClassifier(n_estimators=100, learning_rate=0.1, random_state=42, verbose=-1)
+        except ImportError:
+            return GradientBoostingRegressor(n_estimators=100, learning_rate=0.1, max_depth=3, random_state=42) if is_regression \
+                   else GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, max_depth=3, random_state=42)
 
-    # 9. General fallback
-    return LinearRegression() if is_regression else LogisticRegression(max_iter=1000, random_state=42)
+    # 10. General fallback
+    return GradientBoostingRegressor(n_estimators=100, random_state=42) if is_regression else LogisticRegression(max_iter=1000, random_state=42)
 
 
 # ─────────────────────────────────────────────────────────────────────────────

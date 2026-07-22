@@ -1,13 +1,13 @@
 {
-    "algorithm": "CatBoost",
-    "variant": "Cross-validated",
+    "algorithm": "Neural Network",
+    "variant": "Adversarial",
     "validation_metrics": [
         "r2",
         "rmse",
         "mae"
     ],
     "hyperparameters": {
-        "n_estimators": 50,
-        "max_depth": 6
+        "fit_intercept": true,
+        "alpha": 1.0
     }
 }

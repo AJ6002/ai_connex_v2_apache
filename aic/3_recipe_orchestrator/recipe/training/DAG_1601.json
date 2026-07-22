@@ -1,6 +1,6 @@
 {
-    "algorithm": "Image Classification",
-    "variant": "Standard",
+    "algorithm": "Context-Aware",
+    "variant": "Multi-dimensional",
     "validation_metrics": [
         "accuracy",
         "f1",
@@ -8,7 +8,7 @@
         "recall"
     ],
     "hyperparameters": {
-        "n_estimators": 50,
-        "max_depth": 6
+        "fit_intercept": true,
+        "alpha": 1.0
     }
 }

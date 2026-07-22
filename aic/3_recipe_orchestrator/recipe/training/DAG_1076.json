@@ -1,14 +1,13 @@
 {
-    "algorithm": "LSTM",
+    "algorithm": "ARIMA",
     "variant": "Interpretable",
     "validation_metrics": [
-        "mape",
+        "r2",
         "rmse",
         "mae"
     ],
     "hyperparameters": {
-        "units": 64,
-        "epochs": 20,
-        "batch_size": 32
+        "fit_intercept": true,
+        "alpha": 1.0
     }
 }

@@ -1,10 +1,11 @@
 {
-    "algorithm": "Ridge Regression",
-    "variant": "Standard",
+    "algorithm": "SVM",
+    "variant": "Probabilistic",
     "validation_metrics": [
-        "r2",
-        "rmse",
-        "mae"
+        "accuracy",
+        "f1",
+        "precision",
+        "recall"
     ],
     "hyperparameters": {
         "fit_intercept": true,

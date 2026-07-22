@@ -1,14 +1,13 @@
 {
-    "algorithm": "DBSCAN",
-    "variant": "Streaming",
+    "algorithm": "SVR",
+    "variant": "Linear",
     "validation_metrics": [
-        "f1",
-        "precision",
-        "recall",
-        "auc_roc"
+        "r2",
+        "rmse",
+        "mae"
     ],
     "hyperparameters": {
-        "eps": 0.5,
-        "min_samples": 5
+        "fit_intercept": true,
+        "alpha": 1.0
     }
 }

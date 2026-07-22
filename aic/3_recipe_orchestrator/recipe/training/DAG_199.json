@@ -1,6 +1,6 @@
 {
-    "algorithm": "One-class SVM",
-    "variant": "Large",
+    "algorithm": "Neural Network",
+    "variant": "Streamlining",
     "validation_metrics": [
         "accuracy",
         "f1",
@@ -8,8 +8,7 @@
         "recall"
     ],
     "hyperparameters": {
-        "C": 1.0,
-        "kernel": "rbf",
-        "gamma": "scale"
+        "fit_intercept": true,
+        "alpha": 1.0
     }
 }

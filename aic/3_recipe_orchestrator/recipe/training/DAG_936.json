@@ -1,14 +1,14 @@
 {
-    "algorithm": "ARIMA",
-    "variant": "Ensemble",
+    "algorithm": "Gaussian Mixture",
+    "variant": "Bayesian",
     "validation_metrics": [
-        "mape",
-        "rmse",
-        "mae"
+        "accuracy",
+        "f1",
+        "precision",
+        "recall"
     ],
     "hyperparameters": {
-        "p": 1,
-        "d": 1,
-        "q": 1
+        "fit_intercept": true,
+        "alpha": 1.0
     }
 }

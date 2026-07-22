@@ -1,13 +1,14 @@
 {
-    "algorithm": "Prophet",
-    "variant": "Multi-season",
+    "algorithm": "E-M Clustering",
+    "variant": "GPU-accelerated",
     "validation_metrics": [
-        "mape",
-        "rmse",
-        "mae"
+        "accuracy",
+        "f1",
+        "precision",
+        "recall"
     ],
     "hyperparameters": {
-        "n_estimators": 50,
-        "max_depth": 6
+        "fit_intercept": true,
+        "alpha": 1.0
     }
 }

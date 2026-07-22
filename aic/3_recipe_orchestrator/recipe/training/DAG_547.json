@@ -1,14 +1,13 @@
 {
-    "algorithm": "LOF with KDTree",
-    "variant": "Large",
+    "algorithm": "SVR",
+    "variant": "Fairness",
     "validation_metrics": [
-        "f1",
-        "precision",
-        "recall",
-        "auc_roc"
+        "r2",
+        "rmse",
+        "mae"
     ],
     "hyperparameters": {
-        "n_estimators": 50,
-        "max_depth": 6
+        "fit_intercept": true,
+        "alpha": 1.0
     }
 }

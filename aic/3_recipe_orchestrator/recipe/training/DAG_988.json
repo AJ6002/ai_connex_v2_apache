@@ -1,14 +1,14 @@
 {
-    "algorithm": "GRU",
-    "variant": "Hybrid",
+    "algorithm": "Mean Shift",
+    "variant": "Bandwidth",
     "validation_metrics": [
-        "mape",
-        "rmse",
-        "mae"
+        "accuracy",
+        "f1",
+        "precision",
+        "recall"
     ],
     "hyperparameters": {
-        "units": 64,
-        "epochs": 20,
-        "batch_size": 32
+        "fit_intercept": true,
+        "alpha": 1.0
     }
 }

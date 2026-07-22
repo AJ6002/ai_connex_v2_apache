@@ -1,5 +1,5 @@
 {
     "test_size": 0.2,
-    "validation_strategy": "stratified_kfold",
+    "validation_strategy": "kfold",
     "random_state": 42
 }

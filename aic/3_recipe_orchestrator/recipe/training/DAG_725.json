@@ -1,12 +1,14 @@
 {
-    "algorithm": "Mini-batch K-Means",
-    "variant": "Cross-validated",
+    "algorithm": "Multivariate AD",
+    "variant": "Ensemble",
     "validation_metrics": [
-        "silhouette_score",
-        "calinski_harabasz"
+        "accuracy",
+        "f1",
+        "precision",
+        "recall"
     ],
     "hyperparameters": {
-        "n_clusters": 3,
-        "init": "k-means++"
+        "fit_intercept": true,
+        "alpha": 1.0
     }
 }

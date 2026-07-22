@@ -1,10 +1,11 @@
 {
-    "algorithm": "Ridge Regression",
-    "variant": "Bayesian",
+    "algorithm": "SVM",
+    "variant": "Precomputed",
     "validation_metrics": [
-        "r2",
-        "rmse",
-        "mae"
+        "accuracy",
+        "f1",
+        "precision",
+        "recall"
     ],
     "hyperparameters": {
         "fit_intercept": true,

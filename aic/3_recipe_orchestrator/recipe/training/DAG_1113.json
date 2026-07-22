@@ -1,14 +1,13 @@
 {
-    "algorithm": "ARIMA",
-    "variant": "Online",
+    "algorithm": "Exponential Smoothing",
+    "variant": "Bayesian",
     "validation_metrics": [
-        "mape",
+        "r2",
         "rmse",
         "mae"
     ],
     "hyperparameters": {
-        "p": 1,
-        "d": 1,
-        "q": 1
+        "fit_intercept": true,
+        "alpha": 1.0
     }
 }

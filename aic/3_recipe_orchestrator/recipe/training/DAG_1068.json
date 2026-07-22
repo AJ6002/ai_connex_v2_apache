@@ -1,13 +1,13 @@
 {
-    "algorithm": "Prophet",
-    "variant": "Hybrid",
+    "algorithm": "ARIMA",
+    "variant": "Multi-output",
     "validation_metrics": [
-        "mape",
+        "r2",
         "rmse",
         "mae"
     ],
     "hyperparameters": {
-        "n_estimators": 50,
-        "max_depth": 6
+        "fit_intercept": true,
+        "alpha": 1.0
     }
 }

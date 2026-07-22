@@ -1,12 +1,14 @@
 {
-    "algorithm": "Agglomerative",
-    "variant": "Standard",
+    "algorithm": "One-class SVM",
+    "variant": "Feature-selected",
     "validation_metrics": [
-        "silhouette_score",
-        "calinski_harabasz"
+        "accuracy",
+        "f1",
+        "precision",
+        "recall"
     ],
     "hyperparameters": {
-        "n_estimators": 50,
-        "max_depth": 6
+        "fit_intercept": true,
+        "alpha": 1.0
     }
 }

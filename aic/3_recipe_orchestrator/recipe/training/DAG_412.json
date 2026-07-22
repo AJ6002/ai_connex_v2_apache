@@ -1,13 +1,13 @@
 {
-    "algorithm": "Neural Network",
-    "variant": "Autoencoder",
+    "algorithm": "Lasso Regression",
+    "variant": "Adversarial",
     "validation_metrics": [
         "r2",
         "rmse",
         "mae"
     ],
     "hyperparameters": {
-        "n_estimators": 50,
-        "max_depth": 6
+        "fit_intercept": true,
+        "alpha": 1.0
     }
 }

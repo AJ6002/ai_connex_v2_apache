@@ -1,13 +1,14 @@
 {
-    "algorithm": "Ranking",
-    "variant": "Pairwise",
+    "algorithm": "What-If Analysis",
+    "variant": "Multi-objective",
     "validation_metrics": [
-        "ndcg",
-        "precision_at_k",
-        "recall_at_k"
+        "accuracy",
+        "f1",
+        "precision",
+        "recall"
     ],
     "hyperparameters": {
-        "n_estimators": 50,
-        "max_depth": 6
+        "fit_intercept": true,
+        "alpha": 1.0
     }
 }

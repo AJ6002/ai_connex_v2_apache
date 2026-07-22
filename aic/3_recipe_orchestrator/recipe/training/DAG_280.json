@@ -1,13 +1,14 @@
 {
-    "algorithm": "ElasticNet",
-    "variant": "Coordinate",
+    "algorithm": "XGBoost",
+    "variant": "Multi-Output",
     "validation_metrics": [
-        "r2",
-        "rmse",
-        "mae"
+        "accuracy",
+        "f1",
+        "precision",
+        "recall"
     ],
     "hyperparameters": {
-        "n_estimators": 50,
-        "max_depth": 6
+        "fit_intercept": true,
+        "alpha": 1.0
     }
 }
