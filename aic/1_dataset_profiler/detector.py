@@ -242,7 +242,7 @@ def decide_dag_and_details(df: pd.DataFrame, profile: dict, family_result: dict)
     
     # Standard fallback defaults
     rec_dag_id = "DAG_001"
-    rec_algo = "Logistic Regression"
+    rec_algo = "AdaBoost"
     rec_variant = "Standard"
     rec_special = "None"
     
@@ -262,24 +262,25 @@ def decide_dag_and_details(df: pd.DataFrame, profile: dict, family_result: dict)
         else:
             family_key = "CLASSIFICATION"
             
-    # Additional checks for specialized families
-    if "time" in str(task).lower():
-        family_key = "TIME-SERIES"
-    elif "twin" in str(task).lower():
-        family_key = "DIGITAL TWIN"
-    elif "reinforcement" in str(task).lower():
-        family_key = "REINFORCEMENT LEARNING"
-    elif "recommend" in str(task).lower():
-        family_key = "RECOMMENDATION"
-    elif "nlp" in str(task).lower() or "text" in str(task).lower():
-        family_key = "NLP/TEXT-CLASSIFICATION"
-    elif "vision" in str(task).lower() or "image" in str(task).lower():
-        family_key = "COMPUTER VISION"
+    # Additional checks for specialized families (only apply if not explicitly REGRESSION or ANOMALY DETECTION)
+    if family not in ("Regression", "Anomaly Detection"):
+        if "time" in str(task).lower():
+            family_key = "TIME-SERIES"
+        elif "twin" in str(task).lower():
+            family_key = "DIGITAL TWIN"
+        elif "reinforcement" in str(task).lower():
+            family_key = "REINFORCEMENT LEARNING"
+        elif "recommend" in str(task).lower():
+            family_key = "RECOMMENDATION"
+        elif "nlp" in str(task).lower() or "text" in str(task).lower():
+            family_key = "NLP/TEXT-CLASSIFICATION"
+        elif "vision" in str(task).lower() or "image" in str(task).lower():
+            family_key = "COMPUTER VISION"
         
     family_rows = mapping_db.get(family_key or "CLASSIFICATION", [])
     
     # 2. Match algorithm and variant by checking dataset properties
-    target_algo = "Logistic Regression"
+    target_algo = "AdaBoost"
     target_variant = "Standard"
     
     num_rows = profile['dataset_info']['num_rows']
@@ -311,15 +312,12 @@ def decide_dag_and_details(df: pd.DataFrame, profile: dict, family_result: dict)
             target_variant = "Standard"
             
     elif family_key == "REGRESSION":
-        if has_date:
-            target_algo = "ARIMA"
-            target_variant = "Standard"
-        elif num_rows > 10000:
+        if num_rows > 10000 or has_date:
             target_algo = "LightGBM"
             target_variant = "Standard"
         elif outlier_pct > 0.05:
-            target_algo = "Linear Regression"
-            target_variant = "Huber"
+            target_algo = "Gradient Boosting"
+            target_variant = "Standard"
         elif has_high_corr:
             target_algo = "Ridge Regression"
             target_variant = "Standard"
@@ -328,33 +326,20 @@ def decide_dag_and_details(df: pd.DataFrame, profile: dict, family_result: dict)
             target_variant = "Standard"
             
     elif family_key == "ANOMALY DETECTION":
-        if has_date:
-            target_algo = "Time-series AD"
-            target_variant = "Standard"
-        elif num_rows > 10000:
-            target_algo = "Isolation Forest"
-            target_variant = "Large"
-        else:
-            target_algo = "Isolation Forest"
-            target_variant = "Standard"
+        target_algo = "Isolation Forest"
+        target_variant = "Standard"
             
     elif family_key == "CLUSTERING":
-        if num_rows > 10000:
-            target_algo = "Mini-batch K-Means"
-            target_variant = "Standard"
-        else:
-            target_algo = "K-Means"
-            target_variant = "Standard"
+        target_algo = "K-Means"
+        target_variant = "Standard"
             
     elif family_key == "TIME-SERIES":
-        # Multi-sensor telemetry (> 2 numeric cols) → XGBoost / LSTM multi-feature regression
-        # Univariate (≤ 2 numeric cols) → Prophet
         numeric_count = sum(1 for c in profile.get('columns', []) if c['semantic_type'] == 'numeric')
         if numeric_count > 2:
             target_algo = "XGBoost"
-            target_variant = "Time-Series Multi-Feature"
+            target_variant = "Standard"
         else:
-            target_algo = "Prophet"
+            target_algo = "ARIMA"
             target_variant = "Standard"
     elif family_key == "DIGITAL TWIN":
         target_algo = "Surrogate Neural Network"

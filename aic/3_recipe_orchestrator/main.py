@@ -44,23 +44,23 @@ def orchestrate_recipes(payload: OrchestrationPayload):
         fallback_id = "DAG_001"
         
         if "Regression" in task_str:
-            fallback_id = "DAG_241"
+            fallback_id = "DAG_283"
         elif "Anomaly" in task_str:
-            fallback_id = "DAG_486"
+            fallback_id = "DAG_573"
         elif "Clustering" in task_str:
-            fallback_id = "DAG_696"
+            fallback_id = "DAG_820"
         elif "Time" in task_str:
-            fallback_id = "DAG_906"
+            fallback_id = "DAG_1059"
         elif "Twin" in task_str:
-            fallback_id = "DAG_1131"
+            fallback_id = "DAG_1316"
         elif "Reinforcement" in task_str:
-            fallback_id = "DAG_1241"
-        elif "Recommend" in task_str:
-            fallback_id = "DAG_1341"
-        elif "nlp" in task_str.lower() or "text" in task_str.lower():
             fallback_id = "DAG_1451"
+        elif "Recommend" in task_str:
+            fallback_id = "DAG_1572"
+        elif "nlp" in task_str.lower() or "text" in task_str.lower():
+            fallback_id = "DAG_1705"
         elif "vision" in task_str.lower() or "image" in task_str.lower():
-            fallback_id = "DAG_1561"
+            fallback_id = "DAG_1837"
             
         base_path = os.path.dirname(__file__)
         

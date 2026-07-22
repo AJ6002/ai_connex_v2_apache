@@ -43,8 +43,8 @@ def main() -> int:
         return 1
 
     print(f"=== AIConnex Universal ZIP Compiler v1.0 ===")
-    print(f"Input ZIP: {zip_path}")
-    print(f"Output   : {output_dir}\n")
+    print(f"Input Path: {zip_path}")
+    print(f"Output    : {output_dir}\n")
 
     compiler = UnifiedCompiler(zip_path, output_dir)
     res: CompileResult = compiler.compile()

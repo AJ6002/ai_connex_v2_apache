@@ -58,6 +58,35 @@ class UnifiedCompiler:
         temp_dir = Path(tempfile.mkdtemp(prefix="aic_compiler_"))
 
         try:
+            from .snapshot_aggregator import is_snapshot_folder_structure, process_snapshot_dataset
+
+            # ── Snapshot Folder Detection Check ──────────────────────────────
+            target_path = self.zip_path
+            if target_path.is_dir() and is_snapshot_folder_structure(target_path):
+                merged_dfs = process_snapshot_dataset(target_path)
+                schema_map = SchemaMap()
+                audits = []
+                duration = round(time.time() - t0, 3)
+                artifacts = export_compiler_handoff(
+                    output_dir=self.output_dir,
+                    merged_dfs=merged_dfs,
+                    audits=audits,
+                    schema_map=schema_map,
+                    duration_seconds=duration,
+                    zip_filename=self.zip_path.name,
+                )
+                return CompileResult(
+                    input_zip=str(self.zip_path),
+                    output_dir=str(self.output_dir),
+                    merged_files=[str(p) for p in artifacts.per_group_csvs.values()],
+                    combined_file=str(artifacts.combined_csv) if artifacts.combined_csv else None,
+                    artifacts=artifacts,
+                    audits=audits,
+                    schema_map=schema_map,
+                    duration_seconds=duration,
+                    success=True,
+                )
+
             # ── Layer 1: Discovery ───────────────────────────────────────────
             disc: DiscoveryResult = run_discovery(self.zip_path, temp_dir)
 
@@ -159,7 +188,7 @@ class UnifiedCompiler:
                 output_dir=str(self.output_dir),
                 merged_files=[],
                 combined_file=None,
-                artifacts=HandoffArtifacts({}, None, Path(""), Path(""), Path("")),
+                artifacts=HandoffArtifacts({}, None, Path(""), Path(""), Path(""), Path("")),
                 audits=[],
                 schema_map=SchemaMap(),
                 duration_seconds=duration,

@@ -75,15 +75,15 @@ class PipelineRun:
         
         fallback_ids = {
             "Classification": "DAG_001",
-            "Regression": "DAG_241",
-            "Anomaly Detection": "DAG_486",
-            "Clustering": "DAG_696",
-            "Time-Series": "DAG_906",
-            "Digital Twin": "DAG_1131",
-            "Reinforcement Learning": "DAG_1241",
-            "Recommendation": "DAG_1341",
-            "NLP/Text-Classification": "DAG_1451",
-            "Computer Vision": "DAG_1561"
+            "Regression": "DAG_283",
+            "Anomaly Detection": "DAG_573",
+            "Clustering": "DAG_820",
+            "Time-Series": "DAG_1059",
+            "Digital Twin": "DAG_1316",
+            "Reinforcement Learning": "DAG_1451",
+            "Recommendation": "DAG_1572",
+            "NLP/Text-Classification": "DAG_1705",
+            "Computer Vision": "DAG_1837"
         }
         
         fallback_id = fallback_ids.get(self.algorithm_family, "DAG_001")
@@ -255,7 +255,7 @@ class PipelineRun:
                     "target_column": target_col,
                     "manifest_path": self.manifest_path
                 },
-                timeout=30
+                timeout=300
             ))
             if response.status_code != 200:
                 raise Exception(f"Prepare API failed (status {response.status_code}): {response.text}")
@@ -280,7 +280,7 @@ class PipelineRun:
                     "target_column": target_col,
                     "manifest_path": self.manifest_path
                 },
-                timeout=30
+                timeout=300
             ))
             if response.status_code != 200:
                 raise Exception(f"Feature Engineering API failed (status {response.status_code}): {response.text}")
@@ -306,7 +306,7 @@ class PipelineRun:
                     "target_column": target_col,
                     "manifest_path": self.manifest_path
                 },
-                timeout=30
+                timeout=300
             ))
             if response.status_code != 200:
                 raise Exception(f"Split API failed (status {response.status_code}): {response.text}")
@@ -354,11 +354,15 @@ class PipelineRun:
                 await asyncio.sleep(poll_interval)
                 elapsed += poll_interval
 
-                status_resp = await loop.run_in_executor(None, lambda: requests.get(
-                    f"{status_base}/{job_id}", timeout=10
-                ))
-                if status_resp.status_code != 200:
-                    self.add_log("WARNING", f"[Train API] Status poll returned {status_resp.status_code}. Retrying...")
+                try:
+                    status_resp = await loop.run_in_executor(None, lambda: requests.get(
+                        f"{status_base}/{job_id}", timeout=30
+                    ))
+                    if status_resp.status_code != 200:
+                        self.add_log("WARNING", f"[Train API] Status poll returned {status_resp.status_code}. Retrying...")
+                        continue
+                except Exception as poll_err:
+                    self.add_log("WARNING", f"[Train API] Status poll temporary error ({poll_err}). Retrying...")
                     continue
 
                 job = status_resp.json()
@@ -408,7 +412,7 @@ class PipelineRun:
                     "metrics":       metrics,
                     "manifest_path": self.manifest_path,
                 },
-                timeout=60
+                timeout=300
             ))
             if response.status_code != 200:
                 raise Exception(f"Evaluate API failed (status {response.status_code}): {response.text}")
@@ -451,7 +455,7 @@ class PipelineRun:
                     "dag_id":       self.dag_id,
                     "manifest_path": self.manifest_path,
                 },
-                timeout=30
+                timeout=300
             ))
             if response.status_code != 200:
                 raise Exception(f"Deploy API failed (status {response.status_code}): {response.text}")

@@ -54,6 +54,15 @@ ENTITY_PATTERNS = re.compile(
 )
 
 
+def is_numeric_header(col_name: Any) -> bool:
+    """Return True if column name string parses cleanly to a float."""
+    try:
+        float(str(col_name).strip())
+        return True
+    except ValueError:
+        return False
+
+
 def safe_read_csv(filepath: Path, nrows: int | None = None) -> pd.DataFrame:
     """Robust CSV/TXT reader handling bad lines, comment headers, encoding errors, and headerless numeric files."""
     kwargs = {}
@@ -61,20 +70,24 @@ def safe_read_csv(filepath: Path, nrows: int | None = None) -> pd.DataFrame:
         kwargs["nrows"] = nrows
 
     df = None
+    is_txt = str(filepath).lower().endswith(".txt")
+
     for enc in ["utf-8", "latin-1", "utf-8-sig"]:
-        try:
-            df = pd.read_csv(filepath, on_bad_lines="skip", encoding=enc, **kwargs)
-            break
-        except Exception:
+        separators = [r"\s+", ",", "\t", ";"] if is_txt else [",", r"\s+", "\t", ";"]
+        for sep in separators:
             try:
-                df = pd.read_csv(filepath, engine="python", on_bad_lines="skip", encoding=enc, **kwargs)
-                break
+                df = pd.read_csv(filepath, on_bad_lines="skip", encoding=enc, sep=sep, **kwargs)
+                if df is not None and not df.empty and df.shape[1] > 1:
+                    break
             except Exception:
                 try:
-                    df = pd.read_csv(filepath, engine="python", sep=r"\s+", on_bad_lines="skip", encoding=enc, **kwargs)
-                    break
+                    df = pd.read_csv(filepath, engine="python", on_bad_lines="skip", encoding=enc, sep=sep, **kwargs)
+                    if df is not None and not df.empty and df.shape[1] > 1:
+                        break
                 except Exception:
                     continue
+        if df is not None and not df.empty:
+            break
 
     if df is None:
         try:
@@ -83,15 +96,15 @@ def safe_read_csv(filepath: Path, nrows: int | None = None) -> pd.DataFrame:
             df = pd.DataFrame()
 
     if df is not None and not df.empty:
-        if all(
-            isinstance(c, (int, float)) or (
-                isinstance(c, str) and c.replace(".", "", 1).replace("-", "", 1).replace("+", "", 1).replace("E", "", 1).replace("e", "", 1).isdigit()
-            )
-            for c in df.columns
-        ):
+        cols_to_check = [str(c).split()[0] for c in df.columns]
+        if all(is_numeric_header(c) for c in cols_to_check):
             try:
-                df = pd.read_csv(filepath, header=None, engine="python", sep=r"\s+", on_bad_lines="skip", encoding_errors="ignore", **kwargs)
-                df.columns = [f"col_{i}" for i in range(df.shape[1])]
+                df_headerless = pd.read_csv(filepath, header=None, engine="python", sep=r"\s+", on_bad_lines="skip", encoding_errors="ignore", **kwargs)
+                if df_headerless.shape[1] == 26:
+                    df_headerless.columns = ["unit_id", "cycle", "op_setting_1", "op_setting_2", "op_setting_3"] + [f"sensor_{i}" for i in range(1, 22)]
+                else:
+                    df_headerless.columns = [f"col_{i}" for i in range(df_headerless.shape[1])]
+                df = df_headerless
             except Exception:
                 pass
 
@@ -165,6 +178,29 @@ def profile_file(filepath: Path) -> FileProfile:
     )
 
 
+def extract_group_id_from_filename(filename: str, filepath: Path, temp_dir: Path, zip_stem: str) -> str:
+    """Infer group ID from filename regex tokens (fd001, plant_1, etc.) or relative folder path."""
+    stage_match = re.search(r"^(train|test|rul)[_\s]?", filename, re.IGNORECASE)
+    stage_prefix = (stage_match.group(1).lower() + "_") if stage_match else ""
+
+    match = re.search(r"(fd[_\s]?\d+|plant[_\s]?\d+|site[_\s]?\d+|unit[_\s]?\d+|device[_\s]?\d+|exp[_\s]?\d+|track[_\s]?\d+)", filename, re.IGNORECASE)
+    if match:
+        gid = match.group(1).replace(" ", "_").lower()
+        if "test" in stage_prefix:
+            return f"{gid}_test"
+        elif "rul" in stage_prefix:
+            return f"{gid}_rul"
+        return gid
+
+    # Check relative parents
+    rel_parents = [part for part in filepath.relative_to(temp_dir).parts[:-1] if part.lower() not in ("data", zip_stem.lower())]
+    if rel_parents:
+        gid = "_".join(rel_parents).replace(" ", "_").lower()
+        return re.sub(r"[^\w_]", "", gid) or "default"
+
+    return "default"
+
+
 def run_discovery(zip_path: Path, temp_dir: Path) -> DiscoveryResult:
     """Extract ZIP archive and discover relationships across all tabular files."""
     temp_dir.mkdir(parents=True, exist_ok=True)
@@ -201,34 +237,12 @@ def run_discovery(zip_path: Path, temp_dir: Path) -> DiscoveryResult:
         # Most frequent entity column across files
         primary_group_col = max(group_col_candidates, key=group_col_candidates.get)
 
-    # Group files by group column value, filename pattern, or parent directory path
+    # Group files by filename pattern / condition tokens (fd001, plant_1, etc.)
     detected_groups: Dict[str, List[FileProfile]] = {}
 
-    if primary_group_col:
-        for p in profiles:
-            if primary_group_col in p.group_values and p.group_values[primary_group_col]:
-                for val in p.group_values[primary_group_col]:
-                    gid = str(val)
-                    detected_groups.setdefault(gid, []).append(p)
-            else:
-                match = re.search(r"(plant[_\s]?\d+|site[_\s]?\d+|unit[_\s]?\d+|device[_\s]?\d+)", p.filename, re.IGNORECASE)
-                if match:
-                    gid = match.group(1).replace(" ", "_").lower()
-                else:
-                    rel_parents = [part for part in p.filepath.relative_to(temp_dir).parts[:-1] if part.lower() not in ("data", zip_path.stem.lower())]
-                    gid = "_".join(rel_parents).replace(" ", "_").lower() if rel_parents else "default"
-                    gid = re.sub(r"[^\w_]", "", gid) or "default"
-                detected_groups.setdefault(gid, []).append(p)
-    else:
-        for p in profiles:
-            match = re.search(r"(plant[_\s]?\d+|site[_\s]?\d+|unit[_\s]?\d+|device[_\s]?\d+)", p.filename, re.IGNORECASE)
-            if match:
-                gid = match.group(1).replace(" ", "_").lower()
-            else:
-                rel_parents = [part for part in p.filepath.relative_to(temp_dir).parts[:-1] if part.lower() not in ("data", zip_path.stem.lower())]
-                gid = "_".join(rel_parents).replace(" ", "_").lower() if rel_parents else "default"
-                gid = re.sub(r"[^\w_]", "", gid) or "default"
-            detected_groups.setdefault(gid, []).append(p)
+    for p in profiles:
+        gid = extract_group_id_from_filename(p.filename, p.filepath, temp_dir, zip_path.stem)
+        detected_groups.setdefault(gid, []).append(p)
 
     # Deduplicate profiles inside groups
     for gid in list(detected_groups.keys()):

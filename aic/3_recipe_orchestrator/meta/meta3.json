@@ -1,7 +1,7 @@
 {
   "dag_id": "DAG_241",
   "suggested_task": "Regression",
-  "resolved_at": "1784536279.0",
+  "resolved_at": "1784719792.3831797",
   "recipe_sources": {
     "preparing": "X:\\TAS\\AICONNEX\\aic\\3_recipe_orchestrator\\recipe\\preparing\\DAG_241.json",
     "feature_engineering": "X:\\TAS\\AICONNEX\\aic\\3_recipe_orchestrator\\recipe\\feature_engineering\\DAG_241.json",
@@ -31,12 +31,13 @@
       "random_state": 42
     },
     "training_recipe": {
-      "algorithm": "Linear Regression",
-      "variant": "Standard",
+      "algorithm": "SVM",
+      "variant": "Multi-class",
       "validation_metrics": [
-        "r2",
-        "rmse",
-        "mae"
+        "accuracy",
+        "f1",
+        "precision",
+        "recall"
       ],
       "hyperparameters": {
         "fit_intercept": true,

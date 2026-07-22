@@ -145,6 +145,19 @@ def perform_relational_join(
             f"Row count exploded from {fact_rows} to {merged_rows}. Verify join keys."
         )
 
+    # ── Prognostics Target Synthesis (RUL Generation) ───────────────────────
+    # If unit_id and cycle exist and RUL is not yet present, compute piecewise countdown RUL
+    unit_col = next((c for c in merged_df.columns if str(c).lower() in ("unit_id", "unit", "engine_id")), None)
+    cycle_col = next((c for c in merged_df.columns if str(c).lower() in ("cycle", "time", "flight_cycle")), None)
+
+    if unit_col and cycle_col and "RUL" not in merged_df.columns and "rul" not in merged_df.columns:
+        max_cycle = merged_df.groupby(unit_col)[cycle_col].transform("max")
+        rul = (max_cycle - merged_df[cycle_col]).clip(upper=125)
+        
+        cycle_idx = merged_df.columns.get_loc(cycle_col)
+        merged_df.insert(cycle_idx + 1, "RUL", rul)
+        warnings.append(f"Synthesized ground-truth Piecewise Linear RUL target column (max_clip=125) for group '{group_id}'.")
+
     # Calculate NULL percentage report
     null_pcts = (merged_df.isna().sum() / max(1, len(merged_df)) * 100).round(2).to_dict()
 

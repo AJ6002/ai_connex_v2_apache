@@ -86,6 +86,18 @@ async def profile_dataset(
         elif filename.endswith('.txt'):
             decoded = contents.decode('utf-8', errors='ignore')
             df = pd.read_csv(io.StringIO(decoded), sep=r'\s+')
+        elif filename.endswith(('.xlsx', '.xls')):
+            df_raw = pd.read_excel(io.BytesIO(contents))
+            skip_idx = None
+            for idx in range(min(15, len(df_raw))):
+                row_vals = [str(x).lower() for x in df_raw.iloc[idx].values]
+                if any("date" in v or "time" in v or "timestamp" in v for v in row_vals):
+                    skip_idx = idx
+                    break
+            if skip_idx is not None:
+                df = pd.read_excel(io.BytesIO(contents), header=skip_idx + 1)
+            else:
+                df = df_raw
         else:
             decoded = contents.decode('utf-8', errors='ignore')
             df = pd.read_json(io.StringIO(decoded))
@@ -138,8 +150,6 @@ async def profile_dataset(
         }
         
         # Save meta1.json inside 1_dataset_profiler/meta/
-        import os
-        import json
         meta_dir = os.path.join(os.path.dirname(__file__), "meta")
         os.makedirs(meta_dir, exist_ok=True)
         meta_path = os.path.join(meta_dir, "meta1.json")
