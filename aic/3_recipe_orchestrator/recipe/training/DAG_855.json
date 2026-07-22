@@ -1,0 +1,12 @@
+{
+    "algorithm": "DBSCAN",
+    "variant": "Federated",
+    "validation_metrics": [
+        "silhouette_score",
+        "calinski_harabasz"
+    ],
+    "hyperparameters": {
+        "eps": 0.5,
+        "min_samples": 5
+    }
+}

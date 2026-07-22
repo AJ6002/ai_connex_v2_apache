@@ -1,0 +1,15 @@
+{
+    "algorithm": "Logistic Regression",
+    "variant": "Multi-class",
+    "validation_metrics": [
+        "accuracy",
+        "f1",
+        "precision",
+        "recall"
+    ],
+    "hyperparameters": {
+        "penalty": "l2",
+        "C": 1.0,
+        "solver": "lbfgs"
+    }
+}

@@ -1,0 +1,8 @@
+{
+    "impute_strategy": "median",
+    "outlier_method": "remove",
+    "scale_method": "robust",
+    "encode_strategy": "one-hot",
+    "text_clean": false,
+    "time_align": true
+}

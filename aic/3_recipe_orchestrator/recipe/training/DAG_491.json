@@ -1,0 +1,14 @@
+{
+    "algorithm": "Isolation Forest",
+    "variant": "Hybrid",
+    "validation_metrics": [
+        "f1",
+        "precision",
+        "recall",
+        "auc_roc"
+    ],
+    "hyperparameters": {
+        "n_estimators": 100,
+        "contamination": 0.05
+    }
+}

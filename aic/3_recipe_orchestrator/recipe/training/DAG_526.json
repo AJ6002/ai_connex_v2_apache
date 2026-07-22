@@ -1,0 +1,14 @@
+{
+    "algorithm": "DBSCAN",
+    "variant": "Hybrid",
+    "validation_metrics": [
+        "f1",
+        "precision",
+        "recall",
+        "auc_roc"
+    ],
+    "hyperparameters": {
+        "eps": 0.5,
+        "min_samples": 5
+    }
+}

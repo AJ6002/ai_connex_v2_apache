@@ -1,0 +1,14 @@
+{
+    "algorithm": "Multivariate AD",
+    "variant": "PCA-based",
+    "validation_metrics": [
+        "f1",
+        "precision",
+        "recall",
+        "auc_roc"
+    ],
+    "hyperparameters": {
+        "n_estimators": 50,
+        "max_depth": 6
+    }
+}

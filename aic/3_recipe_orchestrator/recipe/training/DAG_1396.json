@@ -1,0 +1,13 @@
+{
+    "algorithm": "Deep Learning Rec",
+    "variant": "Autoencoder",
+    "validation_metrics": [
+        "ndcg",
+        "precision_at_k",
+        "recall_at_k"
+    ],
+    "hyperparameters": {
+        "n_estimators": 50,
+        "max_depth": 6
+    }
+}

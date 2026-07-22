@@ -1,0 +1,14 @@
+{
+    "algorithm": "ARIMA",
+    "variant": "Changepoint",
+    "validation_metrics": [
+        "mape",
+        "rmse",
+        "mae"
+    ],
+    "hyperparameters": {
+        "p": 1,
+        "d": 1,
+        "q": 1
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "algorithm": "SARIMAX",
+    "variant": "Bayesian",
+    "validation_metrics": [
+        "mape",
+        "rmse",
+        "mae"
+    ],
+    "hyperparameters": {
+        "p": 1,
+        "d": 1,
+        "q": 1
+    }
+}

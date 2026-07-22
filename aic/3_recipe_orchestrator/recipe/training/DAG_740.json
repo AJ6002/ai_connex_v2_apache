@@ -1,0 +1,12 @@
+{
+    "algorithm": "OPTICS",
+    "variant": "Distributed",
+    "validation_metrics": [
+        "silhouette_score",
+        "calinski_harabasz"
+    ],
+    "hyperparameters": {
+        "n_estimators": 50,
+        "max_depth": 6
+    }
+}

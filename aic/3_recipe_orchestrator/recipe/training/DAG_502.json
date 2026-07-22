@@ -1,0 +1,15 @@
+{
+    "algorithm": "One-class SVM",
+    "variant": "Cross-validated",
+    "validation_metrics": [
+        "f1",
+        "precision",
+        "recall",
+        "auc_roc"
+    ],
+    "hyperparameters": {
+        "C": 1.0,
+        "kernel": "rbf",
+        "gamma": "scale"
+    }
+}

@@ -1,0 +1,12 @@
+{
+    "algorithm": "Mini-batch K-Means",
+    "variant": "GPU-accelerated",
+    "validation_metrics": [
+        "silhouette_score",
+        "calinski_harabasz"
+    ],
+    "hyperparameters": {
+        "n_clusters": 3,
+        "init": "k-means++"
+    }
+}

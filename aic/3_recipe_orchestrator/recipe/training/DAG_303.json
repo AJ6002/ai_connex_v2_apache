@@ -1,0 +1,14 @@
+{
+    "algorithm": "Random Forest",
+    "variant": "Weighted",
+    "validation_metrics": [
+        "r2",
+        "rmse",
+        "mae"
+    ],
+    "hyperparameters": {
+        "n_estimators": 100,
+        "max_depth": 10,
+        "min_samples_split": 2
+    }
+}

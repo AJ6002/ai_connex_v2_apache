@@ -1,0 +1,103 @@
+{
+  "timestamp": "2026-07-17T07:01:11.367198Z",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "python": "3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]",
+  "status": "PASSED",
+  "total_checks": 19,
+  "failed_count": 0,
+  "checks": [
+    {
+      "check": "python_version",
+      "required": ">=3.9",
+      "actual": "3.10.11",
+      "status": "PASS"
+    },
+    {
+      "check": "package:pandas",
+      "required": ">=2.0.0",
+      "actual": "2.3.3",
+      "status": "PASS"
+    },
+    {
+      "check": "package:numpy",
+      "required": ">=1.24.0",
+      "actual": "2.2.6",
+      "status": "PASS"
+    },
+    {
+      "check": "package:sklearn",
+      "required": ">=1.2.0",
+      "actual": "1.5.0",
+      "status": "PASS"
+    },
+    {
+      "check": "package:xgboost",
+      "required": ">=1.7.0",
+      "actual": "3.2.0",
+      "status": "PASS"
+    },
+    {
+      "check": "package:pyarrow",
+      "required": ">=12.0.0",
+      "actual": "16.1.0",
+      "status": "PASS"
+    },
+    {
+      "check": "package:boto3",
+      "required": ">=1.26.0",
+      "actual": "1.43.48",
+      "status": "PASS"
+    },
+    {
+      "check": "package:sagemaker",
+      "required": ">=2.140.0",
+      "actual": "2.257.5",
+      "status": "PASS"
+    },
+    {
+      "check": "config_exists",
+      "path": "X:\\TAS\\AICONNEX\\scripts\\..\\sagemaker_pipeline\\config\\config.json",
+      "status": "PASS"
+    },
+    {
+      "check": "config_valid_json",
+      "status": "PASS"
+    },
+    {
+      "check": "config_key:domain",
+      "status": "PASS"
+    },
+    {
+      "check": "config_key:algorithm",
+      "status": "PASS"
+    },
+    {
+      "check": "config_key:schema",
+      "status": "PASS"
+    },
+    {
+      "check": "config_key:thresholds",
+      "status": "PASS"
+    },
+    {
+      "check": "config_key:hyperparameters",
+      "status": "PASS"
+    },
+    {
+      "check": "schema_key:target_column",
+      "status": "PASS"
+    },
+    {
+      "check": "schema_key:features",
+      "status": "PASS"
+    },
+    {
+      "check": "schema_key:time_index",
+      "status": "PASS"
+    },
+    {
+      "check": "schema_key:identifier",
+      "status": "PASS"
+    }
+  ]
+}

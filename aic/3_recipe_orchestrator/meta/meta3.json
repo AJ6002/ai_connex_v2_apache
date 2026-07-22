@@ -1,0 +1,47 @@
+{
+  "dag_id": "DAG_241",
+  "suggested_task": "Regression",
+  "resolved_at": "1784536279.0",
+  "recipe_sources": {
+    "preparing": "X:\\TAS\\AICONNEX\\aic\\3_recipe_orchestrator\\recipe\\preparing\\DAG_241.json",
+    "feature_engineering": "X:\\TAS\\AICONNEX\\aic\\3_recipe_orchestrator\\recipe\\feature_engineering\\DAG_241.json",
+    "splitting": "X:\\TAS\\AICONNEX\\aic\\3_recipe_orchestrator\\recipe\\splitting\\DAG_241.json",
+    "training": "X:\\TAS\\AICONNEX\\aic\\3_recipe_orchestrator\\recipe\\training\\DAG_241.json"
+  },
+  "recipes": {
+    "preparing_recipe": {
+      "impute_strategy": "mean",
+      "outlier_method": "none",
+      "scale_method": "standard",
+      "encode_strategy": "one-hot",
+      "text_clean": false,
+      "time_align": false
+    },
+    "feature_engineering_recipe": {
+      "polynomial_degree": 2,
+      "interaction_features": true,
+      "pca_components": 0,
+      "feature_selection_method": "k_best",
+      "k_best_features": 15,
+      "create_aggregate_features": true
+    },
+    "splitting_recipe": {
+      "test_size": 0.2,
+      "validation_strategy": "kfold",
+      "random_state": 42
+    },
+    "training_recipe": {
+      "algorithm": "Linear Regression",
+      "variant": "Standard",
+      "validation_metrics": [
+        "r2",
+        "rmse",
+        "mae"
+      ],
+      "hyperparameters": {
+        "fit_intercept": true,
+        "alpha": 1.0
+      }
+    }
+  }
+}

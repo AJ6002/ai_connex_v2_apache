@@ -1,0 +1,12 @@
+{
+    "algorithm": "What-If Analysis",
+    "variant": "Scenario Planning",
+    "validation_metrics": [
+        "accuracy",
+        "f1"
+    ],
+    "hyperparameters": {
+        "n_estimators": 50,
+        "max_depth": 6
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "algorithm": "GRU",
+    "variant": "Multi-horizon",
+    "validation_metrics": [
+        "mape",
+        "rmse",
+        "mae"
+    ],
+    "hyperparameters": {
+        "units": 64,
+        "epochs": 20,
+        "batch_size": 32
+    }
+}

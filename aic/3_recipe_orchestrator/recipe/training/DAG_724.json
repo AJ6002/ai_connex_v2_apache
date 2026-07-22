@@ -1,0 +1,12 @@
+{
+    "algorithm": "Mini-batch K-Means",
+    "variant": "Hybrid",
+    "validation_metrics": [
+        "silhouette_score",
+        "calinski_harabasz"
+    ],
+    "hyperparameters": {
+        "n_clusters": 3,
+        "init": "k-means++"
+    }
+}

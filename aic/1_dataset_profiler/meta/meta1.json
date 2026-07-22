@@ -1,0 +1,116 @@
+{
+  "status": "success",
+  "filename": "group_thermal_overstress_aging_with_square_signal_at_gate_merged.csv",
+  "profile": {
+    "dataset_info": {
+      "num_rows": 1,
+      "num_columns": 4,
+      "total_memory_bytes": 3210159,
+      "duplicate_rows": 0,
+      "duplicate_rows_pct": 0.0
+    },
+    "columns": [
+      {
+        "name": "pwm_temp_controller_state",
+        "dtype": "object",
+        "semantic_type": "text",
+        "missing_count": 0,
+        "missing_pct": 0.0,
+        "unique_count": 1,
+        "unique_pct": 1.0,
+        "is_constant": true,
+        "stats": {
+          "min_length": 171216,
+          "max_length": 171216,
+          "mean_length": 171216.0,
+          "mean_word_count": 9512.0,
+          "max_word_count": 9512
+        }
+      },
+      {
+        "name": "transient",
+        "dtype": "object",
+        "semantic_type": "text",
+        "missing_count": 0,
+        "missing_pct": 0.0,
+        "unique_count": 1,
+        "unique_pct": 1.0,
+        "is_constant": true,
+        "stats": {
+          "min_length": 30096,
+          "max_length": 30096,
+          "mean_length": 30096.0,
+          "mean_word_count": 1672.0,
+          "max_word_count": 1672
+        }
+      },
+      {
+        "name": "steady_state",
+        "dtype": "object",
+        "semantic_type": "text",
+        "missing_count": 0,
+        "missing_pct": 0.0,
+        "unique_count": 1,
+        "unique_pct": 1.0,
+        "is_constant": true,
+        "stats": {
+          "min_length": 3006144,
+          "max_length": 3006144,
+          "mean_length": 3006144.0,
+          "mean_word_count": 167008.0,
+          "max_word_count": 167008
+        }
+      },
+      {
+        "name": "report",
+        "dtype": "object",
+        "semantic_type": "text",
+        "missing_count": 0,
+        "missing_pct": 0.0,
+        "unique_count": 1,
+        "unique_pct": 1.0,
+        "is_constant": true,
+        "stats": {
+          "min_length": 2347,
+          "max_length": 2347,
+          "mean_length": 2347.0,
+          "mean_word_count": 377.0,
+          "max_word_count": 377
+        }
+      }
+    ],
+    "correlation_summary": {
+      "warnings": [],
+      "high_correlation_pairs": []
+    },
+    "missing_data_summary": {
+      "total_missing_cells": 0,
+      "overall_missing_pct": 0.0,
+      "columns_above_20pct_missing": []
+    },
+    "outlier_summary": {
+      "overall_outlier_ratio": 0.0,
+      "top_outlier_columns": []
+    },
+    "dimensionality": {
+      "pca_95pct_components": 0,
+      "components_needed_ratio": 0.0
+    },
+    "warnings": [
+      "Column 'pwm_temp_controller_state' is constant (only has 1 unique value) and has no predictive power.",
+      "Column 'transient' is constant (only has 1 unique value) and has no predictive power.",
+      "Column 'steady_state' is constant (only has 1 unique value) and has no predictive power.",
+      "Column 'report' is constant (only has 1 unique value) and has no predictive power."
+    ],
+    "algorithm_family": "Miscellaneous",
+    "family_confidence": 0.8,
+    "family_reason": "No target column detected for supervised learning (Regression/Classification); no numeric columns found in the dataset; mixed categorical/numeric columns without label, suggesting clustering or rule association.",
+    "detected_target": null,
+    "suggested_task": "Clustering / Association Rules",
+    "recommended_dag_id": "DAG_696",
+    "recommended_algorithm": "K-Means",
+    "recommended_variant": "Standard",
+    "recommended_special_handling": "None",
+    "raw_file_path": "X:\\TAS\\AICONNEX\\aic\\workspace_data\\group_thermal_overstress_aging_with_square_signal_at_gate_merged\\group_thermal_overstress_aging_with_square_signal_at_gate_merged.csv"
+  }
+}

@@ -1,0 +1,12 @@
+{
+    "algorithm": "K-Means",
+    "variant": "Sparse",
+    "validation_metrics": [
+        "silhouette_score",
+        "calinski_harabasz"
+    ],
+    "hyperparameters": {
+        "n_clusters": 3,
+        "init": "k-means++"
+    }
+}

@@ -1,0 +1,13 @@
+{
+    "algorithm": "CatBoost",
+    "variant": "Cross-validated",
+    "validation_metrics": [
+        "r2",
+        "rmse",
+        "mae"
+    ],
+    "hyperparameters": {
+        "n_estimators": 50,
+        "max_depth": 6
+    }
+}

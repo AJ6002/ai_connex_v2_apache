@@ -1,0 +1,15 @@
+{
+    "algorithm": "SVM",
+    "variant": "Weighted",
+    "validation_metrics": [
+        "accuracy",
+        "f1",
+        "precision",
+        "recall"
+    ],
+    "hyperparameters": {
+        "C": 1.0,
+        "kernel": "rbf",
+        "gamma": "scale"
+    }
+}
