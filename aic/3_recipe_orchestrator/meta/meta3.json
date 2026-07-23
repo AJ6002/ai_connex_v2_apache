@@ -1,12 +1,12 @@
 {
-  "dag_id": "DAG_241",
-  "suggested_task": "Regression",
-  "resolved_at": "1784719792.3831797",
+  "dag_id": "DAG_595",
+  "suggested_task": "Anomaly Detection",
+  "resolved_at": "1784719792.8268309",
   "recipe_sources": {
-    "preparing": "X:\\TAS\\AICONNEX\\aic\\3_recipe_orchestrator\\recipe\\preparing\\DAG_241.json",
-    "feature_engineering": "X:\\TAS\\AICONNEX\\aic\\3_recipe_orchestrator\\recipe\\feature_engineering\\DAG_241.json",
-    "splitting": "X:\\TAS\\AICONNEX\\aic\\3_recipe_orchestrator\\recipe\\splitting\\DAG_241.json",
-    "training": "X:\\TAS\\AICONNEX\\aic\\3_recipe_orchestrator\\recipe\\training\\DAG_241.json"
+    "preparing": "X:\\TAS\\AICONNEX\\aic\\3_recipe_orchestrator\\recipe\\preparing\\DAG_595.json",
+    "feature_engineering": "X:\\TAS\\AICONNEX\\aic\\3_recipe_orchestrator\\recipe\\feature_engineering\\DAG_595.json",
+    "splitting": "X:\\TAS\\AICONNEX\\aic\\3_recipe_orchestrator\\recipe\\splitting\\DAG_595.json",
+    "training": "X:\\TAS\\AICONNEX\\aic\\3_recipe_orchestrator\\recipe\\training\\DAG_595.json"
   },
   "recipes": {
     "preparing_recipe": {
@@ -31,8 +31,8 @@
       "random_state": 42
     },
     "training_recipe": {
-      "algorithm": "SVM",
-      "variant": "Multi-class",
+      "algorithm": "Isolation Forest",
+      "variant": "Standard",
       "validation_metrics": [
         "accuracy",
         "f1",
@@ -40,8 +40,9 @@
         "recall"
       ],
       "hyperparameters": {
-        "fit_intercept": true,
-        "alpha": 1.0
+        "n_estimators": 100,
+        "contamination": 0.05,
+        "random_state": 42
       }
     }
   }

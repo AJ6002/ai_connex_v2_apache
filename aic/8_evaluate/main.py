@@ -203,7 +203,7 @@ def evaluate_model(payload: EvaluatePayload):
                 evaluator_used = "sklearn_regression_fallback"
 
         # ── Branch B: Anomaly Detection ─────────────────────────────────────
-        elif ml_task == "anomaly_detection" or "isolationforest" in model_class:
+        elif "anomaly" in str(ml_task).lower() or "isolationforest" in model_class:
             try:
                 from aiconnex_ml.anomaly.evaluation import compute_anomaly_metrics
 
@@ -363,7 +363,7 @@ def _run_advisory_vg2(
             warnings.append(f"Accuracy = {accuracy:.4f} below advisory minimum {accuracy_min}")
             score -= 0.20
 
-    elif ml_task == "anomaly_detection":
+    elif "anomaly" in str(ml_task).lower():
         f1    = float(metrics.get("f1",    0.0) or 0.0)
         f1_min = float(thresholds.get("f1_min", 0.5))
         if f1 < f1_min and f1 > 0:

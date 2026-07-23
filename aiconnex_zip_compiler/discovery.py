@@ -201,12 +201,41 @@ def extract_group_id_from_filename(filename: str, filepath: Path, temp_dir: Path
     return "default"
 
 
+def unpack_nested_zips(directory: Path):
+    """Recursively unpack any nested .zip files found inside the extracted directory."""
+    for root, _, files in os.walk(directory):
+        for f in files:
+            if f.lower().endswith(".zip"):
+                zip_path = Path(root) / f
+                extract_target = zip_path.with_suffix("")
+                try:
+                    with zipfile.ZipFile(zip_path, "r") as zf:
+                        zf.extractall(extract_target)
+                    unpack_nested_zips(extract_target)
+                except Exception:
+                    pass
+
+def convert_mat_files(directory: Path):
+    """Convert any MATLAB .mat files found in directory into tabular CSVs."""
+    from .mat_converter import convert_mat_file_to_csv
+    for root, _, files in os.walk(directory):
+        for f in files:
+            if f.lower().endswith(".mat") and not f.lower().startswith("__"):
+                mat_path = Path(root) / f
+                convert_mat_file_to_csv(mat_path)
+
 def run_discovery(zip_path: Path, temp_dir: Path) -> DiscoveryResult:
     """Extract ZIP archive and discover relationships across all tabular files."""
     temp_dir.mkdir(parents=True, exist_ok=True)
 
     with zipfile.ZipFile(zip_path, "r") as zf:
         zf.extractall(temp_dir)
+
+    # 1. Unpack nested zip archives recursively
+    unpack_nested_zips(temp_dir)
+
+    # 2. Auto-convert MATLAB .mat files to CSV
+    convert_mat_files(temp_dir)
 
     # Discover all CSV/TXT files (excluding text documentation like readme/license)
     extracted_files: List[Path] = []

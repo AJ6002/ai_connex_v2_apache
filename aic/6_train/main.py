@@ -88,11 +88,11 @@ def train_model(payload: TrainPayload):
             output_model_path=model_path
         )
 
-        ml_task = manifest_dict.get("ml_task", "regression")
+        ml_task = str(manifest_dict.get("ml_task", "regression")).lower()
         feature_cols = manifest_dict["schema_config"]["raw_features"]
 
         # 3. Invoke aiconnex_ml modeling pipeline
-        if ml_task == "anomaly":
+        if "anomaly" in ml_task:
             print("[Train API] Running Anomaly Detection Training using aiconnex_ml...")
             df_train = pd.read_csv(train_path)
             df_val = pd.read_csv(val_path)

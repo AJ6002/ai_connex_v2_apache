@@ -1,6 +1,6 @@
 {
-    "algorithm": "Autoencoder",
-    "variant": "Streaming",
+    "algorithm": "Isolation Forest",
+    "variant": "Standard",
     "validation_metrics": [
         "accuracy",
         "f1",
@@ -8,7 +8,8 @@
         "recall"
     ],
     "hyperparameters": {
-        "fit_intercept": true,
-        "alpha": 1.0
+        "n_estimators": 100,
+        "contamination": 0.05,
+        "random_state": 42
     }
 }

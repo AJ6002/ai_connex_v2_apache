@@ -197,12 +197,27 @@ def _run_training_job(job_id: str, payload: TrainPayload):
         var_lower   = str(variant).lower()
 
         # Detect task type
-        is_regression = True
-        if y_train is not None:
-            if y_train.nunique() <= 10 or pd.api.types.is_string_dtype(y_train) or pd.api.types.is_object_dtype(y_train):
-                is_regression = False
+        task_type = str(manifest.get("profile", {}).get("suggested_task", ""))
+        family_type = str(manifest.get("profile", {}).get("algorithm_family", ""))
+        ml_task = str(manifest.get("ml_task", ""))
 
-        model = _resolve_model(algo_lower, var_lower, hyperparams, is_regression)
+        if "anomaly" in family_type.lower() or "anomaly" in task_type.lower() or "anomaly" in ml_task.lower():
+            is_anomaly = True
+            is_regression = False
+        elif "regression" in family_type.lower() or "regression" in task_type.lower() or "time" in task_type.lower():
+            is_anomaly = False
+            is_regression = True
+        elif y_train is not None:
+            is_anomaly = False
+            if (y_train.nunique() <= 10 and not pd.api.types.is_float_dtype(y_train)) or pd.api.types.is_string_dtype(y_train) or pd.api.types.is_object_dtype(y_train):
+                is_regression = False
+            else:
+                is_regression = True
+        else:
+            is_anomaly = True
+            is_regression = False
+
+        model = _resolve_model(algo_lower, var_lower, hyperparams, is_regression, is_anomaly=is_anomaly)
 
         # Fit
         if y_train is not None:

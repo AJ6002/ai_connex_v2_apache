@@ -255,6 +255,7 @@ class PipelineRunner:
         self,
         dataset_path: str | Path,
         target_column: Optional[str] = None,
+        family_override: Optional[str] = None,
         output_dir: Optional[str | Path] = None,
         poll_timeout: int = 600,
         poll_interval: int = 3,
@@ -273,11 +274,14 @@ class PipelineRunner:
             else:
                 ds = BASE_DIR / ds
         self.dataset_path   = ds.resolve()
-        self.target_column  = target_column
-        self.poll_timeout   = poll_timeout
-        self.poll_interval  = poll_interval
-        self.dry_run        = dry_run
-        self.verbose        = verbose
+        if target_column and str(target_column).strip().lower() in ("none", "null", ""):
+            target_column = None
+        self.target_column   = target_column
+        self.family_override = family_override
+        self.poll_timeout    = poll_timeout
+        self.poll_interval   = poll_interval
+        self.dry_run         = dry_run
+        self.verbose         = verbose
 
         # Output directory
         if output_dir is None:
@@ -440,6 +444,30 @@ class PipelineRunner:
     # ──────────────────────────────────────────────────────────────────────────
 
     def _step3_override_target(self) -> None:
+        if self.family_override:
+            fam_clean = self.family_override.strip().lower()
+            if "anomaly" in fam_clean:
+                _step(3, self.TOTAL_STEPS, f"Family Override → '{self.family_override}' (Anomaly Detection)")
+                self._result.profile["detected_target"] = None
+                self._result.detected_target = None
+                self._result.profile["algorithm_family"] = "Anomaly_Detection"
+                self._result.profile["suggested_task"]   = "Anomaly Detection"
+                self._result.profile["recommended_dag_id"] = "DAG_595"
+                self._result.algorithm_family = "Anomaly_Detection"
+                self._result.suggested_task   = "Anomaly Detection"
+                self._result.dag_id           = "DAG_595"
+                _ok("Updated ML track to Anomaly Detection (DAG_595 - Isolation Forest)")
+                return
+            else:
+                _step(3, self.TOTAL_STEPS, f"Family Override → '{self.family_override}'")
+                self._result.profile["algorithm_family"] = self.family_override
+                self._result.profile["suggested_task"]   = self.family_override
+                self._result.algorithm_family = self.family_override
+                self._result.suggested_task   = self.family_override
+                if "anomaly" in self.family_override.lower():
+                    self._result.profile["recommended_dag_id"] = "DAG_595"
+                    _ok("Updated ML track to Anomaly Detection (DAG_595 - Isolation Forest)")
+
         if not self.target_column:
             return
 
@@ -457,11 +485,11 @@ class PipelineRunner:
         # Update family and suggested task to Supervised Regression
         self._result.profile["algorithm_family"] = "Regression"
         self._result.profile["suggested_task"]   = "Regression"
-        self._result.profile["recommended_dag_id"] = "DAG_241"
+        self._result.profile["recommended_dag_id"] = "DAG_414"
         self._result.algorithm_family = "Regression"
         self._result.suggested_task   = "Regression"
-        self._result.dag_id           = "DAG_241"
-        _ok("Updated ML track to Supervised Regression (DAG_241)")
+        self._result.dag_id           = "DAG_414"
+        _ok("Updated ML track to Supervised Regression (DAG_414 - LightGBM)")
 
     # ──────────────────────────────────────────────────────────────────────────
     # Step 4: Start pipeline  (Node 2 — port 8001)
@@ -1029,6 +1057,10 @@ Examples:
         help="Override the auto-detected target column name.",
     )
     p.add_argument(
+        "--family", metavar="FAMILY",
+        help="Override algorithm family (e.g. Anomaly_Detection, Regression).",
+    )
+    p.add_argument(
         "--output", metavar="DIR",
         help="Output directory for artifacts. Relative to aic/. Default: workspace_data/<stem>_run",
     )
@@ -1095,6 +1127,7 @@ def main() -> int:
     runner = PipelineRunner(
         dataset_path=args.dataset,
         target_column=args.target,
+        family_override=args.family,
         output_dir=args.output,
         poll_timeout=args.timeout,
         poll_interval=args.interval,
