@@ -266,7 +266,7 @@ def _run_training_job(job_id: str, payload: TrainPayload):
 # Model Resolution Registry
 # ─────────────────────────────────────────────────────────────────────────────
 
-def _resolve_model(algo_lower: str, var_lower: str, hyperparams: dict, is_regression: bool):
+def _resolve_model(algo_lower: str, var_lower: str, hyperparams: dict, is_regression: bool, is_anomaly: bool = False):
     """Map recipe algorithm name → sklearn estimator instance."""
 
     # 1. Logistic Regression
@@ -339,14 +339,17 @@ def _resolve_model(algo_lower: str, var_lower: str, hyperparams: dict, is_regres
 
     # 6. LightGBM (with GradientBoosting fallback)
     if "lightgbm" in algo_lower:
-        n, lr = hyperparams.get("n_estimators", 100), hyperparams.get("learning_rate", 0.1)
+        n = hyperparams.get("n_estimators", 100)
+        lr = hyperparams.get("learning_rate", 0.1)
+        num_leaves = hyperparams.get("num_leaves", 31)
+        max_depth = hyperparams.get("max_depth", -1)
         try:
             import lightgbm as lgb
-            return lgb.LGBMRegressor(n_estimators=n, learning_rate=lr, random_state=42, verbose=-1) if is_regression \
-                   else lgb.LGBMClassifier(n_estimators=n, learning_rate=lr, random_state=42, verbose=-1)
+            return lgb.LGBMRegressor(n_estimators=n, learning_rate=lr, num_leaves=num_leaves, max_depth=max_depth, random_state=42, verbose=-1) if is_regression \
+                   else lgb.LGBMClassifier(n_estimators=n, learning_rate=lr, num_leaves=num_leaves, max_depth=max_depth, random_state=42, verbose=-1)
         except ImportError:
-            return GradientBoostingRegressor(n_estimators=n, learning_rate=lr, random_state=42) if is_regression \
-                   else GradientBoostingClassifier(n_estimators=n, random_state=42)
+            return GradientBoostingRegressor(n_estimators=n, learning_rate=lr, max_depth=max(1, max_depth if max_depth > 0 else 3), random_state=42) if is_regression \
+                   else GradientBoostingClassifier(n_estimators=n, learning_rate=lr, max_depth=max(1, max_depth if max_depth > 0 else 3), random_state=42)
 
     # 7. Anomaly Detection
     if "isolation forest" in algo_lower or "anomaly" in algo_lower:
