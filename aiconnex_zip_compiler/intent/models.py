@@ -51,29 +51,40 @@ class DatasetCard:
 class IntentOption:
     """One choice displayed in the terminal prompt."""
 
-    option_id: str  # "failure_prediction", "anomaly_detection", "forecasting"
+    option_id: str  # LLM-generated per dataset, or a legacy fixed id
     label: str  # "Predict equipment failure"
     description: str  # "Get alerts before your compressor breaks down"
     is_default: bool = False  # First option is typically default for batch mode
+    # Stable machine-selectable alias. LLM-generated option_ids vary between
+    # runs, so automation should target output_mode instead.
+    output_mode: str = ""  # "single_merged" | "per_partition_batch" | "keep_separate"
 
 
 @dataclass
 class CompilationStrategy:
     """Internal compiler instructions derived from the user's terminal selection."""
 
-    intent_id: str  # "failure_prediction" | "anomaly_detection" | "forecasting"
+    intent_id: str  # LLM-generated option_id, or legacy fixed id
     scope: str = "all"  # "per_condition" | "unified" | "single_asset" | "all"
-    condition_filter: Optional[str] = None  # "FD001" or None (all)
+    condition_filter: Optional[str] = None  # e.g. "FD001", or None for all
 
     # Internal decisions (user NEVER sees these):
     sheets_to_include: List[str] = field(default_factory=list)
     sheets_to_exclude: List[str] = field(default_factory=list)
     merge_rule: str = "default"  # "keep_separate" | "vertical_stack" | "merge_on_key" | "default"
-    target_synthesis: str = "auto"  # "rul_countdown" | "anomaly_flag" | "forecast_horizon" | "auto"
-    target_column_hint: Optional[str] = None  # "RUL", "is_anomaly", "next_day_pressure"
+    target_synthesis: str = "auto"  # LLM-described derivation, or legacy fixed id
+    target_column_hint: Optional[str] = None
 
     # Plugin policy overrides (set by resolver, read by compiler)
-    assembler_policy_override: Optional[str] = None  # "relational_join_assembler" | "vertical_stack_assembler"
+    assembler_policy_override: Optional[str] = None
+
+    # Output shaping (drives handoff): how many artifact sets to emit
+    output_mode: str = "single_merged"  # "single_merged" | "per_partition_batch" | "keep_separate"
+    partition_by: Optional[str] = None  # partition dimension name, plain language
+    partitions: List[Dict[str, Any]] = field(default_factory=list)  # [{group_id, group_label, member_tables}]
+
+    # Provenance: set when the strategy came from LLM reasoning rather than fixed rules
+    generated_by_llm: bool = False
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -86,6 +97,10 @@ class CompilationStrategy:
             "target_synthesis": self.target_synthesis,
             "target_column_hint": self.target_column_hint,
             "assembler_policy_override": self.assembler_policy_override,
+            "output_mode": self.output_mode,
+            "partition_by": self.partition_by,
+            "partitions": self.partitions,
+            "generated_by_llm": self.generated_by_llm,
         }
 
 

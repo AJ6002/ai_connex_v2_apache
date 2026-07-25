@@ -54,6 +54,7 @@ class TerminalPrompter:
         card: DatasetCard,
         options: List[IntentOption],
         strategy_override: Optional[str] = None,
+        question: Optional[str] = None,
     ) -> str:
         """
         Display prompt and return the selected option_id.
@@ -68,6 +69,9 @@ class TerminalPrompter:
             If set, bypasses the prompt entirely and returns this option_id.
             If the override does not match any known option, falls back to
             the default option and logs a warning (fail-visible, not silent).
+        question : str, optional
+            The question text to display. When the intelligence layer is active
+            this is LLM-generated per dataset; falls back to a generic prompt.
 
         Returns
         -------
@@ -77,17 +81,23 @@ class TerminalPrompter:
         if not options:
             return "auto_model"
 
-        # Bypass 1: Strategy override from CLI --strategy flag
+        # Bypass 1: Strategy override from CLI --strategy flag.
+        # Resolution order: exact option_id -> output_mode alias -> 1-based index.
+        # option_ids are LLM-generated and vary between runs, so output_mode and
+        # index are the stable selectors for automation.
         if strategy_override:
-            matching = [o for o in options if o.option_id == strategy_override]
-            if matching:
-                return matching[0].option_id
-            # Override did not match any known option - fall back but warn loudly.
+            resolved = self._resolve_override(strategy_override, options)
+            if resolved is not None:
+                return resolved
+
             default = self._get_default(options)
             valid_ids = ", ".join(o.option_id for o in options)
+            valid_modes = ", ".join(sorted({o.output_mode for o in options if o.output_mode}))
             print(
                 f"\n[WARNING] Strategy '{strategy_override}' is not valid for this dataset.\n"
-                f"          Valid options: {valid_ids}\n"
+                f"          Valid option ids   : {valid_ids}\n"
+                + (f"          Valid output modes : {valid_modes}\n" if valid_modes else "")
+                + f"          Valid indices      : 1-{len(options)}\n"
                 f"          Falling back to default: '{default}'\n"
             )
             return default
@@ -110,9 +120,14 @@ class TerminalPrompter:
             return options[0].option_id
 
         # Full interactive prompt
-        return self._interactive_prompt(card, options)
+        return self._interactive_prompt(card, options, question)
 
-    def _interactive_prompt(self, card: DatasetCard, options: List[IntentOption]) -> str:
+    def _interactive_prompt(
+        self,
+        card: DatasetCard,
+        options: List[IntentOption],
+        question: Optional[str] = None,
+    ) -> str:
         """Render the full prompt box and wait for user input."""
         width = 75
 
@@ -132,8 +147,8 @@ class TerminalPrompter:
         print(_horizontal_rule(width, "+", "+"))
         print()
 
-        # Print question
-        print("What do you want the model to do?")
+        # Print question (LLM-generated when available, else generic fallback)
+        print(question or "What do you want the model to do?")
         print()
 
         # Print options
@@ -189,6 +204,36 @@ class TerminalPrompter:
         if self.force_interactive:
             return True
         return hasattr(sys.stdin, "isatty") and sys.stdin.isatty()
+
+    @staticmethod
+    def _resolve_override(override: str, options: List[IntentOption]) -> Optional[str]:
+        """
+        Resolve a --strategy value against the available options.
+
+        Accepts, in priority order:
+          1. An exact option_id
+          2. An output_mode value (stable across runs, unlike LLM option_ids)
+          3. A 1-based index into the presented options
+        Returns None when nothing matches.
+        """
+        candidate = override.strip()
+
+        for option in options:
+            if option.option_id == candidate:
+                return option.option_id
+
+        mode_matches = [o for o in options if o.output_mode and o.output_mode == candidate]
+        if mode_matches:
+            # Prefer the recommended option when several share an output_mode
+            preferred = next((o for o in mode_matches if o.is_default), mode_matches[0])
+            return preferred.option_id
+
+        if candidate.isdigit():
+            index = int(candidate)
+            if 1 <= index <= len(options):
+                return options[index - 1].option_id
+
+        return None
 
     @staticmethod
     def _get_default(options: List[IntentOption]) -> str:

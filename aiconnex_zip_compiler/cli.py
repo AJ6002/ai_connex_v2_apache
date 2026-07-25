@@ -47,14 +47,21 @@ def main() -> int:
              "even when run in a real terminal.",
     )
     intent_group.add_argument(
-        "--strategy", metavar="STRATEGY_ID", type=str, default=None,
+        "--strategy", metavar="SELECTOR", type=str, default=None,
         help=(
-            "Bypass the prompt and use this strategy directly. "
-            "Options: failure_prediction, anomaly_detection, forecasting, "
-            "unified_all_conditions, separate_per_condition, auto_model"
+            "Bypass the prompt and select an option directly. Accepts an output "
+            "mode (single_merged, per_partition_batch, keep_separate), a 1-based "
+            "option index (1, 2, ...), or an exact option id. Output mode and "
+            "index are the stable selectors for automation, because option ids "
+            "are generated per dataset by the intelligence layer."
         ),
     )
 
+    parser.add_argument(
+        "--no-intelligence", action="store_true", default=False,
+        help="Disable the LLM-driven intelligence layer and use the deterministic "
+             "heuristic path only (faster, offline-safe, no LLM calls).",
+    )
     parser.add_argument(
         "--verbose", "-v", action="store_true",
         help="Print detailed execution logs.",
@@ -90,6 +97,7 @@ def main() -> int:
         print("Mode  : Batch (auto-select default)")
     elif interactive:
         print("Mode  : Interactive")
+    print(f"Intel : {'disabled' if args.no_intelligence else 'enabled (LLM analysis)'}")
     print()
 
     compiler = UnifiedCompiler(
@@ -98,6 +106,7 @@ def main() -> int:
         interactive=interactive,
         strategy_override=args.strategy,
         batch=args.batch,
+        enable_intelligence=not args.no_intelligence,
     )
     res: CompileResult = compiler.compile()
 

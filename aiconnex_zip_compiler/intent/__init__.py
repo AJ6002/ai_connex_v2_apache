@@ -13,6 +13,11 @@ from .card_generator import CardGenerator
 from .classifier import IntentClassifier
 from .resolver import IntentResolver
 from .prompter import TerminalPrompter
+from .llm_bridge import (
+    report_to_dataset_card,
+    report_to_intent_options,
+    resolve_llm_strategy,
+)
 
 __all__ = [
     "DatasetCard",
@@ -23,4 +28,7 @@ __all__ = [
     "IntentClassifier",
     "IntentResolver",
     "TerminalPrompter",
+    "report_to_dataset_card",
+    "report_to_intent_options",
+    "resolve_llm_strategy",
 ]

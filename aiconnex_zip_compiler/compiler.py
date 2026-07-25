@@ -64,6 +64,11 @@ class UnifiedCompiler:
     batch : bool
         If True, always auto-selects the default intent option without prompting,
         regardless of tty state. Takes precedence over `interactive`.
+    enable_intelligence : bool
+        If True (default), runs the LLM-driven intelligence layer (7 analysis
+        stages) to generate the DatasetCard, HITL question, and options
+        dynamically. Falls back to the legacy heuristic path when the LLM is
+        unreachable or analysis fails.
     """
 
     def __init__(
@@ -73,12 +78,15 @@ class UnifiedCompiler:
         interactive: bool = False,
         strategy_override: Optional[str] = None,
         batch: bool = False,
+        enable_intelligence: bool = True,
     ) -> None:
         self.zip_path = Path(zip_path).resolve()
         self.output_dir = Path(output_dir).resolve()
         self.interactive = interactive
         self.strategy_override = strategy_override
         self.batch = batch
+        self.enable_intelligence = enable_intelligence
+        self._intelligence = None  # IntelligenceOrchestrator, set during compile()
 
     def compile(self) -> CompileResult:
         """Execute intent layer + all 5 plugin pipeline stages sequentially."""
@@ -117,19 +125,26 @@ class UnifiedCompiler:
             registry = PluginRegistry.get_instance()
             registry.auto_discover()
 
+            # -- Intelligence Stages 1-3 (archive, formats, parser advice) ----
+            self._run_intelligence_pre_parse(temp_dir, registry)
+
             # -- Stage 1: Discovery Plugin ------------------------------------
             disc_plugin = registry.resolve("discovery", context)
             context = disc_plugin.execute(context)
             context.active_plugins["discovery"] = f"{disc_plugin.plugin_id}@{disc_plugin.version}"
 
-            # -- HITL Intent Layer (between Discovery and Parser) -------------
-            # Runs AFTER discovery so we have inventory, but BEFORE parsing
-            self._run_intent_layer(context)
-
             # -- Stage 2: Parser Plugin ---------------------------------------
             parser_plugin = registry.resolve("parser", context)
             context = parser_plugin.execute(context)
             context.active_plugins["parser"] = f"{parser_plugin.plugin_id}@{parser_plugin.version}"
+
+            # -- Intelligence Stages 4-7 (stats, roles, semantics, problem) ---
+            # Needs real DataFrames, so it runs after parsing but before the
+            # HITL prompt, because it generates the question and the options.
+            self._run_intelligence_post_parse(context)
+
+            # -- HITL Intent Layer (after parsing, before assembly) -----------
+            self._run_intent_layer(context)
 
             # -- Stage 3: Assembler Plugin ------------------------------------
             assembler_plugin = registry.resolve("assembler", context)
@@ -190,6 +205,13 @@ class UnifiedCompiler:
                 zip_filename=self.zip_path.name,
             )
 
+            # -- Per-Partition Job Batch (individual model per fault mode) ----
+            self._maybe_export_partition_batch(context, final_dfs)
+
+            # -- Write the intelligence report artifact -----------------------
+            if self._intelligence is not None:
+                self._intelligence.write_report(self.output_dir)
+
             return CompileResult(
                 input_zip=str(self.zip_path),
                 output_dir=str(self.output_dir),
@@ -221,14 +243,102 @@ class UnifiedCompiler:
         finally:
             shutil.rmtree(temp_dir, ignore_errors=True)
 
+    # -- Intelligence Layer -------------------------------------------------
+
+    def _run_intelligence_pre_parse(self, temp_dir: Path, registry) -> None:
+        """
+        Intelligence Stages 1-3: archive exploration, true format detection,
+        LLM parser advice over the live plugin catalog.
+
+        Never raises - intelligence failures must not abort compilation.
+        """
+        if not self.enable_intelligence:
+            return
+
+        try:
+            from .intelligence import IntelligenceOrchestrator
+
+            self._intelligence = IntelligenceOrchestrator()
+            self._intelligence.run_pre_parse(
+                target_path=self.zip_path,
+                temp_dir=temp_dir,
+                registry=registry,
+            )
+        except Exception as e:
+            logger.warning(f"[Intelligence] Pre-parse stages failed: {e}")
+            self._intelligence = None
+
+    def _run_intelligence_post_parse(self, context: PipelineContext) -> None:
+        """
+        Intelligence Stages 4-7: column statistics, schema roles, semantic
+        meaning, and problem framing with dynamically generated HITL options.
+
+        Never raises - intelligence failures must not abort compilation.
+        """
+        if self._intelligence is None or not context.parsed_tables:
+            return
+
+        try:
+            source_paths = {
+                item.relative_path: str(item.filepath) for item in context.inventory
+            }
+            self._intelligence.run_post_parse(
+                parsed_tables=context.parsed_tables,
+                source_paths=source_paths,
+            )
+        except Exception as e:
+            logger.warning(f"[Intelligence] Post-parse stages failed: {e}")
+
+    # -- Output Shaping -----------------------------------------------------
+
+    def _maybe_export_partition_batch(
+        self, context: PipelineContext, final_dfs: Dict[str, pd.DataFrame]
+    ) -> None:
+        """
+        Emit a per-partition job batch when the user chose individual models.
+
+        Never raises - a batch export failure leaves the single-merged artifacts
+        already written by export_compiler_handoff intact.
+        """
+        strategy = context.strategy
+        if strategy is None or getattr(strategy, "output_mode", "") != "per_partition_batch":
+            return
+
+        partitions = getattr(strategy, "partitions", None) or []
+        if not partitions:
+            logger.warning(
+                "[UnifiedCompiler] per_partition_batch requested but no partitions "
+                "were identified - keeping single merged output only"
+            )
+            return
+
+        try:
+            from .batch_writer import export_partition_batch
+
+            result = export_partition_batch(
+                output_dir=self.output_dir,
+                tables=final_dfs,
+                partitions=partitions,
+                partition_dimension=strategy.partition_by,
+                target_column=strategy.target_column_hint,
+                dataset_name=self.zip_path.name,
+            )
+            if result is not None:
+                logger.info(
+                    f"[UnifiedCompiler] Per-partition batch: {len(result.job_specs)} job(s)"
+                )
+        except Exception as e:
+            logger.warning(f"[UnifiedCompiler] Partition batch export failed: {e}")
+
+    # -- HITL Intent Layer --------------------------------------------------
+
     def _run_intent_layer(self, context: PipelineContext) -> None:
         """
-        Execute the HITL Intent Layer:
-          1. Generate DatasetCard from inventory
-          2. Classify feasible intent options
-          3. Prompt user via terminal (or use strategy/batch bypass)
-          4. Resolve choice into CompilationStrategy
-          5. Apply strategy to context (policy overrides)
+        Execute the HITL Intent Layer.
+
+        Preferred path: use the LLM-generated DatasetCard, question, and options
+        from the intelligence layer. Falls back to the legacy heuristic
+        CardGenerator/IntentClassifier when intelligence is unavailable.
         """
         from .intent import (
             CardGenerator,
@@ -236,51 +346,80 @@ class UnifiedCompiler:
             IntentResolver,
             TerminalPrompter,
             IntentDecision,
+            report_to_dataset_card,
+            report_to_intent_options,
+            resolve_llm_strategy,
         )
 
-        # 1. Generate DatasetCard from discovery inventory
-        card_gen = CardGenerator()
-        inventory_dicts = [
-            {
-                "filepath": str(item.filepath),
-                "relative_path": item.relative_path,
-                "format_ext": item.format_ext,
-                "size_bytes": item.size_bytes,
-            }
-            for item in context.inventory
-        ]
-        card = card_gen.generate(
-            dataset_name=self.zip_path.stem,
-            inventory=inventory_dicts,
-        )
+        card = None
+        options = []
+        used_llm = False
+        report = self._intelligence.report if self._intelligence else None
+
+        # 1. Preferred: LLM-generated card and options
+        if report is not None and report.problem_hypothesis is not None:
+            card = report_to_dataset_card(report)
+            options = report_to_intent_options(report)
+            if card is not None and options:
+                used_llm = True
+                logger.info(
+                    f"[IntentLayer] Using LLM-generated card and "
+                    f"{len(options)} dynamic options"
+                )
+
+        # 2. Fallback: legacy heuristic path
+        if not used_llm:
+            logger.info("[IntentLayer] Falling back to heuristic card/classifier")
+            inventory_dicts = [
+                {
+                    "filepath": str(item.filepath),
+                    "relative_path": item.relative_path,
+                    "format_ext": item.format_ext,
+                    "size_bytes": item.size_bytes,
+                }
+                for item in context.inventory
+            ]
+            card = CardGenerator().generate(
+                dataset_name=self.zip_path.stem,
+                inventory=inventory_dicts,
+            )
+            options = IntentClassifier().classify(card)
+
         context.data_card = card
-
-        # 2. Classify feasible options
-        classifier = IntentClassifier()
-        options = classifier.classify(card)
 
         if not options:
             logger.debug("[IntentLayer] No options generated - skipping intent layer")
             return
 
-        # 3. Prompt user (or auto-select)
-        prompter = TerminalPrompter(force_interactive=self.interactive, force_batch=self.batch)
+        # 3. Prompt user (or auto-select via batch/strategy override)
+        question = None
+        if used_llm and report.problem_hypothesis.question_for_user:
+            question = report.problem_hypothesis.question_for_user
+
+        prompter = TerminalPrompter(
+            force_interactive=self.interactive, force_batch=self.batch
+        )
         chosen_id = prompter.prompt(
             card=card,
             options=options,
             strategy_override=self.strategy_override,
+            question=question,
         )
 
-        # 4. Resolve choice into CompilationStrategy
-        resolver = IntentResolver()
-        strategy = resolver.resolve(chosen_id, card)
+        # 4. Resolve choice into a CompilationStrategy
+        strategy = None
+        if used_llm:
+            strategy = resolve_llm_strategy(chosen_id, report)
+        if strategy is None:
+            strategy = IntentResolver().resolve(chosen_id, card)
+
         context.strategy = strategy
 
-        # 5. Apply policy overrides from strategy
+        # 5. Apply plugin policy overrides
         if strategy.assembler_policy_override:
             context.policy_overrides["assembler"] = strategy.assembler_policy_override
 
-        # 6. Record decision for lockfile
+        # 6. Record the decision for the lockfile
         context.intent_decision = IntentDecision(
             dataset_name=card.dataset_name,
             data_card=card.to_dict(),
@@ -293,6 +432,6 @@ class UnifiedCompiler:
         )
 
         logger.info(
-            f"[IntentLayer] User intent: '{chosen_id}' -> scope={strategy.scope}, "
-            f"merge_rule={strategy.merge_rule}, target={strategy.target_synthesis}"
+            f"[IntentLayer] Intent '{chosen_id}' -> output_mode={strategy.output_mode}, "
+            f"merge_rule={strategy.merge_rule}, llm_generated={strategy.generated_by_llm}"
         )
