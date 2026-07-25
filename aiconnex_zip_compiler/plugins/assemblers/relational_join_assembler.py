@@ -54,13 +54,28 @@ class RelationalJoinAssemblerPlugin(BaseAssemblerPlugin):
         if not parsed_tables:
             return {}
 
-        if len(parsed_tables) == 1:
-            name, df = next(iter(parsed_tables.items()))
+        # ── Apply CompilationStrategy filtering (HITL Intent Layer) ──────────
+        tables_to_use = self._apply_strategy_filter(parsed_tables, context)
+
+        if not tables_to_use:
+            return {}
+
+        if len(tables_to_use) == 1:
+            name, df = next(iter(tables_to_use.items()))
             df = self._synthesize_rul(df)
             return {name: df}
 
+        # Check if strategy says keep_separate
+        strategy = context.strategy
+        if strategy and strategy.merge_rule == "keep_separate":
+            # Return each table individually with RUL synthesis applied
+            result = {}
+            for name, df in tables_to_use.items():
+                result[name] = self._synthesize_rul(df)
+            return result
+
         # Multi-table assembly logic
-        table_items = list(parsed_tables.items())
+        table_items = list(tables_to_use.items())
         primary_name, primary_df = max(table_items, key=lambda x: len(x[1]))
         merged_df = primary_df.copy()
         fact_rows_before = len(merged_df)
@@ -179,3 +194,48 @@ class RelationalJoinAssemblerPlugin(BaseAssemblerPlugin):
                 logger.warning(f"[RelationalJoinAssembler] RUL synthesis failed: {e}")
 
         return df
+
+    def _apply_strategy_filter(
+        self, parsed_tables: Dict[str, pd.DataFrame], context: PipelineContext
+    ) -> Dict[str, pd.DataFrame]:
+        """
+        Filter parsed tables based on CompilationStrategy from the HITL Intent Layer.
+        If no strategy is set, returns all tables (default behavior).
+        """
+        strategy = context.strategy
+        if not strategy:
+            return parsed_tables
+
+        filtered = dict(parsed_tables)
+
+        # Filter by sheets_to_include (if specified, only keep matching tables)
+        if strategy.sheets_to_include:
+            include_lower = [s.lower().replace(" ", "_") for s in strategy.sheets_to_include]
+            filtered = {
+                k: v for k, v in filtered.items()
+                if any(inc in k.lower() for inc in include_lower)
+            }
+            # Fallback: if filter excluded everything, use all tables
+            if not filtered:
+                logger.warning("[Assembler] Strategy include filter matched nothing — using all tables")
+                filtered = dict(parsed_tables)
+
+        # Filter by sheets_to_exclude
+        if strategy.sheets_to_exclude:
+            exclude_lower = [s.lower().replace(" ", "_") for s in strategy.sheets_to_exclude]
+            filtered = {
+                k: v for k, v in filtered.items()
+                if not any(exc in k.lower() for exc in exclude_lower)
+            }
+
+        # Filter by condition_filter (e.g. "FD001" — only keep tables with that condition in name)
+        if strategy.condition_filter:
+            cond = strategy.condition_filter.lower()
+            cond_filtered = {
+                k: v for k, v in filtered.items()
+                if cond in k.lower()
+            }
+            if cond_filtered:
+                filtered = cond_filtered
+
+        return filtered

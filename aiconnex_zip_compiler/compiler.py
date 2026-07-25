@@ -1,7 +1,10 @@
 """
 compiler.py — Extensible Plugin Pipeline Ingestion Compiler Engine
 ===================================================================
-Orchestrates Layer 1 -> Layer 5 plugin pipeline via PluginRegistry.
+Orchestrates:
+  0. HITL Intent Layer (optional TUI interaction)
+  1-5. Plugin Pipeline (Discovery → Parser → Assembler → Harvester → Normalizer)
+
 Produces deterministic, lockfile-tracked ingestion outputs for ML Node 1.
 """
 
@@ -45,7 +48,7 @@ class CompileResult:
 
 class UnifiedCompiler:
     """
-    Extensible Ingestion Compiler powered by a 5-Stage Plugin Pipeline & Registry.
+    Extensible Ingestion Compiler powered by HITL Intent Layer + 5-Stage Plugin Pipeline.
 
     Parameters
     ----------
@@ -53,14 +56,26 @@ class UnifiedCompiler:
         Path to raw .zip or dataset directory.
     output_dir : str | Path
         Destination folder for compiled CSVs, audits, and compiler_lock.json.
+    interactive : bool
+        If True, runs TUI intent prompter (halts terminal for user input).
+    strategy_override : str, optional
+        If set, bypasses TUI and uses this strategy directly.
     """
 
-    def __init__(self, zip_path: str | Path, output_dir: str | Path) -> None:
+    def __init__(
+        self,
+        zip_path: str | Path,
+        output_dir: str | Path,
+        interactive: bool = False,
+        strategy_override: Optional[str] = None,
+    ) -> None:
         self.zip_path = Path(zip_path).resolve()
         self.output_dir = Path(output_dir).resolve()
+        self.interactive = interactive
+        self.strategy_override = strategy_override
 
     def compile(self) -> CompileResult:
-        """Execute all 5 plugin pipeline stages sequentially."""
+        """Execute intent layer + all 5 plugin pipeline stages sequentially."""
         t0 = time.time()
         temp_dir = Path(tempfile.mkdtemp(prefix="aic_compiler_"))
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -101,6 +116,10 @@ class UnifiedCompiler:
             context = disc_plugin.execute(context)
             context.active_plugins["discovery"] = f"{disc_plugin.plugin_id}@{disc_plugin.version}"
 
+            # ── HITL Intent Layer (between Discovery and Parser) ─────────────
+            # Runs AFTER discovery so we have inventory, but BEFORE parsing
+            self._run_intent_layer(context)
+
             # ── Stage 2: Parser Plugin ───────────────────────────────────────
             parser_plugin = registry.resolve("parser", context)
             context = parser_plugin.execute(context)
@@ -126,7 +145,8 @@ class UnifiedCompiler:
 
             # ── Freeze Registry & Write Lockfile ─────────────────────────────
             snapshot = registry.freeze()
-            snapshot.write_lockfile(self.output_dir)
+            intent_dict = context.intent_decision.to_dict() if context.intent_decision else None
+            snapshot.write_lockfile(self.output_dir, intent_decision=intent_dict)
 
             # Determine final target DataFrames for handoff
             final_dfs = context.normalized_tables or context.harvested_tables or context.assembled_tables or context.parsed_tables
@@ -194,3 +214,79 @@ class UnifiedCompiler:
 
         finally:
             shutil.rmtree(temp_dir, ignore_errors=True)
+
+    def _run_intent_layer(self, context: PipelineContext) -> None:
+        """
+        Execute the HITL Intent Layer:
+          1. Generate DatasetCard from inventory
+          2. Classify feasible intent options
+          3. Prompt user (or use override/batch fallback)
+          4. Resolve choice into CompilationStrategy
+          5. Apply strategy to context (policy overrides)
+        """
+        from .intent import (
+            CardGenerator,
+            IntentClassifier,
+            IntentResolver,
+            TerminalPrompter,
+            IntentDecision,
+        )
+
+        # 1. Generate DatasetCard from discovery inventory
+        card_gen = CardGenerator()
+        inventory_dicts = [
+            {
+                "filepath": str(item.filepath),
+                "relative_path": item.relative_path,
+                "format_ext": item.format_ext,
+                "size_bytes": item.size_bytes,
+            }
+            for item in context.inventory
+        ]
+        card = card_gen.generate(
+            dataset_name=self.zip_path.stem,
+            inventory=inventory_dicts,
+        )
+        context.data_card = card
+
+        # 2. Classify feasible options
+        classifier = IntentClassifier()
+        options = classifier.classify(card)
+
+        if not options:
+            logger.debug("[IntentLayer] No options generated — skipping intent layer")
+            return
+
+        # 3. Prompt user (or auto-select)
+        prompter = TerminalPrompter(force_interactive=self.interactive)
+        chosen_id = prompter.prompt(
+            card=card,
+            options=options,
+            strategy_override=self.strategy_override,
+        )
+
+        # 4. Resolve choice into CompilationStrategy
+        resolver = IntentResolver()
+        strategy = resolver.resolve(chosen_id, card)
+        context.strategy = strategy
+
+        # 5. Apply policy overrides from strategy
+        if strategy.assembler_policy_override:
+            context.policy_overrides["assembler"] = strategy.assembler_policy_override
+
+        # 6. Record decision for lockfile
+        context.intent_decision = IntentDecision(
+            dataset_name=card.dataset_name,
+            data_card=card.to_dict(),
+            options_presented=[
+                {"option_id": o.option_id, "label": o.label, "description": o.description}
+                for o in options
+            ],
+            user_choice=chosen_id,
+            resolved_strategy=strategy.to_dict(),
+        )
+
+        logger.info(
+            f"[IntentLayer] User intent: '{chosen_id}' → scope={strategy.scope}, "
+            f"merge_rule={strategy.merge_rule}, target={strategy.target_synthesis}"
+        )

@@ -34,6 +34,11 @@ class PipelineContext:
     # Policy overrides from dataset manifest or user configuration
     policy_overrides: Dict[str, str] = field(default_factory=dict)  # stage -> plugin_id
     
+    # HITL Intent Layer outputs
+    data_card: Optional[Any] = None  # intent.models.DatasetCard (avoid circular import)
+    strategy: Optional[Any] = None  # intent.models.CompilationStrategy
+    intent_decision: Optional[Any] = None  # intent.models.IntentDecision
+    
     # Stage outputs
     inventory: List[FileInventoryItem] = field(default_factory=list)
     layout_type: str = "unknown"  # "zip_directory" | "snapshot_folder" | "single_file"
@@ -74,22 +79,28 @@ class PluginSnapshot:
     run_timestamp: str
     resolved_plugins: Dict[str, ResolvedPlugin]  # stage -> ResolvedPlugin
 
-    def to_lockfile_dict(self) -> Dict[str, Any]:
-        return {
+    def to_lockfile_dict(self, intent_decision: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        data = {
             "compiler_version": self.compiler_version,
             "run_timestamp": self.run_timestamp,
             "plugin_lock": {
-                stage: {
+                plugin_id: {
                     "plugin_id": p.plugin_id,
                     "version": p.version,
                     "contract_version": p.contract_version,
                     "priority": p.priority,
+                    "stage": p.stage,
                 }
-                for stage, p in self.resolved_plugins.items()
+                for plugin_id, p in self.resolved_plugins.items()
             },
         }
+        if intent_decision:
+            data["intent_decision"] = intent_decision
+        return data
 
-    def write_lockfile(self, destination: Path) -> Path:
+    def write_lockfile(self, destination: Path, intent_decision: Optional[Dict[str, Any]] = None) -> Path:
         lockfile_path = destination / "compiler_lock.json"
-        lockfile_path.write_text(json.dumps(self.to_lockfile_dict(), indent=2), encoding="utf-8")
+        lockfile_path.write_text(
+            json.dumps(self.to_lockfile_dict(intent_decision), indent=2), encoding="utf-8"
+        )
         return lockfile_path
