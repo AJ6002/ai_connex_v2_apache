@@ -24,6 +24,7 @@ from typing import Any, Dict, List, Optional
 
 from .llm_client import LLMClient, LLMUnavailableError
 from .models import SchemaRoles, SemanticLabel, TableMetadata
+from .validation import safe_confidence
 
 logger = logging.getLogger(__name__)
 
@@ -228,10 +229,7 @@ class SemanticAnalyzer:
                 )
                 continue
 
-            try:
-                confidence = float(item.get("confidence", 0.0))
-            except (TypeError, ValueError):
-                confidence = 0.0
+            confidence = safe_confidence(item.get("confidence"))
 
             unit = item.get("unit_guess")
             results.append(

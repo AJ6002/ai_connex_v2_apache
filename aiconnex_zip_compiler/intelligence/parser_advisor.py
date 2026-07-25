@@ -23,6 +23,7 @@ from typing import Any, Dict, List, Optional
 
 from .llm_client import LLMClient, LLMUnavailableError
 from .models import FileFingerprint, ParserDecision
+from .validation import safe_confidence
 
 logger = logging.getLogger(__name__)
 
@@ -205,10 +206,7 @@ class ParserAdvisor:
             if isinstance(fallback, list):
                 decision.fallback_chain = [str(f) for f in fallback][:6]
 
-            try:
-                decision.confidence = float(answer.get("confidence", 0.0))
-            except (TypeError, ValueError):
-                decision.confidence = 0.0
+            decision.confidence = safe_confidence(answer.get("confidence"))
 
     # -- Registry introspection --------------------------------------------
 

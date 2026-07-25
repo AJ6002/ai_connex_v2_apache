@@ -25,7 +25,6 @@ from __future__ import annotations
 
 import json
 import logging
-import re
 from typing import Any, Dict, List, Optional
 
 from .llm_client import LLMClient, LLMUnavailableError
@@ -39,6 +38,7 @@ from .models import (
     TableMetadata,
     TableRelationship,
 )
+from .validation import dedupe_with_suffix, safe_choice, safe_confidence, stable_slug
 
 logger = logging.getLogger(__name__)
 
@@ -90,7 +90,6 @@ Respond with ONLY a JSON object in exactly this shape:
   "question_for_user": "<the single question to ask, in field-engineer language>",
   "intent_options": [
     {
-      "option_id": "<stable snake_case id you invent>",
       "label": "<short plain-language choice, no ML jargon>",
       "description": "<when to pick this and what they get, operational language>",
       "is_recommended": true,
@@ -110,7 +109,8 @@ Rules:
 - Only reference table names and column names that appear in the provided analysis.
 - Exactly one option should have is_recommended true.
 - detected_partitions may be an empty list if the dataset has no natural partitions.
-- All confidence values are floats 0.0-1.0."""
+- All confidence values are floats 0.0-1.0.
+- Do NOT include an "option_id" field - the caller assigns stable ids itself."""
 
 
 class ProblemDiscoverer:
@@ -261,10 +261,11 @@ class ProblemDiscoverer:
                 )
 
         options: List[GeneratedIntentOption] = []
+        seen_ids: set = set()
         raw_options = data.get("intent_options", [])
         if isinstance(raw_options, list):
             for item in raw_options:
-                option = self._parse_option(item, valid_tables, valid_columns)
+                option = self._parse_option(item, valid_tables, valid_columns, seen_ids)
                 if option:
                     options.append(option)
 
@@ -278,10 +279,7 @@ class ProblemDiscoverer:
                     option.is_recommended = False
                 recommended_seen = True
 
-        try:
-            domain_confidence = float(data.get("domain_confidence", 0.0))
-        except (TypeError, ValueError):
-            domain_confidence = 0.0
+        domain_confidence = safe_confidence(data.get("domain_confidence", 0.0))
 
         return ProblemHypothesis(
             domain=str(data.get("domain", "unknown")),
@@ -298,7 +296,7 @@ class ProblemDiscoverer:
         )
 
     def _parse_option(
-        self, item: Any, valid_tables: set, valid_columns: set
+        self, item: Any, valid_tables: set, valid_columns: set, seen_ids: set
     ) -> Optional[GeneratedIntentOption]:
         if not isinstance(item, dict):
             return None
@@ -307,24 +305,21 @@ class ProblemDiscoverer:
         if not label:
             return None
 
-        option_id = str(item.get("option_id", "")).strip()
-        if not option_id:
-            option_id = self._slugify(label)
-
-        output_mode = str(item.get("output_mode", "single_merged"))
-        if output_mode not in VALID_OUTPUT_MODES:
-            logger.debug(f"[ProblemDiscoverer] Coercing unknown output_mode '{output_mode}'")
-            output_mode = "single_merged"
-
-        merge_strategy = str(item.get("merge_strategy", "auto"))
-        if merge_strategy not in VALID_MERGE_STRATEGIES:
-            merge_strategy = "auto"
+        output_mode = safe_choice(
+            item.get("output_mode"), VALID_OUTPUT_MODES, default="single_merged"
+        )
+        merge_strategy = safe_choice(
+            item.get("merge_strategy"), VALID_MERGE_STRATEGIES, default="auto"
+        )
 
         def clean_tables(key: str) -> List[str]:
             raw = item.get(key, [])
             if not isinstance(raw, list):
                 return []
             return [str(t) for t in raw if str(t) in valid_tables]
+
+        tables_to_include = clean_tables("tables_to_include")
+        partition_by = item.get("partition_by")
 
         target_column = item.get("target_column")
         if target_column is not None:
@@ -335,6 +330,19 @@ class ProblemDiscoverer:
                 )
                 target_column = None
 
+        # Stable id: derived from STRUCTURAL fields (what the compiler will
+        # actually do), never from the LLM's free-text wording. This keeps
+        # --strategy <id> and lockfile replay reliable across runs, because
+        # the same underlying choice always produces the same id even though
+        # the LLM phrases the label/description differently each time.
+        raw_id = stable_slug(
+            output_mode,
+            merge_strategy,
+            target_column,
+            "_".join(sorted(tables_to_include)) if tables_to_include else None,
+        )
+        option_id = dedupe_with_suffix(raw_id, seen_ids)
+
         return GeneratedIntentOption(
             option_id=option_id,
             label=label,
@@ -342,14 +350,9 @@ class ProblemDiscoverer:
             is_recommended=bool(item.get("is_recommended", False)),
             output_mode=output_mode,
             merge_strategy=merge_strategy,
-            tables_to_include=clean_tables("tables_to_include"),
+            tables_to_include=tables_to_include,
             tables_to_exclude=clean_tables("tables_to_exclude"),
-            partition_by=item.get("partition_by"),
+            partition_by=partition_by,
             target_column=target_column,
             target_synthesis=item.get("target_synthesis"),
         )
-
-    @staticmethod
-    def _slugify(text: str) -> str:
-        slug = re.sub(r"[^a-z0-9]+", "_", text.lower()).strip("_")
-        return slug or "option"

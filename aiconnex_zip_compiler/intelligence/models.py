@@ -322,7 +322,13 @@ class PartitionGroup:
 class GeneratedIntentOption:
     """An LLM-generated choice presented to the user. NOT from a hardcoded menu."""
 
-    option_id: str  # LLM-generated stable snake_case id
+    # Stable id COMPUTED from this option's structural fields (output_mode,
+    # merge_strategy, partition_by, target_column) - not the free-text id the
+    # LLM invents. The LLM phrases things differently on every call even for
+    # the identical dataset, so a raw LLM-invented id is not safe for
+    # automation (--strategy <id>, lockfile replay). See
+    # ProblemDiscoverer._assign_stable_option_ids for how this is computed.
+    option_id: str
     label: str  # plain language, field-engineer readable
     description: str  # why/when to pick this
     is_recommended: bool = False

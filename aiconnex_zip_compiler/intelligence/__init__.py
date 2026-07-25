@@ -47,6 +47,13 @@ from .parser_advisor import ParserAdvisor
 from .problem_discoverer import ProblemDiscoverer
 from .schema_analyzer import SchemaAnalyzer
 from .semantic_analyzer import SemanticAnalyzer
+from .validation import (
+    dedupe_with_suffix,
+    safe_choice,
+    safe_confidence,
+    slugify,
+    stable_slug,
+)
 
 __all__ = [
     # Orchestration
@@ -80,4 +87,10 @@ __all__ = [
     "ProblemHypothesis",
     "StageStatus",
     "IntelligenceReport",
+    # Validation helpers
+    "safe_confidence",
+    "safe_choice",
+    "slugify",
+    "stable_slug",
+    "dedupe_with_suffix",
 ]

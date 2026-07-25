@@ -288,6 +288,157 @@ def test_problem_discoverer_generates_dynamic_options(sample_df):
     assert sum(1 for o in hypothesis.intent_options if o.is_recommended) == 1
 
 
+def test_problem_discoverer_option_ids_are_stable_across_llm_wording_changes(sample_df):
+    """
+    The LLM phrases the same underlying choice differently between calls (this
+    happened in practice: 'per_partition_models' vs
+    'per_partition_anomaly_detection' for the identical dataset). option_id
+    must be derived from the STRUCTURAL fields (output_mode, merge_strategy,
+    target_column), not from the LLM's free-text id or label, so automation
+    scripts using --strategy <id> keep working across runs.
+    """
+    metadata = [MetadataExtractor().extract_table("sensors_fd001", sample_df)]
+
+    def make_response(label_a: str, label_b: str) -> Dict[str, Any]:
+        return {
+            "ml solutions architect": {
+                "domain": "gas compressor condition monitoring",
+                "domain_confidence": 0.88,
+                "dataset_purpose": "test",
+                "structural_shape": "test",
+                "partition_dimension_name": "operating condition",
+                "detected_partitions": [],
+                "question_for_user": "What do you want?",
+                "intent_options": [
+                    {
+                        # Note: NO option_id field - the LLM no longer supplies one.
+                        "label": label_a,
+                        "description": "One model for everything.",
+                        "is_recommended": True,
+                        "output_mode": "single_merged",
+                        "merge_strategy": "vertical_stack",
+                        "tables_to_include": [],
+                        "tables_to_exclude": [],
+                        "partition_by": None,
+                        "target_column": None,
+                        "target_synthesis": None,
+                    },
+                    {
+                        "label": label_b,
+                        "description": "Separate models per condition.",
+                        "is_recommended": False,
+                        "output_mode": "per_partition_batch",
+                        "merge_strategy": "none",
+                        "tables_to_include": [],
+                        "tables_to_exclude": [],
+                        "partition_by": "operating condition",
+                        "target_column": None,
+                        "target_synthesis": None,
+                    },
+                ],
+                "reasoning": "test",
+            }
+        }
+
+    # Two "runs" where the LLM invents completely different wording for the
+    # identical structural choices.
+    mock_run_1 = MockLLM(make_response(
+        "Predict overall failure risk", "Build a model per fault mode"
+    ))
+    mock_run_2 = MockLLM(make_response(
+        "Detect anomalies across everything", "Separate anomaly detectors per condition"
+    ))
+
+    hypothesis_1 = ProblemDiscoverer(mock_run_1).discover(None, metadata, [], [], [])
+    hypothesis_2 = ProblemDiscoverer(mock_run_2).discover(None, metadata, [], [], [])
+
+    ids_1 = sorted(o.option_id for o in hypothesis_1.intent_options)
+    ids_2 = sorted(o.option_id for o in hypothesis_2.intent_options)
+
+    assert ids_1 == ids_2, (
+        f"option_ids must be stable across runs regardless of LLM wording: "
+        f"{ids_1} != {ids_2}"
+    )
+
+    # And they should be usable as automation selectors matching output_mode
+    single_merged_id = next(
+        o.option_id for o in hypothesis_1.intent_options if o.output_mode == "single_merged"
+    )
+    batch_id = next(
+        o.option_id for o in hypothesis_1.intent_options if o.output_mode == "per_partition_batch"
+    )
+    assert single_merged_id != batch_id
+
+
+def test_problem_discoverer_deduplicates_colliding_option_ids(sample_df):
+    """Two options with identical structural fields must not collide on id."""
+    metadata = [MetadataExtractor().extract_table("sensors_fd001", sample_df)]
+
+    mock = MockLLM({
+        "ml solutions architect": {
+            "domain": "test",
+            "domain_confidence": 0.8,
+            "dataset_purpose": "test",
+            "structural_shape": "test",
+            "partition_dimension_name": None,
+            "detected_partitions": [],
+            "question_for_user": "What do you want?",
+            "intent_options": [
+                {
+                    "label": "Option A",
+                    "description": "First",
+                    "is_recommended": True,
+                    "output_mode": "single_merged",
+                    "merge_strategy": "auto",
+                    "tables_to_include": [],
+                    "tables_to_exclude": [],
+                    "partition_by": None,
+                    "target_column": None,
+                    "target_synthesis": None,
+                },
+                {
+                    "label": "Option B (structurally identical to A)",
+                    "description": "Second",
+                    "is_recommended": False,
+                    "output_mode": "single_merged",
+                    "merge_strategy": "auto",
+                    "tables_to_include": [],
+                    "tables_to_exclude": [],
+                    "partition_by": None,
+                    "target_column": None,
+                    "target_synthesis": None,
+                },
+            ],
+            "reasoning": "test",
+        }
+    })
+
+    hypothesis = ProblemDiscoverer(mock).discover(None, metadata, [], [], [])
+
+    ids = [o.option_id for o in hypothesis.intent_options]
+    assert len(ids) == len(set(ids)), f"option_ids must be unique, got duplicates: {ids}"
+
+
+def test_safe_confidence_clamps_and_coerces():
+    from aiconnex_zip_compiler.intelligence.validation import safe_confidence
+
+    assert safe_confidence(0.5) == 0.5
+    assert safe_confidence(1.5) == 1.0, "must clamp above 1.0"
+    assert safe_confidence(-0.3) == 0.0, "must clamp below 0.0"
+    assert safe_confidence("not a number", default=0.42) == 0.42
+    assert safe_confidence(None, default=0.1) == 0.1
+    assert safe_confidence(float("nan"), default=0.2) == 0.2
+
+
+def test_safe_choice_falls_back_on_unexpected_value():
+    from aiconnex_zip_compiler.intelligence.validation import safe_choice
+
+    allowed = {"a", "b", "c"}
+    assert safe_choice("b", allowed, default="a") == "b"
+    assert safe_choice("not_in_set", allowed, default="a") == "a"
+    assert safe_choice(None, allowed, default="a") == "a"
+
+
 def test_parser_advisor_rejects_unknown_plugin_id():
     from aiconnex_zip_compiler.intelligence.models import FileFingerprint
 

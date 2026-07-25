@@ -21,6 +21,7 @@ from typing import Any, Dict, List, Optional
 
 from .llm_client import LLMClient, LLMUnavailableError
 from .models import SchemaRoles, TableMetadata, TableRelationship
+from .validation import safe_confidence
 
 logger = logging.getLogger(__name__)
 
@@ -177,10 +178,7 @@ class SchemaAnalyzer:
                     return []
                 return [str(c) for c in raw if str(c) in valid]
 
-            try:
-                confidence = float(item.get("confidence", 0.0))
-            except (TypeError, ValueError):
-                confidence = 0.0
+            confidence = safe_confidence(item.get("confidence"))
 
             results.append(
                 SchemaRoles(
@@ -261,10 +259,7 @@ class SchemaAnalyzer:
                 shared = columns_by_table[left] & columns_by_table[right]
                 join_keys = [str(k) for k in raw_keys if str(k) in shared]
 
-            try:
-                confidence = float(item.get("confidence", 0.0))
-            except (TypeError, ValueError):
-                confidence = 0.0
+            confidence = safe_confidence(item.get("confidence"))
 
             results.append(
                 TableRelationship(
