@@ -1,5 +1,5 @@
 """
-plugins/discovery/zip_directory_discovery.py — General Zip & Directory Discovery Plugin
+plugins/discovery/zip_directory_discovery.py - General Zip & Directory Discovery Plugin
 ========================================================================================
 Stage 1 Discovery plugin that walks ZIP archives or directories, extracts files to temp,
 recursively unpacks nested ZIP archives, and populates PipelineContext inventory.
@@ -34,7 +34,7 @@ def _unpack_nested_zips(directory: Path, max_depth: int = 5, _current_depth: int
                 try:
                     with zipfile.ZipFile(zip_path, "r") as zf:
                         zf.extractall(extract_target)
-                    logger.debug(f"[ZipDiscovery] Unpacked nested ZIP: {zip_path.name} → {extract_target}")
+                    logger.debug(f"[ZipDiscovery] Unpacked nested ZIP: {zip_path.name} -> {extract_target}")
                     # Recurse into extracted contents
                     _unpack_nested_zips(extract_target, max_depth, _current_depth + 1)
                 except (zipfile.BadZipFile, Exception) as e:

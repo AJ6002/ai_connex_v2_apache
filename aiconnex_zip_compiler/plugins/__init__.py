@@ -1,5 +1,5 @@
 """
-aiconnex_zip_compiler.plugins — Extensible Multi-Stage Plugin Pipeline Package
+aiconnex_zip_compiler.plugins - Extensible Multi-Stage Plugin Pipeline Package
 """
 
 from .base import (

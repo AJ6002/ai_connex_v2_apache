@@ -1,5 +1,5 @@
 """
-schema_gate.py — Lightweight Entry Schema Gate & Ingestion Router
+schema_gate.py - Lightweight Entry Schema Gate & Ingestion Router
 ===================================================================
 Pre-compilation gate that validates incoming raw archives before heavy compilation:
 1. Validates archive integrity (non-empty, valid ZIP/file format, non-corrupt).

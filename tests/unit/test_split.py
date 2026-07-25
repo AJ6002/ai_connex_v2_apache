@@ -1,5 +1,5 @@
 """
-Unit Tests — Node 3: split.py
+Unit Tests - Node 3: split.py
 Tests: no entity overlap across splits, chronological order preserved, row-count sum equals total.
 """
 import numpy as np

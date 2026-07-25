@@ -1,5 +1,5 @@
 """
-plugins/parsers/mat_parser.py — MATLAB .mat Struct Parser Plugin
+plugins/parsers/mat_parser.py - MATLAB .mat Struct Parser Plugin
 ==================================================================
 Stage 2 Parser plugin for MATLAB .mat struct archives (e.g. NASA Li-ion battery aging datasets).
 Extracts cycle-based voltage, current, temperature arrays and computes statistical summaries
@@ -57,7 +57,7 @@ class MatParserPlugin(BaseParserPlugin):
             for key in keys:
                 obj = mat[key]
 
-                # ── NASA Battery struct pattern (cycle-based with voltage/current/temp arrays) ──
+                # -- NASA Battery struct pattern (cycle-based with voltage/current/temp arrays) --
                 if hasattr(obj, "dtype") and obj.dtype.names and "cycle" in obj.dtype.names:
                     struct = obj[0, 0]
                     cycles = struct["cycle"][0]

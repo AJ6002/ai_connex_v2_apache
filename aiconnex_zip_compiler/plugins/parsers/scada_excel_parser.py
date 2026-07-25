@@ -1,5 +1,5 @@
 """
-plugins/parsers/scada_excel_parser.py — SCADA Multi-Sheet Excel Parser Plugin
+plugins/parsers/scada_excel_parser.py - SCADA Multi-Sheet Excel Parser Plugin
 ==============================================================================
 Stage 2 Parser plugin that handles multi-header, multi-sheet SCADA Excel workbooks
 (.xlsx, .xls). Refactored from monolithic excel_converter.py.

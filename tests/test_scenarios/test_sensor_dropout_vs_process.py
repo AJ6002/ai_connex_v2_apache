@@ -9,7 +9,7 @@ The model receives a column of NaN / zeros for that sensor. The question is:
 
 The pipeline must:
   1. Detect stuck / zero-filled sensors via quality_checks.py BEFORE modeling.
-  2. Be ROBUST to single-sensor dropout — i.e., a regression model's RMSE must
+  2. Be ROBUST to single-sensor dropout - i.e., a regression model's RMSE must
      not degrade catastrophically when one column is zeroed out.
   3. NOT produce NaN predictions from NaN feature inputs (crash prevention).
   4. Correctly distinguish between:
@@ -31,7 +31,7 @@ from aiconnex_ml.regression.baselines import run_baselines
 from aiconnex_ml.regression.evaluation import compute_regression_metrics
 
 
-# ── Fixtures ───────────────────────────────────────────────────────────────────
+# -- Fixtures -------------------------------------------------------------------
 
 SENSOR_COLS = [f"sensor_{i}" for i in range(1, 9)]    # 8 sensors
 
@@ -48,9 +48,9 @@ def make_pump_dataset(n: int = 400, seed: int = 42):
 def make_dropout_dataset(df: pd.DataFrame, sensor_col: str, mode: str = "zero") -> pd.DataFrame:
     """
     Simulate a sensor dropout:
-      mode='zero' → replace all values with 0 (cable shorted to ground)
-      mode='nan'  → replace all values with NaN (sensor offline, no data)
-      mode='stuck'→ replace all values with a constant (sensor frozen at last reading)
+      mode='zero' -> replace all values with 0 (cable shorted to ground)
+      mode='nan'  -> replace all values with NaN (sensor offline, no data)
+      mode='stuck'-> replace all values with a constant (sensor frozen at last reading)
     """
     df = df.copy()
     if mode == "zero":
@@ -74,7 +74,7 @@ def make_manifest():
     }
 
 
-# ── Quality Check Tests ────────────────────────────────────────────────────────
+# -- Quality Check Tests --------------------------------------------------------
 
 class TestSensorDropoutDetection:
     def test_stuck_sensor_detected_on_constant_column(self):
@@ -106,7 +106,7 @@ class TestSensorDropoutDetection:
             "NaN-mode dropout (sensor_4) should be flagged as high null rate."
         )
 
-        # Zero mode — the zero column IS constant, so it must be stuck
+        # Zero mode - the zero column IS constant, so it must be stuck
         df_zero = make_dropout_dataset(df, "sensor_5", mode="zero")
         stuck = detect_stuck_sensors(df_zero, window=20)
         assert "sensor_5" in stuck, (
@@ -125,7 +125,7 @@ class TestSensorDropoutDetection:
         )
 
 
-# ── Model Robustness Tests ─────────────────────────────────────────────────────
+# -- Model Robustness Tests -----------------------------------------------------
 
 class TestModelRobustnessToDropout:
     def _train_model(self):
@@ -231,12 +231,12 @@ class TestModelRobustnessToDropout:
         rmse_4_dropout = compute_regression_metrics(y_val, model.predict(X4))["rmse"]
 
         assert rmse_4_dropout >= rmse_1_dropout, (
-            f"4-sensor dropout RMSE ({rmse_4_dropout:.4f}) should be ≥ "
+            f"4-sensor dropout RMSE ({rmse_4_dropout:.4f}) should be >= "
             f"1-sensor dropout RMSE ({rmse_1_dropout:.4f}). "
             "Robustness degradation should be monotonic with dropout severity."
         )
         print(
-            f"[DropoutTest] Degradation scale — "
+            f"[DropoutTest] Degradation scale - "
             f"Clean: {clean_rmse:.4f} | 1-dropout: {rmse_1_dropout:.4f} | "
             f"4-dropout: {rmse_4_dropout:.4f}"
         )

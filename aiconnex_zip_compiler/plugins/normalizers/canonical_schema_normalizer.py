@@ -1,5 +1,5 @@
 """
-plugins/normalizers/canonical_schema_normalizer.py — Canonical Schema & Timestamp Normalizer Plugin
+plugins/normalizers/canonical_schema_normalizer.py - Canonical Schema & Timestamp Normalizer Plugin
 ===================================================================================================
 Stage 5 Normalizer plugin that standardizes column header names, parses timestamp formats,
 and ensures canonical alignment for downstream ML Node 1. Refactored from schema_mapper.py.

@@ -1,9 +1,9 @@
 """
-compiler.py — Extensible Plugin Pipeline Ingestion Compiler Engine
+compiler.py - Extensible Plugin Pipeline Ingestion Compiler Engine
 ===================================================================
 Orchestrates:
-  0. HITL Intent Layer (optional TUI interaction)
-  1-5. Plugin Pipeline (Discovery → Parser → Assembler → Harvester → Normalizer)
+  0. HITL Intent Layer (optional interactive terminal prompt)
+  1-5. Plugin Pipeline (Discovery -> Parser -> Assembler -> Harvester -> Normalizer)
 
 Produces deterministic, lockfile-tracked ingestion outputs for ML Node 1.
 """
@@ -57,9 +57,13 @@ class UnifiedCompiler:
     output_dir : str | Path
         Destination folder for compiled CSVs, audits, and compiler_lock.json.
     interactive : bool
-        If True, runs TUI intent prompter (halts terminal for user input).
+        If True, forces the interactive terminal prompt (halts for user input)
+        even if stdin is not a tty.
     strategy_override : str, optional
-        If set, bypasses TUI and uses this strategy directly.
+        If set, bypasses the prompt and uses this strategy directly.
+    batch : bool
+        If True, always auto-selects the default intent option without prompting,
+        regardless of tty state. Takes precedence over `interactive`.
     """
 
     def __init__(
@@ -68,11 +72,13 @@ class UnifiedCompiler:
         output_dir: str | Path,
         interactive: bool = False,
         strategy_override: Optional[str] = None,
+        batch: bool = False,
     ) -> None:
         self.zip_path = Path(zip_path).resolve()
         self.output_dir = Path(output_dir).resolve()
         self.interactive = interactive
         self.strategy_override = strategy_override
+        self.batch = batch
 
     def compile(self) -> CompileResult:
         """Execute intent layer + all 5 plugin pipeline stages sequentially."""
@@ -80,7 +86,7 @@ class UnifiedCompiler:
         temp_dir = Path(tempfile.mkdtemp(prefix="aic_compiler_"))
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
-        # ── Pre-Check: Entry Schema Gate ────────────────────────────────────────
+        # -- Pre-Check: Entry Schema Gate ----------------------------------------
         from .schema_gate import SchemaGate
         gate = SchemaGate(self.zip_path)
         decision = gate.evaluate()
@@ -101,7 +107,7 @@ class UnifiedCompiler:
         logger.info(f"[SchemaGate] Passed: {decision.gate_message} (Route: {decision.primary_route})")
 
         try:
-            # ── Initialize Pipeline Context & Plugin Registry ─────────────────
+            # -- Initialize Pipeline Context & Plugin Registry -----------------
             context = PipelineContext(
                 target_path=self.zip_path,
                 temp_dir=temp_dir,
@@ -111,26 +117,26 @@ class UnifiedCompiler:
             registry = PluginRegistry.get_instance()
             registry.auto_discover()
 
-            # ── Stage 1: Discovery Plugin ────────────────────────────────────
+            # -- Stage 1: Discovery Plugin ------------------------------------
             disc_plugin = registry.resolve("discovery", context)
             context = disc_plugin.execute(context)
             context.active_plugins["discovery"] = f"{disc_plugin.plugin_id}@{disc_plugin.version}"
 
-            # ── HITL Intent Layer (between Discovery and Parser) ─────────────
+            # -- HITL Intent Layer (between Discovery and Parser) -------------
             # Runs AFTER discovery so we have inventory, but BEFORE parsing
             self._run_intent_layer(context)
 
-            # ── Stage 2: Parser Plugin ───────────────────────────────────────
+            # -- Stage 2: Parser Plugin ---------------------------------------
             parser_plugin = registry.resolve("parser", context)
             context = parser_plugin.execute(context)
             context.active_plugins["parser"] = f"{parser_plugin.plugin_id}@{parser_plugin.version}"
 
-            # ── Stage 3: Assembler Plugin ────────────────────────────────────
+            # -- Stage 3: Assembler Plugin ------------------------------------
             assembler_plugin = registry.resolve("assembler", context)
             context = assembler_plugin.execute(context)
             context.active_plugins["assembler"] = f"{assembler_plugin.plugin_id}@{assembler_plugin.version}"
 
-            # ── Stage 4: Feature Harvester Plugin (Optional) ─────────────────
+            # -- Stage 4: Feature Harvester Plugin (Optional) -----------------
             try:
                 harvester_plugin = registry.resolve("harvester", context)
                 context = harvester_plugin.execute(context)
@@ -138,12 +144,12 @@ class UnifiedCompiler:
             except (UnsupportedLayoutError, AmbiguousPluginMatchError):
                 logger.debug("[UnifiedCompiler] Stage 4 Harvester skipped (not required for layout)")
 
-            # ── Stage 5: Schema Normalizer Plugin ───────────────────────────
+            # -- Stage 5: Schema Normalizer Plugin ---------------------------
             normalizer_plugin = registry.resolve("normalizer", context)
             context = normalizer_plugin.execute(context)
             context.active_plugins["normalizer"] = f"{normalizer_plugin.plugin_id}@{normalizer_plugin.version}"
 
-            # ── Freeze Registry & Write Lockfile ─────────────────────────────
+            # -- Freeze Registry & Write Lockfile -----------------------------
             snapshot = registry.freeze()
             intent_dict = context.intent_decision.to_dict() if context.intent_decision else None
             snapshot.write_lockfile(self.output_dir, intent_decision=intent_dict)
@@ -220,7 +226,7 @@ class UnifiedCompiler:
         Execute the HITL Intent Layer:
           1. Generate DatasetCard from inventory
           2. Classify feasible intent options
-          3. Prompt user (or use override/batch fallback)
+          3. Prompt user via terminal (or use strategy/batch bypass)
           4. Resolve choice into CompilationStrategy
           5. Apply strategy to context (policy overrides)
         """
@@ -254,11 +260,11 @@ class UnifiedCompiler:
         options = classifier.classify(card)
 
         if not options:
-            logger.debug("[IntentLayer] No options generated — skipping intent layer")
+            logger.debug("[IntentLayer] No options generated - skipping intent layer")
             return
 
         # 3. Prompt user (or auto-select)
-        prompter = TerminalPrompter(force_interactive=self.interactive)
+        prompter = TerminalPrompter(force_interactive=self.interactive, force_batch=self.batch)
         chosen_id = prompter.prompt(
             card=card,
             options=options,
@@ -287,6 +293,6 @@ class UnifiedCompiler:
         )
 
         logger.info(
-            f"[IntentLayer] User intent: '{chosen_id}' → scope={strategy.scope}, "
+            f"[IntentLayer] User intent: '{chosen_id}' -> scope={strategy.scope}, "
             f"merge_rule={strategy.merge_rule}, target={strategy.target_synthesis}"
         )

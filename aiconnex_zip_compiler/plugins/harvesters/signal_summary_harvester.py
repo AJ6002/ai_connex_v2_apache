@@ -1,5 +1,5 @@
 """
-plugins/harvesters/signal_summary_harvester.py — Signal & Snapshot Feature Harvester Plugin
+plugins/harvesters/signal_summary_harvester.py - Signal & Snapshot Feature Harvester Plugin
 =============================================================================================
 Stage 4 Harvester plugin that computes 14 statistical time-domain and frequency-domain features
 over raw high-frequency vibration/sensor snapshot CSV files (e.g. FEMTO / IMS bearing datasets).

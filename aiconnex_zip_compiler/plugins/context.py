@@ -1,5 +1,5 @@
 """
-plugins/context.py — Shared State, Execution Context, Plugin Snapshot & Lockfile
+plugins/context.py - Shared State, Execution Context, Plugin Snapshot & Lockfile
 =================================================================================
 Carries mutable dataset context between pipeline stages, captures immutable
 run snapshots, and generates reproducible `compiler_lock.json` lockfiles.

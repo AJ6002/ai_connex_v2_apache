@@ -1,5 +1,5 @@
 """
-intent/resolver.py — Intent Choice → CompilationStrategy Resolver
+intent/resolver.py - Intent Choice -> CompilationStrategy Resolver
 ==================================================================
 Maps the user's TUI selection into a CompilationStrategy that controls
 how the assembler, target synthesis, and scope operate internally.
@@ -42,7 +42,7 @@ class IntentResolver:
             If user selected a specific condition (e.g. "FD001")
         """
 
-        # ── Unified all conditions (C-MAPSS combined) ────────────────────────
+        # -- Unified all conditions (C-MAPSS combined) ------------------------
         if choice_id == "unified_all_conditions":
             return CompilationStrategy(
                 intent_id=choice_id,
@@ -56,7 +56,7 @@ class IntentResolver:
                 assembler_policy_override="vertical_stack_assembler",
             )
 
-        # ── Separate per-condition (C-MAPSS individual) ──────────────────────
+        # -- Separate per-condition (C-MAPSS individual) ----------------------
         if choice_id == "separate_per_condition":
             return CompilationStrategy(
                 intent_id=choice_id,
@@ -70,7 +70,7 @@ class IntentResolver:
                 assembler_policy_override="relational_join_assembler",
             )
 
-        # ── Failure prediction (general — SCADA, bearings, battery) ──────────
+        # -- Failure prediction (general - SCADA, bearings, battery) ----------
         if choice_id == "failure_prediction":
             strategy = CompilationStrategy(
                 intent_id=choice_id,
@@ -85,7 +85,7 @@ class IntentResolver:
                 strategy.sheets_to_exclude = card.detected_sheets[1:]
             return strategy
 
-        # ── Anomaly detection ────────────────────────────────────────────────
+        # -- Anomaly detection ------------------------------------------------
         if choice_id == "anomaly_detection":
             strategy = CompilationStrategy(
                 intent_id=choice_id,
@@ -99,7 +99,7 @@ class IntentResolver:
                 strategy.sheets_to_exclude = card.detected_sheets[1:]
             return strategy
 
-        # ── Forecasting (time-series prediction) ─────────────────────────────
+        # -- Forecasting (time-series prediction) -----------------------------
         if choice_id == "forecasting":
             strategy = CompilationStrategy(
                 intent_id=choice_id,
@@ -111,7 +111,7 @@ class IntentResolver:
             )
             return strategy
 
-        # ── Primary sheet model (multi-sheet, use first sheet only) ──────────
+        # -- Primary sheet model (multi-sheet, use first sheet only) ----------
         if choice_id == "primary_sheet_model":
             return CompilationStrategy(
                 intent_id=choice_id,
@@ -122,7 +122,7 @@ class IntentResolver:
                 target_synthesis="auto",
             )
 
-        # ── Combined sheets model (merge all on date key) ────────────────────
+        # -- Combined sheets model (merge all on date key) --------------------
         if choice_id == "combined_sheets_model":
             return CompilationStrategy(
                 intent_id=choice_id,
@@ -134,7 +134,7 @@ class IntentResolver:
                 assembler_policy_override="relational_join_assembler",
             )
 
-        # ── Auto model (single table fallback — no user choice needed) ───────
+        # -- Auto model (single table fallback - no user choice needed) -------
         if choice_id == "auto_model":
             return CompilationStrategy(
                 intent_id=choice_id,
@@ -143,8 +143,8 @@ class IntentResolver:
                 target_synthesis="auto",
             )
 
-        # ── Unknown choice — safe fallback ───────────────────────────────────
-        logger.warning(f"[IntentResolver] Unknown choice_id '{choice_id}' — using auto strategy")
+        # -- Unknown choice - safe fallback -----------------------------------
+        logger.warning(f"[IntentResolver] Unknown choice_id '{choice_id}' - using auto strategy")
         return CompilationStrategy(
             intent_id=choice_id,
             scope="all",

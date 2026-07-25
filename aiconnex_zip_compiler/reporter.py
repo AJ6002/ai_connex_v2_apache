@@ -1,5 +1,5 @@
 """
-reporter.py — Structured Compilation Failure Reporter & Gap Classifier
+reporter.py - Structured Compilation Failure Reporter & Gap Classifier
 ======================================================================
 Captures structured failure metadata when a dataset compilation fails,
 classifies the failure into known Gap IDs (G-01 through G-12), and emits

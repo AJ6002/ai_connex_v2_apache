@@ -1,5 +1,5 @@
 """
-plugins/registry.py — Deterministic Central Plugin Registry
+plugins/registry.py - Deterministic Central Plugin Registry
 ============================================================
 Provides auto-discovery, registration, and deterministic plugin selection:
   1. Explicit Policy Override (from dataset manifest or user config)

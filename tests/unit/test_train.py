@@ -1,5 +1,5 @@
 """
-Unit Tests — Node 6: train.py
+Unit Tests - Node 6: train.py
 Tests: ALGORITHM_REGISTRY dispatch, hyperparameter injection, artifact creation, seed reproducibility.
 """
 import pickle
@@ -94,7 +94,7 @@ class TestTrain:
         assert len(preds) == len(df)
 
     def test_seed_reproducibility(self):
-        """Same seed → same predictions."""
+        """Same seed -> same predictions."""
         df = _make_train_df()
         hp = {"n_estimators": 10, "random_state": 42}
         m1 = _fit_model("random_forest", hp, df, FEATURES, "RUL")

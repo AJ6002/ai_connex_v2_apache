@@ -1,3 +1,3 @@
 """
-plugins/harvesters — Stage 4 Harvester Plugins
+plugins/harvesters - Stage 4 Harvester Plugins
 """

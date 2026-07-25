@@ -1,5 +1,5 @@
 """
-test_split_policy.py — Tests for topology-enforced splitting
+test_split_policy.py - Tests for topology-enforced splitting
 """
 
 import pytest

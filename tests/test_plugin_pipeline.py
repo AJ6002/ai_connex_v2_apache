@@ -1,5 +1,5 @@
 """
-test_plugin_pipeline.py — Unit Tests for 5-Stage Plugin Pipeline & Registry Architecture
+test_plugin_pipeline.py - Unit Tests for 5-Stage Plugin Pipeline & Registry Architecture
 ========================================================================================
 Validates:
   1. PluginRegistry auto-discovery and registration.

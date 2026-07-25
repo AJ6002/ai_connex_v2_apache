@@ -1,5 +1,5 @@
 """
-plugins/assemblers/vertical_stack_assembler.py — Vertical Stacking Assembler Plugin
+plugins/assemblers/vertical_stack_assembler.py - Vertical Stacking Assembler Plugin
 ====================================================================================
 Stage 3 Assembler plugin that stacks multiple periodic/monthly tables vertically
 when schemas match (e.g. SCADA Excel monthly DPR logs or split CSV chunks).

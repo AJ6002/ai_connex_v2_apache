@@ -1,5 +1,5 @@
 """
-plugins/base.py — Abstract Base Classes & Core Interfaces for Compiler Plugins
+plugins/base.py - Abstract Base Classes & Core Interfaces for Compiler Plugins
 ================================================================================
 Defines the base plugin contracts, probe MatchResult structures, and 5 pipeline stage ABCs:
   Stage 1: BaseDiscoveryPlugin

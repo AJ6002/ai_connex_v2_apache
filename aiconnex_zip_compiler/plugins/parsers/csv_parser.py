@@ -1,5 +1,5 @@
 """
-plugins/parsers/csv_parser.py — Generic CSV / TXT Parser Plugin
+plugins/parsers/csv_parser.py - Generic CSV / TXT Parser Plugin
 ================================================================
 Stage 2 Parser plugin for standard CSV and whitespace-delimited TXT files.
 Handles:
@@ -109,7 +109,7 @@ class CsvParserPlugin(BaseParserPlugin):
             except Exception:
                 df = pd.DataFrame()
 
-        # ── Headerless Detection & C-MAPSS Auto-Naming ───────────────────────
+        # -- Headerless Detection & C-MAPSS Auto-Naming -----------------------
         if df is not None and not df.empty:
             # Check if ALL column names are numeric (indicates the file has no header row)
             cols_to_check = [str(c).split()[0] for c in df.columns]
@@ -129,7 +129,7 @@ class CsvParserPlugin(BaseParserPlugin):
                         df_headerless.columns = CMAPSS_26_COLUMNS
                         logger.info(
                             f"[CsvParser] Detected 26-column headerless file '{filepath.name}' "
-                            f"→ assigned C-MAPSS standard column names"
+                            f"-> assigned C-MAPSS standard column names"
                         )
                     else:
                         # Generic headerless: assign col_0, col_1, ...

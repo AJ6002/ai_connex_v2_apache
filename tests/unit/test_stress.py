@@ -1,5 +1,5 @@
 """
-Unit Tests — Node 10: stress.py
+Unit Tests - Node 10: stress.py
 Tests: noise injection logic, degradation metric calculation, robustness report schema.
 """
 import numpy as np

@@ -1,5 +1,5 @@
 """
-test_data_quality.py — Tests for quality checks, contract, time alignment
+test_data_quality.py - Tests for quality checks, contract, time alignment
 """
 
 import numpy as np
@@ -25,7 +25,7 @@ def _make_df():
 
 def test_stuck_sensor_detection():
     df = _make_df()
-    df["flat_sensor"] = 5.0  # constant — should be detected as stuck
+    df["flat_sensor"] = 5.0  # constant - should be detected as stuck
     stuck = detect_stuck_sensors(df, window=10)
     assert "flat_sensor" in stuck
     assert "sensor_1" not in stuck

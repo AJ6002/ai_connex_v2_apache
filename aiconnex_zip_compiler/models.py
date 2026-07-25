@@ -1,5 +1,5 @@
 """
-models.py — Shared Data Models for Compiler Pipeline
+models.py - Shared Data Models for Compiler Pipeline
 =====================================================
 Contains SchemaMap and JoinAudit dataclasses used across compiler.py and handoff.py.
 Previously these lived in schema_mapper.py and relational_joiner.py (now deleted).

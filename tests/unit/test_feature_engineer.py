@@ -1,5 +1,5 @@
 """
-Unit Tests — Node 4: feature_engineer.py
+Unit Tests - Node 4: feature_engineer.py
 Tests: scaler fit-only-on-train rule, rolling/lag column creation, no target leakage, determinism.
 """
 import numpy as np
@@ -130,7 +130,7 @@ class TestFeatureEngineer:
         np.testing.assert_array_almost_equal(val_transformed, val_transformed2)
 
     def test_target_column_not_in_scaled_features(self):
-        """RUL must NEVER be scaled — it is the target."""
+        """RUL must NEVER be scaled - it is the target."""
         train, _, _ = self._get_splits()
         fe = _process_features(train, SENSORS, "cycle", "global_engine_id")
         # RUL must be excluded from continuous features used for scaling

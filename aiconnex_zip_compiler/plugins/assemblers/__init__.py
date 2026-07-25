@@ -1,3 +1,3 @@
 """
-plugins/assemblers — Stage 3 Assembler Plugins
+plugins/assemblers - Stage 3 Assembler Plugins
 """

@@ -1,5 +1,5 @@
 """
-test_algorithm_matrix.py — Algorithm-by-Scenario Matrix Tests
+test_algorithm_matrix.py - Algorithm-by-Scenario Matrix Tests
 ==============================================================
 Validates that every single algorithm in REGRESSION_REGISTRY and ANOMALY_REGISTRY:
   1. Instantiates and fits without errors on clean synthetic data.
@@ -40,7 +40,7 @@ def synthetic_anomaly_data():
     return X, y
 
 
-# ─── REGRESSION ALGORITHM MATRIX ─────────────────────────────────────────────
+# --- REGRESSION ALGORITHM MATRIX ---------------------------------------------
 
 REGRESSION_ALGORITHMS = list(REGRESSION_REGISTRY.keys())
 
@@ -77,7 +77,7 @@ def test_regression_algorithm_matrix(algo_name, synthetic_regression_data):
     np.testing.assert_allclose(preds, reloaded_preds, rtol=1e-5, err_msg=f"{algo_name} reloaded model prediction mismatch")
 
 
-# ─── ANOMALY ALGORITHM MATRIX ────────────────────────────────────────────────
+# --- ANOMALY ALGORITHM MATRIX ------------------------------------------------
 
 ANOMALY_ALGORITHMS = list(ANOMALY_REGISTRY.keys())
 

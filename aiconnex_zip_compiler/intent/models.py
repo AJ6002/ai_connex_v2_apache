@@ -1,9 +1,9 @@
 """
-intent/models.py — Data Models for the HITL Intent & Dataset Card Layer
+intent/models.py - Data Models for the HITL Intent & Dataset Card Layer
 ========================================================================
 Contains all dataclasses for the intent layer:
   - DatasetCard: Structured summary of dataset type, domain, and structure
-  - IntentOption: One choice displayed to the user in the TUI
+  - IntentOption: One choice displayed to the user in the terminal prompt
   - CompilationStrategy: Internal compiler instructions derived from user choice
   - IntentDecision: Recorded in lockfile for reproducibility
 """
@@ -29,7 +29,7 @@ class DatasetCard:
     detected_sheets: List[str] = field(default_factory=list)  # ["DPR Report", "Reco-Inflow"]
     file_count: int = 0
     total_rows_estimate: int = 0
-    summary: str = ""  # Plain-language one-liner for the TUI
+    summary: str = ""  # Plain-language one-liner for the terminal prompt
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -49,18 +49,17 @@ class DatasetCard:
 
 @dataclass
 class IntentOption:
-    """One choice displayed in the TUI terminal prompt."""
+    """One choice displayed in the terminal prompt."""
 
     option_id: str  # "failure_prediction", "anomaly_detection", "forecasting"
     label: str  # "Predict equipment failure"
     description: str  # "Get alerts before your compressor breaks down"
-    icon: str = ""  # "🔧"
     is_default: bool = False  # First option is typically default for batch mode
 
 
 @dataclass
 class CompilationStrategy:
-    """Internal compiler instructions derived from the TUI user selection."""
+    """Internal compiler instructions derived from the user's terminal selection."""
 
     intent_id: str  # "failure_prediction" | "anomaly_detection" | "forecasting"
     scope: str = "all"  # "per_condition" | "unified" | "single_asset" | "all"

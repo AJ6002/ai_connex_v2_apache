@@ -1,9 +1,9 @@
 """
-sandbox_runner.py — Layer 4 Docker Sandbox Engine
+sandbox_runner.py - Layer 4 Docker Sandbox Engine
 ==================================================
 Executes LLM-generated Python code patches exclusively inside a
 `docker run --rm` container, reusing the already-running Docker Desktop
-daemon. No image pulls — uses python:3.10-slim (pre-cached on most systems).
+daemon. No image pulls - uses python:3.10-slim (pre-cached on most systems).
 
 DESIGN CONTRACT:
 - ALWAYS runs inside Docker. No subprocess fallback. No exceptions.
@@ -42,11 +42,11 @@ class SandboxValidationResult:
 
 
 # ---------------------------------------------------------------------------
-# Mock functional test — runs INSIDE the Docker container
+# Mock functional test - runs INSIDE the Docker container
 # ---------------------------------------------------------------------------
 MOCK_TEST_SCRIPT = '''\
 """
-sandbox_mock_test.py — Injected into Docker container at runtime.
+sandbox_mock_test.py - Injected into Docker container at runtime.
 Validates the proposed compiler patch against a synthetic dataset.
 """
 import sys, ast, json
@@ -116,7 +116,7 @@ pd.DataFrame({
 try:
     result = fn(mock_dir)
     if isinstance(result, list):
-        print(f"[CHECK] Converter returned list ({len(result)} item(s)) — OK")
+        print(f"[CHECK] Converter returned list ({len(result)} item(s)) - OK")
         sys.exit(0)
     else:
         print(f"[FAIL]  Unexpected return type: {type(result)}")
@@ -125,7 +125,7 @@ except Exception as e:
     import traceback
     tb = traceback.format_exc()
     if "FileNotFoundError" in tb or "No such file" in tb:
-        print(f"[WARN]  Expected file-not-found (parquet mock missing) — acceptable: {e}")
+        print(f"[WARN]  Expected file-not-found (parquet mock missing) - acceptable: {e}")
         sys.exit(0)
     print(f"[FAIL]  Converter raised unexpected exception: {e}")
     print(tb)
@@ -144,8 +144,8 @@ class SandboxRunner:
     DOCKER_IMAGE = "aiconnex-sandbox:latest"
 
     def __init__(self, use_docker: bool = True, docker_image: str = "aiconnex-sandbox:latest"):
-        # use_docker param kept for API compatibility but ignored — always Docker
-        # aiconnex-sandbox:latest has pandas/pyarrow/openpyxl pre-installed — no pip at runtime
+        # use_docker param kept for API compatibility but ignored - always Docker
+        # aiconnex-sandbox:latest has pandas/pyarrow/openpyxl pre-installed - no pip at runtime
         self.docker_image = docker_image or self.DOCKER_IMAGE
 
     def validate_patch(
@@ -178,7 +178,7 @@ class SandboxRunner:
             # docker run --rm mounts only the sandbox dir
             cmd = [
                 "docker", "run", "--rm",
-                "--network", "none",           # air-gapped — no internet
+                "--network", "none",           # air-gapped - no internet
                 "--memory", "256m",            # 256 MB memory cap
                 "--cpus",   "0.5",             # 0.5 CPU cores
                 "-v", f"{tmp_sandbox}:/sandbox",

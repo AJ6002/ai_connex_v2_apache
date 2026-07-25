@@ -1,5 +1,5 @@
 """
-test_compiler_regression_suite.py — Automated Regression Test Suite
+test_compiler_regression_suite.py - Automated Regression Test Suite
 ====================================================================
 Runs the UnifiedCompiler on synthetic & real dataset archives to verify
 that zero regressions occur when adding new format converters or rules.

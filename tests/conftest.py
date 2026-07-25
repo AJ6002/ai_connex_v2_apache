@@ -1,5 +1,5 @@
 """
-conftest.py — Global pytest fixtures (G-12 Fix)
+conftest.py - Global pytest fixtures (G-12 Fix)
 =================================================
 Provides reusable synthetic DataFrames, manifest templates, and temporary workspace
 fixtures across unit, matrix, contract, and scenario tests.

@@ -1,5 +1,5 @@
 """
-aiconnex_zip_compiler — AIConnex Universal Multi-Table Dataset Compiler
+aiconnex_zip_compiler - AIConnex Universal Multi-Table Dataset Compiler
 ========================================================================
 Decoupled, domain-agnostic data ingestion compiler for multi-file ZIP archives.
 

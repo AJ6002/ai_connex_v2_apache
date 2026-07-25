@@ -1,8 +1,8 @@
 """
-plugins/assemblers/relational_join_assembler.py — Relational & Index-Join Assembler Plugin
+plugins/assemblers/relational_join_assembler.py - Relational & Index-Join Assembler Plugin
 =============================================================================================
 Stage 3 Assembler plugin that merges multi-table fact/dimension DataFrames on shared keys
-(or index alignment). Implements Cartesian Explosion Guard (≤5% row delta) and automatic
+(or index alignment). Implements Cartesian Explosion Guard (<=5% row delta) and automatic
 RUL countdown target synthesis for prognostics datasets.
 
 Refactored from monolithic relational_joiner.py.
@@ -54,7 +54,7 @@ class RelationalJoinAssemblerPlugin(BaseAssemblerPlugin):
         if not parsed_tables:
             return {}
 
-        # ── Apply CompilationStrategy filtering (HITL Intent Layer) ──────────
+        # -- Apply CompilationStrategy filtering (HITL Intent Layer) ----------
         tables_to_use = self._apply_strategy_filter(parsed_tables, context)
 
         if not tables_to_use:
@@ -107,7 +107,7 @@ class RelationalJoinAssemblerPlugin(BaseAssemblerPlugin):
                     suffixes=("", f"_{name}"),
                 )
 
-                # ── Cartesian Explosion Guard ────────────────────────────────
+                # -- Cartesian Explosion Guard --------------------------------
                 merged_rows_after = len(merged_df)
                 if merged_rows_after > int(fact_rows_before * CARTESIAN_EXPLOSION_THRESHOLD):
                     raise RuntimeError(
@@ -132,7 +132,7 @@ class RelationalJoinAssemblerPlugin(BaseAssemblerPlugin):
                     f"({len(df_clean)} vs {len(merged_df)})"
                 )
 
-        # ── RUL Countdown Synthesis ──────────────────────────────────────────
+        # -- RUL Countdown Synthesis ------------------------------------------
         merged_df = self._synthesize_rul(merged_df)
 
         assembled_key = f"{primary_name}_assembled"
@@ -217,7 +217,7 @@ class RelationalJoinAssemblerPlugin(BaseAssemblerPlugin):
             }
             # Fallback: if filter excluded everything, use all tables
             if not filtered:
-                logger.warning("[Assembler] Strategy include filter matched nothing — using all tables")
+                logger.warning("[Assembler] Strategy include filter matched nothing - using all tables")
                 filtered = dict(parsed_tables)
 
         # Filter by sheets_to_exclude
@@ -228,7 +228,7 @@ class RelationalJoinAssemblerPlugin(BaseAssemblerPlugin):
                 if not any(exc in k.lower() for exc in exclude_lower)
             }
 
-        # Filter by condition_filter (e.g. "FD001" — only keep tables with that condition in name)
+        # Filter by condition_filter (e.g. "FD001" - only keep tables with that condition in name)
         if strategy.condition_filter:
             cond = strategy.condition_filter.lower()
             cond_filtered = {

@@ -1,5 +1,5 @@
 """
-test_compiler.py — Unit Tests for AIConnex Plugin Pipeline Compiler
+test_compiler.py - Unit Tests for AIConnex Plugin Pipeline Compiler
 ====================================================================
 Tests the 5-stage plugin pipeline on synthetic multi-file ZIP archives.
 """

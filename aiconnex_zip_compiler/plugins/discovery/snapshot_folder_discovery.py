@@ -1,5 +1,5 @@
 """
-plugins/discovery/snapshot_folder_discovery.py — Bearing / Signal Snapshot Discovery Plugin
+plugins/discovery/snapshot_folder_discovery.py - Bearing / Signal Snapshot Discovery Plugin
 =============================================================================================
 Stage 1 Discovery plugin that detects directories with sequential vibration snapshot files
 (e.g., FEMTO bearing dataset containing acc_XXXXX.csv files).

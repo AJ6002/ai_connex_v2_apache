@@ -1,5 +1,5 @@
 """
-__main__.py — Entry point for python -m aiconnex_zip_compiler
+__main__.py - Entry point for python -m aiconnex_zip_compiler
 """
 
 import sys

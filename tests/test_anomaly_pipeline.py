@@ -1,5 +1,5 @@
 """
-test_anomaly_pipeline.py — Anomaly detection pipeline smoke tests
+test_anomaly_pipeline.py - Anomaly detection pipeline smoke tests
 """
 
 import numpy as np

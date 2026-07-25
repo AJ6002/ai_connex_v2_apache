@@ -1,5 +1,5 @@
 """
-plugins/parsers/hdf5_parser.py — HDF5 Telemetry Parser Plugin
+plugins/parsers/hdf5_parser.py - HDF5 Telemetry Parser Plugin
 ==============================================================
 Stage 2 Parser plugin that extracts dataset matrices from HDF5 (.h5, .hdf5) archives.
 Refactored from monolithic hdf5_converter.py.

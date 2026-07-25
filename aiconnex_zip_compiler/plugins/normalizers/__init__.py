@@ -1,3 +1,3 @@
 """
-plugins/normalizers — Stage 5 Normalizer Plugins
+plugins/normalizers - Stage 5 Normalizer Plugins
 """

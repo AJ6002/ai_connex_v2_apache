@@ -1,5 +1,5 @@
 """
-handoff.py — Layer 4: ML Handoff & Artifact Exporter
+handoff.py - Layer 4: ML Handoff & Artifact Exporter
 =====================================================
 Exports per-group merged CSVs, optional combined fleet table, join_audit.json,
 schema_map.json, and compiler_report.json to the output workspace.

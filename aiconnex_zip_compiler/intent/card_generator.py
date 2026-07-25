@@ -1,8 +1,8 @@
 """
-intent/card_generator.py — Lightweight Dataset Card Generator
+intent/card_generator.py - Lightweight Dataset Card Generator
 ==============================================================
 Generates a DatasetCard by inspecting file inventory and sniffing column headers
-from the first few files. Runs BEFORE the full plugin pipeline — must be fast
+from the first few files. Runs BEFORE the full plugin pipeline - must be fast
 and non-destructive (no full CSV parsing, just header sampling).
 """
 
@@ -60,7 +60,7 @@ CONDITION_PATTERNS = re.compile(
 class CardGenerator:
     """
     Generates a DatasetCard from file inventory and lightweight header sampling.
-    Does NOT run full parsing — only reads first few lines of representative files.
+    Does NOT run full parsing - only reads first few lines of representative files.
     """
 
     def generate(
@@ -276,8 +276,8 @@ class CardGenerator:
         if sheets:
             return f"{domain_label} workbook with {len(sheets)} data sheets ({', '.join(sheets[:3])})"
         if file_count > 100:
-            return f"{domain_label} — {file_count} snapshot files"
-        return f"{domain_label} — {file_count} file(s)"
+            return f"{domain_label} - {file_count} snapshot files"
+        return f"{domain_label} - {file_count} file(s)"
 
     @staticmethod
     def _is_numeric(val: str) -> bool:

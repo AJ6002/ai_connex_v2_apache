@@ -1,5 +1,5 @@
 """
-Unit Tests — Node 1: preprocess.py
+Unit Tests - Node 1: preprocess.py
 Tests: null imputation, duplicate removal, required-column guard, manifest creation.
 """
 import os
@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 
 # ---------------------------------------------------------------------------
-# Helpers — replicate the core logic from preprocess.py without AWS calls
+# Helpers - replicate the core logic from preprocess.py without AWS calls
 # ---------------------------------------------------------------------------
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 

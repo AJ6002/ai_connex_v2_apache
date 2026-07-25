@@ -1,14 +1,14 @@
 """
-cli.py — Command Line Interface for AIConnex Plugin Pipeline Compiler
+cli.py - Command Line Interface for AIConnex Plugin Pipeline Compiler
 ======================================================================
 Usage:
-    # Interactive mode (TUI halts for user intent selection):
+    # Interactive mode (prompt halts for user intent selection):
     python -m aiconnex_zip_compiler --input data.zip --output out/ --interactive
 
-    # Batch mode (auto-selects default intent, no halt):
+    # Batch mode (auto-selects default intent, no halt, no tty required):
     python -m aiconnex_zip_compiler --input data.zip --output out/ --batch
 
-    # Strategy override (bypasses TUI, uses specified strategy):
+    # Strategy override (bypasses prompt, uses specified strategy):
     python -m aiconnex_zip_compiler --input data.zip --output out/ --strategy failure_prediction
 """
 
@@ -39,16 +39,17 @@ def main() -> int:
     intent_group = parser.add_mutually_exclusive_group()
     intent_group.add_argument(
         "--interactive", action="store_true", default=False,
-        help="Force interactive TUI mode (halts terminal for user intent selection).",
+        help="Force interactive prompt mode (halts terminal for user intent selection).",
     )
     intent_group.add_argument(
         "--batch", action="store_true", default=False,
-        help="Batch mode — auto-selects default intent option without prompting.",
+        help="Batch mode - always auto-selects default intent option without prompting, "
+             "even when run in a real terminal.",
     )
     intent_group.add_argument(
         "--strategy", metavar="STRATEGY_ID", type=str, default=None,
         help=(
-            "Bypass TUI and use this strategy directly. "
+            "Bypass the prompt and use this strategy directly. "
             "Options: failure_prediction, anomaly_detection, forecasting, "
             "unified_all_conditions, separate_per_condition, auto_model"
         ),
@@ -68,26 +69,27 @@ def main() -> int:
         print(f"Error: Input path not found at {zip_path}", file=sys.stderr)
         return 1
 
-    # Determine interactive mode
-    # Default: interactive if tty is attached and neither --batch nor --strategy is set
+    # Determine interactive mode.
+    # Default (no flag set): interactive only if stdin is a real terminal.
+    # --batch always wins and disables prompting regardless of tty state.
+    # --strategy also disables prompting (handled inside the intent layer).
     interactive = args.interactive
     if not interactive and not args.batch and not args.strategy:
-        # Auto-detect: interactive if stdin is a terminal
         interactive = hasattr(sys.stdin, "isatty") and sys.stdin.isatty()
 
     if args.verbose:
         import logging
         logging.basicConfig(level=logging.DEBUG, format="%(name)s | %(message)s")
 
-    print(f"=== AIConnex Plugin Pipeline Compiler v0.9 ===")
+    print("=== AIConnex Plugin Pipeline Compiler v0.9 ===")
     print(f"Input : {zip_path}")
     print(f"Output: {output_dir}")
     if args.strategy:
         print(f"Mode  : Strategy override ({args.strategy})")
     elif args.batch:
-        print(f"Mode  : Batch (auto-select default)")
+        print("Mode  : Batch (auto-select default)")
     elif interactive:
-        print(f"Mode  : Interactive (TUI)")
+        print("Mode  : Interactive")
     print()
 
     compiler = UnifiedCompiler(
@@ -95,6 +97,7 @@ def main() -> int:
         output_dir=output_dir,
         interactive=interactive,
         strategy_override=args.strategy,
+        batch=args.batch,
     )
     res: CompileResult = compiler.compile()
 
@@ -102,17 +105,19 @@ def main() -> int:
         print(f"\n[FAIL] Compilation failed: {res.error}", file=sys.stderr)
         return 1
 
+    output_dir_path = Path(res.output_dir)
+
     print(f"[SUCCESS] Compiled in {res.duration_seconds}s")
-    print(f"  Per-Group Merged CSVs:")
+    print("  Per-Group Merged CSVs:")
     for f in res.merged_files:
         print(f"    - {f}")
     if res.combined_file:
         print(f"  Combined Fleet CSV:\n    - {res.combined_file}")
-    print(f"\n  Artifacts Written:")
+    print("\n  Artifacts Written:")
     print(f"    - {res.artifacts.join_audit_json}")
     print(f"    - {res.artifacts.schema_map_json}")
     print(f"    - {res.artifacts.compiler_report_json}")
-    print(f"    - {res.output_dir / 'compiler_lock.json'}")
+    print(f"    - {output_dir_path / 'compiler_lock.json'}")
     print()
 
     return 0

@@ -1,5 +1,5 @@
 """
-plugins/parsers/parquet_parser.py — Apache Parquet / Arrow Parser Plugin
+plugins/parsers/parquet_parser.py - Apache Parquet / Arrow Parser Plugin
 ========================================================================
 Stage 2 Parser plugin for Apache Parquet files (.parquet, .pq).
 Refactored from custom_converters/solar_parquet_converter.py.

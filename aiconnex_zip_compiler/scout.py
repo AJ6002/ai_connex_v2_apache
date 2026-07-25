@@ -1,10 +1,10 @@
 """
-scout.py — Scout Agent Engine & Compiler Evolution Observer (Layer 3)
+scout.py - Scout Agent Engine & Compiler Evolution Observer (Layer 3)
 ====================================================================
 Monitors dataset compilation execution, captures failures, analyzes schema
 and file structure gaps at the PLUGIN STAGE level, proposes new plugin patches
 via LLM, validates in Docker sandbox, and auto-promotes successful plugins
-to plugins/ directory. Follows the build → test → approve → rerun cycle.
+to plugins/ directory. Follows the build -> test -> approve -> rerun cycle.
 
 Logs evolutionary progress to compiler_evolution_log.json.
 """
@@ -42,12 +42,12 @@ class ScoutAgent:
     """
     Scout Agent (Layer 3): Plugin-aware self-improving compiler observer.
 
-    Follows the build → test → approve → rerun cycle:
+    Follows the build -> test -> approve -> rerun cycle:
       1. Observe compilation failure
-      2. Classify gap → determine target plugin stage
+      2. Classify gap -> determine target plugin stage
       3. Generate new plugin class via LLM (patch_proposer.py)
       4. Validate plugin in Docker sandbox
-      5. On PASS → promote plugin to plugins/ directory
+      5. On PASS -> promote plugin to plugins/ directory
       6. Trigger new compiler run with updated PluginRegistry
     """
 
@@ -73,7 +73,7 @@ class ScoutAgent:
             attempt += 1
             logger.info(f"[ScoutAgent] Compilation attempt {attempt}/{max_attempts} for {zip_path.name}")
 
-            # ── Run compiler (plugin pipeline) ───────────────────────────────
+            # -- Run compiler (plugin pipeline) -------------------------------
             compiler = UnifiedCompiler(zip_path=zip_path, output_dir=output_dir)
             result = compiler.compile()
 
@@ -92,7 +92,7 @@ class ScoutAgent:
 
             last_result = result
 
-            # ── Classify the failure at the plugin stage level ────────────────
+            # -- Classify the failure at the plugin stage level ----------------
             error_exc = Exception(result.error or "Unknown compilation error")
             report = classify_compilation_failure(zip_path, output_dir, error_exc)
 
@@ -112,7 +112,7 @@ class ScoutAgent:
                 patch_applied=f"Gap detected: {report.gap_id}",
             )
 
-            # ── Generate plugin patch via LLM ────────────────────────────────
+            # -- Generate plugin patch via LLM --------------------------------
             promoted_path = self._attempt_patch_and_promote(report, zip_path)
             if promoted_path:
                 logger.info(f"[ScoutAgent] Plugin promoted: {promoted_path}. Rerunning compilation...")
@@ -122,7 +122,7 @@ class ScoutAgent:
             else:
                 logger.warning(f"[ScoutAgent] Patch generation/promotion failed on attempt {attempt}")
 
-        # Max attempts reached — emit error result
+        # Max attempts reached - emit error result
         return last_result or CompileResult(
             input_zip=str(zip_path),
             output_dir=str(output_dir),
@@ -164,7 +164,7 @@ class ScoutAgent:
             patch_file = patch_dir / f"patch_{report.gap_id}_{zip_path.stem}.py"
             patch_file.write_text(code_patch, encoding="utf-8")
 
-            # ── Docker Sandbox Validation ────────────────────────────────────
+            # -- Docker Sandbox Validation ------------------------------------
             runner = SandboxRunner()
             val_res = runner.validate_patch(code_patch, patch_name=f"patch_{report.gap_id}.py")
 
@@ -174,10 +174,10 @@ class ScoutAgent:
             )
 
             if not val_res.regression_passed:
-                logger.warning("[ScoutAgent] Sandbox validation FAILED — patch not promoted")
+                logger.warning("[ScoutAgent] Sandbox validation FAILED - patch not promoted")
                 return None
 
-            # ── Auto-Promote to plugins/ directory ───────────────────────────
+            # -- Auto-Promote to plugins/ directory ---------------------------
             promoted_path = self._promote_plugin(code_patch, report)
             return promoted_path
 

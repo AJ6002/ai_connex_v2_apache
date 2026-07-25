@@ -1,5 +1,5 @@
 """
-test_regression_pipeline.py — End-to-end regression pipeline smoke test
+test_regression_pipeline.py - End-to-end regression pipeline smoke test
 Uses synthetic data so it runs without any external files.
 """
 

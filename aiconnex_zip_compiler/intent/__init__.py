@@ -1,5 +1,5 @@
 """
-aiconnex_zip_compiler.intent — HITL Intent & Dataset Card Layer
+aiconnex_zip_compiler.intent - HITL Intent & Dataset Card Layer
 ================================================================
 Provides the interactive Terminal UI (TUI) that:
   1. Generates a DatasetCard (lightweight pre-pipeline inspection)
