@@ -62,7 +62,7 @@ class RelationalJoinAssemblerPlugin(BaseAssemblerPlugin):
 
         if len(tables_to_use) == 1:
             name, df = next(iter(tables_to_use.items()))
-            df = self._synthesize_rul(df)
+            df = self._synthesize_rul(df, context)
             return {name: df}
 
         # Check if strategy says keep_separate
@@ -71,18 +71,19 @@ class RelationalJoinAssemblerPlugin(BaseAssemblerPlugin):
             # Return each table individually with RUL synthesis applied
             result = {}
             for name, df in tables_to_use.items():
-                result[name] = self._synthesize_rul(df)
+                result[name] = self._synthesize_rul(df, context)
             return result
 
         # Multi-table assembly logic
         table_items = list(tables_to_use.items())
         primary_name, primary_df = max(table_items, key=lambda x: len(x[1]))
         merged_df = primary_df.copy()
-        fact_rows_before = len(merged_df)
 
         for name, df in table_items:
             if name == primary_name or df.empty:
                 continue
+
+            current_rows = len(merged_df)
 
             # Deduplicate dimension table columns that are entity keys not useful as features
             dim_entity_cols = [
@@ -109,10 +110,10 @@ class RelationalJoinAssemblerPlugin(BaseAssemblerPlugin):
 
                 # -- Cartesian Explosion Guard --------------------------------
                 merged_rows_after = len(merged_df)
-                if merged_rows_after > int(fact_rows_before * CARTESIAN_EXPLOSION_THRESHOLD):
+                if merged_rows_after > int(current_rows * CARTESIAN_EXPLOSION_THRESHOLD):
                     raise RuntimeError(
                         f"Cartesian Explosion Guard triggered: Row count exploded from "
-                        f"{fact_rows_before} to {merged_rows_after} after joining '{name}'. "
+                        f"{current_rows} to {merged_rows_after} after joining '{name}'. "
                         f"Verify join keys: {join_keys}."
                     )
 
@@ -133,7 +134,7 @@ class RelationalJoinAssemblerPlugin(BaseAssemblerPlugin):
                 )
 
         # -- RUL Countdown Synthesis ------------------------------------------
-        merged_df = self._synthesize_rul(merged_df)
+        merged_df = self._synthesize_rul(merged_df, context)
 
         assembled_key = f"{primary_name}_assembled"
         return {assembled_key: merged_df}
@@ -156,10 +157,11 @@ class RelationalJoinAssemblerPlugin(BaseAssemblerPlugin):
         # Fall back to first common column
         return [common[0]]
 
-    def _synthesize_rul(self, df: pd.DataFrame) -> pd.DataFrame:
+    def _synthesize_rul(self, df: pd.DataFrame, context: Optional[PipelineContext] = None) -> pd.DataFrame:
         """
         Synthesize piecewise-linear RUL countdown target if unit_id and cycle columns exist.
-        RUL = min(125, max_cycle_per_unit - current_cycle)
+        Inspects context.strategy.domain_constraints for clip_upper.
+        Only clips if clip_upper is explicitly provided as a non-None integer or float.
         """
         if df.empty:
             return df
@@ -181,13 +183,25 @@ class RelationalJoinAssemblerPlugin(BaseAssemblerPlugin):
 
         if unit_col and cycle_col:
             try:
+                clip_upper = None
+                if context and context.strategy:
+                    constraints = getattr(context.strategy, "domain_constraints", {}) or {}
+                    clip_val = constraints.get("clip_upper")
+                    if clip_val is not None and isinstance(clip_val, (int, float)):
+                        clip_upper = clip_val
+
                 max_cycle = df.groupby(unit_col)[cycle_col].transform("max")
-                rul = (max_cycle - df[cycle_col]).clip(upper=125).astype(int)
+                rul = max_cycle - df[cycle_col]
+                if clip_upper is not None:
+                    rul = rul.clip(upper=clip_upper)
+                rul = rul.astype(int)
+
                 cycle_idx = df.columns.get_loc(cycle_col)
                 df = df.copy()
                 df.insert(cycle_idx + 1, "RUL", rul)
+                clip_msg = f", max_clip={clip_upper}" if clip_upper is not None else ""
                 logger.info(
-                    f"[RelationalJoinAssembler] Synthesized RUL target (piecewise linear, max_clip=125) "
+                    f"[RelationalJoinAssembler] Synthesized RUL target (piecewise linear{clip_msg}) "
                     f"from '{unit_col}' + '{cycle_col}'"
                 )
             except Exception as e:
@@ -239,3 +253,7 @@ class RelationalJoinAssemblerPlugin(BaseAssemblerPlugin):
                 filtered = cond_filtered
 
         return filtered
+
+
+# Alias for backwards-compatibility / convenience
+RelationalJoinAssembler = RelationalJoinAssemblerPlugin

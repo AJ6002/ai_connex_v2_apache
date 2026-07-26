@@ -75,6 +75,9 @@ class CompilationStrategy:
     target_synthesis: str = "auto"  # LLM-described derivation, or legacy fixed id
     target_column_hint: Optional[str] = None
 
+    # Domain constraints (e.g. clip_upper for RUL, bounds, thresholds)
+    domain_constraints: Dict[str, Any] = field(default_factory=dict)
+
     # Plugin policy overrides (set by resolver, read by compiler)
     assembler_policy_override: Optional[str] = None
 
@@ -96,6 +99,7 @@ class CompilationStrategy:
             "merge_rule": self.merge_rule,
             "target_synthesis": self.target_synthesis,
             "target_column_hint": self.target_column_hint,
+            "domain_constraints": self.domain_constraints,
             "assembler_policy_override": self.assembler_policy_override,
             "output_mode": self.output_mode,
             "partition_by": self.partition_by,
