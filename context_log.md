@@ -1670,3 +1670,137 @@
 **Current system state:** Artifact inventory delivered to user.
 ---
 
+
+---
+## Query 190 -- 2026-07-26 22:59
+**Input:** User requested simple explanation of Scout Agent's role, confirmation of LLM usage, git status comparison between main and scout branch, and checkout of the scout branch.
+**Response summary:** Explained Scout Agent across 4 roles (Detective for semantics, Mechanic for self-healing, Advisor for HITL options, Traffic Director for cleaning alerts). Confirmed gpt-oss:120b-cloud handles semantic reasoning while fast Python C-libraries handle math/data crunching. Evaluated branch divergence (main 7 commits behind scout branch) and executed git checkout feature/agentic-scout-compiler to prepare for v2.0 re-wiring.
+**Files changed:** none (git checkout feature/agentic-scout-compiler)
+**Architectural decisions:** Confirmed feature/agentic-scout-compiler as the target development branch for Architecture v2.0 plugin and gap remediation upgrades before PR to main.
+**Current system state:** Cleanly checked out on branch feature/agentic-scout-compiler.
+---
+
+
+---
+## Query 191 -- 2026-07-26 23:08
+**Input:** User requested building the standalone compiler package and lightweight Scout Agent based on the architecture plan without codebase over-complication.
+**Response summary:** Designed and generated implementation_plan.md artifact outlining the 4 component areas: PluginRegistry lifecycle unfreezing (Gap 15), 11-plugin expansion set, live code gap remediations (Gaps 7-14), and simple 3-method ScoutAgent API.
+**Files changed:** brain/implementation_plan.md
+**Architectural decisions:** Adopted lightweight 3-method ScoutAgent design (inspect, advise_strategy, self_heal); mandated deterministic fallback when scout=None.
+**Current system state:** implementation_plan.md created and presented for user review.
+---
+
+---
+## Query 192 -- 2026-07-26 23:09
+**Input:** User requested using writing-plans skill to verify if the implementation plan systematically addresses 100% of AICONNEX_COMPILER_ARCHITECTURE_V2.md.
+**Response summary:** Announced use of writing-plans skill and generated docs/superpowers/plans/2026-07-26-compiler-v2-remediation.md. Formulated 9 bite-sized TDD tasks with exact failing/passing test code, interface definitions, global constraints, and file paths covering all 15 gaps and 11 expansion plugins.
+**Files changed:** docs/superpowers/plans/2026-07-26-compiler-v2-remediation.md
+**Architectural decisions:** Enforced strict TDD workflow (failing test -> minimal code -> pass -> commit) for every architecture task; defined explicit Execution Handoff options.
+**Current system state:** Comprehensive TDD implementation plan written to docs/superpowers/plans/2026-07-26-compiler-v2-remediation.md.
+---
+
+## Query 193 -- 2026-07-26 23:10
+**Input:** Implement Task 1 of AIConnex Compiler v2.0 Remediation Plan (Gap 15: PluginRegistry unfreeze and reload_and_unfreeze).
+**Response summary:** Followed strict TDD workflow to fix Gap 15. Created failing unit test in `test_registry_lifecycle.py`, confirmed failure via pytest, added `unfreeze()` and `reload_and_unfreeze()` to `PluginRegistry` in `plugins/registry.py`, verified all tests pass, and committed changes.
+**Files changed:** aiconnex_zip_compiler/plugins/registry.py, aiconnex_zip_compiler/tests/test_registry_lifecycle.py
+**Architectural decisions:** Enabled dynamic unfreezing and hot-reloading of singleton PluginRegistry to support runtime plugin promotions.
+**Current system state:** Task 1 complete; pytest passing (5/5 compiler tests); commit 0744193 created on feature/agentic-scout-compiler branch.
+---
+
+## Query 194 -- 2026-07-26 23:12
+**Input:** Implement Task 2 of AIConnex Compiler v2.0 Remediation Plan (Gap 7: Cumulative Cartesian Guard & Gap 8: Dynamic RUL Constraints).
+**Response summary:** Followed strict TDD workflow to fix Gaps 7 & 8. Created unit tests in `test_relational_join_fixes.py`, confirmed failure, updated `RelationalJoinAssemblerPlugin.assemble()` to evaluate `current_rows` per iteration and `_synthesize_rul` to read dynamic `clip_upper` from `context.strategy.domain_constraints`, verified all 9 compiler tests pass, and committed changes.
+**Files changed:** aiconnex_zip_compiler/intent/models.py, aiconnex_zip_compiler/plugins/assemblers/relational_join_assembler.py, aiconnex_zip_compiler/tests/test_relational_join_fixes.py
+**Architectural decisions:** Dynamic evaluation of Cartesian row expansion threshold relative to current working state rather than initial state; domain-aware RUL clipping via CompilationStrategy.
+**Current system state:** Task 2 complete; pytest passing (9/9 compiler tests); commit 9ce13f8 created on feature/agentic-scout-compiler branch.
+---
+
+## Query 195 -- 2026-07-26 23:14
+**Input:** Implement Task 3 of AIConnex Compiler v2.0 Remediation Plan (Gap 9: SCADA Excel Header Detection).
+**Response summary:** Followed strict TDD to replace naive digit heuristic in `scada_excel_parser.py` with structural type-consistency header scanning (`_is_data_row_start` and `_cell_type_class`). Created failing tests in `test_scada_excel_header.py`, updated parser code, verified all 11 compiler tests pass, and committed changes with commit hash 25f0849.
+**Files changed:** aiconnex_zip_compiler/plugins/parsers/scada_excel_parser.py, aiconnex_zip_compiler/tests/test_scada_excel_header.py
+**Architectural decisions:** Implemented row structure evaluation across subsequent rows using cell type classification (`number`, `date`, `bool`, `text`) to distinguish multi-level and numeric text headers from data rows.
+**Current system state:** Task 3 complete; pytest passing (11/11 compiler tests); commit 25f0849 created on feature/agentic-scout-compiler.
+---
+
+## Query 196 -- 2026-07-26 23:18
+**Input:** Implement Task 4 of AIConnex Compiler v2.0 Remediation Plan (Gap 10: Decoupled Telemetry & Gap 11: Two-Pass Joint Intelligence Fusion).
+**Response summary:** Followed strict TDD workflow to remediate Gaps 10 and 11. Created failing unit tests in `test_orchestrator_two_pass.py`, confirmed failure, added `execution_mode` telemetry attribute to `IntelligenceReport` in `models.py`, decoupled `degraded` flag from LLM availability in `orchestrator.py`, updated Stage 6 and Stage 7 execution flow to run Stage 7 first (Pass 1) to establish domain context before Stage 6 consumes it (Pass 2), verified all 15 compiler tests pass, and committed changes with commit hash 6aa66c6.
+**Files changed:** aiconnex_zip_compiler/intelligence/models.py, aiconnex_zip_compiler/intelligence/orchestrator.py, aiconnex_zip_compiler/tests/test_orchestrator_two_pass.py
+**Architectural decisions:** Decoupled telemetry execution mode (`deterministic_headless` vs `llm_enhanced`) from degradation status, ensuring `degraded=True` is only set on actual exceptions/failures; implemented two-pass joint intelligence flow where problem domain discovery precedes semantic sensor resolution.
+**Current system state:** Task 4 complete; pytest passing (15/15 compiler tests); commit 6aa66c6 created on feature/agentic-scout-compiler.
+---
+
+## Query 198 -- 2026-07-26 23:22
+**Input:** Implement Task 6 of AIConnex Compiler v2.0 Remediation Plan (Stage 1 Discovery Plugins: archive manifest catalog, schema fingerprint Jaccard distance, mixed archive router).
+**Response summary:** Followed strict TDD workflow to implement 3 Stage 1 discovery plugins. Created failing test suite `test_stage1_discovery.py`, confirmed failure via pytest, implemented `ArchiveManifestDiscoveryPlugin`, `SchemaFingerprintDiscoveryPlugin`, and `MixedArchiveRouterPlugin`, verified all 24 compiler unit tests pass cleanly, and committed changes with commit hash 3a7816b.
+**Files changed:** aiconnex_zip_compiler/plugins/discovery/archive_manifest_discovery.py:127, aiconnex_zip_compiler/plugins/discovery/schema_fingerprint_discovery.py:167, aiconnex_zip_compiler/plugins/discovery/mixed_archive_router.py:84, aiconnex_zip_compiler/tests/test_stage1_discovery.py:194
+**Architectural decisions:** Implemented Jaccard distance column schema similarity for layout classification (`same_schema_batch`, `relational_schema_bundle`, `heterogeneous_mixed_archive`); tuned discovery probe confidence and priorities to maintain deterministic container unpack resolution while enabling flexible stage 1 discovery.
+**Current system state:** Task 6 complete; all 24 pytest tests passing; commit 3a7816b created on feature/agentic-scout-compiler.
+---
+
+## Query 199 -- 2026-07-26 23:23
+**Input:** Implement Task 7 of AIConnex Compiler v2.0 Remediation Plan (Stage 2 Parsers: TDMS, JSON/JSONL, SQLite, XML, and Text Delimited Autodetect).
+**Response summary:** Followed strict TDD workflow to implement 5 Stage 2 parser plugins. Created test suite `test_stage2_parsers.py`, verified failure, implemented `TdmsParserPlugin`, `JsonParserPlugin`, `SqliteParserPlugin`, `XmlParserPlugin`, and `TextDelimitedAutodetectParserPlugin`, confirmed all 35 compiler unit tests pass, and committed changes with commit hash 1770a5f.
+**Files changed:** aiconnex_zip_compiler/plugins/parsers/tdms_parser.py:68, aiconnex_zip_compiler/plugins/parsers/json_parser.py:84, aiconnex_zip_compiler/plugins/parsers/sqlite_parser.py:61, aiconnex_zip_compiler/plugins/parsers/xml_parser.py:64, aiconnex_zip_compiler/plugins/parsers/text_delimited_autodetect_parser.py:126, aiconnex_zip_compiler/tests/test_stage2_parsers.py:288
+**Architectural decisions:** Added graceful import handling for optional dependency nptdms; implemented comment-prefixed header autodetection for raw sensor dumps (.dat, .asc, .log, .txt); normalized table keys across multi-table database/file structures.
+**Current system state:** Task 7 complete; all 35 pytest tests passing; commit 1770a5f created on feature/agentic-scout-compiler.
+---
+
+## Query 200 -- 2026-07-26 23:24
+**Input:** Implement Task 8 of AIConnex Compiler v2.0 Remediation Plan (Multi-Source Union Assembler, Keyed Time Join Assembler, Unit Standardizer Normalizer).
+**Response summary:** Followed strict TDD workflow to implement 2 Stage 3 assembler plugins and 1 Stage 5 normalizer plugin. Created test suite `test_stage3_4_plugins.py`, verified initial failure via pytest, implemented `MultiSourceUnionAssemblerPlugin`, `KeyedTimeJoinAssemblerPlugin`, and `UnitStandardizerPlugin`, confirmed all 41 compiler unit tests pass cleanly, and committed changes with commit hash 8de9d42.
+**Files changed:** aiconnex_zip_compiler/plugins/assemblers/multi_source_union_assembler.py:84, aiconnex_zip_compiler/plugins/assemblers/keyed_time_join_assembler.py:165, aiconnex_zip_compiler/plugins/normalizers/unit_standardizer.py:118, aiconnex_zip_compiler/tests/test_stage3_4_plugins.py:185
+**Architectural decisions:** Implemented `source_id` provenance tagging during multi-source vertical unions; automated `merge_asof` time alignment with asset-key grouping (`by=asset_id`); standardized physical units (psi->bar, degF->degC, kW->W, mph->m/s) with engineering factor conversions.
+**Current system state:** Task 8 complete; all 41 pytest tests passing; commit 8de9d42 created on feature/agentic-scout-compiler branch.
+---
+
+## Query 201 -- 2026-07-26 23:26
+**Input:** Implement Task 9 (The Final Task) of AIConnex Compiler v2.0 Remediation Plan (3-method ScoutAgent API & Deterministic UnifiedCompiler Fallback).
+**Response summary:** Followed strict TDD workflow to implement Task 9. Created test suite `test_scout_integration.py`, confirmed failure via pytest, updated `ScoutAgent` with 3 lightweight methods (`inspect`, `advise_strategy`, `self_heal`), updated `UnifiedCompiler` with optional `scout` integration and deterministic fallback when `scout=None`, verified all 45 unit tests pass, and committed changes with commit hash `41df527`.
+**Files changed:** aiconnex_zip_compiler/scout.py:101, aiconnex_zip_compiler/compiler.py:35, aiconnex_zip_compiler/tests/test_scout_integration.py:115
+**Architectural decisions:** Decoupled LLM intelligence from deterministic compiler execution so compiler runs 100% deterministically when `scout=None`; exposed 3 lightweight ScoutAgent observer methods; enabled self-healing fallback trigger on compilation exceptions via `PluginRegistry.reload_and_unfreeze()`.
+**Current system state:** Task 9 (Final Task) complete; all 45 pytest unit tests passing across `aiconnex_zip_compiler`; commit 41df527 created on `feature/agentic-scout-compiler` branch.
+---
+
+## Query 202 -- 2026-07-26 23:27
+**Input:** Execute final whole-branch review and generate execution walkthrough for AIConnex Compiler Architecture v2.0 completion.
+**Response summary:** Audited all 9 committed tasks on branch `feature/agentic-scout-compiler`. Ran full test suite verifying 45/45 unit tests pass (100% pass rate). Created walkthrough.md artifact summarizing all 9 task deliverables, commits, and architectural standards.
+**Files changed:** brain/walkthrough.md, .superpowers/sdd/progress.md
+**Architectural decisions:** Confirmed completion of v2.0 compiler remediation plan on feature/agentic-scout-compiler branch; verified zero-LLM deterministic fallback and 11-plugin catalog readiness.
+**Current system state:** AIConnex Compiler Architecture v2.0 is fully built, tested, committed, and ready for deployment.
+---
+
+
+
+
+
+
+
+
+
+
+
+## Query 203 -- 2026-07-26 23:33
+**Input:** Execute /karen whole-branch check on eature/agentic-scout-compiler to verify end-to-end functionality without shortcuts.
+**Response summary:** Performed independent end-to-end execution audit of the branch. Executed compiler test suite (45/45 passed), project regression suites (32/32 passed), standalone ingestion on real Dataset-TAS.zip (183 continuous daily records compiled across 6 workbooks), and unified compiler CLI ([SUCCESS] Compiled in 1.097s). Found zero critical/high defects and 2 minor deprecation/parsing warnings.
+**Files changed:** none
+**Architectural decisions:** Confirmed branch code is genuinely functional, robust against missing LLMs (scout=None), and ready for PR merge to main.
+**Current system state:** All v2.0 compiler remediations verified via real execution on eature/agentic-scout-compiler branch.
+---
+
+## Query 204 -- 2026-07-26 23:48
+**Input:** Execute /jenny-verify spec compliance audit and clean up previous non-required scout/compiler files.
+**Response summary:** Executed git cleanup removing 4 deprecated plan/note files from root (compiler changes.md, implementation_plan-scout.md, implementation_plan-plugin.md, implementation_plan-migration.md) and consolidating authoritative architecture docs in docs/AICONNEX_COMPILER_ARCHITECTURE_V2.md. Conducted independent specification verification confirming 100% compliance with 11-plugin catalog and 3-method ScoutAgent API. Identified 1 documentation maintenance gap (PLUGIN_MAPPING.md needs updating for 11 new plugins).
+**Files changed:** compiler changes.md, implementation_plan-migration.md, implementation_plan-plugin.md, implementation_plan-scout.md, docs/AICONNEX_COMPILER_ARCHITECTURE_V2.md
+**Architectural decisions:** Removed root-level plan clutter from previous iterations to preserve single source of truth in docs/ and iconnex_zip_compiler/.
+**Current system state:** Deprecated root files removed; 22 runtime plugins active; authoritative spec in docs/AICONNEX_COMPILER_ARCHITECTURE_V2.md.
+---
+
+## Query 205 -- 2026-07-26 23:51
+**Input:** Regenerate and update the plugin routing documentation table in PLUGIN_MAPPING.md to match the 22 active plugins and commit on the branch without merging.
+**Response summary:** Updated iconnex_zip_compiler/PLUGIN_MAPPING.md to document all 22 active runtime plugins across all 5 pipeline stages (Discovery, Parser, Assembler, Harvester, Normalizer), resolved Gap #1 documentation with mixed_archive_router, verified 45/45 unit tests pass, and committed changes to eature/agentic-scout-compiler.
+**Files changed:** aiconnex_zip_compiler/PLUGIN_MAPPING.md, context_log.md
+**Architectural decisions:** Synchronized deterministic routing documentation tables with live runtime registry state (22 active plugins) to prevent documentation drift.
+**Current system state:** Documentation sync complete; 22 plugins documented; committed on eature/agentic-scout-compiler branch; not merged to main per instructions.
+---

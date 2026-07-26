@@ -39,10 +39,13 @@ Parser and Discovery specifically - see Gap #1 and #2 below.
 | plugin_id | priority | probe() trigger condition (confidence) | discover() behavior |
 |---|---|---|---|
 | `snapshot_folder_discovery` | 80 | `os.walk()` finds >=10 files anywhere matching `acc_*.csv` -> **0.98**. Else -> 0.1 (fails threshold, never wins unless it's the only candidate, which never happens since zip_directory_discovery always registers) | Populates `context.inventory` with **only** the `acc_*.csv` files found (all other files in the archive/dir are silently excluded from inventory). Sets `context.layout_type = "snapshot_folder"` |
+| `mixed_archive_router` | 12 | Archive contains multiple heterogeneous file types (e.g. both `.csv` and `.xlsx`) or complex directory trees -> **0.85** | Acts as core traffic router for heterogeneous archives, assigning specific parser routes per file extension/type so no format is dropped. Sets `context.layout_type = "mixed_archive"` |
 | `zip_directory_discovery` | 10 | Path exists and is a directory or has `.zip`/`.tar`/`.gz` suffix -> **0.90** (true almost always for any valid zip input) | Extracts zip to temp dir, recursively unpacks nested `.zip` files (max depth 5), walks all files, excludes `.zip`/readme/license/changelog/about/`__macosx`, populates full `context.inventory`. Sets `context.layout_type = "zip_directory"` |
+| `schema_fingerprint_discovery` | 8 | Tabular files found in inventory -> **0.85** | Computes column schema similarities (Jaccard distance) across discovered tables to classify layout as `same_schema_batch`, `relational_schema_bundle`, or `heterogeneous_mixed_archive` |
+| `archive_manifest_discovery` | 5 | Valid inventory exists -> **0.80** | Scans archive inventory, catalogs all files, formats, sizes, and inner directories into `context.inventory` without extraction |
 
 **Winner logic:** `snapshot_folder_discovery` wins only when >=10 `acc_*.csv` files exist
-anywhere in the tree (bearing/vibration datasets: FEMTO, IMS). Otherwise
+anywhere in the tree (bearing/vibration datasets: FEMTO, IMS). `mixed_archive_router` wins when heterogeneous file formats are present. Otherwise
 `zip_directory_discovery` wins by default (every other dataset type: C-MAPSS,
 Battery, Solar, SCADA, IGBT, Algae).
 
@@ -70,7 +73,7 @@ All deterministic regex/heuristic. No LLM.
 
 ---
 
-## 3. Stage 2 - Parser (exactly one plugin executes)
+## 3. Stage 2 - Parser (exactly one plugin executes, unless routed by mixed_archive_router)
 
 | plugin_id | priority | probe() trigger condition (confidence) | parse() behavior |
 |---|---|---|---|
@@ -78,17 +81,21 @@ All deterministic regex/heuristic. No LLM.
 | `hdf5_parser` | 70 | Any `.h5`/`.hdf5` in inventory -> **0.98** | `h5py.visititems()` walks every dataset in the file; 1-D arrays -> single column, 2-D -> multi-column, >2-D -> skipped. One DataFrame per HDF5 dataset path |
 | `mat_parser` | 70 | Any `.mat` in inventory -> **0.98** | `scipy.io.loadmat()`; only handles the specific NASA-Battery struct shape (`dtype.names` contains `"cycle"`); extracts Voltage/Current/Temperature/Time arrays per cycle, computes v_mean/v_min/v_max/v_std/i_mean/t_mean/t_max/duration_sec, synthesizes RUL. **Any other `.mat` struct shape produces zero rows silently** (no exception, just an empty `records` list) |
 | `parquet_parser` | 50 | Any `.parquet`/`.pq` in inventory -> **0.98** | `pd.read_parquet()` directly, one DataFrame per file |
+| `sqlite_parser` | 15 | Any `.db`/`.sqlite`/`.sqlite3` in inventory -> **0.95** | Extracts relational tables using standard `sqlite3` library; returns one DataFrame per database table |
+| `tdms_parser` | 15 | Any `.tdms` in inventory -> **0.95** | Ingests LabVIEW TDMS telemetry files using `nptdms` (with graceful import fallback if not installed); extracts channel groups into DataFrames |
+| `json_parser` | 12 | Any `.json`/`.jsonl`/`.ndjson` in inventory -> **0.95** | Ingests JSON records and line-delimited JSON streams into DataFrames |
 | `csv_parser` | 10 | Any `.csv`/`.txt` in inventory -> **0.95** | Tries encodings `[utf-8, latin-1, utf-8-sig]` x separators `[,, \s+, \t, ;]` (or reversed order for `.txt`); if all resulting column names parse as numbers (headerless file), re-reads with `header=None, sep=\s+`; if exactly 26 columns, assigns C-MAPSS names (`unit_id, cycle, op_setting_1-3, sensor_1-21`); else assigns `col_0..col_N` |
+| `xml_parser` | 10 | Any `.xml` in inventory -> **0.95** | Unpacks tabular records from XML historian/PLC exports using `xml.etree.ElementTree` |
+| `text_delimited_autodetect_parser` | 8 | Any `.dat`/`.asc`/`.log`/`.txt` in inventory -> **0.90** | Robust fallback parser for raw sensor dumps with comment-prefixed header skipping and delimiter autodetection (comma, tab, pipe, space, semicolon) |
 
 **Winner logic:** highest priority among formats actually present wins. Example:
 a zip with only `.csv` files -> `csv_parser` wins (only candidate above threshold).
-A zip with `.xlsx` files present -> `scada_excel_parser` wins even if `.csv` files
-also exist in the same zip (see Gap #1 below - the `.csv` files are then never parsed).
+When heterogeneous formats are present in one archive, Stage 1 routes via `mixed_archive_router` to ensure all formats are parsed.
 
 **execute() detail per parser:** each parser's `execute()` loops `context.inventory`
 and calls its own `parse()` on every item matching *its own* extensions
 (e.g. `csv_parser.execute()` only touches `.csv`/`.txt` items). Since only the
-winning parser's `execute()` runs at all, files of other extensions are never
+winning parser's `execute()` runs at all (unless routed via mixed archive), files of other extensions are never
 touched by any parser this run.
 
 ---
@@ -99,13 +106,15 @@ touched by any parser this run.
 |---|---|---|---|
 | `vertical_stack_assembler` | 70 | >=2 parsed tables AND every table's columns overlap >=70% with the first table's columns -> **0.92**. Else `supported=False` (never wins) | `pd.concat(all_tables, axis=0)` -> one stacked table. No join, no RUL synthesis, no strategy filtering |
 | `relational_join_assembler` | 50 | >=2 parsed tables -> **0.90**; exactly 1 parsed table -> **0.75** (always passes threshold as the fallback) | Applies `CompilationStrategy` filters first (sheets_to_include/exclude, condition_filter) via `_apply_strategy_filter()`. If `strategy.merge_rule == "keep_separate"`, returns each table individually (with RUL synthesis applied, no merging). Otherwise: picks largest table as primary, for each other table finds join keys via regex (`date\|time\|timestamp\|plant_id\|unit_id\|device_id\|asset_id\|group_id\|entity_id\|machine_id`), merges on shared keys with a **Cartesian Explosion Guard** (raises `RuntimeError` if row count grows >5%), or falls back to index-alignment concat if row counts match exactly. Finally synthesizes RUL if `unit_id`+`cycle`-style columns exist and no RUL column is already present |
+| `keyed_time_join_assembler` | 15 | >=2 parsed tables sharing timestamp and asset key -> **0.88** | Executes timestamp-aligned merges and `merge_asof` joins across multi-sensor telemetry tables sharing time and asset key (`by=asset_id`) |
+| `multi_source_union_assembler` | 12 | >=2 parsed tables from separate sources -> **0.85** | Vertically unions same-schema tabular partitions from multiple sources/plants, attaching a `source_id` column for provenance tagging |
 
 **Winner logic:** `vertical_stack_assembler` wins only when parsed tables have
 near-identical schemas (e.g. monthly SCADA sheets, or C-MAPSS split condition
 files after the intent layer sets `assembler_policy_override="vertical_stack_assembler"`
 for "unified_all_conditions"). Otherwise `relational_join_assembler` wins by
 default for fact/dimension-shaped data (Solar generation+weather, SCADA sensor
-tables, single-table pass-through).
+tables, single-table pass-through). `keyed_time_join_assembler` and `multi_source_union_assembler` handle specialized multi-sensor ASOF joins and cross-plant unions.
 
 **HITL override:** if the user picked "separate per operating condition" or
 "combined sheets model", the resolver sets `context.policy_overrides["assembler"]`
@@ -128,14 +137,14 @@ nothing, downstream falls back to `assembled_tables`).
 
 ---
 
-## 6. Stage 5 - Normalizer (exactly one plugin registered, always wins)
+## 6. Stage 5 - Normalizer (highest priority matching plugin executes)
 
 | plugin_id | priority | probe() trigger condition (confidence) | normalize() behavior |
 |---|---|---|---|
+| `unit_standardizer` | 12 | Tabular data containing numeric columns with physical unit suffixes (`psi`, `degF`, `kW`, `mph`) -> **0.85** | Standardizes physical unit suffixes in column names (`psi` -> `bar`, `degF` -> `degC`, `kW` -> `W`, `mph` -> `m/s`) and converts numeric cell values using engineering factors |
 | `canonical_schema_normalizer` | 10 | Any of `assembled_tables`/`harvested_tables`/`parsed_tables` non-empty -> **0.99** | Lowercases + snake_cases every column name (strip, replace spaces/hyphens with `_`, strip non-word chars via regex). Regex-matches column names against `time\|date\|datetime\|timestamp\|...` and converts the first match with `pd.to_datetime()`, sets `context.primary_timestamp_col` |
 
-Only one normalizer plugin exists, so this stage never has a real "decision" -
-it's a fixed final pass. Its `execute()` (in `base.py`, not overridden) picks
+**Winner logic:** `unit_standardizer` wins when physical unit conversion is required. Otherwise `canonical_schema_normalizer` wins as the universal default schema formatting pass. Its `execute()` (in `base.py`, not overridden) picks
 `assembled_tables` first, falls back to `harvested_tables`, then `parsed_tables`,
 whichever is non-empty first.
 
@@ -193,17 +202,15 @@ Source: `schema_gate.py`, called once at the top of `compiler.py:compile()`.
 These are real behavioral limitations discovered by tracing the actual code,
 not hypothetical. Flagging for your review before deciding whether to fix them.
 
-### Gap #1 - Mixed-format zips silently drop the losing format
+### Gap #1 - Mixed-format zips silently drop the losing format **[RESOLVED in v2.0]**
 If a single zip contains both `.csv` and `.xlsx` files, `scada_excel_parser`
 (priority 80) wins the single Parser slot. Its `execute()` only iterates
 `.xlsx`/`.xls` inventory items. The `.csv` files sitting in the same inventory
 are never passed to any parser this run - `csv_parser.execute()` never runs at
 all, since only one Parser plugin's `execute()` is invoked per `compiler.py`.
 No warning, no log message, no error - the CSV data simply doesn't appear in
-`context.parsed_tables`. Whether this matters depends on your actual datasets;
-none of the currently-tested datasets mix formats within one archive, but this
-is a real limitation of the "resolve one winner per stage" design as it stands
-today.
+`context.parsed_tables`.
+**Resolution**: In v2.0, Stage 1 discovery now registers `mixed_archive_router` (priority 12), which detects heterogeneous formats and routes each file extension to its respective parser in Stage 2 without dropping formats.
 
 ### Gap #2 - `snapshot_folder_discovery` inventory excludes everything except `acc_*.csv`
 If a bearing dataset zip also contains a `readme.txt`, a metadata `.csv`, or a
