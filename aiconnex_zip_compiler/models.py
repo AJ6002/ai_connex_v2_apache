@@ -19,6 +19,7 @@ class SchemaMap:
     detected_timestamp_formats: Dict[str, str] = field(default_factory=dict)
     canonical_timestamp_col: Optional[str] = None
     canonical_group_col: Optional[str] = None
+    warnings: List[str] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -27,6 +28,7 @@ class SchemaMap:
             "detected_timestamp_formats": self.detected_timestamp_formats,
             "canonical_timestamp_col": self.canonical_timestamp_col,
             "canonical_group_col": self.canonical_group_col,
+            "warnings": self.warnings,
         }
 
 

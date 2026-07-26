@@ -177,6 +177,8 @@ class UnifiedCompiler:
             schema_map = SchemaMap()
             if context.primary_timestamp_col:
                 schema_map.canonical_timestamp_col = context.primary_timestamp_col
+            if getattr(context, "schema_warnings", None):
+                schema_map.warnings = list(context.schema_warnings)
 
             audits = [
                 JoinAudit(

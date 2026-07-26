@@ -37,23 +37,48 @@ class SignalSummaryHarvesterPlugin(BaseFeatureHarvesterPlugin):
         return MatchResult(supported=False, confidence=0.0, reasons=["Not a snapshot folder layout"])
 
     def harvest(self, tables: Dict[str, pd.DataFrame], context: PipelineContext) -> Dict[str, pd.DataFrame]:
+        input_tables = tables or getattr(context, "parsed_tables", {})
         snapshot_items = [item for item in context.inventory if item.detected_role == "snapshot"]
-        if not snapshot_items:
+
+        feature_sources: List[pd.DataFrame | Path] = []
+
+        if snapshot_items:
+            for item in snapshot_items:
+                # Check for in-memory table match first
+                df = (
+                    input_tables.get(item.relative_path)
+                    or input_tables.get(item.filepath.name)
+                    or input_tables.get(str(item.filepath))
+                )
+                if df is not None:
+                    feature_sources.append(df)
+                else:
+                    feature_sources.append(item.filepath)
+        elif input_tables:
+            # If no inventory snapshot items present, consume provided in-memory tables
+            feature_sources = list(input_tables.values())
+
+        if not feature_sources:
             return {}
 
         feature_rows: List[Dict[str, float]] = []
-        for idx, item in enumerate(snapshot_items):
-            stats = self._extract_snapshot_features(item.filepath)
+        total_count = len(feature_sources)
+        for idx, source in enumerate(feature_sources):
+            stats = self._extract_snapshot_features(source)
             stats["snapshot_index"] = idx + 1
-            stats["rul"] = float(len(snapshot_items) - idx - 1)  # Synthetic RUL target
+            stats["rul"] = float(total_count - idx - 1)  # Synthetic RUL target
             feature_rows.append(stats)
 
         harvested_df = pd.DataFrame(feature_rows)
         return {"bearing_snapshot_features": harvested_df}
 
-    def _extract_snapshot_features(self, filepath: Path) -> Dict[str, float]:
+    def _extract_snapshot_features(self, target: pd.DataFrame | Path | str) -> Dict[str, float]:
         try:
-            df = pd.read_csv(filepath, header=None)
+            if isinstance(target, pd.DataFrame):
+                df = target
+            else:
+                df = pd.read_csv(target, header=None)
+
             if df.shape[1] >= 6:
                 h_acc = df.iloc[:, 4].values
                 v_acc = df.iloc[:, 5].values
@@ -92,3 +117,4 @@ class SignalSummaryHarvesterPlugin(BaseFeatureHarvesterPlugin):
             return out
         except Exception:
             return {}
+

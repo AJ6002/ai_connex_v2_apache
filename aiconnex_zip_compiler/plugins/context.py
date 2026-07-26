@@ -61,6 +61,7 @@ class PipelineContext:
     active_plugins: Dict[str, str] = field(default_factory=dict)  # plugin_id -> version
     audits: List[Dict[str, Any]] = field(default_factory=list)
     errors: List[str] = field(default_factory=list)
+    schema_warnings: List[str] = field(default_factory=list)
 
 
 @dataclass(frozen=True)

@@ -23,6 +23,17 @@ class VerticalStackAssemblerPlugin(BaseAssemblerPlugin):
     priority = 70  # Higher priority than relational join when schemas match
 
     def probe(self, context: PipelineContext) -> MatchResult:
+        if context.strategy:
+            merge_rule = getattr(context.strategy, "merge_rule", None) or (
+                context.strategy.get("merge_rule") if isinstance(context.strategy, dict) else None
+            )
+            if merge_rule == "keep_separate":
+                return MatchResult(
+                    supported=False,
+                    confidence=0.0,
+                    reasons=["Compilation strategy explicitly specifies merge_rule='keep_separate'"],
+                )
+
         tables = list(context.parsed_tables.values())
         if len(tables) >= 2:
             # Check if column shapes match across tables
@@ -37,9 +48,17 @@ class VerticalStackAssemblerPlugin(BaseAssemblerPlugin):
         return MatchResult(supported=False, confidence=0.0, reasons=["Tables do not share matching column schemas for vertical stacking"])
 
     def assemble(self, parsed_tables: Dict[str, pd.DataFrame], context: PipelineContext) -> Dict[str, pd.DataFrame]:
+        if context.strategy:
+            merge_rule = getattr(context.strategy, "merge_rule", None) or (
+                context.strategy.get("merge_rule") if isinstance(context.strategy, dict) else None
+            )
+            if merge_rule == "keep_separate":
+                raise ValueError("Vertical stacking assembly is incompatible with strategy merge_rule='keep_separate'")
+
         valid_dfs = [df for df in parsed_tables.values() if not df.empty]
         if not valid_dfs:
             return {}
 
         stacked_df = pd.concat(valid_dfs, ignore_index=True, axis=0)
         return {"stacked_dataset": stacked_df}
+

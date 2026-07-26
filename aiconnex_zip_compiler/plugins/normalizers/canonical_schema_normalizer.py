@@ -46,12 +46,53 @@ class CanonicalSchemaNormalizerPlugin(BaseSchemaNormalizerPlugin):
         df_out = df.copy()
 
         # Clean column names (strip whitespace, sanitize special chars, lowercase)
-        cleaned_cols = []
-        for col in df_out.columns:
+        raw_cols = list(df_out.columns)
+        base_cols = []
+        for col in raw_cols:
             c_str = str(col).strip().replace(" ", "_").replace("-", "_")
             c_str = re.sub(r"[^\w\.]", "", c_str).lower()
-            cleaned_cols.append(c_str)
-        df_out.columns = cleaned_cols
+            base_cols.append(c_str)
+
+        # Count frequencies of base normalized names to detect collisions
+        base_counts: Dict[str, int] = {}
+        for b in base_cols:
+            base_counts[b] = base_counts.get(b, 0) + 1
+
+        used_counts: Dict[str, int] = {}
+        seen_final = set()
+        final_cols: List[str] = []
+
+        for raw_col, base in zip(raw_cols, base_cols):
+            if base_counts[base] > 1:
+                used_counts[base] = used_counts.get(base, 0) + 1
+                candidate = f"{base}_{used_counts[base]}"
+                warning_msg = (
+                    f"Column collision detected for raw header '{raw_col}' "
+                    f"mapping to duplicate base '{base}'. Suffix deduplicated to '{candidate}'."
+                )
+                if hasattr(context, "schema_warnings"):
+                    context.schema_warnings.append(warning_msg)
+                context.audits.append({"type": "schema_warning", "message": warning_msg})
+            else:
+                candidate = base
+
+            counter = 1
+            unique_candidate = candidate
+            while unique_candidate in seen_final:
+                unique_candidate = f"{candidate}_{counter}"
+                counter += 1
+                warning_msg = (
+                    f"Column collision guard triggered for '{raw_col}'. Renamed to '{unique_candidate}'."
+                )
+                if hasattr(context, "schema_warnings"):
+                    context.schema_warnings.append(warning_msg)
+                context.audits.append({"type": "schema_warning", "message": warning_msg})
+
+            seen_final.add(unique_candidate)
+            final_cols.append(unique_candidate)
+
+        df_out.columns = final_cols
+
 
         # Standardize timestamp column if present
         for col in df_out.columns:
