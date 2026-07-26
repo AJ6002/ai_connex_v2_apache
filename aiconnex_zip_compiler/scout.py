@@ -13,13 +13,18 @@ from __future__ import annotations
 
 import json
 import logging
+import shutil
+import tempfile
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+import pandas as pd
+
 from .compiler import UnifiedCompiler, CompileResult
 from .reporter import classify_compilation_failure, CompilationFailureReport
+from .intelligence.models import IntelligenceReport, ProblemHypothesis
 
 logger = logging.getLogger(__name__)
 
@@ -42,18 +47,111 @@ class ScoutAgent:
     """
     Scout Agent (Layer 3): Plugin-aware self-improving compiler observer.
 
-    Follows the build -> test -> approve -> rerun cycle:
-      1. Observe compilation failure
-      2. Classify gap -> determine target plugin stage
-      3. Generate new plugin class via LLM (patch_proposer.py)
-      4. Validate plugin in Docker sandbox
-      5. On PASS -> promote plugin to plugins/ directory
-      6. Trigger new compiler run with updated PluginRegistry
+    Exposes 3 lightweight methods:
+      1. inspect(inventory, readme_text) -> IntelligenceReport
+      2. advise_strategy(tables, inventory) -> str
+      3. self_heal(error_traceback, sample_bytes) -> bool
     """
 
     def __init__(self, log_path: Optional[Path] = None):
         self.log_path = log_path or Path("workspace_data/compiler_evolution_log.json")
         self.log_path.parent.mkdir(parents=True, exist_ok=True)
+
+    def inspect(self, inventory: Any, readme_text: Optional[str] = None) -> IntelligenceReport:
+        """
+        Inspect dataset inventory and optional readme_text to produce an IntelligenceReport
+        mapping column semantics, file structure, and metadata.
+        """
+        archive_name = "archive"
+        if isinstance(inventory, (str, Path)):
+            p = Path(inventory)
+            archive_name = p.name
+            try:
+                from .intelligence import IntelligenceOrchestrator
+                orch = IntelligenceOrchestrator()
+                if p.exists():
+                    temp_dir = Path(tempfile.mkdtemp(prefix="scout_inspect_"))
+                    try:
+                        from .plugins import PluginRegistry
+                        reg = PluginRegistry.get_instance()
+                        orch.run_pre_parse(target_path=p, temp_dir=temp_dir, registry=reg)
+                        return orch.report
+                    finally:
+                        shutil.rmtree(temp_dir, ignore_errors=True)
+            except Exception as e:
+                logger.warning(f"[ScoutAgent.inspect] IntelligenceOrchestrator pre-parse error: {e}")
+        elif isinstance(inventory, list) and len(inventory) > 0:
+            first_item = inventory[0]
+            if hasattr(first_item, "filepath"):
+                archive_name = Path(first_item.filepath).name
+            elif isinstance(first_item, (str, Path)):
+                archive_name = Path(first_item).name
+
+        report = IntelligenceReport(
+            archive_name=archive_name,
+            execution_mode="scout_assisted",
+        )
+        if readme_text:
+            report.problem_hypothesis = ProblemHypothesis(
+                domain="general_engineering",
+                dataset_purpose=readme_text,
+            )
+        return report
+
+    def advise_strategy(self, tables: Any, inventory: Optional[Any] = None) -> str:
+        """
+        Recommends compilation strategy (e.g. 'vertical_stack', 'per_partition_batch', 'key_join').
+        """
+        if isinstance(tables, dict) and len(tables) > 1:
+            dfs = list(tables.values())
+            col_sets = [set(df.columns) for df in dfs if isinstance(df, pd.DataFrame)]
+            if len(col_sets) > 1 and all(s == col_sets[0] for s in col_sets[1:]):
+                return "vertical_stack"
+
+            has_time = all(
+                any("date" in str(c).lower() or "time" in str(c).lower() for c in s)
+                for s in col_sets
+            )
+            if has_time:
+                return "key_join"
+
+        return "vertical_stack"
+
+    def self_heal(
+        self,
+        error_traceback: str,
+        sample_bytes: Optional[bytes] = None,
+        zip_path: Optional[Path] = None,
+    ) -> bool:
+        """
+        Generates plugin patch, promotes, and invokes PluginRegistry.get_instance().reload_and_unfreeze().
+        """
+        logger.info(f"[ScoutAgent.self_heal] Self-healing triggered for traceback:\n{error_traceback[:200]}...")
+        try:
+            from .plugins import PluginRegistry
+            from .reporter import classify_compilation_failure
+
+            target_zip = zip_path or Path("workspace_data/unknown_failure.zip")
+            out_dir = Path("workspace_data/unknown_out")
+            exc = Exception(error_traceback.split("\n")[-1] if error_traceback else "Compilation Failure")
+
+            report = classify_compilation_failure(target_zip, out_dir, exc)
+            promoted = self._attempt_patch_and_promote(report, target_zip)
+
+            registry = PluginRegistry.get_instance()
+            registry.reload_and_unfreeze()
+
+            if promoted:
+                logger.info(f"[ScoutAgent.self_heal] Successfully promoted patch and reloaded registry: {promoted}")
+                return True
+            else:
+                logger.warning("[ScoutAgent.self_heal] Self-heal attempt did not produce a promoted patch.")
+                return False
+        except Exception as e:
+            logger.warning(f"[ScoutAgent.self_heal] Self-heal execution error: {e}")
+            from .plugins import PluginRegistry
+            PluginRegistry.get_instance().reload_and_unfreeze()
+            return False
 
     def observe_and_compile(
         self,

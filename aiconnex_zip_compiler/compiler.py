@@ -79,6 +79,7 @@ class UnifiedCompiler:
         strategy_override: Optional[str] = None,
         batch: bool = False,
         enable_intelligence: bool = True,
+        scout: Optional[Any] = None,
     ) -> None:
         self.zip_path = Path(zip_path).resolve()
         self.output_dir = Path(output_dir).resolve()
@@ -86,6 +87,7 @@ class UnifiedCompiler:
         self.strategy_override = strategy_override
         self.batch = batch
         self.enable_intelligence = enable_intelligence
+        self.scout = scout
         self._intelligence = None  # IntelligenceOrchestrator, set during compile()
 
     def compile(self) -> CompileResult:
@@ -94,12 +96,28 @@ class UnifiedCompiler:
         temp_dir = Path(tempfile.mkdtemp(prefix="aic_compiler_"))
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
+        # -- Scout Inspection (if ScoutAgent provided) ---------------------------
+        if self.scout is not None:
+            try:
+                logger.info("[UnifiedCompiler] ScoutAgent present - running scout.inspect()")
+                self.scout.inspect(inventory=self.zip_path)
+            except Exception as e:
+                logger.warning(f"[UnifiedCompiler] scout.inspect() call failed: {e}")
+
         # -- Pre-Check: Entry Schema Gate ----------------------------------------
         from .schema_gate import SchemaGate
         gate = SchemaGate(self.zip_path)
         decision = gate.evaluate()
         if not decision.is_valid:
             logger.error(f"[SchemaGate] Rejected: {decision.gate_message}")
+            if self.scout is not None:
+                try:
+                    self.scout.self_heal(
+                        error_traceback=f"SchemaGate rejected input: {decision.gate_message}",
+                        zip_path=self.zip_path,
+                    )
+                except Exception as ex:
+                    logger.warning(f"[UnifiedCompiler] scout.self_heal() on SchemaGate rejection failed: {ex}")
             return CompileResult(
                 input_zip=str(self.zip_path),
                 output_dir=str(self.output_dir),
@@ -137,6 +155,19 @@ class UnifiedCompiler:
             parser_plugin = registry.resolve("parser", context)
             context = parser_plugin.execute(context)
             context.active_plugins["parser"] = f"{parser_plugin.plugin_id}@{parser_plugin.version}"
+
+            # -- Scout Strategy Advice (if ScoutAgent provided) ---------------
+            if self.scout is not None and context.parsed_tables:
+                try:
+                    scout_strat = self.scout.advise_strategy(
+                        tables=context.parsed_tables,
+                        inventory=context.inventory,
+                    )
+                    if scout_strat and self.strategy_override is None:
+                        logger.info(f"[UnifiedCompiler] Scout advised strategy: {scout_strat}")
+                        self.strategy_override = scout_strat
+                except Exception as e:
+                    logger.warning(f"[UnifiedCompiler] scout.advise_strategy() failed: {e}")
 
             # -- Intelligence Stages 4-7 (stats, roles, semantics, problem) ---
             # Needs real DataFrames, so it runs after parsing but before the
@@ -229,6 +260,16 @@ class UnifiedCompiler:
         except Exception as e:
             duration = round(time.time() - t0, 3)
             logger.error(f"[UnifiedCompiler] Ingestion failure: {e}")
+            
+            if self.scout is not None:
+                import traceback
+                tb_str = traceback.format_exc()
+                try:
+                    logger.warning("[UnifiedCompiler] Ingestion failed - triggering scout.self_heal()")
+                    self.scout.self_heal(error_traceback=tb_str, zip_path=self.zip_path)
+                except Exception as ex:
+                    logger.warning(f"[UnifiedCompiler] scout.self_heal() call failed: {ex}")
+
             return CompileResult(
                 input_zip=str(self.zip_path),
                 output_dir=str(self.output_dir),
