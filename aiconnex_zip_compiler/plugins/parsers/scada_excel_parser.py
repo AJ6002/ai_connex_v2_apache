@@ -7,13 +7,92 @@ Stage 2 Parser plugin that handles multi-header, multi-sheet SCADA Excel workboo
 
 from __future__ import annotations
 
+import datetime
 from pathlib import Path
 from typing import Dict, List
+import numpy as np
 import pandas as pd
 
 from ..base import BaseParserPlugin, MatchResult
 from ..context import PipelineContext
 from ..registry import register_plugin
+
+
+def _cell_type_class(val) -> str:
+    """Classifies a cell value into a high-level structural type class."""
+    if pd.isna(val) or val is None:
+        return "null"
+    if isinstance(val, (int, float, complex, np.number)):
+        return "number"
+    if isinstance(val, (pd.Timestamp, datetime.datetime, datetime.date)):
+        return "date"
+    if isinstance(val, bool):
+        return "bool"
+    
+    s = str(val).strip()
+    if not s:
+        return "null"
+    
+    # Check if string date
+    if len(s) >= 8 and any(sep in s for sep in ["-", "/", ":", "T"]):
+        try:
+            pd.to_datetime(s)
+            return "date"
+        except (ValueError, TypeError):
+            pass
+
+    return "text"
+
+
+def _is_data_row_start(df_raw: pd.DataFrame, idx: int) -> bool:
+    """
+    Determines if row `idx` is the start of uniform data rows by evaluating structural
+    type consistency across columns between row `idx` and subsequent rows.
+    Replaces naive digit heuristics (Gap 9 fix).
+    """
+    total_rows = len(df_raw)
+    if idx >= total_rows:
+        return False
+
+    row_curr_types = [_cell_type_class(v) for v in df_raw.iloc[idx]]
+    non_null_curr = [t for t in row_curr_types if t != "null"]
+    if not non_null_curr:
+        return False
+
+    # Ratio of data cells (number, date, bool) in current row
+    data_type_count = sum(1 for t in non_null_curr if t in ("number", "date", "bool"))
+    curr_data_ratio = data_type_count / len(non_null_curr)
+
+    # If this is the last row, rely on whether it has data types
+    if idx == total_rows - 1:
+        return curr_data_ratio >= 0.5
+
+    # Check structural type consistency with next row
+    row_next_types = [_cell_type_class(v) for v in df_raw.iloc[idx + 1]]
+    
+    matches = 0
+    compared = 0
+    for t1, t2 in zip(row_curr_types, row_next_types):
+        if t1 != "null" and t2 != "null":
+            compared += 1
+            if t1 == t2:
+                matches += 1
+
+    consistency_ratio = (matches / compared) if compared > 0 else 0.0
+
+    non_null_next = [t for t in row_next_types if t != "null"]
+    next_data_ratio = (sum(1 for t in non_null_next if t in ("number", "date", "bool")) / len(non_null_next)) if non_null_next else 0.0
+
+    # A row is a data row start if:
+    # 1. It contains data types AND exhibits high structural type consistency with the next row (>= 70%)
+    # 2. OR it has predominant data types (>= 50%) and the next row also has predominant data types (>= 40%)
+    if curr_data_ratio > 0.0 and consistency_ratio >= 0.70 and (curr_data_ratio >= 0.3 or next_data_ratio >= 0.3):
+        return True
+
+    if curr_data_ratio >= 0.5 and next_data_ratio >= 0.4:
+        return True
+
+    return False
 
 
 @register_plugin
@@ -43,14 +122,15 @@ class ScadaExcelParserPlugin(BaseParserPlugin):
                 if df_raw.empty or df_raw.shape[0] < 2:
                     continue
 
-                # Multi-level header detection
+                # Multi-level header detection using structural type-consistency row scanning
                 header_rows = []
                 data_start_idx = 0
-                for idx, row in df_raw.iterrows():
+                for idx in range(len(df_raw)):
+                    row = df_raw.iloc[idx]
                     non_null_str = [str(val).strip() for val in row.dropna() if str(val).strip() != ""]
                     if not non_null_str:
                         continue
-                    if any(c.replace(".", "").isdigit() for c in non_null_str):
+                    if _is_data_row_start(df_raw, idx):
                         data_start_idx = idx
                         break
                     header_rows.append(idx)
