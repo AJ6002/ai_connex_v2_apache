@@ -432,6 +432,7 @@ class IntelligenceReport:
     stage_statuses: List[StageStatus] = field(default_factory=list)
     llm_available: bool = True
     degraded: bool = False  # True if any LLM stage failed and fallback was used
+    execution_mode: str = "llm_enhanced"  # "llm_enhanced" or "deterministic_headless"
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -439,6 +440,7 @@ class IntelligenceReport:
             "generated_at": self.generated_at,
             "llm_available": self.llm_available,
             "degraded": self.degraded,
+            "execution_mode": self.execution_mode,
             "archive_tree": self.archive_tree.to_dict() if self.archive_tree else None,
             "fingerprints": [f.to_dict() for f in self.fingerprints],
             "parser_decisions": [p.to_dict() for p in self.parser_decisions],

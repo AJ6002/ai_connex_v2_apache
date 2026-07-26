@@ -95,9 +95,11 @@ class IntelligenceOrchestrator:
     ) -> IntelligenceReport:
         """Run archive exploration, format detection, and parser selection."""
         target_path = Path(target_path)
+        mode = "llm_enhanced" if self.llm is not None else "deterministic_headless"
         self.report = IntelligenceReport(
             archive_name=target_path.name,
             llm_available=self.llm is not None,
+            execution_mode=mode,
         )
 
         # Stage 1: Archive Exploration
@@ -152,8 +154,11 @@ class IntelligenceOrchestrator:
     ) -> IntelligenceReport:
         """Run metadata extraction, schema discovery, semantics, problem discovery."""
         if self.report is None:
+            mode = "llm_enhanced" if self.llm is not None else "deterministic_headless"
             self.report = IntelligenceReport(
-                archive_name="unknown", llm_available=self.llm is not None
+                archive_name="unknown",
+                llm_available=self.llm is not None,
+                execution_mode=mode,
             )
 
         # Stage 4: Metadata Extraction
@@ -179,22 +184,7 @@ class IntelligenceOrchestrator:
                 f"{len(relationships)} relationships"
             )
 
-        # Stage 6: Semantic Analysis
-        with self._stage("semantic_analysis") as status:
-            domain_hint = None
-            if self.report.problem_hypothesis:
-                domain_hint = self.report.problem_hypothesis.domain
-
-            self.report.semantic_labels = self._semantic_analyzer.analyze(
-                self.report.table_metadata,
-                self.report.schema_roles,
-                domain_hint=domain_hint,
-            )
-            status.used_llm = self._semantic_analyzer.used_llm
-            status.llm_model = self._semantic_analyzer.llm_model_used
-            logger.info(f"[Intelligence] Stage 6: {len(self.report.semantic_labels)} columns labelled")
-
-        # Stage 7: Problem Discovery
+        # Stage 7 (Pass 1): Problem Discovery - establish domain & target hypothesis first
         with self._stage("problem_discovery") as status:
             self.report.problem_hypothesis = self._problem_discoverer.discover(
                 self.report.archive_tree,
@@ -209,10 +199,25 @@ class IntelligenceOrchestrator:
             if self.report.problem_hypothesis:
                 hypothesis = self.report.problem_hypothesis
                 logger.info(
-                    f"[Intelligence] Stage 7: domain='{hypothesis.domain}', "
+                    f"[Intelligence] Stage 7 (Pass 1): domain='{hypothesis.domain}', "
                     f"{len(hypothesis.detected_partitions)} partitions, "
                     f"{len(hypothesis.intent_options)} options generated"
                 )
+
+        # Stage 6 (Pass 2): Semantic Analysis - consume established domain context
+        with self._stage("semantic_analysis") as status:
+            domain_hint = None
+            if self.report.problem_hypothesis:
+                domain_hint = self.report.problem_hypothesis.domain
+
+            self.report.semantic_labels = self._semantic_analyzer.analyze(
+                self.report.table_metadata,
+                self.report.schema_roles,
+                domain_hint=domain_hint,
+            )
+            status.used_llm = self._semantic_analyzer.used_llm
+            status.llm_model = self._semantic_analyzer.llm_model_used
+            logger.info(f"[Intelligence] Stage 6 (Pass 2): {len(self.report.semantic_labels)} columns labelled")
 
         return self.report
 
@@ -272,9 +277,6 @@ class _StageRecorder:
 
         if self.orchestrator.report is not None:
             self.orchestrator.report.stage_statuses.append(self.status)
-            # A stage that should have used the LLM but did not means degraded output
-            if self.orchestrator.llm is None:
-                self.orchestrator.report.degraded = True
 
         # Suppress the exception - intelligence failures must never abort compilation
         return True
