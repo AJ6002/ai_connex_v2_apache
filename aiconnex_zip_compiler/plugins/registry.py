@@ -199,6 +199,16 @@ class PluginRegistry:
             resolved_plugins=resolved,
         )
 
+    def unfreeze(self) -> None:
+        """Unfreeze the registry to allow new plugin promotions."""
+        self._is_frozen = False
+        logger.info("[PluginRegistry] Unfrozen for dynamic plugin registration.")
+
+    def reload_and_unfreeze(self, plugins_dir: Optional[Path] = None) -> None:
+        """Unfreeze registry and re-run auto-discovery to pick up newly promoted plugins."""
+        self.unfreeze()
+        self.auto_discover(plugins_dir=plugins_dir)
+
 
 def register_plugin(plugin_cls: Type[BasePlugin]) -> Type[BasePlugin]:
     """Decorator to register a plugin class into the global PluginRegistry."""
