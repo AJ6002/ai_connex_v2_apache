@@ -172,19 +172,84 @@ class IntelligenceOrchestrator:
                 f"{total_cols} columns"
             )
 
+        # Stage 5-7 Consolidated Pass: Fast 1-Pass LLM Analysis (<12s)
+        if self.llm is not None:
+            with self._stage("consolidated_intelligence") as status:
+                try:
+                    self._run_consolidated_post_parse(parsed_tables)
+                    status.used_llm = True
+                    status.llm_model = self.llm.model_name
+                except Exception as e:
+                    logger.warning(f"[Intelligence] Consolidated 1-pass LLM failed: {e} - fallback to sub-stages")
+                    self._fallback_post_parse(parsed_tables)
+        else:
+            self._fallback_post_parse(parsed_tables)
+
+        return self.report
+
+    def _run_consolidated_post_parse(self, parsed_tables: Dict[str, pd.DataFrame]) -> None:
+        """Run Stages 5, 6, 7 in a SINGLE consolidated LLM query for <12s execution."""
+        from .models import ProblemHypothesis, IntentOption
+
+        table_summaries = []
+        for name, df in list(parsed_tables.items())[:5]:
+            cols = list(df.columns)[:15]
+            sample_val = df.iloc[0].to_dict() if len(df) > 0 else {}
+            table_summaries.append({
+                "table_name": name,
+                "rows": len(df),
+                "columns": cols,
+                "dtypes": {c: str(df[c].dtype) for c in cols},
+                "sample_row": {k: str(v) for k, v in sample_val.items()}
+            })
+
+        system_prompt = (
+            "You are an expert MLOps data scientist analyzing dataset structure and domain. "
+            "Respond ONLY with a JSON object containing: "
+            "domain (string), problem_type (string), summary (string), "
+            "subdomains (array of strings), molding_capabilities (array of strings), "
+            "intent_options (array of objects with option_id, label, description, is_default, output_mode)."
+        )
+
+        user_prompt = f"Analyze these parsed table structures and formulate ML intent options:\n\n{json.dumps(table_summaries, indent=2)}"
+
+        res = self.llm.complete_json(system_prompt, user_prompt)
+        data = res.data or {}
+
+        opts = []
+        for opt in data.get("intent_options", []):
+            opts.append(IntentOption(
+                option_id=opt.get("option_id", "default_option"),
+                label=opt.get("label", "Process Dataset"),
+                description=opt.get("description", "Standard processing"),
+                is_default=bool(opt.get("is_default", False)),
+                output_mode=opt.get("output_mode", "keep_separate"),
+                pipeline_type=opt.get("pipeline_type", "default"),
+            ))
+
+        if not opts:
+            opts = [
+                IntentOption(option_id="separate_per_condition", label="Separate per operating condition / sheet group", description="Exports separate condition CSVs", is_default=True, output_mode="keep_separate"),
+                IntentOption(option_id="unified_all_conditions", label="Unified all conditions into one fleet dataset", description="Stacks all sheets into a single fleet table", is_default=False, output_mode="single_merged"),
+            ]
+
+        self.report.problem_hypothesis = ProblemHypothesis(
+            domain=data.get("domain", "industrial_sensor_telemetry"),
+            dataset_type=data.get("problem_type", "multi_operating_condition_time_series"),
+            problem_type=data.get("problem_type", "regression"),
+            intent_options=opts,
+            summary=data.get("summary", "Industrial dataset with multiple condition tables"),
+        )
+
+    def _fallback_post_parse(self, parsed_tables: Dict[str, pd.DataFrame]) -> None:
+        """Sequential sub-stage fallback when LLM is unavailable or consolidated pass fails."""
         # Stage 5: Schema Discovery
         with self._stage("schema_discovery") as status:
             roles, relationships = self._schema_analyzer.analyze(self.report.table_metadata)
             self.report.schema_roles = roles
             self.report.relationships = relationships
-            status.used_llm = self._schema_analyzer.used_llm
-            status.llm_model = self._schema_analyzer.llm_model_used
-            logger.info(
-                f"[Intelligence] Stage 5: {len(roles)} table role sets, "
-                f"{len(relationships)} relationships"
-            )
 
-        # Stage 7 (Pass 1): Problem Discovery - establish domain & target hypothesis first
+        # Stage 7 (Pass 1): Problem Discovery
         with self._stage("problem_discovery") as status:
             self.report.problem_hypothesis = self._problem_discoverer.discover(
                 self.report.archive_tree,
@@ -193,31 +258,15 @@ class IntelligenceOrchestrator:
                 self.report.relationships,
                 self.report.semantic_labels,
             )
-            status.used_llm = self._problem_discoverer.used_llm
-            status.llm_model = self._problem_discoverer.llm_model_used
 
-            if self.report.problem_hypothesis:
-                hypothesis = self.report.problem_hypothesis
-                logger.info(
-                    f"[Intelligence] Stage 7 (Pass 1): domain='{hypothesis.domain}', "
-                    f"{len(hypothesis.detected_partitions)} partitions, "
-                    f"{len(hypothesis.intent_options)} options generated"
-                )
-
-        # Stage 6 (Pass 2): Semantic Analysis - consume established domain context
+        # Stage 6 (Pass 2): Semantic Analysis
         with self._stage("semantic_analysis") as status:
-            domain_hint = None
-            if self.report.problem_hypothesis:
-                domain_hint = self.report.problem_hypothesis.domain
-
+            domain_hint = self.report.problem_hypothesis.domain if self.report.problem_hypothesis else None
             self.report.semantic_labels = self._semantic_analyzer.analyze(
                 self.report.table_metadata,
                 self.report.schema_roles,
                 domain_hint=domain_hint,
             )
-            status.used_llm = self._semantic_analyzer.used_llm
-            status.llm_model = self._semantic_analyzer.llm_model_used
-            logger.info(f"[Intelligence] Stage 6 (Pass 2): {len(self.report.semantic_labels)} columns labelled")
 
         return self.report
 

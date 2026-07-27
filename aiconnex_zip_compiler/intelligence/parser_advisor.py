@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import json
 import logging
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from .llm_client import LLMClient, LLMUnavailableError
@@ -107,12 +108,53 @@ class ParserAdvisor:
 
         # Formats we can resolve structurally without consulting the LLM
         pending: List[ParserDecision] = []
+        
+        # Build map of file extensions / format aliases to catalog plugin_ids
+        known_format_to_plugin = {
+            "whitespace_delimited_text": "text_delimited_autodetect_parser",
+            "csv": "text_delimited_autodetect_parser",
+            "tsv": "text_delimited_autodetect_parser",
+            "txt": "text_delimited_autodetect_parser",
+            "excel_workbook": "scada_excel_parser",
+            "scada_excel": "scada_excel_parser",
+            "matlab_struct": "mat_parser",
+            "mat": "mat_parser",
+            "json": "json_parser",
+            "jsonl": "json_parser",
+            "sqlite": "sqlite_parser",
+            "tdms": "tdms_parser",
+            "xml": "xml_parser",
+        }
+
+        parser_catalog = [p for p in plugin_catalog if p.get("stage") == "parser"]
+        catalog_plugin_ids = {p.get("plugin_id") for p in parser_catalog}
+
         for decision in decisions:
             if decision.detected_format in NON_TABULAR_FORMATS:
                 decision.chosen_plugin_id = None
                 decision.requires_new_plugin = False
                 decision.confidence = 0.95
                 decision.llm_reasoning = "Non-tabular or already-unpacked container format; no parser required."
+                continue
+
+            # Flaw #2 Fix: Deterministic Sanity Check BEFORE LLM Override
+            # Check 1: Alias / Format Mapping
+            matched_plugin_id = known_format_to_plugin.get(decision.detected_format.lower())
+            
+            # Check 2: File Extension Matching against registered catalog handles_extensions
+            if not matched_plugin_id and decision.affected_paths:
+                first_ext = Path(decision.affected_paths[0]).suffix.lower()
+                for p_entry in parser_catalog:
+                    exts = p_entry.get("handles_extensions", [])
+                    if first_ext in exts:
+                        matched_plugin_id = p_entry.get("plugin_id")
+                        break
+
+            if matched_plugin_id and matched_plugin_id in catalog_plugin_ids:
+                decision.chosen_plugin_id = matched_plugin_id
+                decision.requires_new_plugin = False
+                decision.confidence = 0.95
+                decision.llm_reasoning = f"Matched existing registered plugin '{matched_plugin_id}' via deterministic pre-check."
             else:
                 pending.append(decision)
 
@@ -219,6 +261,13 @@ class ParserAdvisor:
         Scout Agent plugins are included automatically.
         """
         catalog: List[Dict[str, Any]] = []
+
+        if hasattr(registry, "auto_discover") and hasattr(registry, "get_plugins"):
+            if not any(registry.get_plugins(s) for s in ("discovery", "parser", "assembler", "harvester", "normalizer")):
+                try:
+                    registry.auto_discover()
+                except Exception:
+                    pass
 
         for stage in ("discovery", "parser", "assembler", "harvester", "normalizer"):
             try:
