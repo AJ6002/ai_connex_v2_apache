@@ -54,6 +54,8 @@ def detect_family(df: pd.DataFrame, profile: dict, target_hint: str = None) -> d
         # Priority 1: Anchored exact matches
         for col in df.columns:
             col_lower = str(col).lower()
+            if col_lower.startswith('daily_log_report') or 'january' in col_lower or 'february' in col_lower or 'march' in col_lower:
+                continue
             for pattern in target_keywords_exact:
                 if re.match(pattern, col_lower):
                     if not (col_lower.endswith('id') or col_lower.endswith('key')):

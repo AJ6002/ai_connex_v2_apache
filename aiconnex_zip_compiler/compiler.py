@@ -387,82 +387,36 @@ class UnifiedCompiler:
             CardGenerator,
             IntentClassifier,
             IntentResolver,
-            TerminalPrompter,
             IntentDecision,
-            report_to_dataset_card,
-            report_to_intent_options,
-            resolve_llm_strategy,
         )
 
-        card = None
-        options = []
-        used_llm = False
-        report = self._intelligence.report if self._intelligence else None
-
-        # 1. Preferred: LLM-generated card and options
-        if report is not None and report.problem_hypothesis is not None:
-            card = report_to_dataset_card(report)
-            options = report_to_intent_options(report)
-            if card is not None and options:
-                used_llm = True
-                logger.info(
-                    f"[IntentLayer] Using LLM-generated card and "
-                    f"{len(options)} dynamic options"
-                )
-
-        # 2. Fallback: legacy heuristic path
-        if not used_llm:
-            logger.info("[IntentLayer] Falling back to heuristic card/classifier")
-            inventory_dicts = [
-                {
-                    "filepath": str(item.filepath),
-                    "relative_path": item.relative_path,
-                    "format_ext": item.format_ext,
-                    "size_bytes": item.size_bytes,
-                }
-                for item in context.inventory
-            ]
-            card = CardGenerator().generate(
-                dataset_name=self.zip_path.stem,
-                inventory=inventory_dicts,
-            )
-            options = IntentClassifier().classify(card)
-
+        inventory_dicts = [
+            {
+                "filepath": str(item.filepath),
+                "relative_path": item.relative_path,
+                "format_ext": item.format_ext,
+                "size_bytes": item.size_bytes,
+            }
+            for item in context.inventory
+        ]
+        card = CardGenerator().generate(
+            dataset_name=self.zip_path.stem,
+            inventory=inventory_dicts,
+        )
+        options = IntentClassifier().classify(card)
         context.data_card = card
 
         if not options:
             logger.debug("[IntentLayer] No options generated - skipping intent layer")
             return
 
-        # 3. Prompt user (or auto-select via batch/strategy override)
-        question = None
-        if used_llm and report.problem_hypothesis.question_for_user:
-            question = report.problem_hypothesis.question_for_user
-
-        prompter = TerminalPrompter(
-            force_interactive=self.interactive, force_batch=self.batch
-        )
-        chosen_id = prompter.prompt(
-            card=card,
-            options=options,
-            strategy_override=self.strategy_override,
-            question=question,
-        )
-
-        # 4. Resolve choice into a CompilationStrategy
-        strategy = None
-        if used_llm:
-            strategy = resolve_llm_strategy(chosen_id, report)
-        if strategy is None:
-            strategy = IntentResolver().resolve(chosen_id, card)
-
+        chosen_id = self.strategy_override or options[0].option_id
+        strategy = IntentResolver().resolve(chosen_id, card)
         context.strategy = strategy
 
-        # 5. Apply plugin policy overrides
-        if strategy.assembler_policy_override:
+        if strategy and strategy.assembler_policy_override:
             context.policy_overrides["assembler"] = strategy.assembler_policy_override
 
-        # 6. Record the decision for the lockfile
         context.intent_decision = IntentDecision(
             dataset_name=card.dataset_name,
             data_card=card.to_dict(),
@@ -471,7 +425,7 @@ class UnifiedCompiler:
                 for o in options
             ],
             user_choice=chosen_id,
-            resolved_strategy=strategy.to_dict(),
+            resolved_strategy=strategy.to_dict() if strategy else {},
         )
 
         logger.info(

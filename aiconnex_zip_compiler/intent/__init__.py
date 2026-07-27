@@ -1,23 +1,14 @@
 """
-aiconnex_zip_compiler.intent - HITL Intent & Dataset Card Layer
-================================================================
-Provides the interactive Terminal UI (TUI) that:
-  1. Generates a DatasetCard (lightweight pre-pipeline inspection)
-  2. Classifies feasible modeling directions
-  3. Prompts the user for their intent (plain language, no ML jargon)
-  4. Resolves the choice into a CompilationStrategy for the plugin pipeline
+aiconnex_zip_compiler.intent - Static Intent & Dataset Card Layer
+==================================================================
+Provides non-interactive DatasetCard generation and intent resolution
+for the compiler plugin pipeline.
 """
 
 from .models import DatasetCard, IntentOption, CompilationStrategy, IntentDecision
 from .card_generator import CardGenerator
 from .classifier import IntentClassifier
 from .resolver import IntentResolver
-from .prompter import TerminalPrompter
-from .llm_bridge import (
-    report_to_dataset_card,
-    report_to_intent_options,
-    resolve_llm_strategy,
-)
 
 __all__ = [
     "DatasetCard",
@@ -27,8 +18,4 @@ __all__ = [
     "CardGenerator",
     "IntentClassifier",
     "IntentResolver",
-    "TerminalPrompter",
-    "report_to_dataset_card",
-    "report_to_intent_options",
-    "resolve_llm_strategy",
 ]

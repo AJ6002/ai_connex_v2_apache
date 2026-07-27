@@ -34,6 +34,24 @@ class UnsupportedLayoutError(Exception):
     pass
 
 
+class UnsupportedFormatError(Exception):
+    """Raised when an uploaded file format is outside the scope of registered plugins."""
+    SUPPORTED_FORMATS = [
+        "csv", "tsv", "txt", "xlsx", "xls", "parquet", "json", "jsonl",
+        "mat", "hdf5", "h5", "tdms", "sqlite", "db", "xml", "scada_excel"
+    ]
+
+    def __init__(self, ext: str):
+        self.ext = ext
+        msg = (
+            f"Format '{ext}' is not supported by the AIConnex compiler.\n"
+            f"Supported formats: {', '.join(self.SUPPORTED_FORMATS)}\n"
+            f"If your format is different, please convert it manually to a supported format first."
+        )
+        super().__init__(msg)
+
+
+
 class PluginRegistry:
     """
     Central Singleton Registry for compiler plugins across all 5 stages.
@@ -198,16 +216,6 @@ class PluginRegistry:
             run_timestamp=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
             resolved_plugins=resolved,
         )
-
-    def unfreeze(self) -> None:
-        """Unfreeze the registry to allow new plugin promotions."""
-        self._is_frozen = False
-        logger.info("[PluginRegistry] Unfrozen for dynamic plugin registration.")
-
-    def reload_and_unfreeze(self, plugins_dir: Optional[Path] = None) -> None:
-        """Unfreeze registry and re-run auto-discovery to pick up newly promoted plugins."""
-        self.unfreeze()
-        self.auto_discover(plugins_dir=plugins_dir)
 
 
 def register_plugin(plugin_cls: Type[BasePlugin]) -> Type[BasePlugin]:

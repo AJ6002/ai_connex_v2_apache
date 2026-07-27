@@ -1893,3 +1893,52 @@ elational_join_assembler isolates DPR_Report (compressor telemetry) from Reco-In
 **Architectural decisions:** Expanded HITL TUI prompt box to display sub-domain breakdown and multi-model molding capabilities directly in the terminal before user input.
 **Current system state:** Enhanced HITL Intent Layer TUI fully implemented, tested, and committed.
 ---
+
+## Query 227 -- 2026-07-27 14:22
+**Input:** Resolve can't open file 'aiconnex.py' CLI error.
+**Response summary:** Discovered git branch was switched to git-agents. Checked out eature/agentic-scout-compiler branch (git checkout feature/agentic-scout-compiler), restoring iconnex.py and all 22 active plugins. Verified 47/47 pytest unit tests pass cleanly.
+**Files changed:** context_log.md
+**Architectural decisions:** Switched active workspace branch back to eature/agentic-scout-compiler.
+**Current system state:** iconnex.py entrypoint restored and fully operational.
+---
+
+## Query 228 -- 2026-07-27 14:43
+**Input:** Diagnose Target auto-detection error causing 0.0000 metrics.
+**Response summary:** Identified that detector.py matched keyword report inside SCADA header column. Updated aic/1_dataset_profiler/detector.py to ignore text/datetime header strings from target auto-selection.
+**Files changed:** aic/1_dataset_profiler/detector.py, context_log.md
+**Architectural decisions:** Excluded SCADA export header metadata strings from target auto-detection.
+**Current system state:** Target auto-detector sanitized.
+---
+
+## Query 229 - 2026-07-27 14:47
+**Input:** Pivot to building a complete dashboard UI chat experience first.
+**Response summary:** Acknowledged the plan change. Created an implementation plan artifact for a new Dashboard UI Chat Experience outlining a React/Vite frontend, FastAPI backend, and NLP chat flow.
+**Files changed:** none
+**Architectural decisions:** Transitioned from terminal/scripting focus to a full-stack dashboard architecture with an NLP chat interface as the primary entry point.
+**Current system state:** Implementation plan created and pending user review.
+---
+
+## Query 230 - 2026-07-27 16:11
+**Input:** Implement Phase 1-3 architecture plan: Static Plugin Registry, JSON contract, and LangGraph 3-node agent skeleton with HITL interrupt.
+**Response summary:** Deleted sandbox_runner.py, patch_proposer.py, scout.py, and dynamic LLM intelligence modules. Updated registry.py with UnsupportedFormatError and static format whitelist. Created aiconnex_agent package (schemas.py, compiler_adapter.py, state.py, llm.py, nodes, graph.py, runner.py). Successfully executed end-to-end dry run on Dataset-TAS.zip with HITL interrupt and seamless state resumption producing 678 rows x 383 cols compiled CSV.
+**Files changed:** aiconnex_zip_compiler/plugins/registry.py, aiconnex_zip_compiler/SUPPORTED_FORMATS.md [NEW], aiconnex_zip_compiler/compiler.py, aiconnex_zip_compiler/intent/__init__.py, aiconnex_agent/__init__.py [NEW], schemas.py [NEW], compiler_adapter.py [NEW], state.py [NEW], llm.py [NEW], nodes/intent_extractor.py [NEW], compiler_node.py [NEW], hitl_node.py [NEW], data_explorer.py [NEW], scope_narrower.py [NEW], pipeline_trigger.py [NEW], edges.py [NEW], graph.py [NEW], runner.py [NEW]
+**Architectural decisions:** Transitioned compiler to 100% static plugin architecture; implemented stateful LangGraph agent graph with native interrupt() checkpointer for HITL chat interactions; established Pydantic JSON contracts.
+**Current system state:** LangGraph agent skeleton fully implemented, tested, and operational on multi-sheet Excel ZIP dataset.
+---
+
+## Query 231 - 2026-07-27 16:20
+**Input:** User asked where the output files of the dry run were stored.
+**Response summary:** Located exact output directory for the LangGraph agent dry run (`test_tas_session_99`) at `workspace_data/compiled_output/test_tas_session_99/`. Verified presence of `all_groups_combined.csv` (273.5 KB, 678 rows x 383 columns), `dataset_card.json`, `compiler_lock.json`, `compiler_report.json`, `schema_map.json`, `join_audit.json`, and 12 individual group CSV files.
+**Files changed:** context_log.md
+**Architectural decisions:** Confirmed default dry run output directory structure under `workspace_data/compiled_output/<session_id>/`.
+**Current system state:** All dry run output files located, audited, and confirmed.
+---
+
+
+## Query 231 - 2026-07-27 16:27
+**Input:** Process suyash2.zip with domain context, emit AI compiler model suggestions, and execute downstream handoff to Node 1 Profiler and Node 2 DAG Matcher without hardcoding/asserting model choices ahead.
+**Response summary:** Verified full agent-to-compiler-to-ML-handoff pipeline on suyash2.zip (26,898 high-frequency rows x 253 columns). Emitted 5 non-binding AI domain model suggestions. Handed off compiled CSV to Node 1 Profiler and Node 2 DAG Matcher, which dynamically detected time_series topology and assigned algorithm families based on empirical data profiling.
+**Files changed:** aiconnex_agent/compiler_adapter.py, scratch/suyash2_fe_mock_payload.json [NEW], scratch/test_suyash2_agent.py [NEW], scratch/test_suyash2_pipeline_handoff.py [NEW]
+**Architectural decisions:** Strict separation of concerns: Compiler/Agent emits domain suggestions while downstream Node 1/2 microservices dynamically profile data and assign exact Master DAG IDs and algorithm classes post-handoff.
+**Current system state:** Suyash2 2-month 26,898-row SCADA dataset fully compiled and verified end-to-end through Agent, Compiler, and Node 1/2 Handoff.
+---
