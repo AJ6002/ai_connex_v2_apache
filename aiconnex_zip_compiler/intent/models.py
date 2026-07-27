@@ -27,6 +27,8 @@ class DatasetCard:
     sensor_columns: List[str] = field(default_factory=list)  # ["sensor_1", "sensor_2", ...]
     detected_conditions: List[str] = field(default_factory=list)  # ["FD001", "FD002", ...]
     detected_sheets: List[str] = field(default_factory=list)  # ["DPR Report", "Reco-Inflow"]
+    detected_subdomains: List[str] = field(default_factory=list)  # ["Compressor Telemetry", "Sales Reconciliation"]
+    molding_capabilities: List[str] = field(default_factory=list)  # ["Dual-Model Export", "Single Combined Fleet"]
     file_count: int = 0
     total_rows_estimate: int = 0
     summary: str = ""  # Plain-language one-liner for the terminal prompt
@@ -41,6 +43,8 @@ class DatasetCard:
             "sensor_columns": self.sensor_columns[:10],  # Cap for readability
             "detected_conditions": self.detected_conditions,
             "detected_sheets": self.detected_sheets,
+            "detected_subdomains": self.detected_subdomains,
+            "molding_capabilities": self.molding_capabilities,
             "file_count": self.file_count,
             "total_rows_estimate": self.total_rows_estimate,
             "summary": self.summary,
@@ -55,9 +59,9 @@ class IntentOption:
     label: str  # "Predict equipment failure"
     description: str  # "Get alerts before your compressor breaks down"
     is_default: bool = False  # First option is typically default for batch mode
-    # Stable machine-selectable alias. LLM-generated option_ids vary between
-    # runs, so automation should target output_mode instead.
     output_mode: str = ""  # "single_merged" | "per_partition_batch" | "keep_separate"
+    pipeline_type: str = ""  # "sensor_rul" | "sales_inflow" | "dual_multi_model"
+    export_behavior: str = ""  # "separate_condition_csvs" | "merged_fleet_csv"
 
 
 @dataclass

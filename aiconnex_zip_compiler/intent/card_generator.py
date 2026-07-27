@@ -123,6 +123,33 @@ class CardGenerator:
         # Detect operating conditions from filenames
         detected_conditions = self._detect_conditions(filenames)
 
+        # Detect subdomains and multi-model molding options
+        detected_subdomains: List[str] = []
+        molding_capabilities: List[str] = []
+        
+        sheet_str_low = " ".join(detected_sheets).lower()
+        fn_str_low = " ".join(filenames).lower()
+
+        if "dpr" in sheet_str_low or "telemetry" in sheet_str_low or "sensor" in sheet_str_low or "acc_" in fn_str_low:
+            detected_subdomains.append("Compressor & Sensor Telemetry (Operational)")
+        if "reco" in sheet_str_low or "inflow" in sheet_str_low or "sales" in sheet_str_low or "price" in fn_str_low:
+            detected_subdomains.append("Sales & Inflow Reconciliation (Financial/Business)")
+
+        if not detected_subdomains:
+            detected_subdomains.append("Single-Domain Industrial Telemetry")
+
+        if len(detected_subdomains) > 1 or len(detected_sheets) > 1 or len(detected_conditions) > 1:
+            molding_capabilities = [
+                "Dual-Model Export (Independent Compressor RUL & Sales Forecasting Models)",
+                "Single Combined Fleet Dataset (Cross-Condition Generalization)",
+                "Per-Condition Partition Export (Isolated Monthly CSVs)",
+            ]
+        else:
+            molding_capabilities = [
+                "Single Target Regression / RUL Model",
+                "Anomaly Detection Model",
+            ]
+
         # Detect domain
         domain = self._detect_domain(all_headers, filenames, extensions)
 
@@ -140,15 +167,19 @@ class CardGenerator:
             domain, dataset_type, len(inventory), detected_conditions, detected_sheets
         )
 
+        dataset_name = base_dir.name if base_dir else "Uploaded Dataset"
+
         return DatasetCard(
             dataset_name=dataset_name,
             domain=domain,
             dataset_type=dataset_type,
             entity_keys=list(set(entity_keys)),
             time_keys=list(set(time_keys)),
-            sensor_columns=list(set(sensor_columns))[:20],
+            sensor_columns=list(set(sensor_columns)),
             detected_conditions=detected_conditions,
             detected_sheets=detected_sheets,
+            detected_subdomains=detected_subdomains,
+            molding_capabilities=molding_capabilities,
             file_count=len(inventory),
             total_rows_estimate=row_estimates,
             summary=summary,

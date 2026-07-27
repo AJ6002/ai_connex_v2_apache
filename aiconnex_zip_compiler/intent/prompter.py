@@ -129,33 +129,47 @@ class TerminalPrompter:
         question: Optional[str] = None,
     ) -> str:
         """Render the full prompt box and wait for user input."""
-        width = 75
+        width = 78
 
         # Print DatasetCard box
         print()
         print(_horizontal_rule(width))
-        print(_box_line(f"DATASET CARD - {card.dataset_name}", width))
+        print(_box_line(f"AICONNEX HITL INTENT LAYER - DATASET CARD: {card.dataset_name}", width))
         print(_horizontal_rule(width, "+", "+"))
-        print(_box_line(f"Domain     : {card.domain.replace('_', ' ').title()}", width))
-        print(_box_line(f"Structure  : {card.summary}", width))
+        print(_box_line(f"Domain             : {card.domain.replace('_', ' ').title()}", width))
+        print(_box_line(f"Structure          : {card.summary}", width))
+
+        if getattr(card, "detected_subdomains", None):
+            subs_str = " | ".join(card.detected_subdomains)
+            print(_box_line(f"Sub-Domains        : {subs_str}", width))
+
+        if getattr(card, "molding_capabilities", None):
+            print(_horizontal_rule(width, "+", "+"))
+            print(_box_line("MULTI-MODEL MOLDING CAPABILITIES DETECTED:", width))
+            for cap in card.molding_capabilities:
+                print(_box_line(f"  * {cap}", width))
 
         if card.entity_keys:
-            print(_box_line(f"Entity Keys: {', '.join(card.entity_keys)}", width))
+            print(_box_line(f"Entity Keys        : {', '.join(card.entity_keys)}", width))
         if card.time_keys:
-            print(_box_line(f"Time Keys  : {', '.join(card.time_keys)}", width))
+            print(_box_line(f"Time Keys          : {', '.join(card.time_keys)}", width))
 
         print(_horizontal_rule(width, "+", "+"))
         print()
 
         # Print question (LLM-generated when available, else generic fallback)
-        print(question or "What do you want the model to do?")
+        print("=" * width)
+        print(f"QUESTION FOR YOU: {question or 'How do you want to process and mold this dataset for downstream ML?'}")
+        print("=" * width)
         print()
 
         # Print options
         for idx, opt in enumerate(options, 1):
             default_tag = " (default)" if opt.is_default else ""
             print(f"  [{idx}] {opt.label}{default_tag}")
-            print(f"       {opt.description}")
+            print(f"       Description: {opt.description}")
+            if opt.output_mode:
+                print(f"       Strategy   : merge_rule='{opt.output_mode}' | pipeline_type='{getattr(opt, 'pipeline_type', 'default')}'")
             print()
 
         # Input loop

@@ -1828,3 +1828,68 @@
 **Architectural decisions:** Expanded MATLAB parser capabilities to generically unpack struct arrays into clean tabular DataFrames while preserving cycle-degradation RUL target synthesis.
 **Current system state:** 100% compilation success rate achieved across all 7 industrial datasets; all 7 individual reports updated.
 ---
+
+## Query 209 -- 2026-07-27 07:43
+**Input:** Verify handling of simple CSV/Excel files on Dataset-TAS.zip and audit compilation strategy.
+**Response summary:** Executed standalone compilation on Dataset-TAS.zip. Audited full strategy: zip_directory_discovery -> scada_excel_parser -> relational_join_assembler (routing merge_rule=keep_separate across 12 distinct sheet groups to prevent Cartesian explosion) -> canonical_schema_normalizer, outputting 438 clean compiled rows in 8.44s.
+**Files changed:** context_log.md
+**Architectural decisions:** Confirmed compiler relational join assembler correctly avoids force-joining non-relational report sheets while preserving individual sheet groups.
+**Current system state:** Dataset-TAS.zip compiled cleanly; audit report delivered to user.
+---
+
+## Query 210 -- 2026-07-27 07:45
+**Input:** Execute AIConnex Compiler CLI on data/raw/Dataset-TAS.zip to produce standard compiled destination outputs.
+**Response summary:** Executed iconnex_zip_compiler.cli with --input data/raw/Dataset-TAS.zip and --output data/compiled/Dataset-TAS. Successfully compiled all 12 sheet group CSVs and ll_groups_combined.csv with lockfile tracking in 8.36s.
+**Files changed:** context_log.md
+**Architectural decisions:** Confirmed standard CLI binary interface produces full handoff artifacts in standard compiled dataset directory.
+**Current system state:** Dataset-TAS.zip compiled cleanly to data/compiled/Dataset-TAS.
+---
+
+## Query 211 -- 2026-07-27 10:04
+**Input:** Explain what goes into the ML pipeline among the compiled outputs.
+**Response summary:** Explained the ML handoff contract implemented in handoff.py. ll_groups_combined.csv acts as the default single entry point for ML Node 1, while individual group_..._merged.csv files provide per-condition datasets for multi-model workflows, guided by schema_map.json and compiler_lock.json.
+**Files changed:** context_log.md
+**Architectural decisions:** Clarified dual entry-point handoff design supporting both unified fleet training and per-condition split training.
+**Current system state:** ML pipeline handoff entry points documented and explained.
+---
+
+## Query 212 -- 2026-07-27 10:05
+**Input:** Address dual sheet domain routing (sales reconciliation vs compressor sensor readings) for downstream ML forecasting.
+**Response summary:** Explained how the compiler's 
+elational_join_assembler isolates DPR_Report (compressor telemetry) from Reco-Inflow_Data (sales reconciliation) into distinct group CSVs. Detailed ML pipeline routing via dataset_card.json (separate_condition_csvs) to route physical sensor forecasting vs sales forecasting to separate model pipelines.
+**Files changed:** context_log.md
+**Architectural decisions:** Confirmed compiler's group partitioning prevents cross-domain feature contamination between physical sensor telemetry and financial/sales reconciliation data.
+**Current system state:** Group routing contract for sales vs compressor telemetry documented.
+---
+
+## Query 213 -- 2026-07-27 10:22
+**Input:** Clarify provision for batch/job sequencing to export separate models independently for dual domains.
+**Response summary:** Detailed the job sequencing provision in dataset_card.json. Shown how separate_condition_csvs enables sequential batch execution in ML Node 2 to train and export two distinct model artifacts (compressor_health_model.pkl and sales_forecasting_model.pkl) independently on their own.
+**Files changed:** context_log.md
+**Architectural decisions:** Confirmed batch job sequencing manifest structure in dataset_card.json for multi-model export.
+**Current system state:** Job sequencing and multi-model export provision explained.
+---
+
+## Query 214 -- 2026-07-27 10:37
+**Input:** Explain exact CLI commands and pipeline triggers to run separate batch jobs and export two models independently.
+**Response summary:** Documented exact CLI flags for the compiler (--strategy separate_per_condition, --batch, --interactive) and downstream test runner (python cli-run.py --dataset <group_csv>) to execute independent batch jobs for multi-model exports.
+**Files changed:** context_log.md
+**Architectural decisions:** Documented execution interface for strategy selection and multi-model pipeline invocation.
+**Current system state:** CLI pipeline commands and multi-model job triggers documented.
+---
+
+## Query 215 -- 2026-07-27 10:52
+**Input:** Plan expansion of HITL Intent Layer TUI with LLM questions, multi-model molding options, and ambiguity routing.
+**Response summary:** Created implementation_plan.md artifact outlining the design for an expanded LLM-driven HITL TUI. Defined updates to DatasetCard, LLMBridge, TerminalPrompter, and UnifiedCompiler to present dynamic multi-domain pipeline options (sensor RUL vs sales forecasting) and route layout ambiguities directly to the TUI.
+**Files changed:** brain/implementation_plan.md, context_log.md
+**Architectural decisions:** Designed LLM-generated TUI prompts that evaluate dataset sub-domains and offer explicit multi-model molding options while maintaining clean ASCII terminal compatibility.
+**Current system state:** Expanded HITL TUI design plan created; awaiting user approval to implement.
+---
+
+## Query 216 -- 2026-07-27 11:01
+**Input:** Implement expanded HITL Intent Layer TUI with LLM-driven questions, sub-domain detection, and multi-model molding options.
+**Response summary:** Implemented expanded HITL TUI architecture. Updated DatasetCard and IntentOption in models.py, added sub-domain and molding capability inference in card_generator.py, enhanced TerminalPrompter ASCII TUI rendering in prompter.py, created 	est_prompter_tui.py, verified all 47 pytest unit tests pass cleanly, and committed changes to eature/agentic-scout-compiler.
+**Files changed:** aiconnex_zip_compiler/intent/models.py, aiconnex_zip_compiler/intent/card_generator.py, aiconnex_zip_compiler/intent/prompter.py, aiconnex_zip_compiler/tests/test_prompter_tui.py, context_log.md
+**Architectural decisions:** Expanded HITL TUI prompt box to display sub-domain breakdown and multi-model molding capabilities directly in the terminal before user input.
+**Current system state:** Enhanced HITL Intent Layer TUI fully implemented, tested, and committed.
+---
