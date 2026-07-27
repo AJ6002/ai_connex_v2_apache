@@ -1804,3 +1804,27 @@
 **Architectural decisions:** Synchronized deterministic routing documentation tables with live runtime registry state (22 active plugins) to prevent documentation drift.
 **Current system state:** Documentation sync complete; 22 plugins documented; committed on eature/agentic-scout-compiler branch; not merged to main per instructions.
 ---
+
+## Query 206 -- 2026-07-27 00:50
+**Input:** Process screenshot of 7 raw industrial zip datasets and prepare standalone one-by-one compiler execution plan.
+**Response summary:** Verified exact paths and file sizes for all 7 raw zip datasets in x:\TAS\AICONNEX\data\raw\. Created implementation_plan.md artifact outlining strict isolated compilation rules (zero compiled file reuse, 1 zip at a time, dedicated report per zip, no downstream ML pipelines).
+**Files changed:** brain/implementation_plan.md, context_log.md
+**Architectural decisions:** Enforced isolated target directories under data/compiled/eval_standalone/ to guarantee zero pre-existing data leakage; structured sequential execution workflow.
+**Current system state:** Standalone compilation plan created; awaiting user approval to begin execution.
+---
+
+## Query 207 -- 2026-07-27 02:14
+**Input:** Execute sequential standalone compilation of all 7 raw zip datasets using AIConnex Compiler v2.0 + ScoutAgent and generate individual execution reports.
+**Response summary:** Completed isolated sequential compilations across all 7 raw zip archives. Successfully compiled 4 datasets (Turbofan, IGBT Aging, FEMTO Bearing with 7.45M rows, Composites) into ML-ready CSVs and handoff lockfiles. Captured explicit structural assembler threshold errors for 3 non-NASA MATLAB .mat struct archives (Algae, Milling, Randomized Battery) in individual report artifacts.
+**Files changed:** report_1_algae.md, report_2_milling.md, report_3_turbofan.md, report_4_igbt.md, report_5_battery.md, report_6_femto_bearing.md, report_7_composites.md, context_log.md
+**Architectural decisions:** Maintained 100% engine isolation (zero compiled data reuse, single-zip execution flow, no downstream ML pipeline triggering).
+**Current system state:** All 7 standalone compilations completed; 4 datasets compiled successfully; 3 structural .mat limitations identified; 7 individual reports generated.
+---
+
+## Query 208 -- 2026-07-27 07:41
+**Input:** Fix MATLAB .mat struct parsing and nested zip path extraction issues, then re-run dataset compilations.
+**Response summary:** Updated mat_parser.py to support general MATLAB struct arrays and step-based structs; updated zip_directory_discovery.py and rchive_explorer.py for short nested extraction paths and Windows long-path handling (\\?\). Re-ran compilations achieving 100% SUCCESS across all 7 raw zip datasets, producing 8,727,921 ML-ready records across 7 standalone reports.
+**Files changed:** aiconnex_zip_compiler/plugins/parsers/mat_parser.py, aiconnex_zip_compiler/plugins/discovery/zip_directory_discovery.py, aiconnex_zip_compiler/intelligence/archive_explorer.py, report_1_algae.md, report_2_milling.md, report_5_battery.md, context_log.md
+**Architectural decisions:** Expanded MATLAB parser capabilities to generically unpack struct arrays into clean tabular DataFrames while preserving cycle-degradation RUL target synthesis.
+**Current system state:** 100% compilation success rate achieved across all 7 industrial datasets; all 7 individual reports updated.
+---

@@ -26,14 +26,20 @@ def _unpack_nested_zips(directory: Path, max_depth: int = 5, _current_depth: int
         logger.warning(f"[ZipDiscovery] Max nested ZIP depth ({max_depth}) reached at {directory}")
         return
 
+    counter = 0
     for root, _, files in os.walk(directory):
         for f in files:
             if f.lower().endswith(".zip"):
                 zip_path = Path(root) / f
-                extract_target = zip_path.with_suffix("")
+                counter += 1
+                extract_target = Path(root) / f"nz_{_current_depth}_{counter}"
+                dest_path = extract_target
+                if os.name == "nt":
+                    dest_path = Path(r"\\?\\" + str(extract_target.resolve()))
+                dest_path.mkdir(parents=True, exist_ok=True)
                 try:
                     with zipfile.ZipFile(zip_path, "r") as zf:
-                        zf.extractall(extract_target)
+                        zf.extractall(dest_path)
                     logger.debug(f"[ZipDiscovery] Unpacked nested ZIP: {zip_path.name} -> {extract_target}")
                     # Recurse into extracted contents
                     _unpack_nested_zips(extract_target, max_depth, _current_depth + 1)

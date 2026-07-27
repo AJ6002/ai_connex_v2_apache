@@ -95,14 +95,19 @@ class ArchiveExplorer:
         name = archive_path.name.lower()
 
         try:
+            dest_target = destination
+            if os.name == "nt" and not str(destination).startswith("\\\\?\\"):
+                dest_target = Path(r"\\?\\" + str(destination.resolve()))
+            dest_target.mkdir(parents=True, exist_ok=True)
+
             if name.endswith(".zip"):
                 with zipfile.ZipFile(archive_path, "r") as zf:
-                    zf.extractall(destination)
+                    zf.extractall(dest_target)
                 return True
 
             if any(name.endswith(ext) for ext in (".tar", ".tar.gz", ".tgz", ".tar.bz2", ".tar.xz")):
                 with tarfile.open(archive_path, "r:*") as tf:
-                    tf.extractall(destination)
+                    tf.extractall(dest_target)
                 return True
 
             if name.endswith(".gz"):

@@ -57,7 +57,7 @@ class MatParserPlugin(BaseParserPlugin):
             for key in keys:
                 obj = mat[key]
 
-                # -- NASA Battery struct pattern (cycle-based with voltage/current/temp arrays) --
+                # -- Pattern A: NASA Battery cycle-based struct pattern --
                 if hasattr(obj, "dtype") and obj.dtype.names and "cycle" in obj.dtype.names:
                     struct = obj[0, 0]
                     cycles = struct["cycle"][0]
@@ -120,6 +120,59 @@ class MatParserPlugin(BaseParserPlugin):
                                 ),
                             }
                             records.append(rec)
+
+                # -- Pattern B: Randomized Battery step-based struct pattern --
+                elif hasattr(obj, "dtype") and obj.dtype.names and "step" in obj.dtype.names:
+                    try:
+                        struct = obj[0, 0]
+                        steps = struct["step"][0]
+                        step_recs = []
+                        for s_idx, s in enumerate(steps):
+                            if hasattr(s, "dtype") and s.dtype.names:
+                                s_row = {"asset_id": filepath.stem, "step_id": s_idx + 1}
+                                for field in s.dtype.names:
+                                    val = s[field]
+                                    if isinstance(val, np.ndarray):
+                                        if val.size == 1:
+                                            s_row[field] = val.item()
+                                        elif val.size > 1:
+                                            s_row[field] = (
+                                                float(np.mean(val.flatten()))
+                                                if np.issubdtype(val.dtype, np.number)
+                                                else str(val.flatten()[0])
+                                            )
+                                    else:
+                                        s_row[field] = val
+                                step_recs.append(s_row)
+                        if step_recs:
+                            results[f"{filepath.stem}_{key}"] = pd.DataFrame(step_recs)
+                    except Exception as ex:
+                        logger.warning(f"[MatParser] Failed parsing step struct for key {key}: {ex}")
+
+                # -- Pattern C: General Struct Array (e.g. Milling dataset 'mill' array) --
+                elif hasattr(obj, "dtype") and obj.dtype.names:
+                    struct_recs = []
+                    flat_obj = obj.flatten()
+                    for item_idx, item in enumerate(flat_obj):
+                        if hasattr(item, "dtype") and item.dtype.names:
+                            item_row = {"asset_id": filepath.stem, "item_id": item_idx + 1}
+                            for field in item.dtype.names:
+                                val = item[field]
+                                if isinstance(val, np.ndarray):
+                                    if val.size == 1:
+                                        item_row[field] = val.item()
+                                    elif val.ndim >= 2 and np.issubdtype(val.dtype, np.number):
+                                        item_row[f"{field}_mean"] = float(np.mean(val))
+                                        item_row[f"{field}_std"] = float(np.std(val))
+                                    elif val.size > 1 and np.issubdtype(val.dtype, np.number):
+                                        item_row[f"{field}_mean"] = float(np.mean(val))
+                                    elif val.size > 0:
+                                        item_row[field] = str(val.flatten()[0])
+                                else:
+                                    item_row[field] = val
+                            struct_recs.append(item_row)
+                    if struct_recs:
+                        results[f"{filepath.stem}_{key}"] = pd.DataFrame(struct_recs)
 
             if records:
                 df = pd.DataFrame(records)
