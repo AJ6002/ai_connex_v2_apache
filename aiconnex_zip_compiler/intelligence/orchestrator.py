@@ -188,8 +188,8 @@ class IntelligenceOrchestrator:
         return self.report
 
     def _run_consolidated_post_parse(self, parsed_tables: Dict[str, pd.DataFrame]) -> None:
-        """Run Stages 5, 6, 7 in a SINGLE consolidated LLM query for <12s execution."""
-        from .models import ProblemHypothesis, IntentOption
+        from .models import ProblemHypothesis
+        from ..intent.models import IntentOption
 
         table_summaries = []
         for name, df in list(parsed_tables.items())[:5]:
