@@ -68,12 +68,13 @@ class ScoutAgent:
             archive_name = p.name
             try:
                 from .intelligence import IntelligenceOrchestrator
-                orch = IntelligenceOrchestrator()
                 if p.exists():
-                    temp_dir = Path(tempfile.mkdtemp(prefix="scout_inspect_"))
+                    from .models import create_compiler_temp_dir
+                    temp_dir = create_compiler_temp_dir(prefix="scout_inspect_")
                     try:
                         from .plugins import PluginRegistry
                         reg = PluginRegistry.get_instance()
+                        orch = IntelligenceOrchestrator()
                         orch.run_pre_parse(target_path=p, temp_dir=temp_dir, registry=reg)
                         return orch.report
                     finally:

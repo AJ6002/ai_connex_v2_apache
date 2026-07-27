@@ -61,3 +61,19 @@ class JoinAudit:
             "warnings": self.warnings,
             "redundant_keys_excluded": self.redundant_keys_excluded,
         }
+
+
+def create_compiler_temp_dir(prefix: str = "aic_compiler_") -> Path:
+    """Create a temporary working directory for the compiler, preferring workspace drive (X: drive) if available."""
+    import os
+    import tempfile
+    from pathlib import Path
+
+    ws_temp = Path(r"x:\TAS\AICONNEX\scratch\temp")
+    try:
+        ws_temp.mkdir(parents=True, exist_ok=True)
+        return Path(tempfile.mkdtemp(prefix=prefix, dir=ws_temp))
+    except Exception:
+        pass
+
+    return Path(tempfile.mkdtemp(prefix=prefix))

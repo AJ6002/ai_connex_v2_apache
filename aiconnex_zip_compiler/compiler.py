@@ -91,9 +91,9 @@ class UnifiedCompiler:
         self._intelligence = None  # IntelligenceOrchestrator, set during compile()
 
     def compile(self) -> CompileResult:
-        """Execute intent layer + all 5 plugin pipeline stages sequentially."""
         t0 = time.time()
-        temp_dir = Path(tempfile.mkdtemp(prefix="aic_compiler_"))
+        from .models import create_compiler_temp_dir
+        temp_dir = create_compiler_temp_dir(prefix="aic_compiler_")
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
         # -- Scout Inspection (if ScoutAgent provided) ---------------------------
