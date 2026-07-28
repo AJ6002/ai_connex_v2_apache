@@ -1,5 +1,5 @@
 """
-handoff.py — Layer 4: ML Handoff & Artifact Exporter
+handoff.py - Layer 4: ML Handoff & Artifact Exporter
 =====================================================
 Exports per-group merged CSVs, optional combined fleet table, join_audit.json,
 schema_map.json, and compiler_report.json to the output workspace.
@@ -14,8 +14,7 @@ from typing import Dict, List, Optional, Any
 
 import pandas as pd
 
-from .schema_mapper import SchemaMap
-from .relational_joiner import JoinAudit
+from .models import SchemaMap, JoinAudit
 
 
 @dataclass
@@ -70,7 +69,7 @@ def export_compiler_handoff(
 
     # 2. Export Combined Fleet/Multi-Device CSV (Option 2: Merged Generalization Mode)
     combined_csv_path: Optional[Path] = None
-    if len(all_dfs) > 1:
+    if len(all_dfs) >= 1:
         combined_csv_path = output_dir / "all_groups_combined.csv"
         combined_df = pd.concat(all_dfs, ignore_index=True)
         combined_df.to_csv(combined_csv_path, index=False)

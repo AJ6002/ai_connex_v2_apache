@@ -2,7 +2,7 @@
 Scenario Test 1: RUL with Censored Data
 ========================================
 Real scenario: Turbofan engines where some assets are STILL RUNNING
-at the time of data collection. Their true RUL is unknown — only a
+at the time of data collection. Their true RUL is unknown - only a
 lower bound is known ("the engine ran at least this long").
 
 This test verifies:
@@ -28,13 +28,13 @@ from aiconnex_ml.regression.baselines import run_baselines
 from aiconnex_ml.regression.evaluation import compute_regression_metrics
 
 
-# ── Fixtures ───────────────────────────────────────────────────────────────────
+# -- Fixtures -------------------------------------------------------------------
 
 def make_rul_dataset(n_engines=20, cycles_per_engine=50, seed=42):
     """
     Synthetic multi-engine RUL dataset.
     Each engine has `cycles_per_engine` rows. The last 5 engines are
-    censored — they were still running when data collection ended.
+    censored - they were still running when data collection ended.
     """
     rng = np.random.default_rng(seed)
     records = []
@@ -82,7 +82,7 @@ def make_rul_manifest():
     }
 
 
-# ── Tests ──────────────────────────────────────────────────────────────────────
+# -- Tests ----------------------------------------------------------------------
 
 def test_censoring_column_must_exist_in_dataframe():
     """
@@ -119,7 +119,7 @@ def test_uncensored_rows_are_majority():
     uncensored_fraction = (df["is_censored"] == 0).mean()
     assert uncensored_fraction >= 0.50, (
         f"Too few uncensored rows: {uncensored_fraction:.0%}. "
-        "Check the fixture — it should only censor the last 5 engines."
+        "Check the fixture - it should only censor the last 5 engines."
     )
 
 
@@ -134,9 +134,9 @@ def test_asymmetric_scoring_penalises_late_more():
     """
     y_true = np.array([100.0, 50.0, 20.0, 5.0])
 
-    # Predict 20 cycles late (under-predict remaining life → late alarm)
+    # Predict 20 cycles late (under-predict remaining life -> late alarm)
     y_late = y_true + 20.0
-    # Predict 20 cycles early (over-predict remaining life → conservative alarm)
+    # Predict 20 cycles early (over-predict remaining life -> conservative alarm)
     y_early = y_true - 20.0
 
     score_late  = asymmetric_rul_score(y_true, y_late)
@@ -144,7 +144,7 @@ def test_asymmetric_scoring_penalises_late_more():
 
     assert score_late > score_early, (
         f"Late prediction score ({score_late:.3f}) should be HIGHER than "
-        f"early prediction score ({score_early:.3f}) — late failures are more costly."
+        f"early prediction score ({score_early:.3f}) - late failures are more costly."
     )
 
 
@@ -208,7 +208,7 @@ def test_rmse_computed_on_uncensored_test_rows_only():
     mask = is_censored == 0
     metrics_uncensored = compute_regression_metrics(y_true_full[mask], y_pred_full[mask])
 
-    # Compute metrics on all rows (incorrect — for comparison)
+    # Compute metrics on all rows (incorrect - for comparison)
     metrics_all = compute_regression_metrics(y_true_full, y_pred_full)
 
     # RMSE on uncensored rows should be lower (predictions are accurate there)

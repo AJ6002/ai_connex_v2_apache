@@ -2,9 +2,9 @@
 Scenario Test 6: Multiple Legitimate Operating Regimes
 =======================================================
 Real scenario: A compressor operates across 3 distinct regimes:
-  Regime-0  → Cold startup   (low RPM, low temperature, low vibration)
-  Regime-1  → Normal running (medium RPM, medium temperature)
-  Regime-2  → High-load run  (high RPM, high temperature, higher vibration)
+  Regime-0  -> Cold startup   (low RPM, low temperature, low vibration)
+  Regime-1  -> Normal running (medium RPM, medium temperature)
+  Regime-2  -> High-load run  (high RPM, high temperature, higher vibration)
 
 All three are NORMAL. The anomaly model must not alarm during legitimate
 transitions between them. This is the most common source of alarm fatigue
@@ -14,7 +14,7 @@ This test verifies:
   1. Per-mode scalers are fitted independently on each regime's data.
   2. Per-mode thresholds are calibrated separately, not on pooled data.
   3. Predictions across all known modes produce scores BELOW their respective
-     per-mode threshold (false alarm rate ≈ 0 on training distribution).
+     per-mode threshold (false alarm rate ~= 0 on training distribution).
   4. The model scores from regime transitions do NOT exceed the thresholds.
   5. A genuine process anomaly IN REGIME-1 is still correctly detected.
 """
@@ -32,7 +32,7 @@ from aiconnex_ml.anomaly.threshold import ThresholdCalibrator
 from aiconnex_ml.shared.features.mode_normalization import fit_per_mode_scalers, apply_per_mode_scaling
 
 
-# ── Fixtures ───────────────────────────────────────────────────────────────────
+# -- Fixtures -------------------------------------------------------------------
 
 FEATURE_COLS = ["rpm", "temperature", "vibration", "pressure"]
 
@@ -66,7 +66,7 @@ def make_regime_dataset(n_per_regime: int = 400, seed: int = 42, include_anomaly
     df_all = pd.concat(frames, ignore_index=True)
 
     if include_anomaly:
-        # Inject 20 anomalies in Regime-1 (genuine process fault — bearing overheating)
+        # Inject 20 anomalies in Regime-1 (genuine process fault - bearing overheating)
         rng2 = np.random.default_rng(seed + 1)
         anomaly_rows = rng2.integers(n_per_regime, 2 * n_per_regime, 20)
         df_all.loc[anomaly_rows, "temperature"] += 40   # overheating spike
@@ -95,7 +95,7 @@ def make_multi_regime_manifest():
     }
 
 
-# ── Mode Normalization Tests ───────────────────────────────────────────────────
+# -- Mode Normalization Tests ---------------------------------------------------
 
 class TestPerModeScaling:
     def test_per_mode_scalers_are_fitted_per_regime(self):
@@ -128,11 +128,11 @@ class TestPerModeScaling:
             for col in FEATURE_COLS:
                 assert abs(col_means[col]) < 0.5, (
                     f"Regime {mode_label}, column '{col}' mean after scaling: "
-                    f"{col_means[col]:.4f} — expected near 0."
+                    f"{col_means[col]:.4f} - expected near 0."
                 )
 
 
-# ── Threshold Calibration Per Regime ─────────────────────────────────────────
+# -- Threshold Calibration Per Regime -----------------------------------------
 
 class TestPerModeThresholds:
     def _train_and_score(self, df_train, df_val):
@@ -164,7 +164,7 @@ class TestPerModeThresholds:
         # All three threshold values should not be identical
         threshold_values = list(mode_thresholds.values())
         assert len(set(round(t, 3) for t in threshold_values)) > 1, (
-            "All per-mode thresholds are identical — per-mode calibration may not be working."
+            "All per-mode thresholds are identical - per-mode calibration may not be working."
         )
         print(f"[MultiRegimeTest] Per-mode thresholds: {mode_thresholds}")
 
@@ -172,7 +172,7 @@ class TestPerModeThresholds:
         """
         When the threshold is calibrated at the 99th percentile of each regime's
         training scores, the false alarm rate on validation data from KNOWN regimes
-        must be ≤ 1%.
+        must be <= 1%.
         """
         df = make_regime_dataset(n_per_regime=500)
         df_train = df.groupby("regime").apply(lambda x: x.iloc[:300]).reset_index(drop=True)
@@ -310,7 +310,7 @@ class TestPerModeThresholds:
         # Among the injected anomaly rows, at least 50% should be flagged
         anomaly_mask = df_with_anomaly["is_anomaly"].values == 1
         if anomaly_mask.sum() == 0:
-            pytest.skip("No injected anomaly rows in fixture — check make_regime_dataset(include_anomaly=True)")
+            pytest.skip("No injected anomaly rows in fixture - check make_regime_dataset(include_anomaly=True)")
 
         anomaly_scores = scores[anomaly_mask]
         detection_rate = float((anomaly_scores > threshold).mean())

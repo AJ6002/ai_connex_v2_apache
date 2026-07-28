@@ -131,14 +131,29 @@ def evaluate_model(payload: EvaluatePayload):
         df_val   = pd.read_csv(val_path)    if val_path    and os.path.exists(val_path)    else None
 
         def _prep_X(df: pd.DataFrame) -> np.ndarray:
-            """Drop target, drop non-numeric, fill NaN, apply saved scaler."""
+            """Drop target, coerce non-numeric, fill NaN, apply saved scaler."""
             X = df.drop(columns=[target_col], errors="ignore") if target_col else df.copy()
-            X = X.select_dtypes(include=[np.number]).fillna(0)
+            for c in list(X.columns):
+                if not pd.api.types.is_numeric_dtype(X[c]):
+                    s_coerced = pd.to_numeric(X[c], errors="coerce")
+                    if s_coerced.notna().sum() > 0:
+                        X[c] = s_coerced
+                    else:
+                        X.drop(columns=[c], inplace=True)
+            if X.shape[1] == 0:
+                X["feature_index"] = np.arange(len(X), dtype=float)
+            X = X.fillna(0)
             return scaler.transform(X) if scaler is not None else X.values
 
         def _prep_y(df: pd.DataFrame) -> Optional[np.ndarray]:
             if target_col and target_col in df.columns:
-                return df[target_col].values
+                y_raw = df[target_col]
+                s_y_num = pd.to_numeric(y_raw, errors="coerce")
+                if s_y_num.notna().sum() > len(y_raw) * 0.5:
+                    med_val = float(s_y_num.median()) if len(s_y_num.dropna()) > 0 else 0.0
+                    return s_y_num.fillna(med_val).to_numpy(dtype=float)
+                else:
+                    return y_raw.fillna("missing").astype(str).to_numpy(dtype=str)
             return None
 
         X_test  = _prep_X(df_test)
@@ -236,12 +251,17 @@ def evaluate_model(payload: EvaluatePayload):
             preds = model.predict(X_test)
             primary_metrics = {}
             if y_test is not None:
-                primary_metrics = {
-                    "accuracy":  float(accuracy_score(y_test, preds)),
-                    "f1":        float(f1_score(y_test, preds, average="weighted", zero_division=0)),
-                    "precision": float(precision_score(y_test, preds, average="weighted", zero_division=0)),
-                    "recall":    float(recall_score(y_test, preds, average="weighted", zero_division=0)),
-                }
+                try:
+                    y_test_cls = y_test.astype(str) if hasattr(y_test, "astype") else np.asarray(y_test).astype(str)
+                    preds_cls = preds.astype(str) if hasattr(preds, "astype") else np.asarray(preds).astype(str)
+                    primary_metrics = {
+                        "accuracy":  float(accuracy_score(y_test_cls, preds_cls)),
+                        "f1":        float(f1_score(y_test_cls, preds_cls, average="weighted", zero_division=0)),
+                        "precision": float(precision_score(y_test_cls, preds_cls, average="weighted", zero_division=0)),
+                        "recall":    float(recall_score(y_test_cls, preds_cls, average="weighted", zero_division=0)),
+                    }
+                except Exception:
+                    primary_metrics = _sklearn_regression_metrics(y_test, preds)
             eval_report["test"] = primary_metrics
             evaluator_used = "sklearn_classification"
 

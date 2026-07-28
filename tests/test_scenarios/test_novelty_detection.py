@@ -30,14 +30,14 @@ from aiconnex_ml.anomaly.threshold import ThresholdCalibrator
 from aiconnex_ml.anomaly.evaluation import compute_anomaly_metrics
 
 
-# ── Fixtures ───────────────────────────────────────────────────────────────────
+# -- Fixtures -------------------------------------------------------------------
 
 def make_mode_dataset(n_per_mode: int = 300, seed: int = 42):
     """
     Generate a 3-mode sensor dataset:
       Mode-A (normal steady state): sensors centred at (50, 200, 1.0)
       Mode-B (high-load normal):    sensors centred at (80, 250, 1.5)
-      Mode-C (anomalous over-speed): sensors centred at (150, 400, 4.0) — never seen in training
+      Mode-C (anomalous over-speed): sensors centred at (150, 400, 4.0) - never seen in training
     """
     rng = np.random.default_rng(seed)
 
@@ -73,7 +73,7 @@ def make_novelty_manifest():
     }
 
 
-# ── Tests ──────────────────────────────────────────────────────────────────────
+# -- Tests ----------------------------------------------------------------------
 
 def test_unknown_mode_is_flagged_by_detector():
     """
@@ -130,7 +130,7 @@ def test_novel_mode_scores_significantly_higher():
 def test_false_alarm_rate_low_on_known_modes():
     """
     After calibrating threshold at the 99th percentile of known-mode training scores,
-    the false alarm rate on Mode-A and Mode-B validation data must be ≤ 2%.
+    the false alarm rate on Mode-A and Mode-B validation data must be <= 2%.
     """
     df_A, df_B, df_C = make_mode_dataset(n_per_mode=500)
     feature_cols = ["sensor_speed", "sensor_load", "sensor_vibration"]

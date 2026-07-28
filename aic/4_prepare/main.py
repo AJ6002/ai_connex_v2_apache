@@ -66,16 +66,24 @@ def prepare_data(payload: PreparePayload):
         impute_strategy = recipe.get("impute_strategy", "mean")
         for col in df.columns:
             if df[col].isna().sum() > 0:
-                if col in numeric_cols or col == target_col:
+                if col in numeric_cols:
+                    s_num = pd.to_numeric(df[col], errors="coerce")
                     if impute_strategy == "mean":
-                        df[col] = df[col].fillna(df[col].mean())
+                        fill_val = s_num.mean()
                     elif impute_strategy == "median":
-                        df[col] = df[col].fillna(df[col].median())
+                        fill_val = s_num.median()
                     else:
-                        df[col] = df[col].fillna(0)
+                        fill_val = 0
+                    df[col] = df[col].fillna(fill_val)
+                elif col == target_col and pd.api.types.is_numeric_dtype(df[col]):
+                    s_num = pd.to_numeric(df[col], errors="coerce")
+                    df[col] = df[col].fillna(s_num.mean() if impute_strategy == "mean" else 0)
                 else:
                     if df[col].nunique() > 0:
-                        mode_val = df[col].mode().iloc[0]
+                        try:
+                            mode_val = df[col].mode().iloc[0]
+                        except Exception:
+                            mode_val = "missing"
                         df[col] = df[col].fillna(mode_val)
                     else:
                         df[col] = df[col].fillna("missing")

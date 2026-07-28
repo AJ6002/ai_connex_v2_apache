@@ -4,14 +4,14 @@ Scenario Test 4: Changepoint / Concept Drift Detection
 Real scenario: A pump is running normally for 3 months. Then a component
 degrades and the process distribution shifts gradually over 2 weeks
 (higher average temperature, wider variance in flow, subtle vibration shift).
-This is NOT a single-point anomaly — it's a concept drift / changepoint.
+This is NOT a single-point anomaly - it's a concept drift / changepoint.
 
 The pipeline must detect this via Population Stability Index (PSI) and
 KS-test on feature distributions, and correctly route to the appropriate
 drift action.
 
 This test verifies:
-  1. PSI < 0.1 on identical distributions (stable — no action).
+  1. PSI < 0.1 on identical distributions (stable - no action).
   2. PSI > 0.2 on strongly shifted distributions (drift detected).
   3. AnomalyDriftPolicy correctly routes to "recalibrate_threshold"
      when only the anomaly SCORE distribution shifts (features stable).
@@ -31,7 +31,7 @@ from aiconnex_ml.anomaly.drift import AnomalyDriftPolicy, compute_psi, run_ks_te
 from aiconnex_ml.regression.drift import RegressionDriftPolicy
 
 
-# ── Helpers ────────────────────────────────────────────────────────────────────
+# -- Helpers --------------------------------------------------------------------
 
 def stable_normal(n: int, mu: float = 0, sigma: float = 1, seed: int = 0) -> np.ndarray:
     return np.random.default_rng(seed).normal(mu, sigma, n)
@@ -69,7 +69,7 @@ def make_regression_drift_manifest(rmse_threshold_pct: float = 20.0):
     }
 
 
-# ── PSI Tests ─────────────────────────────────────────────────────────────────
+# -- PSI Tests -----------------------------------------------------------------
 
 class TestPSI:
     def test_psi_near_zero_for_identical_distribution(self):
@@ -104,14 +104,14 @@ class TestPSI:
 
     def test_psi_above_02_for_variance_shift(self):
         """
-        A large variance increase (sigma ×5) must also produce PSI > 0.2.
+        A large variance increase (sigma x5) must also produce PSI > 0.2.
         """
         rng = np.random.default_rng(42)
         baseline = rng.normal(0, 1, 1000)
-        current  = rng.normal(0, 5, 1000)     # same mean, 5× wider spread
+        current  = rng.normal(0, 5, 1000)     # same mean, 5x wider spread
         psi = compute_psi(baseline, current)
         assert psi > 0.2, (
-            f"Variance shift (sigma ×5) should produce PSI > 0.2. Got {psi:.4f}"
+            f"Variance shift (sigma x5) should produce PSI > 0.2. Got {psi:.4f}"
         )
 
     def test_psi_monotonically_increases_with_shift_magnitude(self):
@@ -127,7 +127,7 @@ class TestPSI:
             )
 
 
-# ── KS-Test Tests ─────────────────────────────────────────────────────────────
+# -- KS-Test Tests -------------------------------------------------------------
 
 class TestKSTest:
     def test_ks_pvalue_high_for_same_distribution(self):
@@ -152,13 +152,13 @@ class TestKSTest:
         assert p_value < 0.01, f"KS p-value should be < 0.01 for 10-sigma shift. Got {p_value:.4f}"
 
 
-# ── Anomaly Drift Policy Routing Tests ─────────────────────────────────────────
+# -- Anomaly Drift Policy Routing Tests -----------------------------------------
 
 class TestAnomalyDriftRouting:
     def test_score_only_drift_routes_to_recalibrate(self):
         """
         If anomaly scores have shifted but feature distributions are stable,
-        the correct action is 'recalibrate_threshold' — NOT retraining the model.
+        the correct action is 'recalibrate_threshold' - NOT retraining the model.
         """
         rng = np.random.default_rng(42)
         baseline_feats   = rng.normal(0, 1, (500, 4))
@@ -182,7 +182,7 @@ class TestAnomalyDriftRouting:
     def test_feature_drift_routes_to_retrain(self):
         """
         If the input feature distribution itself has shifted (concept drift),
-        the correct action is 'retrain_normal_model' — the threshold alone cannot fix this.
+        the correct action is 'retrain_normal_model' - the threshold alone cannot fix this.
         """
         rng = np.random.default_rng(42)
         baseline_feats   = rng.normal(0, 1, (500, 4))
@@ -244,7 +244,7 @@ class TestAnomalyDriftRouting:
         assert not missing, f"Drift report missing keys: {missing}"
 
 
-# ── Regression Drift Policy Test ───────────────────────────────────────────────
+# -- Regression Drift Policy Test -----------------------------------------------
 
 class TestRegressionDrift:
     def test_rmse_increase_triggers_retrain(self):
@@ -258,7 +258,7 @@ class TestRegressionDrift:
 
         action, report = policy.evaluate(
             baseline_rmse=10.0,
-            current_rmse=15.0,    # 50% increase — above 20% threshold
+            current_rmse=15.0,    # 50% increase - above 20% threshold
         )
         assert action == "retrain", (
             f"RMSE increase of 50% should trigger retrain. Got '{action}'."
@@ -274,7 +274,7 @@ class TestRegressionDrift:
 
         action, report = policy.evaluate(
             baseline_rmse=10.0,
-            current_rmse=10.5,    # 5% increase — within 20% tolerance
+            current_rmse=10.5,    # 5% increase - within 20% tolerance
         )
         assert action == "none", (
             f"5% RMSE increase should not trigger retrain. Got '{action}'."

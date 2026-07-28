@@ -1,5 +1,5 @@
 """
-Contract Tests — Report Schemas
+Contract Tests - Report Schemas
 Validates that each node's output JSON report has the required keys
 and value types defined in the contract.
 """

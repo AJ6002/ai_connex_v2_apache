@@ -1,5 +1,5 @@
 """
-test_inference_smoke.py — Production Deployment & Inference Smoke Tests
+test_inference_smoke.py - Production Deployment & Inference Smoke Tests
 ========================================================================
 Validates that exported artifacts (models, scalers, thresholds, reports):
   1. Exist and pass size/integrity checks.

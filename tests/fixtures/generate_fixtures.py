@@ -1,6 +1,6 @@
 """
 Synthetic mini-dataset generator for local pipeline tests.
-Produces a clean 200-row parquet file with 5 engines × 40 cycles.
+Produces a clean 200-row parquet file with 5 engines x 40 cycles.
 Run once before running tests.
 """
 import os
@@ -34,4 +34,4 @@ df = pd.DataFrame(rows)
 out_dir = os.path.dirname(os.path.abspath(__file__))
 out_path = os.path.join(out_dir, "mini_dataset.parquet")
 df.to_parquet(out_path, index=False)
-print(f"Saved mini_dataset.parquet → {out_path}  ({df.shape[0]} rows × {df.shape[1]} cols)")
+print(f"Saved mini_dataset.parquet -> {out_path}  ({df.shape[0]} rows x {df.shape[1]} cols)")

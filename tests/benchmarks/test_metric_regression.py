@@ -1,5 +1,5 @@
 """
-test_metric_regression.py — Version-over-Version Metric Baseline Tracking
+test_metric_regression.py - Version-over-Version Metric Baseline Tracking
 ===========================================================================
 Compares the metrics in latest run reports (outputs/regression/reports/ and outputs/anomaly/reports/)
 against baseline tolerances in tests/benchmarks/baseline_metrics.json to prevent performance regressions.
@@ -43,7 +43,7 @@ def test_regression_metric_baseline(baselines):
 
     # In our runner, metrics can be reported on unscaled or scaled targets.
     # We verify that r2 >= min_allowed_r2 (r2 is scale-invariant) and metrics are valid numbers.
-    assert r2 >= cfg["min_allowed_r2"], f"Regression R² degraded: got {r2:.4f}, required >= {cfg['min_allowed_r2']}"
+    assert r2 >= cfg["min_allowed_r2"], f"Regression R^2 degraded: got {r2:.4f}, required >= {cfg['min_allowed_r2']}"
     import math
     assert not math.isnan(rmse)
 

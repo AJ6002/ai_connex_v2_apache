@@ -1,5 +1,5 @@
 """
-Integration Smoke Test — Full Mini-Pipeline (Node 1 → Node 8)
+Integration Smoke Test - Full Mini-Pipeline (Node 1 -> Node 8)
 Runs all pipeline steps locally on a tiny 200-row synthetic dataset.
 No AWS, no S3, no SageMaker.
 
@@ -16,7 +16,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import StandardScaler
 import sklearn.metrics
 
-# ─── Config ────────────────────────────────────────────────────────────────
+# --- Config ----------------------------------------------------------------
 
 SENSORS  = ["sensor_2", "sensor_3", "sensor_4", "sensor_7"]
 SETTINGS = ["setting_1", "setting_2"]
@@ -40,7 +40,7 @@ CONFIG = {
     },
 }
 
-# ─── Helpers ────────────────────────────────────────────────────────────────
+# --- Helpers ----------------------------------------------------------------
 
 def _make_raw_df(n_engines: int = 5, cycles: int = 40) -> pd.DataFrame:
     np.random.seed(42)
@@ -90,14 +90,14 @@ def _process_features(df: pd.DataFrame) -> pd.DataFrame:
     return pd.concat([df] + rolling_dfs + lag_dfs, axis=1)
 
 
-# ─── Smoke Test ─────────────────────────────────────────────────────────────
+# --- Smoke Test -------------------------------------------------------------
 
 @pytest.fixture(scope="module")
 def pipeline_outputs():
     """Run the full mini-pipeline once; return a dict of all intermediate outputs."""
     outputs = {}
 
-    # ── Node 1: Clean ──────────────────────────────────────────────────────
+    # -- Node 1: Clean ------------------------------------------------------
     raw_df = _make_raw_df()
     clean_df = raw_df.copy()
     for col in clean_df.select_dtypes(include="number").columns:
@@ -119,7 +119,7 @@ def pipeline_outputs():
     outputs["manifest"]  = manifest
     outputs["n1_passed"] = True
 
-    # ── Node 2: Validate Raw ───────────────────────────────────────────────
+    # -- Node 2: Validate Raw -----------------------------------------------
     null_rate = clean_df.isnull().sum().sum() / (clean_df.shape[0] * clean_df.shape[1])
     raw_report = {
         "status": "PASSED" if null_rate <= 0.02 else "FAILED",
@@ -128,7 +128,7 @@ def pipeline_outputs():
     outputs["raw_report"] = raw_report
     outputs["n2_passed"]  = raw_report["status"] == "PASSED"
 
-    # ── Node 3: Split ──────────────────────────────────────────────────────
+    # -- Node 3: Split ------------------------------------------------------
     ids = sorted(clean_df[IDENT].unique())
     n = len(ids)
     train_ids = ids[:int(n * 0.7)]
@@ -139,7 +139,7 @@ def pipeline_outputs():
     test_df  = clean_df[clean_df[IDENT].isin(test_ids)].reset_index(drop=True)
     outputs.update({"train_df": train_df, "val_df": val_df, "test_df": test_df, "n3_passed": True})
 
-    # ── Node 4: Feature Engineering ────────────────────────────────────────
+    # -- Node 4: Feature Engineering ----------------------------------------
     train_fe = _process_features(train_df)
     val_fe   = _process_features(val_df)
     test_fe  = _process_features(test_df)
@@ -155,14 +155,14 @@ def pipeline_outputs():
     outputs.update({"train_fe": train_fe, "val_fe": val_fe, "test_fe": test_fe,
                     "cont_cols": cont_cols, "scaler": scaler, "n4_passed": True})
 
-    # ── Node 6: Train ──────────────────────────────────────────────────────
+    # -- Node 6: Train ------------------------------------------------------
     X_train = train_fe[cont_cols].fillna(0).values
     y_train = train_fe[TARGET].fillna(0).values
     model = RandomForestRegressor(n_estimators=5, random_state=42)
     model.fit(X_train, y_train)
     outputs.update({"model": model, "n6_passed": True})
 
-    # ── Node 8: Evaluate ───────────────────────────────────────────────────
+    # -- Node 8: Evaluate ---------------------------------------------------
     X_test  = test_fe[cont_cols].fillna(0).values
     y_test  = test_fe[TARGET].fillna(0).values
     y_pred  = model.predict(X_test)
@@ -178,7 +178,7 @@ def pipeline_outputs():
     }
     outputs.update({"eval_report": eval_report, "n8_passed": True})
 
-    # ── Node 9: Explain ────────────────────────────────────────────────────
+    # -- Node 9: Explain ----------------------------------------------------
     importances = model.feature_importances_
     ranked = sorted(
         [{"feature": n, "importance": float(v)} for n, v in zip(cont_cols, importances)],
@@ -188,7 +188,7 @@ def pipeline_outputs():
     explain_report = {"ranked_features": ranked}
     outputs.update({"explain_report": explain_report, "n9_passed": True})
 
-    # ── Node 10: Stress ────────────────────────────────────────────────────
+    # -- Node 10: Stress ----------------------------------------------------
     np.random.seed(42)
     X_noisy = X_test.copy()
     for i in range(X_noisy.shape[1]):
@@ -207,7 +207,7 @@ def pipeline_outputs():
     return outputs
 
 
-# ─── Assertions ─────────────────────────────────────────────────────────────
+# --- Assertions -------------------------------------------------------------
 
 class TestSmokePipeline:
 

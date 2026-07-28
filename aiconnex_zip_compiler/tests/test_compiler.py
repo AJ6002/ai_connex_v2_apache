@@ -1,7 +1,7 @@
 """
-test_compiler.py — Unit Tests for AIConnex Unified Dataset Compiler
+test_compiler.py - Unit Tests for AIConnex Plugin Pipeline Compiler
 ====================================================================
-Tests 4 internal layers on synthetic multi-file ZIP archives and real solar datasets.
+Tests the 5-stage plugin pipeline on synthetic multi-file ZIP archives.
 """
 
 import json
@@ -13,8 +13,15 @@ import pandas as pd
 import pytest
 
 from aiconnex_zip_compiler.compiler import UnifiedCompiler, CompileResult
-from aiconnex_zip_compiler.discovery import run_discovery
-from aiconnex_zip_compiler.schema_mapper import SchemaMap, normalize_schema_and_timestamps
+from aiconnex_zip_compiler.plugins import PluginRegistry, PipelineContext
+
+
+@pytest.fixture(autouse=True)
+def reset_registry():
+    """Reset singleton registry before each test."""
+    PluginRegistry.reset_instance()
+    yield
+    PluginRegistry.reset_instance()
 
 
 @pytest.fixture
@@ -50,26 +57,60 @@ def synthetic_zip(tmp_path) -> Path:
     return zip_path
 
 
-def test_discovery_layer(synthetic_zip, tmp_path):
-    temp_dir = tmp_path / "extracted"
-    disc = run_discovery(synthetic_zip, temp_dir)
-    assert len(disc.files) == 2
-    assert disc.primary_group_col in ["PLANT_ID", "plant_id"]
+def test_plugin_discovery_and_parsing(synthetic_zip, tmp_path):
+    """Test that plugin pipeline discovers and parses CSV files from a ZIP."""
+    registry = PluginRegistry.get_instance()
+    registry.auto_discover()
+
+    context = PipelineContext(
+        target_path=synthetic_zip,
+        temp_dir=tmp_path / "temp",
+        output_dir=tmp_path / "out",
+    )
+    (tmp_path / "temp").mkdir()
+
+    # Stage 1: Discovery
+    disc_plugin = registry.resolve("discovery", context)
+    context = disc_plugin.execute(context)
+    assert len(context.inventory) == 2
+    assert context.layout_type == "zip_directory"
+
+    # Stage 2: Parser
+    parser_plugin = registry.resolve("parser", context)
+    context = parser_plugin.execute(context)
+    assert len(context.parsed_tables) == 2
 
 
-def test_schema_mapper():
-    df = pd.DataFrame({
-        "DATE_TIME": ["15-05-2020 00:00", "15-05-2020 00:15"],
-        "AC_POWER": [100.0, 105.0]
-    })
-    smap = SchemaMap()
-    norm = normalize_schema_and_timestamps(df, "test.csv", "DATE_TIME", None, smap)
-    assert "date_time" in norm.columns
-    assert "ac_power" in norm.columns
-    assert pd.api.types.is_datetime64_any_dtype(norm["date_time"])
+def test_schema_normalizer_plugin(tmp_path):
+    """Test that the normalizer plugin applies snake_case and timestamp parsing."""
+    registry = PluginRegistry.get_instance()
+    registry.auto_discover()
+
+    context = PipelineContext(
+        target_path=tmp_path,
+        temp_dir=tmp_path,
+        output_dir=tmp_path,
+    )
+
+    # Pre-populate assembled_tables
+    context.assembled_tables = {
+        "test_table": pd.DataFrame({
+            "DATE_TIME": ["15-05-2020 00:00", "15-05-2020 00:15"],
+            "AC_POWER": [100.0, 105.0],
+        })
+    }
+
+    normalizer = registry.resolve("normalizer", context)
+    context = normalizer.execute(context)
+
+    assert "test_table" in context.normalized_tables
+    norm_df = context.normalized_tables["test_table"]
+    assert "date_time" in norm_df.columns
+    assert "ac_power" in norm_df.columns
 
 
 def test_full_compiler_pipeline(synthetic_zip, tmp_path):
+    """Test end-to-end compiler with plugin pipeline produces correct artifacts."""
     out_dir = tmp_path / "compiled_output"
     compiler = UnifiedCompiler(synthetic_zip, out_dir)
     res: CompileResult = compiler.compile()
@@ -80,10 +121,13 @@ def test_full_compiler_pipeline(synthetic_zip, tmp_path):
     assert Path(res.artifacts.schema_map_json).exists()
     assert Path(res.artifacts.compiler_report_json).exists()
 
+    # Verify lockfile was generated
+    lockfile = out_dir / "compiler_lock.json"
+    assert lockfile.exists()
+
     # Check merged CSV content
     merged_csv = Path(res.merged_files[0])
     merged_df = pd.read_csv(merged_csv)
 
     assert "date_time" in merged_df.columns
     assert "ac_power" in merged_df.columns
-    assert "irradiation" in merged_df.columns

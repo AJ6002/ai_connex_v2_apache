@@ -31,7 +31,7 @@ from aiconnex_ml.shared.features.lag import add_lag_features
 from aiconnex_ml.regression.baselines import run_baselines
 
 
-# ── Fixtures ───────────────────────────────────────────────────────────────────
+# -- Fixtures -------------------------------------------------------------------
 
 def make_sparse_label_dataset(n_rows: int = 500, lab_interval_rows: int = 24, seed: int = 42):
     """
@@ -88,7 +88,7 @@ def make_sparse_manifest(lag_seconds: int = 0):
     }
 
 
-# ── Tests ──────────────────────────────────────────────────────────────────────
+# -- Tests ----------------------------------------------------------------------
 
 def test_sparse_label_fraction_is_realistic():
     """
@@ -99,7 +99,7 @@ def test_sparse_label_fraction_is_realistic():
     label_coverage = df["lab_quality"].notna().mean()
     print(f"[SparseLabel] Label coverage: {label_coverage:.1%}")
     assert label_coverage < 0.10, f"Expected <10% label coverage, got {label_coverage:.1%}"
-    assert label_coverage > 0.01, "Too few labeled rows — fixture may be broken"
+    assert label_coverage > 0.01, "Too few labeled rows - fixture may be broken"
 
 
 def test_label_contract_passes_with_sparse_but_sufficient_labels():
@@ -138,12 +138,12 @@ def test_label_lag_shifts_target_backward():
     (because there are no prior lab readings to shift into them).
     """
     df = make_sparse_label_dataset(n_rows=200, lab_interval_rows=24)
-    lag_seconds = 240   # 24 rows × 10 seconds/row
+    lag_seconds = 240   # 24 rows x 10 seconds/row
 
     df_lagged = apply_label_lag(df, "lab_quality", lag_seconds, "timestamp")
 
     # The shape must be preserved
-    assert len(df_lagged) == len(df), "Row count changed after label lag — unexpected."
+    assert len(df_lagged) == len(df), "Row count changed after label lag - unexpected."
 
 
 def test_rolling_features_on_sparse_labeled_data():
@@ -163,7 +163,7 @@ def test_rolling_features_on_sparse_labeled_data():
     for col in rolling_cols:
         null_frac = df_feat[col].isnull().mean()
         assert null_frac < 0.15, (
-            f"Rolling feature '{col}' has {null_frac:.0%} NaN — suspiciously high. "
+            f"Rolling feature '{col}' has {null_frac:.0%} NaN - suspiciously high. "
             "Rolling features over dense sensor columns should not have many NaN values."
         )
 
@@ -180,7 +180,7 @@ def test_lag_features_do_not_destroy_labeled_rows():
     df_feat = add_lag_features(df, sensor_cols, lags=[1, 5, 10])
 
     # Simulate the pipeline: drop rows with NaN in sensor lag features
-    # (NOT in the target — we keep sparse targets)
+    # (NOT in the target - we keep sparse targets)
     lag_cols = [c for c in df_feat.columns if "_lag" in c]
     df_clean = df_feat.dropna(subset=lag_cols)
 

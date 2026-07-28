@@ -165,16 +165,29 @@ def _run_training_job(job_id: str, payload: TrainPayload):
 
         # ── 4. Prepare X / y ─────────────────────────────────────────────────
         if target_col and target_col in df_train.columns:
-            y_train = df_train[target_col]
+            y_raw = df_train[target_col]
+            s_y_num = pd.to_numeric(y_raw, errors="coerce")
+            if s_y_num.notna().sum() > len(y_raw) * 0.5:
+                med_val = float(s_y_num.median()) if len(s_y_num.dropna()) > 0 else 0.0
+                y_train = s_y_num.fillna(med_val).to_numpy(dtype=float)
+            else:
+                y_train = y_raw.fillna("missing").astype(str).to_numpy(dtype=str)
             X_train = df_train.drop(columns=[target_col])
         else:
             y_train = None
             X_train = df_train
 
-        # Drop any remaining non-numeric columns before fitting
-        non_numeric = [c for c in X_train.columns if not pd.api.types.is_numeric_dtype(X_train[c])]
-        if non_numeric:
-            X_train = X_train.drop(columns=non_numeric)
+        # Coerce non-numeric columns to numeric where possible
+        for c in list(X_train.columns):
+            if not pd.api.types.is_numeric_dtype(X_train[c]):
+                s_coerced = pd.to_numeric(X_train[c], errors="coerce")
+                if s_coerced.notna().sum() > 0:
+                    X_train[c] = s_coerced
+                else:
+                    X_train.drop(columns=[c], inplace=True)
+
+        if X_train.shape[1] == 0:
+            X_train["feature_index"] = np.arange(len(X_train), dtype=float)
 
         X_train = X_train.fillna(X_train.median(numeric_only=True).fillna(0))
 
@@ -209,7 +222,8 @@ def _run_training_job(job_id: str, payload: TrainPayload):
             is_regression = True
         elif y_train is not None:
             is_anomaly = False
-            if (y_train.nunique() <= 10 and not pd.api.types.is_float_dtype(y_train)) or pd.api.types.is_string_dtype(y_train) or pd.api.types.is_object_dtype(y_train):
+            s_y = pd.Series(y_train)
+            if (s_y.nunique() <= 10 and not pd.api.types.is_float_dtype(s_y)) or pd.api.types.is_string_dtype(s_y) or pd.api.types.is_object_dtype(s_y):
                 is_regression = False
             else:
                 is_regression = True
@@ -266,7 +280,7 @@ def _run_training_job(job_id: str, payload: TrainPayload):
 # Model Resolution Registry
 # ─────────────────────────────────────────────────────────────────────────────
 
-def _resolve_model(algo_lower: str, var_lower: str, hyperparams: dict, is_regression: bool):
+def _resolve_model(algo_lower: str, var_lower: str, hyperparams: dict, is_regression: bool, is_anomaly: bool = False):
     """Map recipe algorithm name → sklearn estimator instance."""
 
     # 1. Logistic Regression
@@ -339,14 +353,17 @@ def _resolve_model(algo_lower: str, var_lower: str, hyperparams: dict, is_regres
 
     # 6. LightGBM (with GradientBoosting fallback)
     if "lightgbm" in algo_lower:
-        n, lr = hyperparams.get("n_estimators", 100), hyperparams.get("learning_rate", 0.1)
+        n = hyperparams.get("n_estimators", 100)
+        lr = hyperparams.get("learning_rate", 0.1)
+        num_leaves = hyperparams.get("num_leaves", 31)
+        max_depth = hyperparams.get("max_depth", -1)
         try:
             import lightgbm as lgb
-            return lgb.LGBMRegressor(n_estimators=n, learning_rate=lr, random_state=42, verbose=-1) if is_regression \
-                   else lgb.LGBMClassifier(n_estimators=n, learning_rate=lr, random_state=42, verbose=-1)
+            return lgb.LGBMRegressor(n_estimators=n, learning_rate=lr, num_leaves=num_leaves, max_depth=max_depth, random_state=42, verbose=-1) if is_regression \
+                   else lgb.LGBMClassifier(n_estimators=n, learning_rate=lr, num_leaves=num_leaves, max_depth=max_depth, random_state=42, verbose=-1)
         except ImportError:
-            return GradientBoostingRegressor(n_estimators=n, learning_rate=lr, random_state=42) if is_regression \
-                   else GradientBoostingClassifier(n_estimators=n, random_state=42)
+            return GradientBoostingRegressor(n_estimators=n, learning_rate=lr, max_depth=max(1, max_depth if max_depth > 0 else 3), random_state=42) if is_regression \
+                   else GradientBoostingClassifier(n_estimators=n, learning_rate=lr, max_depth=max(1, max_depth if max_depth > 0 else 3), random_state=42)
 
     # 7. Anomaly Detection
     if "isolation forest" in algo_lower or "anomaly" in algo_lower:

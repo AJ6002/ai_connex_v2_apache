@@ -1,5 +1,5 @@
 """
-Unit Tests — Node 2: validate_raw.py
+Unit Tests - Node 2: validate_raw.py
 Tests: missing-rate check, negative time-index guard, negative-target guard, report schema.
 """
 import numpy as np

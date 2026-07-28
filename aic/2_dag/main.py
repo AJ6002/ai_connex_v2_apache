@@ -155,6 +155,101 @@ def get_execution_timeline_plot(run_id: str):
         })
     return {"run_id": run_id, "timeline": timeline}
 
+@app.api_route("/api/v1/predict/{run_id}", methods=["GET", "POST"])
+async def predict_endpoint(run_id: str, payload: Optional[Dict[str, Any]] = None):
+    """Serving REST prediction endpoint for deployed models."""
+    # 1. Resolve model file path
+    workspace_root = os.path.join(os.path.dirname(os.path.dirname(__file__)), "workspace_data")
+    model_path = None
+    scaler_path = None
+
+    # Search for model_run_<run_id>.pkl or deployed model matching run_id
+    if run_id in RUNS:
+        run = RUNS[run_id]
+        if hasattr(run, "model_path") and run.model_path and os.path.exists(run.model_path):
+            model_path = run.model_path
+            scaler_path = getattr(run, "scaler_path", None)
+
+    if not model_path or not os.path.exists(model_path):
+        for root, dirs, files in os.walk(workspace_root):
+            for f in files:
+                if f.endswith(".pkl") and run_id in f and "scaler" not in f:
+                    model_path = os.path.join(root, f)
+                    sc_cand = os.path.join(root, f.replace("model_", "scaler_"))
+                    if os.path.exists(sc_cand):
+                        scaler_path = sc_cand
+                    break
+            if model_path:
+                break
+
+    if not model_path or not os.path.exists(model_path):
+        raise HTTPException(
+            status_code=404,
+            detail=f"Deployed model for run_id '{run_id}' not found."
+        )
+
+    # 2. GET request → Return active endpoint status & instructions
+    if payload is None:
+        return {
+            "status": "active",
+            "service": "AIConnex Model Prediction API",
+            "run_id": run_id,
+            "model_path": model_path,
+            "has_scaler": bool(scaler_path and os.path.exists(scaler_path)),
+            "usage": "POST JSON payload with {'features': [val1, val2, ...]} or {'features': {'col1': val1, ...}}"
+        }
+
+    # 3. POST request → Execute model inference
+    try:
+        import pickle
+        import pandas as pd
+        import numpy as np
+
+        with open(model_path, "rb") as f:
+            model = pickle.load(f)
+
+        features = payload.get("features", payload)
+        if isinstance(features, dict):
+            df_in = pd.DataFrame([features])
+        elif isinstance(features, list):
+            if len(features) > 0 and isinstance(features[0], list):
+                df_in = pd.DataFrame(features)
+            else:
+                df_in = pd.DataFrame([features])
+        else:
+            raise ValueError("Payload features must be a dict or list of numbers.")
+
+        # Scaler transformation if available
+        if scaler_path and os.path.exists(scaler_path):
+            try:
+                with open(scaler_path, "rb") as f:
+                    scaler = pickle.load(f)
+                if hasattr(scaler, "transform") and df_in.shape[1] == getattr(scaler, "n_features_in_", df_in.shape[1]):
+                    df_in = scaler.transform(df_in)
+            except Exception:
+                pass
+
+        # Model prediction
+        if hasattr(model, "predict"):
+            preds = model.predict(df_in)
+            if hasattr(preds, "tolist"):
+                preds = preds.tolist()
+        else:
+            raise ValueError("Loaded model object lacks predict() method.")
+
+        return {
+            "status": "success",
+            "run_id": run_id,
+            "predictions": preds,
+            "sample_count": len(preds)
+        }
+
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Prediction inference failed: {str(exc)}"
+        )
+
 if __name__ == "__main__":
     import uvicorn
     should_reload = os.environ.get("AIC_RELOAD", "0").lower() in ("true", "1", "yes")

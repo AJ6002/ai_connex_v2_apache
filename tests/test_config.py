@@ -1,5 +1,5 @@
 """
-test_config.py — Unit tests for Pydantic manifest validation
+test_config.py - Unit tests for Pydantic manifest validation
 """
 
 import pytest
