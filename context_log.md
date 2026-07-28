@@ -1431,4 +1431,22 @@
 **Current system state:** Branch `28_july_agentic` updated with full UI suite from `origin/ui-27JUL`. Working tree clean.
 ---
 
+## Query 133 — 2026-07-28 17:48
+**Input:** User asked how to run the AIConnex system end-to-end.
+**Response summary:** Provided clear, step-by-step instructions for 3 execution modes: 1) Interactive UI + Microservices Cluster (`python start_all.py` + `python start_frontend.py` -> `http://localhost:3000`); 2) Automated Pipeline CLI (`python run_pipeline.py` or `python smoke_test.py`); 3) Standalone Agentic ZIP Compiler (`python aiconnex.py`).
+**Files changed:** context_log.md
+**Architectural decisions:** Documented 3 primary end-to-end execution options.
+**Current system state:** End-to-end execution guide delivered to user.
+---
+
+## Query 134 — 2026-07-28 18:01
+**Input:** User reported Vite frontend pre-transform import error: `Failed to resolve import "./data/initialData" from "src/App.tsx"`.
+**Response summary:** Diagnosed missing `initialData.ts` file in `frontend/src/data/`. Copied `initialData.ts` into `frontend/src/data/initialData.ts`, updated `.gitignore` rule from `data/` to `/data/` to prevent ignoring frontend data files, ran `npm run build` in `frontend/` confirming 0 errors (56 modules transformed in 2.50s), and committed fix.
+**Files changed:** frontend/src/data/initialData.ts [NEW], .gitignore, context_log.md
+**Architectural decisions:** Restored `initialData.ts` mock data module for Vite frontend build pipeline and un-ignored `frontend/src/data/`.
+**Current system state:** Vite build error resolved; `npm run build` succeeds cleanly in 2.50s.
+---
+
+
+
 
