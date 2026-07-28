@@ -1,0 +1,11 @@
+{
+  "algorithm": "AdaBoostClassifier",
+  "variant": "Imbalanced",
+  "hyperparameters": {
+    "n_estimators": 100,
+    "learning_rate": 0.1
+  },
+  "use_gpu": false,
+  "early_stopping": false,
+  "class_weight": "balanced"
+}

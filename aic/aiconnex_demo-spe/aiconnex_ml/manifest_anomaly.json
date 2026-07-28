@@ -1,0 +1,855 @@
+{
+  "pipeline_run_id": "anomaly_run_001",
+  "pipeline_version": "2.0.0",
+  "ml_task": "anomaly",
+  "data_topology": "time_series",
+  "tenant": {
+    "tenant_id": "plant_beta",
+    "site": "Site-B",
+    "tag_registry_path": null
+  },
+  "label_contract": {
+    "regime": "curated_normal",
+    "supervision_mode": "semi_supervised",
+    "target_column": null,
+    "normal_period": {
+      "start": "2025-01-01",
+      "end": "2025-01-15"
+    },
+    "contamination_estimate": 0.02,
+    "fault_label_column": null,
+    "anomaly_types_of_interest": [
+      "point",
+      "collective",
+      "contextual"
+    ]
+  },
+  "schema_config": {
+    "entity_column": null,
+    "timestamp_column": "timestamp",
+    "raw_features": [
+      "ambient_temp_c",
+      "feed_flow_tph",
+      "steam_flow_tph",
+      "vacuum_bar",
+      "pressure_bar",
+      "cooling_water_temp_c",
+      "cooling_water_pressure_bar",
+      "heat_duty",
+      "concentration_pct",
+      "energy_consumption_kwh"
+    ],
+    "final_features": [
+      "batch_id",
+      "ambient_temp_c",
+      "feed_flow_tph",
+      "steam_flow_tph",
+      "vacuum_bar",
+      "pressure_bar",
+      "cooling_water_temp_c",
+      "cooling_water_pressure_bar",
+      "heat_duty",
+      "concentration_pct",
+      "energy_consumption_kwh",
+      "steam_efficiency",
+      "ambient_temp_c_lag1",
+      "ambient_temp_c_lag5",
+      "ambient_temp_c_lag10",
+      "feed_flow_tph_lag1",
+      "feed_flow_tph_lag5",
+      "feed_flow_tph_lag10",
+      "steam_flow_tph_lag1",
+      "steam_flow_tph_lag5",
+      "steam_flow_tph_lag10",
+      "vacuum_bar_lag1",
+      "vacuum_bar_lag5",
+      "vacuum_bar_lag10",
+      "pressure_bar_lag1",
+      "pressure_bar_lag5",
+      "pressure_bar_lag10",
+      "cooling_water_temp_c_lag1",
+      "cooling_water_temp_c_lag5",
+      "cooling_water_temp_c_lag10",
+      "cooling_water_pressure_bar_lag1",
+      "cooling_water_pressure_bar_lag5",
+      "cooling_water_pressure_bar_lag10",
+      "heat_duty_lag1",
+      "heat_duty_lag5",
+      "heat_duty_lag10",
+      "concentration_pct_lag1",
+      "concentration_pct_lag5",
+      "concentration_pct_lag10",
+      "energy_consumption_kwh_lag1",
+      "energy_consumption_kwh_lag5",
+      "energy_consumption_kwh_lag10",
+      "ambient_temp_c_diff1",
+      "ambient_temp_c_diff5",
+      "feed_flow_tph_diff1",
+      "feed_flow_tph_diff5",
+      "steam_flow_tph_diff1",
+      "steam_flow_tph_diff5",
+      "vacuum_bar_diff1",
+      "vacuum_bar_diff5",
+      "pressure_bar_diff1",
+      "pressure_bar_diff5",
+      "cooling_water_temp_c_diff1",
+      "cooling_water_temp_c_diff5",
+      "cooling_water_pressure_bar_diff1",
+      "cooling_water_pressure_bar_diff5",
+      "heat_duty_diff1",
+      "heat_duty_diff5",
+      "concentration_pct_diff1",
+      "concentration_pct_diff5",
+      "energy_consumption_kwh_diff1",
+      "energy_consumption_kwh_diff5",
+      "ambient_temp_c_roll10_mean",
+      "ambient_temp_c_roll10_std",
+      "ambient_temp_c_roll10_min",
+      "ambient_temp_c_roll10_max",
+      "ambient_temp_c_roll30_mean",
+      "ambient_temp_c_roll30_std",
+      "ambient_temp_c_roll30_min",
+      "ambient_temp_c_roll30_max",
+      "feed_flow_tph_roll10_mean",
+      "feed_flow_tph_roll10_std",
+      "feed_flow_tph_roll10_min",
+      "feed_flow_tph_roll10_max",
+      "feed_flow_tph_roll30_mean",
+      "feed_flow_tph_roll30_std",
+      "feed_flow_tph_roll30_min",
+      "feed_flow_tph_roll30_max",
+      "steam_flow_tph_roll10_mean",
+      "steam_flow_tph_roll10_std",
+      "steam_flow_tph_roll10_min",
+      "steam_flow_tph_roll10_max",
+      "steam_flow_tph_roll30_mean",
+      "steam_flow_tph_roll30_std",
+      "steam_flow_tph_roll30_min",
+      "steam_flow_tph_roll30_max",
+      "vacuum_bar_roll10_mean",
+      "vacuum_bar_roll10_std",
+      "vacuum_bar_roll10_min",
+      "vacuum_bar_roll10_max",
+      "vacuum_bar_roll30_mean",
+      "vacuum_bar_roll30_std",
+      "vacuum_bar_roll30_min",
+      "vacuum_bar_roll30_max",
+      "pressure_bar_roll10_mean",
+      "pressure_bar_roll10_std",
+      "pressure_bar_roll10_min",
+      "pressure_bar_roll10_max",
+      "pressure_bar_roll30_mean",
+      "pressure_bar_roll30_std",
+      "pressure_bar_roll30_min",
+      "pressure_bar_roll30_max",
+      "cooling_water_temp_c_roll10_mean",
+      "cooling_water_temp_c_roll10_std",
+      "cooling_water_temp_c_roll10_min",
+      "cooling_water_temp_c_roll10_max",
+      "cooling_water_temp_c_roll30_mean",
+      "cooling_water_temp_c_roll30_std",
+      "cooling_water_temp_c_roll30_min",
+      "cooling_water_temp_c_roll30_max",
+      "cooling_water_pressure_bar_roll10_mean",
+      "cooling_water_pressure_bar_roll10_std",
+      "cooling_water_pressure_bar_roll10_min",
+      "cooling_water_pressure_bar_roll10_max",
+      "cooling_water_pressure_bar_roll30_mean",
+      "cooling_water_pressure_bar_roll30_std",
+      "cooling_water_pressure_bar_roll30_min",
+      "cooling_water_pressure_bar_roll30_max",
+      "heat_duty_roll10_mean",
+      "heat_duty_roll10_std",
+      "heat_duty_roll10_min",
+      "heat_duty_roll10_max",
+      "heat_duty_roll30_mean",
+      "heat_duty_roll30_std",
+      "heat_duty_roll30_min",
+      "heat_duty_roll30_max",
+      "concentration_pct_roll10_mean",
+      "concentration_pct_roll10_std",
+      "concentration_pct_roll10_min",
+      "concentration_pct_roll10_max",
+      "concentration_pct_roll30_mean",
+      "concentration_pct_roll30_std",
+      "concentration_pct_roll30_min",
+      "concentration_pct_roll30_max",
+      "energy_consumption_kwh_roll10_mean",
+      "energy_consumption_kwh_roll10_std",
+      "energy_consumption_kwh_roll10_min",
+      "energy_consumption_kwh_roll10_max",
+      "energy_consumption_kwh_roll30_mean",
+      "energy_consumption_kwh_roll30_std",
+      "energy_consumption_kwh_roll30_min",
+      "energy_consumption_kwh_roll30_max",
+      "ambient_temp_c_slope20",
+      "feed_flow_tph_slope20",
+      "steam_flow_tph_slope20",
+      "vacuum_bar_slope20",
+      "pressure_bar_slope20",
+      "cooling_water_temp_c_slope20",
+      "cooling_water_pressure_bar_slope20",
+      "heat_duty_slope20",
+      "concentration_pct_slope20",
+      "energy_consumption_kwh_slope20"
+    ]
+  },
+  "operating_modes": {
+    "enabled": false,
+    "mode_column": "operating_mode",
+    "known_modes": [
+      "STARTUP",
+      "NORMAL_RUN",
+      "HIGH_LOAD"
+    ],
+    "normalize_per_mode": false
+  },
+  "split_policy": {
+    "enforced_by_topology": true,
+    "train_ratio": 0.7,
+    "val_ratio": 0.15,
+    "test_ratio": 0.15,
+    "random_state": 42
+  },
+  "recipes": {
+    "preparing": {
+      "time_align": {
+        "interval_seconds": 300
+      }
+    }
+  },
+  "features_config": {
+    "temporal_ordered": true,
+    "time_window_sizes": [
+      10,
+      30
+    ],
+    "lag_features": true,
+    "spectral_features": false,
+    "normalization": "global"
+  },
+  "candidate_algorithms": [
+    "Isolation Forest",
+    "PCA-based"
+  ],
+  "hpo_config": {
+    "method": "randomized_search",
+    "n_iter": 3,
+    "scoring": "average_precision",
+    "cv_strategy": "predefined_split",
+    "n_jobs_search": -1,
+    "random_state": 42
+  },
+  "threshold_config": {
+    "method": "percentile",
+    "percentile": 99.0,
+    "max_false_alarm_rate_per_week": 5
+  },
+  "validation_gates": {
+    "vg_1": {
+      "allow_stuck_sensors": true,
+      "max_allowed_null_ratio": 0.05
+    }
+  },
+  "quality_gates": {
+    "family": "anomaly",
+    "anomaly_gates": {
+      "min_precision": 0.1,
+      "min_recall": 0.1,
+      "min_pr_auc": 0.1,
+      "max_false_alarm_rate_per_week": 50,
+      "max_detection_latency_minutes": 120
+    }
+  },
+  "drift_policy": {
+    "family": "anomaly",
+    "anomaly_drift": {
+      "signal": "feature_distribution_shift",
+      "detection_method": "psi_and_ks_test",
+      "psi_threshold": 0.2,
+      "action_routing": {
+        "score_distribution_shifted_only": "recalibrate_threshold",
+        "feature_distribution_shifted": "retrain_normal_model"
+      }
+    }
+  },
+  "deployment_target": {
+    "platform": "local",
+    "compilation_format": "pickle"
+  },
+  "paths": {
+    "raw_data": "historian_data.csv",
+    "best_model": "outputs/anomaly/best_model.pkl",
+    "scaler": "outputs/anomaly/scaler.pkl",
+    "threshold": "outputs/anomaly/best_model",
+    "reports": "outputs/anomaly/reports",
+    "manifest_self": "aiconnex_ml/manifest_anomaly.json"
+  },
+  "status": "deployed",
+  "completed_steps": [
+    "scope",
+    "acquire",
+    "split",
+    "feature_engineering",
+    "anomaly_training",
+    "deploy",
+    "report"
+  ],
+  "registry": {},
+  "data_info": {
+    "raw_rows": 525600,
+    "raw_cols": 18,
+    "column_names": [
+      "timestamp",
+      "shift",
+      "operating_mode",
+      "site_id",
+      "unit_id",
+      "asset_id",
+      "batch_id",
+      "ambient_temp_c",
+      "feed_flow_tph",
+      "steam_flow_tph",
+      "vacuum_bar",
+      "pressure_bar",
+      "cooling_water_temp_c",
+      "cooling_water_pressure_bar",
+      "heat_duty",
+      "concentration_pct",
+      "energy_consumption_kwh",
+      "steam_efficiency"
+    ],
+    "dtypes": {
+      "timestamp": "object",
+      "shift": "object",
+      "operating_mode": "object",
+      "site_id": "object",
+      "unit_id": "object",
+      "asset_id": "object",
+      "batch_id": "int64",
+      "ambient_temp_c": "float64",
+      "feed_flow_tph": "float64",
+      "steam_flow_tph": "float64",
+      "vacuum_bar": "float64",
+      "pressure_bar": "float64",
+      "cooling_water_temp_c": "float64",
+      "cooling_water_pressure_bar": "float64",
+      "heat_duty": "float64",
+      "concentration_pct": "float64",
+      "energy_consumption_kwh": "float64",
+      "steam_efficiency": "float64"
+    },
+    "split_sizes": {
+      "train": 367920,
+      "val": 78840,
+      "test": 78840
+    },
+    "detected_gaps": 0,
+    "quality_report": {
+      "stuck_sensors": [
+        "batch_id"
+      ],
+      "high_null_columns": {},
+      "duplicate_rows": 0,
+      "duplicate_fraction": 0.0,
+      "timestamp_monotonicity": {
+        "is_monotonic": true,
+        "n_violations": 0
+      }
+    },
+    "post_dedup_rows": 73584,
+    "contract_errors": [],
+    "feature_validation": {
+      "psi_drifted_features": {
+        "batch_id": 10.5809,
+        "ambient_temp_c": 8.9909,
+        "ambient_temp_c_lag1": 8.9916,
+        "ambient_temp_c_lag5": 8.9942,
+        "ambient_temp_c_lag10": 8.9971,
+        "ambient_temp_c_roll10_mean": 8.9153,
+        "ambient_temp_c_roll10_min": 8.751,
+        "ambient_temp_c_roll10_max": 9.114,
+        "ambient_temp_c_roll30_mean": 8.9831,
+        "ambient_temp_c_roll30_min": 8.4068,
+        "ambient_temp_c_roll30_max": 9.4822
+      },
+      "high_collinear_pairs": [
+        [
+          "ambient_temp_c_lag1",
+          "ambient_temp_c",
+          0.9986
+        ],
+        [
+          "ambient_temp_c_lag5",
+          "ambient_temp_c",
+          0.9966
+        ],
+        [
+          "ambient_temp_c_lag5",
+          "ambient_temp_c_lag1",
+          0.9973
+        ],
+        [
+          "ambient_temp_c_lag10",
+          "ambient_temp_c",
+          0.9906
+        ],
+        [
+          "ambient_temp_c_lag10",
+          "ambient_temp_c_lag1",
+          0.9921
+        ],
+        [
+          "ambient_temp_c_lag10",
+          "ambient_temp_c_lag5",
+          0.9966
+        ],
+        [
+          "concentration_pct_lag1",
+          "concentration_pct",
+          0.9779
+        ],
+        [
+          "concentration_pct_lag5",
+          "concentration_pct",
+          0.9631
+        ],
+        [
+          "concentration_pct_lag5",
+          "concentration_pct_lag1",
+          0.967
+        ],
+        [
+          "concentration_pct_lag10",
+          "concentration_pct_lag5",
+          0.9631
+        ],
+        [
+          "heat_duty_diff1",
+          "steam_flow_tph_diff1",
+          0.9984
+        ],
+        [
+          "heat_duty_diff5",
+          "steam_flow_tph_diff5",
+          0.9921
+        ],
+        [
+          "ambient_temp_c_roll10_mean",
+          "ambient_temp_c",
+          0.9977
+        ],
+        [
+          "ambient_temp_c_roll10_mean",
+          "ambient_temp_c_lag1",
+          0.9984
+        ],
+        [
+          "ambient_temp_c_roll10_mean",
+          "ambient_temp_c_lag5",
+          0.9994
+        ],
+        [
+          "ambient_temp_c_roll10_mean",
+          "ambient_temp_c_lag10",
+          0.9968
+        ],
+        [
+          "ambient_temp_c_roll10_min",
+          "ambient_temp_c",
+          0.9975
+        ],
+        [
+          "ambient_temp_c_roll10_min",
+          "ambient_temp_c_lag1",
+          0.9981
+        ],
+        [
+          "ambient_temp_c_roll10_min",
+          "ambient_temp_c_lag5",
+          0.9989
+        ],
+        [
+          "ambient_temp_c_roll10_min",
+          "ambient_temp_c_lag10",
+          0.9964
+        ],
+        [
+          "ambient_temp_c_roll10_min",
+          "ambient_temp_c_roll10_mean",
+          0.9996
+        ],
+        [
+          "ambient_temp_c_roll10_max",
+          "ambient_temp_c",
+          0.9975
+        ],
+        [
+          "ambient_temp_c_roll10_max",
+          "ambient_temp_c_lag1",
+          0.9981
+        ],
+        [
+          "ambient_temp_c_roll10_max",
+          "ambient_temp_c_lag5",
+          0.9989
+        ],
+        [
+          "ambient_temp_c_roll10_max",
+          "ambient_temp_c_lag10",
+          0.9965
+        ],
+        [
+          "ambient_temp_c_roll10_max",
+          "ambient_temp_c_roll10_mean",
+          0.9996
+        ],
+        [
+          "ambient_temp_c_roll10_max",
+          "ambient_temp_c_roll10_min",
+          0.9989
+        ],
+        [
+          "ambient_temp_c_roll30_mean",
+          "ambient_temp_c",
+          0.9826
+        ],
+        [
+          "ambient_temp_c_roll30_mean",
+          "ambient_temp_c_lag1",
+          0.9848
+        ],
+        [
+          "ambient_temp_c_roll30_mean",
+          "ambient_temp_c_lag5",
+          0.9921
+        ],
+        [
+          "ambient_temp_c_roll30_mean",
+          "ambient_temp_c_lag10",
+          0.9977
+        ],
+        [
+          "ambient_temp_c_roll30_mean",
+          "ambient_temp_c_roll10_mean",
+          0.9919
+        ],
+        [
+          "ambient_temp_c_roll30_mean",
+          "ambient_temp_c_roll10_min",
+          0.9916
+        ],
+        [
+          "ambient_temp_c_roll30_mean",
+          "ambient_temp_c_roll10_max",
+          0.9916
+        ],
+        [
+          "ambient_temp_c_roll30_min",
+          "ambient_temp_c",
+          0.9804
+        ],
+        [
+          "ambient_temp_c_roll30_min",
+          "ambient_temp_c_lag1",
+          0.9825
+        ],
+        [
+          "ambient_temp_c_roll30_min",
+          "ambient_temp_c_lag5",
+          0.9896
+        ],
+        [
+          "ambient_temp_c_roll30_min",
+          "ambient_temp_c_lag10",
+          0.9951
+        ],
+        [
+          "ambient_temp_c_roll30_min",
+          "ambient_temp_c_roll10_mean",
+          0.9895
+        ],
+        [
+          "ambient_temp_c_roll30_min",
+          "ambient_temp_c_roll10_min",
+          0.9903
+        ],
+        [
+          "ambient_temp_c_roll30_min",
+          "ambient_temp_c_roll10_max",
+          0.9882
+        ],
+        [
+          "ambient_temp_c_roll30_min",
+          "ambient_temp_c_roll30_mean",
+          0.9975
+        ],
+        [
+          "ambient_temp_c_roll30_max",
+          "ambient_temp_c",
+          0.9803
+        ],
+        [
+          "ambient_temp_c_roll30_max",
+          "ambient_temp_c_lag1",
+          0.9824
+        ],
+        [
+          "ambient_temp_c_roll30_max",
+          "ambient_temp_c_lag5",
+          0.9895
+        ],
+        [
+          "ambient_temp_c_roll30_max",
+          "ambient_temp_c_lag10",
+          0.995
+        ],
+        [
+          "ambient_temp_c_roll30_max",
+          "ambient_temp_c_roll10_mean",
+          0.9894
+        ],
+        [
+          "ambient_temp_c_roll30_max",
+          "ambient_temp_c_roll10_min",
+          0.9881
+        ],
+        [
+          "ambient_temp_c_roll30_max",
+          "ambient_temp_c_roll10_max",
+          0.9902
+        ],
+        [
+          "ambient_temp_c_roll30_max",
+          "ambient_temp_c_roll30_mean",
+          0.9975
+        ],
+        [
+          "ambient_temp_c_roll30_max",
+          "ambient_temp_c_roll30_min",
+          0.9906
+        ],
+        [
+          "steam_flow_tph_roll30_mean",
+          "steam_flow_tph_roll10_mean",
+          0.958
+        ],
+        [
+          "vacuum_bar_roll30_mean",
+          "vacuum_bar_roll10_mean",
+          0.9722
+        ],
+        [
+          "cooling_water_temp_c_roll30_mean",
+          "cooling_water_temp_c_roll10_mean",
+          0.9605
+        ],
+        [
+          "concentration_pct_roll10_mean",
+          "concentration_pct",
+          0.981
+        ],
+        [
+          "concentration_pct_roll10_mean",
+          "concentration_pct_lag1",
+          0.984
+        ],
+        [
+          "concentration_pct_roll10_mean",
+          "concentration_pct_lag5",
+          0.9886
+        ],
+        [
+          "concentration_pct_roll10_mean",
+          "concentration_pct_lag10",
+          0.9754
+        ],
+        [
+          "concentration_pct_roll10_min",
+          "concentration_pct",
+          0.9892
+        ],
+        [
+          "concentration_pct_roll10_min",
+          "concentration_pct_lag1",
+          0.9856
+        ],
+        [
+          "concentration_pct_roll10_min",
+          "concentration_pct_lag5",
+          0.9711
+        ],
+        [
+          "concentration_pct_roll10_min",
+          "concentration_pct_lag10",
+          0.9509
+        ],
+        [
+          "concentration_pct_roll10_min",
+          "concentration_pct_roll10_mean",
+          0.9872
+        ],
+        [
+          "concentration_pct_roll10_max",
+          "concentration_pct",
+          0.9579
+        ],
+        [
+          "concentration_pct_roll10_max",
+          "concentration_pct_lag1",
+          0.9615
+        ],
+        [
+          "concentration_pct_roll10_max",
+          "concentration_pct_lag5",
+          0.9757
+        ],
+        [
+          "concentration_pct_roll10_max",
+          "concentration_pct_lag10",
+          0.984
+        ],
+        [
+          "concentration_pct_roll10_max",
+          "concentration_pct_roll10_mean",
+          0.9881
+        ],
+        [
+          "concentration_pct_roll10_max",
+          "concentration_pct_roll10_min",
+          0.9627
+        ],
+        [
+          "concentration_pct_roll30_mean",
+          "concentration_pct",
+          0.9551
+        ],
+        [
+          "concentration_pct_roll30_mean",
+          "concentration_pct_lag1",
+          0.9587
+        ],
+        [
+          "concentration_pct_roll30_mean",
+          "concentration_pct_lag5",
+          0.9703
+        ],
+        [
+          "concentration_pct_roll30_mean",
+          "concentration_pct_lag10",
+          0.9792
+        ],
+        [
+          "concentration_pct_roll30_mean",
+          "concentration_pct_roll10_mean",
+          0.9823
+        ],
+        [
+          "concentration_pct_roll30_mean",
+          "concentration_pct_roll10_min",
+          0.9615
+        ],
+        [
+          "concentration_pct_roll30_mean",
+          "concentration_pct_roll10_max",
+          0.9841
+        ],
+        [
+          "concentration_pct_roll30_min",
+          "concentration_pct",
+          0.9871
+        ],
+        [
+          "concentration_pct_roll30_min",
+          "concentration_pct_lag1",
+          0.9837
+        ],
+        [
+          "concentration_pct_roll30_min",
+          "concentration_pct_lag5",
+          0.9696
+        ],
+        [
+          "concentration_pct_roll30_min",
+          "concentration_pct_lag10",
+          0.9519
+        ],
+        [
+          "concentration_pct_roll30_min",
+          "concentration_pct_roll10_mean",
+          0.9856
+        ],
+        [
+          "concentration_pct_roll30_min",
+          "concentration_pct_roll10_min",
+          0.9958
+        ],
+        [
+          "concentration_pct_roll30_min",
+          "concentration_pct_roll10_max",
+          0.9619
+        ],
+        [
+          "concentration_pct_roll30_min",
+          "concentration_pct_roll30_mean",
+          0.9623
+        ],
+        [
+          "concentration_pct_roll30_max",
+          "concentration_pct_roll30_mean",
+          0.9702
+        ]
+      ]
+    },
+    "anomaly_label_errors": []
+  },
+  "validation_results": {
+    "vg_1": {
+      "gate": "VG_1",
+      "passed": true,
+      "checks": {
+        "no_high_null_columns": {
+          "passed": true,
+          "detail": "OK"
+        },
+        "no_stuck_sensors": {
+          "passed": true,
+          "detail": "OK (stuck sensors allowed)"
+        },
+        "schema_contract": {
+          "passed": true,
+          "detail": "OK"
+        },
+        "timestamp_monotonic": {
+          "passed": true,
+          "detail": "OK"
+        },
+        "sufficient_train_rows": {
+          "passed": true,
+          "detail": "73574 rows (minimum: 50)"
+        }
+      }
+    },
+    "vg_2": {
+      "gate": "VG_2",
+      "ml_task": "anomaly",
+      "passed": true,
+      "checks": {}
+    }
+  },
+  "results": {
+    "best_algorithm": "Isolation Forest",
+    "threshold_calibration": {
+      "method": "percentile",
+      "percentile": 99.0,
+      "threshold": 0.013208,
+      "estimated_far_on_val": 0.01
+    },
+    "anomaly_evaluation": {
+      "mode": "unsupervised_score_only",
+      "mean_score": -0.0451,
+      "p99_score": 0.0077,
+      "pct_flagged": 0.0056
+    }
+  }
+}

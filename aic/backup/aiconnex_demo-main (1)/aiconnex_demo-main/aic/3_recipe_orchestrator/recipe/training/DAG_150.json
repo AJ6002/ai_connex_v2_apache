@@ -1,0 +1,14 @@
+{
+    "algorithm": "Logistic Regression",
+    "variant": "Multi-class",
+    "validation_metrics": [
+        "accuracy",
+        "f1",
+        "precision",
+        "recall"
+    ],
+    "hyperparameters": {
+        "fit_intercept": true,
+        "alpha": 1.0
+    }
+}

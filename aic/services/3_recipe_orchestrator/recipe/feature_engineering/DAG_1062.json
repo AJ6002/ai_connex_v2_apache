@@ -1,0 +1,14 @@
+{
+  "lag_steps": [
+    1,
+    2,
+    5
+  ],
+  "rolling_windows": [
+    5,
+    10
+  ],
+  "diff_periods": [
+    1
+  ]
+}

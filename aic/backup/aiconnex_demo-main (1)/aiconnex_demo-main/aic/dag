@@ -1,0 +1,114 @@
+# Implementation Plan - Multi-API Orchestration & Developer Console
+
+This plan covers restructuring the codebase, implementing a new **Pipeline Engine (Orchestrator + DAG) API**, and updating the **Dashboard UI** to feature a real-time developer execution console showing inputs, outputs, and status logs.
+
+---
+
+## Restructured Project Layout
+
+All projects will be contained in subfolders of `c:/Users/admin.DESKTOP-17T37DJ/Desktop/aic`:
+
+```text
+c:/Users/admin.DESKTOP-17T37DJ/Desktop/aic/
+├── main_dashboard/          # Dashboard frontend
+│   ├── index.html
+│   ├── styles.css
+│   └── app.js
+├── dataset_profiler/        # Data Profiler API (FastAPI, Port 8000)
+│   ├── main.py
+│   ├── profiler.py
+│   ├── detector.py
+│   └── requirements.txt
+└── pipeline_engine/         # Pipeline Engine API (FastAPI, Port 8001)
+    ├── main.py              # Exposes POST /api/v1/pipeline/run and GET /api/v1/pipeline/{id}/status
+    ├── orchestrator.py      # Simulates DAG executions, registers status and step logs
+    └── requirements.txt
+```
+
+---
+
+## Sequence Flow & API Details
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant D as main_dashboard.js
+    participant P as Data Profiler API (8000)
+    participant E as Pipeline Engine (8001)
+
+    D->>P: POST /api/v1/profile (Multipart File)
+    Note over D,P: Input: CSV/JSON File
+    P-->>D: 200 OK (Profile JSON Metadata)
+    Note over D,P: Output: Profile JSON
+    
+    D->>E: POST /api/v1/pipeline/run (Body: Profile JSON)
+    Note over D,E: Input: Profile JSON
+    E-->>D: 200 OK (dag_id, status: "running")
+    Note over D,E: Output: dag_id & initial state
+    
+    loop Poll Status
+        D->>E: GET /api/v1/pipeline/{dag_id}/status
+        E-->>D: 200 OK (Step logs, status, progress_pct)
+        Note over D,E: Outputs: log lines & active steps
+    end
+    
+    E-->>D: 200 OK (status: "completed", results: model_meta, endpoint)
+    Note over D,E: Output: Final deployed model info
+```
+
+---
+
+## Proposed Changes
+
+### Component 1: Code Restructuring
+* Move root dashboard files (`index.html`, `styles.css`, `app.js`) to `c:/Users/admin.DESKTOP-17T37DJ/Desktop/aic/main_dashboard/`.
+
+### Component 2: Pipeline Engine API (`pipeline_engine`)
+A second FastAPI service running on port `8001`. It will manage execution states for running machine learning pipeline DAGs.
+
+#### [NEW] [pipeline_engine/requirements.txt](file:///c:/Users/admin.DESKTOP-17T37DJ/Desktop/aic/pipeline_engine/requirements.txt)
+* FastAPI, Uvicorn, CORS middleware.
+
+#### [NEW] [pipeline_engine/orchestrator.py](file:///c:/Users/admin.DESKTOP-17T37DJ/Desktop/aic/pipeline_engine/orchestrator.py)
+* Threaded/async runner for executing pipeline steps.
+* Defines steps according to `algorithm_family` in the input profile:
+  * **Regression DAG**: Data Preprocessing $\rightarrow$ Feature Selection $\rightarrow$ Hyperparameter Grid Search $\rightarrow$ Model Evaluation $\rightarrow$ Model Deployment.
+  * **Anomaly Detection DAG**: Normalization $\rightarrow$ Dimensionality Reduction (PCA) $\rightarrow$ Isolation Forest Contamination Fitting $\rightarrow$ Evaluation $\rightarrow$ Model Deployment.
+  * **Miscellaneous DAG**: Category Labeling $\rightarrow$ Random Forest Fitting $\rightarrow$ Accuracy Evaluation $\rightarrow$ Model Deployment.
+* Emits live step logs and outputs (e.g. training scores, coefficients, simulated endpoint URL).
+
+#### [NEW] [pipeline_engine/main.py](file:///c:/Users/admin.DESKTOP-17T37DJ/Desktop/aic/pipeline_engine/main.py)
+* FastAPI routing.
+* `POST /api/v1/pipeline/run`: Starts a background thread running the orchestrator DAG.
+* `GET /api/v1/pipeline/{dag_id}/status`: Returns live logs, progress percentage, step statuses, and results if completed.
+
+---
+
+### Component 3: Dashboard UI Enhancements (`main_dashboard`)
+We will create a **Developer Pipeline Execution Console** inside the loading screen.
+
+#### [MODIFY] [index.html](file:///c:/Users/admin.DESKTOP-17T37DJ/Desktop/aic/main_dashboard/index.html)
+* Replace basic loader list with a split screen:
+  * **Left Panel**: Real-time terminal log viewer with color coding (`INFO`, `WARNING`, `SUCCESS`).
+  * **Right Panel**: Workflow DAG Node graph visualization showing status pulses.
+  * **Bottom Panel**: Live JSON Inspector showing active HTTP payloads (`Sent Payload` and `Received Response`).
+
+#### [MODIFY] [styles.css](file:///c:/Users/admin.DESKTOP-17T37DJ/Desktop/aic/main_dashboard/styles.css)
+* Add terminal-like console styles, custom neon colors, visual node connection layout, and payload inspection grids.
+
+#### [MODIFY] [app.js](file:///c:/Users/admin.DESKTOP-17T37DJ/Desktop/aic/main_dashboard/app.js)
+* Implement sequence chaining: Upload $\rightarrow$ Get Profile $\rightarrow$ Run Pipeline $\rightarrow$ Poll Status.
+* Feed response JSONs and request bodies to the bottom panel JSON inspector.
+* Stream orchestrator logs and animate the workflow DAG graph dynamically as nodes finish.
+
+---
+
+## Verification Plan
+
+### Manual Verification
+1. Launch both FastAPI services:
+   * **Profiler API**: `uvicorn main:app --port 8000`
+   * **Pipeline Engine API**: `uvicorn main:app --port 8001`
+2. Open `main_dashboard/index.html` in the browser.
+3. Upload `housing_regression.csv` and monitor the console logs, request payloads, and node highlights during the run.
+4. Verify the dashboard receives the final model endpoint and displays it inside the recommendation results.

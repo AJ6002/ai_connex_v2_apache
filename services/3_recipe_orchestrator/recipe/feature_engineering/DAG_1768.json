@@ -1,0 +1,7 @@
+{
+  "polynomial_degree": 2,
+  "interaction_features": false,
+  "pca_components": 0,
+  "feature_selection_method": "none",
+  "k_best_features": 10
+}

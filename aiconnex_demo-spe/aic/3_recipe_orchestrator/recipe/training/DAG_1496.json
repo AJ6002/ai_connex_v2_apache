@@ -1,0 +1,14 @@
+{
+    "algorithm": "Inverse RL",
+    "variant": "Hybrid",
+    "validation_metrics": [
+        "accuracy",
+        "f1",
+        "precision",
+        "recall"
+    ],
+    "hyperparameters": {
+        "fit_intercept": true,
+        "alpha": 1.0
+    }
+}

@@ -1,0 +1,20 @@
+{
+  "recipes": {
+    "imputation": "median",
+    "scaling": "RobustScaler",
+    "test_size": "0.2",
+    "features": "lag_1, lag_5, lag_10, rolling_mean_5, rolling_std_5"
+  },
+  "jsons": {
+    "pipeline_config": "{\n  \"version\": \"1.4.2\",\n  \"stages\": [\"profile\", \"match\", \"recipe\", \"prepare\", \"feature\", \"split\", \"train\", \"eval\", \"deploy\"],\n  \"max_runtime_sec\": 3600\n}"
+  },
+  "boilerplates": {
+    "html_report": "<!DOCTYPE html>\n<html>\n<head>\n<title>Evaluation Report</title>\n</head>\n<body>\n<h1>{{ title }}</h1>\n<p>Accuracy: {{ accuracy }}</p>\n</body>\n</html>"
+  },
+  "templates": {
+    "json_blueprint": "{\n  \"dag_id\": \"DAG_CUSTOM\",\n  \"steps\": []\n}",
+    "recipe_blueprint": "{\n  \"scaling\": \"StandardScaler\",\n  \"impute_strategy\": \"mean\"\n}",
+    "training_notebook": "# Custom Training Notebook Boilerplate\nimport pandas as pd\nimport pickle\n...",
+    "dag_template": "DAG: Custom_Waterfall\nNode 1 -> Node 2 -> Node 3"
+  }
+}

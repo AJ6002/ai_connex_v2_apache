@@ -1,0 +1,14 @@
+{
+    "algorithm": "Spectral",
+    "variant": "Nystr\u00f6m",
+    "validation_metrics": [
+        "accuracy",
+        "f1",
+        "precision",
+        "recall"
+    ],
+    "hyperparameters": {
+        "fit_intercept": true,
+        "alpha": 1.0
+    }
+}

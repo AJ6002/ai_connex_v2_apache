@@ -1,0 +1,14 @@
+{
+    "algorithm": "Logistic Regression",
+    "variant": "L2 Regularization",
+    "validation_metrics": [
+        "accuracy",
+        "f1",
+        "precision",
+        "recall"
+    ],
+    "hyperparameters": {
+        "fit_intercept": true,
+        "alpha": 1.0
+    }
+}

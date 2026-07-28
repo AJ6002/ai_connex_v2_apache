@@ -1,0 +1,14 @@
+{
+    "algorithm": "Anomaly Detection",
+    "variant": "Isolation Forest",
+    "validation_metrics": [
+        "accuracy",
+        "f1",
+        "precision",
+        "recall"
+    ],
+    "hyperparameters": {
+        "fit_intercept": true,
+        "alpha": 1.0
+    }
+}

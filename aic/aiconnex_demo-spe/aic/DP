@@ -1,0 +1,84 @@
+# Implementation Plan - Dataset Profiler API & Dashboard
+
+This plan outlines the design and implementation of a Dataset Profiler API (Python/FastAPI) and an interactive dashboard (HTML/CSS/JS) to visualize the profile report and recommended ML algorithm families (Regression, Anomaly Detection, or Miscellaneous).
+
+---
+
+## Proposed System Architecture
+
+```mermaid
+graph TD
+    A[Dashboard UI - c:/Users/admin.DESKTOP-17T37DJ/Desktop/aic] -->|POST /api/v1/profile| B[FastAPI Backend - c:/Users/admin.DESKTOP-17T37DJ/Desktop/dataset_profiler]
+    B -->|Parse Dataset| C[Pandas Engine]
+    C -->|Calculate Metrics| D[Statistical Profiler]
+    D -->|Rule-based Classification| E[Algorithm Family Detector]
+    E -->|JSON Metadata Response| B
+    B -->|JSON Response| A
+```
+
+---
+
+## Proposed Changes
+
+### Component 1: Dataset Profiler API
+We will build the backend using **FastAPI** and **Pandas** for statistical calculations. It will run locally (e.g., on port `8000`).
+
+#### [NEW] [main.py](file:///c:/Users/admin.DESKTOP-17T37DJ/Desktop/dataset_profiler/main.py)
+* Entry point for the FastAPI application.
+* Provides the CORS middleware configured for dashboard access.
+* Implements the `/api/v1/profile` endpoint which accepts a CSV or JSON file and an optional target column override.
+
+#### [NEW] [profiler.py](file:///c:/Users/admin.DESKTOP-17T37DJ/Desktop/dataset_profiler/profiler.py)
+* Core profiling engine.
+* Calculates:
+  * **General Information**: Row/column counts, memory usage, duplicate counts.
+  * **Column Summaries**: Min, max, mean, std, skewness, kurtosis, unique values, missing values, and outliers (IQR and Z-score methods).
+  * **Correlations**: High-correlation pairs (Pearson) to detect redundant features.
+  * **Dimensionality**: Explains dataset complexity using Principal Component Analysis (PCA) variance benchmarks.
+
+#### [NEW] [detector.py](file:///c:/Users/admin.DESKTOP-17T37DJ/Desktop/dataset_profiler/detector.py)
+* Rule-based ML family classifier.
+* Logic flow:
+  1. **Identify Target Column**: Search for semantic column names (e.g. `target`, `label`, `y`, `price`, `medv`, `class`) or check the last columns.
+  2. **Regression Check**: If a target column is found, is numeric, and has high cardinality (>20 unique values) $\rightarrow$ **Regression**.
+  3. **Classification (Miscellaneous) Check**: If a target is found but is categorical or low-cardinality $\rightarrow$ **Miscellaneous** (with target type `classification`).
+  4. **Anomaly Detection Check**: If no target column is found, check if features have high outlier ratios ($>5\%$) or extreme skewness distributions $\rightarrow$ **Anomaly Detection**.
+  5. **Fallback (Miscellaneous)**: If the dataset does not meet these criteria, label it **Miscellaneous** (useful for clustering/dimensionality reduction in the future).
+
+#### [NEW] [requirements.txt](file:///c:/Users/admin.DESKTOP-17T37DJ/Desktop/dataset_profiler/requirements.txt)
+* Project dependencies: `fastapi`, `uvicorn`, `pandas`, `numpy`, `scipy`, `scikit-learn`, `python-multipart`.
+
+---
+
+### Component 2: Dashboard UI
+Located in the workspace folder `c:/Users/admin.DESKTOP-17T37DJ/Desktop/aic`. It will be a premium dashboard styled with **Vanilla CSS** and utilizing **Chart.js** for interactive data distribution and correlation heatmaps.
+
+#### [NEW] [index.html](file:///c:/Users/admin.DESKTOP-17T37DJ/Desktop/aic/index.html)
+* Core markup with semantic HTML.
+* Features a file drop zone, progress loader, and a grid-based dashboard view.
+
+#### [NEW] [styles.css](file:///c:/Users/admin.DESKTOP-17T37DJ/Desktop/aic/styles.css)
+* Premium styles with a futuristic Dark/Glassmorphism theme.
+* Custom transitions, layout designs, and responsive design patterns.
+
+#### [NEW] [app.js](file:///c:/Users/admin.DESKTOP-17T37DJ/Desktop/aic/app.js)
+* JavaScript controller to:
+  * Handle file uploads and endpoint communications.
+  * Render summary cards, warning logs, and dynamic charts for statistics.
+  * Allow clicking a column to expand details (histograms, outliers).
+
+---
+
+## Verification Plan
+
+### Automated Verification
+* Propose to write a verification script `test_profiler.py` in the api directory and verify using Python `pytest`.
+
+### Manual Verification
+1. Run the FastAPI server.
+2. Open the dashboard in the browser.
+3. Upload sample datasets:
+   * **Regression**: Boston Housing or a synthetic continuous dataset.
+   * **Anomaly Detection**: An unlabeled dataset injected with extreme value anomalies.
+   * **Miscellaneous**: A typical classification dataset (e.g. Iris or Titanic).
+4. Verify the dashboard visualizes columns, correlations, and correct algorithm family recommendations.

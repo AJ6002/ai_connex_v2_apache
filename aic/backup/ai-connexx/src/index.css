@@ -1,0 +1,126 @@
+@import "tailwindcss";
+
+@theme {
+  --color-tas-blue: #23388B;
+  --color-tas-blue-hover: #1c2e73;
+  --color-tas-blue-light: rgba(35, 56, 139, 0.12);
+  --color-tas-red: #E30613;
+  --color-tas-red-hover: #be040f;
+  --color-tas-red-light: rgba(227, 6, 19, 0.12);
+  --color-tas-dark: #0f172a;
+}
+
+@layer base {
+  :root {
+    --font-display: 'Hanken Grotesk', sans-serif;
+    --font-sans: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: #ffffff;
+    color: #0f172a;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, .font-headline {
+    font-family: var(--font-display);
+  }
+
+  .font-mono-numeral {
+    font-family: var(--font-mono);
+  }
+}
+
+/* iOS Liquid Glass UI/UX Styling Classes */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 
+    0 12px 32px 0 rgba(15, 23, 42, 0.08),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.glass-panel-dark {
+  background: rgba(15, 23, 42, 0.68);
+  backdrop-filter: blur(28px) saturate(210%);
+  -webkit-backdrop-filter: blur(28px) saturate(210%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 
+    0 16px 40px 0 rgba(0, 0, 0, 0.35),
+    inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.2);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 
+    0 8px 24px -4px rgba(15, 23, 42, 0.06),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
+}
+
+.glass-pill {
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.liquid-glow-red {
+  box-shadow: 0 0 20px rgba(227, 6, 19, 0.4);
+}
+
+.liquid-glow-blue {
+  box-shadow: 0 0 20px rgba(35, 56, 139, 0.4);
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+}
+
+.material-symbols-outlined.fill-1 {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.donut-ring {
+  stroke-dasharray: 100, 100;
+  transition: stroke-dasharray 1s ease-out;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 9999px;
+  backdrop-filter: blur(4px);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.7);
+}
+
+/* Pulse effects & node workflow line styles */
+@keyframes flowLine {
+  0% { stroke-dashoffset: 20; }
+  100% { stroke-dashoffset: 0; }
+}
+
+.animate-flow {
+  stroke-dasharray: 6 3;
+  animation: flowLine 1.5s linear infinite;
+}
+
+

@@ -1,0 +1,13 @@
+{
+    "algorithm": "GRU",
+    "variant": "Early-stopping",
+    "validation_metrics": [
+        "r2",
+        "rmse",
+        "mae"
+    ],
+    "hyperparameters": {
+        "fit_intercept": true,
+        "alpha": 1.0
+    }
+}

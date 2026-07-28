@@ -1,0 +1,11 @@
+{
+  "algorithm": "KNNRegressor",
+  "variant": "Manhattan",
+  "hyperparameters": {
+    "n_neighbors": 5,
+    "metric": "manhattan"
+  },
+  "use_gpu": false,
+  "early_stopping": false,
+  "class_weight": null
+}

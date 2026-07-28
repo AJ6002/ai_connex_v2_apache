@@ -1,0 +1,5 @@
+{
+  "impute_strategy": "mean",
+  "scale_method": "standard",
+  "categorical_encoding": "onehot"
+}

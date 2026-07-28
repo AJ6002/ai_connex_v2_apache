@@ -1,0 +1,11 @@
+{
+  "algorithm": "Random ForestRegressor",
+  "variant": "Adversarial",
+  "hyperparameters": {
+    "n_estimators": 100,
+    "max_depth": 8
+  },
+  "use_gpu": false,
+  "early_stopping": false,
+  "class_weight": null
+}

@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI-CONNEXX Master Documentation Journal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Hanken+Grotesk:wght@600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    
+:root {
+  --bg-page: #FFFFFF;
+  --bg-panel: rgba(11, 31, 74, 0.95); /* Consistent Dark Blue for Headers */
+  --bg-card: rgba(255, 255, 255, 0.85); /* Frosted White Glass Cards */
+  --bg-card-hover: rgba(30, 71, 200, 0.04);
+  --bg-inner: rgba(13, 21, 51, 0.03); /* Light inner blocks */
+  --border-ui: rgba(13, 21, 51, 0.10);
+  --text-primary: #0B1F4A; /* Dark Blue primary text */
+  --text-secondary: rgba(11, 31, 74, 0.70);
+  --text-muted: rgba(11, 31, 74, 0.45);
+  --tas-red: #C8102E;
+  --tas-blue: #1E47C8;
+  --glass-shadow: rgba(11, 31, 74, 0.08);
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.glow-text {
+  text-shadow: 0 0 10px rgba(30, 71, 200, 0.1);
+}
+
+.glass-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-panel);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-ui);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 800;
+  font-size: 1.25rem;
+  color: #FFFFFF;
+}
+
+.logo-icon {
+  width: 2rem;
+  height: 2rem;
+  background: linear-gradient(135deg, var(--tas-red), var(--tas-blue));
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #FFFFFF;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-links a {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover {
+  color: #FFFFFF;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 3rem auto;
+  padding: 0 2rem;
+}
+
+.cover-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-ui);
+  border-radius: 2rem;
+  padding: 4rem;
+  text-align: center;
+  box-shadow: 0 20px 50px var(--glass-shadow);
+  margin-bottom: 3rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.cover-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(30, 71, 200, 0.05) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.doc-grid {
+  display: grid;
+  grid-template-cols: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.glass-tile {
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-ui);
+  border-radius: 1.5rem;
+  padding: 2rem;
+  box-shadow: 0 10px 30px var(--glass-shadow);
+  transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.glass-tile:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(30, 71, 200, 0.12);
+  border-color: var(--tas-blue);
+  background: var(--bg-card-hover);
+}
+
+.doc-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: var(--tas-red);
+  background: rgba(200, 16, 46, 0.08);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  display: inline-block;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(200, 16, 46, 0.2);
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, var(--tas-blue), #143596);
+  color: #FFFFFF;
+  font-weight: bold;
+  font-size: 0.9rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 1rem;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 10px 20px rgba(30, 71, 200, 0.2);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px rgba(30, 71, 200, 0.35);
+}
+
+.svg-flowchart {
+  background: rgba(13, 21, 51, 0.02);
+  border: 1px solid var(--border-ui);
+  border-radius: 1.5rem;
+  padding: 2rem;
+  margin: 2rem 0;
+  display: flex;
+  justify-content: center;
+}
+
+.code-block {
+  background: #0B1F4A;
+  border: 1px solid var(--border-ui);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  overflow-x: auto;
+  color: #EDF0FA;
+  margin: 1.5rem 0;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.proof-img {
+  width: 100%;
+  max-width: 900px;
+  border-radius: 1.5rem;
+  border: 1px solid var(--border-ui);
+  box-shadow: 0 20px 45px rgba(11, 31, 74, 0.1);
+  margin: 2rem auto;
+  display: block;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-cols: 1fr 1fr;
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+@media (max-width: 768px) {
+  .info-grid {
+    grid-template-cols: 1fr;
+  }
+}
+
+.tag-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.tag {
+  background: var(--bg-inner);
+  border: 1px solid var(--border-ui);
+  padding: 0.25rem 0.6rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-secondary);
+}
+
+.section-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-ui);
+  border-radius: 1.5rem;
+  padding: 2.5rem;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 10px 30px var(--glass-shadow);
+}
+
+    .toc-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-ui);
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      margin-bottom: 3rem;
+    }
+    .toc-container ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+    .toc-container li {
+      margin-bottom: 0.5rem;
+    }
+    .toc-container a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .toc-container a:hover {
+      color: var(--tas-blue);
+      text-decoration: underline;
+    }
+    
+    .index-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-ui);
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      margin-bottom: 3rem;
+    }
+    .index-grid {
+      display: grid;
+      grid-template-cols: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+    .index-letter-group {
+      margin-bottom: 1rem;
+    }
+    .index-letter {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--tas-red);
+      border-bottom: 2px solid var(--border-ui);
+      margin-bottom: 0.5rem;
+      padding-bottom: 0.2rem;
+    }
+    .index-links {
+      list-style: none;
+      padding-left: 0;
+      margin: 0;
+    }
+    .index-links li {
+      font-size: 0.85rem;
+      margin-bottom: 0.3rem;
+    }
+    .index-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .index-links a:hover {
+      color: var(--tas-blue);
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <header class="glass-header">
+    <div class="logo-container">
+      <div class="logo-icon">TAS</div>
+      <span>AI-CONNEXX Master Journal</span>
+    </div>
+    <nav class="nav-links">
+      <a href="cover.html">Home</a>
+      <a href="main-journal.html">Master Journal</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h1 style="font-size: 3rem; margin-top: 0;" class="glow-text">System Documentation Journal</h1>
+    <p style="color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 3rem;">
+      Full 16-part technical compilation detailing functional operations, microservices layout, cloud systems, and machine learning gates.
+    </p>
+
+    <div class="toc-container">
+      <h3>Table of Contents</h3>
+      <ul>
+        <li><a href="#doc-001">DOC-001: AI-CONNEXX OVERVIEW</a></li>
+<li><a href="#doc-002">DOC-002: SYSTEM ARCHITECTURE</a></li>
+<li><a href="#doc-003">DOC-003: CLOUD ARCHITECTURE</a></li>
+<li><a href="#doc-004">DOC-004: USER JOURNEY OVERVIEW</a></li>
+<li><a href="#doc-005">DOC-005: COMPILER</a></li>
+<li><a href="#doc-006">DOC-006: DATASET PROFILER</a></li>
+<li><a href="#doc-007">DOC-007: DAG</a></li>
+<li><a href="#doc-008">DOC-008: RECIPE ORCHESTRATOR</a></li>
+<li><a href="#doc-009">DOC-009: PREPARE</a></li>
+<li><a href="#doc-010">DOC-010: FEATURE ENGINEER</a></li>
+<li><a href="#doc-011">DOC-011: SPLIT, TRAIN & EVALUATE</a></li>
+<li><a href="#doc-012">DOC-012: VALIDATION GATEWAY 1 (VG-1)</a></li>
+<li><a href="#doc-013">DOC-013: VALIDATION GATEWAY 2 (VG-2)</a></li>
+<li><a href="#doc-014">DOC-014: DEPLOYMENT</a></li>
+<li><a href="#doc-015">DOC-015: MONITORING</a></li>
+<li><a href="#doc-016">DOC-016: AGENTS</a></li>
+      </ul>
+    </div>
+
+    <!-- Alphabetical Index Section -->
+    <div class="index-container">
+      <h3>Alphabetical Index</h3>
+      <div class="index-grid">
+        <div class="index-letter-group">
+          <div class="index-letter">A</div>
+          <ul class="index-links">
+            <li><a href="#doc-016">AI Chat Agent (DOC-016)</a></li>
+            <li><a href="#doc-006">Anomaly Detection Target (DOC-006)</a></li>
+            <li><a href="#doc-003">API Gateway Routing (DOC-003)</a></li>
+          </ul>
+        </div>
+
+        <div class="index-letter-group">
+          <div class="index-letter">C</div>
+          <ul class="index-links">
+            <li><a href="#doc-005">Cartesian Guard Check (DOC-005)</a></li>
+            <li><a href="#doc-006">Classification Target (DOC-006)</a></li>
+            <li><a href="#doc-003">Cloud Deploy PVC EFS (DOC-003)</a></li>
+            <li><a href="#doc-005">Compiler Data Joiner (DOC-005)</a></li>
+          </ul>
+        </div>
+
+        <div class="index-letter-group">
+          <div class="index-letter">D</div>
+          <ul class="index-links">
+            <li><a href="#doc-007">DAG Graph definitions (DOC-007)</a></li>
+            <li><a href="#doc-015">Data Drift alarm (DOC-015)</a></li>
+            <li><a href="#doc-006">Dataset Profiler metrics (DOC-006)</a></li>
+            <li><a href="#doc-014">Deployment predictions (DOC-014)</a></li>
+          </ul>
+        </div>
+
+        <div class="index-letter-group">
+          <div class="index-letter">F</div>
+          <ul class="index-links">
+            <li><a href="#doc-010">Feature Builder rolling (DOC-010)</a></li>
+          </ul>
+        </div>
+
+        <div class="index-letter-group">
+          <div class="index-letter">I</div>
+          <ul class="index-links">
+            <li><a href="#doc-009">Imputation missing (DOC-009)</a></li>
+            <li><a href="#doc-013">Inference Latency gate (DOC-013)</a></li>
+          </ul>
+        </div>
+
+        <div class="index-letter-group">
+          <div class="index-letter">K</div>
+          <ul class="index-links">
+            <li><a href="#doc-015">Kolmogorov-Smirnov (DOC-015)</a></li>
+            <li><a href="#doc-003">Kubernetes Cluster Pods (DOC-003)</a></li>
+          </ul>
+        </div>
+
+        <div class="index-letter-group">
+          <div class="index-letter">M</div>
+          <ul class="index-links">
+            <li><a href="#doc-008">Manifest JSON recipe (DOC-008)</a></li>
+            <li><a href="#doc-009">MinMaxScaler scaling (DOC-009)</a></li>
+            <li><a href="#doc-015">Monitoring telemetry logs (DOC-015)</a></li>
+          </ul>
+        </div>
+
+        <div class="index-letter-group">
+          <div class="index-letter">O</div>
+          <ul class="index-links">
+            <li><a href="#doc-002">OpenBLAS Allocations (DOC-002)</a></li>
+            <li><a href="#doc-011">OpenBLAS Scipy check (DOC-011)</a></li>
+          </ul>
+        </div>
+
+        <div class="index-letter-group">
+          <div class="index-letter">P</div>
+          <ul class="index-links">
+            <li><a href="#doc-009">Prepare imputations (DOC-009)</a></li>
+            <li><a href="#doc-014">Pickle Model loading (DOC-014)</a></li>
+          </ul>
+        </div>
+
+        <div class="index-letter-group">
+          <div class="index-letter">R</div>
+          <ul class="index-links">
+            <li><a href="#doc-008">Recipe compile engine (DOC-008)</a></li>
+            <li><a href="#doc-011">Regression modeling (DOC-011)</a></li>
+            <li><a href="#doc-010">Rolling metrics window (DOC-010)</a></li>
+          </ul>
+        </div>
+
+        <div class="index-letter-group">
+          <div class="index-letter">S</div>
+          <ul class="index-links">
+            <li><a href="#doc-003">S3 model registry (DOC-003)</a></li>
+            <li><a href="#doc-011">Split temporal partition (DOC-011)</a></li>
+            <li><a href="#doc-009">StandardScaler scaling (DOC-009)</a></li>
+          </ul>
+        </div>
+
+        <div class="index-letter-group">
+          <div class="index-letter">V</div>
+          <ul class="index-links">
+            <li><a href="#doc-012">Validation Quality Gate 1 (DOC-012)</a></li>
+            <li><a href="#doc-013">Validation Latency Gate 2 (DOC-013)</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Proof Assets Section -->
+    <section class="section-card" style="border-color: var(--tas-red);">
+      <div class="doc-id" style="color: var(--tas-red); background: rgba(200, 16, 46, 0.1);">System Proofs</div>
+      <h2>Visual Dashboard Proofs</h2>
+      <p style="color: var(--text-secondary);">
+        Real-world screenshots demonstrating functional components, visual themes, state tracking widgets, and notifications panel slides.
+      </p>
+      
+      <h4>Ingestion & Live Compiler View (Light Mode adaptation)</h4>
+      <img src="assets/white_bg_verification_1784796977719.webp" alt="Compiler Studio Ingestion Light Mode" class="proof-img" />
+      
+      <h4>Warning Indicators and Sliding Panel Log Checks</h4>
+      <img src="assets/notification_drawer_open_1784796421120.png" alt="Notification Slide Panel Logs" class="proof-img" />
+    </section>
+
+    
+    <!-- DOC-001 SECTION -->
+    <section id="doc-001" class="section-card">
+      <div class="doc-id">DOC-001</div>
+      <h2>AI-CONNEXX OVERVIEW</h2>
+      <p style="font-size: 1.05rem; color: var(--text-secondary);">High-level overview of the AI-CONNEXX machine learning workflow studio for prognostic metrics.</p>
+      
+      <h4>Process Flow Chart</h4>
+      <div class="svg-flowchart">
+        
+          <svg width="500" height="120" viewBox="0 0 500 120">
+            <rect x="10" y="30" width="120" height="50" rx="8" fill="#1E47C8" stroke="var(--border-ui)"/>
+            <text x="70" y="60" fill="white" font-size="11" text-anchor="middle">Ingestion Dropzone</text>
+            <path d="M 130 55 L 180 55" stroke="var(--tas-red)" stroke-width="2"/>
+            <rect x="180" y="30" width="120" height="50" rx="8" fill="#0B1F4A" stroke="var(--border-ui)"/>
+            <text x="240" y="60" fill="white" font-size="11" text-anchor="middle">Pipeline Execution</text>
+            <path d="M 300 55 L 350 55" stroke="var(--tas-red)" stroke-width="2"/>
+            <rect x="350" y="30" width="130" height="50" rx="8" fill="#C8102E" stroke="var(--border-ui)"/>
+            <text x="415" y="60" fill="white" font-size="11" text-anchor="middle">Deployed REST API</text>
+          </svg>
+        
+      </div>
+
+      <h4>Subsystem Logic</h4>
+      <div style="font-size: 1rem; color: var(--text-secondary);">
+        
+          <p>AI-CONNEXX is a Total Automation Solution (TAS) machine learning workflow studio designed for industrial diagnostics, prognostics, and real-time sensor telemetries. At its core, the platform allows industrial engineers—who might not be professional data scientists—to upload multi-table archives and build robust regression or classification prediction services automatically.</p>
+          <p>By connecting ingestion modules, data profiling nodes, feature engineers, splitters, estimators, validation gateways, and monitoring APIs, the studio builds a seamless pipeline. It translates complex machine learning operations into intuitive, visual drag-and-drop actions.</p>
+        
+      </div>
+
+      <h4>Source Code Example</h4>
+      <div class="code-block">
+# AI-CONNEXX Core Initialization
+class AIConnexStudio:
+    def __init__(self, run_id: str, workspace_path: str):
+        self.run_id = run_id
+        self.workspace = workspace_path
+        self.manifest = None
+        
+    def bootstrap(self):
+        print(f"[Boot] Starting pipeline workspace for Run ID: {self.run_id}")
+        return True
+      </div>
+    </section>
+
+    <!-- DOC-002 SECTION -->
+    <section id="doc-002" class="section-card">
+      <div class="doc-id">DOC-002</div>
+      <h2>SYSTEM ARCHITECTURE</h2>
+      <p style="font-size: 1.05rem; color: var(--text-secondary);">Detailed look into the 9 microservices running independently in the studio.</p>
+      
+      <h4>Process Flow Chart</h4>
+      <div class="svg-flowchart">
+        
+          <svg width="500" height="150" viewBox="0 0 500 150">
+            <circle cx="60" cy="75" r="35" fill="#1E47C8"/>
+            <text x="60" y="78" fill="white" font-size="10" text-anchor="middle">Profiler (8000)</text>
+            <path d="M 95 75 L 145 75" stroke="#C8102E" stroke-width="2"/>
+            <circle cx="180" cy="75" r="35" fill="#0B1F4A"/>
+            <text x="180" y="78" fill="white" font-size="10" text-anchor="middle">DAG (8001)</text>
+            <path d="M 215 75 L 265 75" stroke="#C8102E" stroke-width="2"/>
+            <circle cx="300" cy="75" r="35" fill="#0B1F4A"/>
+            <text x="300" y="78" fill="white" font-size="10" text-anchor="middle">Nodes (8003-8)</text>
+            <path d="M 335 75 L 385 75" stroke="#C8102E" stroke-width="2"/>
+            <circle cx="420" cy="75" r="35" fill="#C8102E"/>
+            <text x="420" y="78" fill="white" font-size="10" text-anchor="middle">Deploy (8008)</text>
+          </svg>
+        
+      </div>
+
+      <h4>Subsystem Logic</h4>
+      <div style="font-size: 1rem; color: var(--text-secondary);">
+        
+          <p>The AI-CONNEXX platform follows a decentralized, microservice-based architecture. Instead of running a single monolithic process, it spreads the processing load across nine independent modules that communicate via REST APIs. This design ensures that if one processing step encounters resources limits, other active nodes remain unaffected.</p>
+          <p>All microservices are unified under a shared file storage system to exchange compiled CSV outputs and serialized pickle estimators.</p>
+          <h4>List of Core Services:</h4>
+          <ul>
+            <li><strong>Dataset Profiler</strong> (Port 8000): Performs statistical analysis and task classification.</li>
+            <li><strong>DAG Orchestrator</strong> (Port 8001): Directs step sequences and manages current run executions.</li>
+            <li><strong>Recipe Orchestrator</strong> (Port 8002): Resolves specific DAG definitions to build execution recipes.</li>
+            <li><strong>Data Preparation API</strong> (Port 8003): Imputes missing values, encodes categories, and scales columns.</li>
+            <li><strong>Feature Engineering API</strong> (Port 8004): Creates rolling window statistics.</li>
+            <li><strong>Split API</strong> (Port 8005): Partitions datasets into validation sets.</li>
+            <li><strong>Train API</strong> (Port 8006): Fits models in secondary subprocess tasks.</li>
+            <li><strong>Evaluate API</strong> (Port 8007): Formulates performance scoring reports.</li>
+            <li><strong>Deploy API</strong> (Port 8008): Registers and hosts endpoint model estimators.</li>
+          </ul>
+        
+      </div>
+
+      <h4>Source Code Example</h4>
+      <div class="code-block">
+# Microservices Endpoint Definitions
+SERVICES = {
+    "profiler": "http://127.0.0.1:8000",
+    "dag":      "http://127.0.0.1:8001",
+    "recipe":   "http://127.0.0.1:8002",
+    "prepare":  "http://127.0.0.1:8003",
+    "feature":  "http://127.0.0.1:8004",
+    "split":    "http://127.0.0.1:8005",
+    "train":    "http://127.0.0.1:8006",
+    "evaluate": "http://127.0.0.1:8007",
+    "deploy":   "http://127.0.0.1:8008",
+}
+      </div>
+    </section>
+
+    <!-- DOC-003 SECTION -->
+    <section id="doc-003" class="section-card">
+      <div class="doc-id">DOC-003</div>
+      <h2>CLOUD ARCHITECTURE</h2>
+      <p style="font-size: 1.05rem; color: var(--text-secondary);">Deployment schema for scale, containers, object stores, and database integrations.</p>
+      
+      <h4>Process Flow Chart</h4>
+      <div class="svg-flowchart">
+        
+          <svg width="500" height="120" viewBox="0 0 500 120">
+            <rect x="10" y="30" width="100" height="50" fill="#1D3D7A" stroke="var(--border-ui)"/>
+            <text x="60" y="60" fill="white" font-size="11" text-anchor="middle">API Gateway</text>
+            <path d="M 110 55 L 160 55" stroke="var(--tas-red)" stroke-width="2"/>
+            <rect x="160" y="10" width="140" height="40" fill="#1E47C8" stroke="var(--border-ui)"/>
+            <text x="230" y="35" fill="white" font-size="10" text-anchor="middle">K8s Service Pods</text>
+            <rect x="160" y="70" width="140" height="40" fill="#0B1F4A" stroke="var(--border-ui)"/>
+            <text x="230" y="95" fill="white" font-size="10" text-anchor="middle">Shared Persistent Store</text>
+            <path d="M 300 55 L 350 55" stroke="var(--tas-red)" stroke-width="2"/>
+            <rect x="350" y="30" width="130" height="50" fill="#C8102E" stroke="var(--border-ui)"/>
+            <text x="415" y="60" fill="white" font-size="11" text-anchor="middle">S3 Model Registry</text>
+          </svg>
+        
+      </div>
+
+      <h4>Subsystem Logic</h4>
+      <div style="font-size: 1rem; color: var(--text-secondary);">
+        
+          <p>For cloud deployment, AI-CONNEXX services are wrapped inside Docker containers managed by a Kubernetes cluster. A front API Gateway (like Nginx, Traefik, or AWS ALB) routes client calls to individual service containers based on URL paths.</p>
+          <p>The workspace data is housed inside a Shared Volume (EFS / Ceph PersistentVolumeClaim) so all service instances can quickly access intermediate CSV files. Model pickle objects are backed up to S3 or MinIO object stores for long-term archiving, and state records are logged inside PostgreSQL databases.</p>
+        
+      </div>
+
+      <h4>Source Code Example</h4>
+      <div class="code-block">
+# Kubernetes Deployment Spec Snippet
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aiconnex-compiler
+spec:
+  replicas: 3
+  template:
+    spec:
+      containers:
+      - name: compiler
+        image: aiconnex/compiler:v1.0
+        volumeMounts:
+        - mountPath: /workspace
+          name: shared-volume
+      </div>
+    </section>
+
+    <!-- DOC-004 SECTION -->
+    <section id="doc-004" class="section-card">
+      <div class="doc-id">DOC-004</div>
+      <h2>USER JOURNEY OVERVIEW</h2>
+      <p style="font-size: 1.05rem; color: var(--text-secondary);">Walkthrough of how the user uploads files, runs the pipeline, and tests predictions.</p>
+      
+      <h4>Process Flow Chart</h4>
+      <div class="svg-flowchart">
+        
+          <svg width="500" height="120" viewBox="0 0 500 120">
+            <rect x="10" y="40" width="90" height="40" rx="5" fill="#1E47C8"/>
+            <text x="55" y="65" fill="white" font-size="11" text-anchor="middle">1. Upload</text>
+            <path d="M 100 60 L 130 60" stroke="#000" stroke-width="1.5"/>
+            <rect x="130" y="40" width="90" height="40" rx="5" fill="#0B1F4A"/>
+            <text x="175" y="65" fill="white" font-size="11" text-anchor="middle">2. Profile</text>
+            <path d="M 220 60 L 250 60" stroke="#000" stroke-width="1.5"/>
+            <rect x="250" y="40" width="90" height="40" rx="5" fill="#0B1F4A"/>
+            <text x="295" y="65" fill="white" font-size="11" text-anchor="middle">3. Run DAG</text>
+            <path d="M 340 60 L 370 60" stroke="#000" stroke-width="1.5"/>
+            <rect x="370" y="40" width="110" height="40" rx="5" fill="#C8102E"/>
+            <text x="425" y="65" fill="white" font-size="11" text-anchor="middle">4. Test Endpoint</text>
+          </svg>
+        
+      </div>
+
+      <h4>Subsystem Logic</h4>
+      <div style="font-size: 1rem; color: var(--text-secondary);">
+        
+          <p>The product is designed to minimize user friction. A standard session follows four visual steps:</p>
+          <ol>
+            <li><strong>Ingest</strong>: User drops a dataset (e.g., ZIP or Excel) into the frosted glass Dropzone.</li>
+            <li><strong>Review</strong>: The compiler completes alignment, and the AI Data Agent displays table shapes, missing data indicators, and task family recommendations.</li>
+            <li><strong>Execute</strong>: The user triggers the execution DAG and watches real-time progress lights.</li>
+            <li><strong>Inference</strong>: The validation gateways approve the model, and the user enters test values on a custom form to generate predictions.</li>
+          </ol>
+        
+      </div>
+
+      <h4>Source Code Example</h4>
+      <div class="code-block">
+// Frontend triggering handler
+async function handleTriggerPipeline() {
+  setLoading(true);
+  const response = await fetch('/api/v1/compile', {
+    method: 'POST',
+    body: formData
+  });
+  const data = await response.json();
+  startStatusPolling(data.run_id);
+}
+      </div>
+    </section>
+
+    <!-- DOC-005 SECTION -->
+    <section id="doc-005" class="section-card">
+      <div class="doc-id">DOC-005</div>
+      <h2>COMPILER</h2>
+      <p style="font-size: 1.05rem; color: var(--text-secondary);">Inner workings of the multi-format Ingestion & Relational Compiler Engine.</p>
+      
+      <h4>Process Flow Chart</h4>
+      <div class="svg-flowchart">
+        
+          <svg width="500" height="120" viewBox="0 0 500 120">
+            <rect x="10" y="35" width="100" height="50" fill="#1E47C8"/>
+            <text x="60" y="65" fill="white" font-size="11" text-anchor="middle">Multi-Format</text>
+            <path d="M 110 60 L 160 60" stroke="#C8102E" stroke-width="2"/>
+            <rect x="160" y="35" width="110" height="50" fill="#0B1F4A"/>
+            <text x="215" y="65" fill="white" font-size="11" text-anchor="middle">Joiner Engine</text>
+            <path d="M 270 60 L 320 60" stroke="#C8102E" stroke-width="2"/>
+            <rect x="320" y="35" width="150" height="50" fill="#C8102E"/>
+            <text x="395" y="65" fill="white" font-size="11" text-anchor="middle">Cartesian Guard Check</text>
+          </svg>
+        
+      </div>
+
+      <h4>Subsystem Logic</h4>
+      <div style="font-size: 1rem; color: var(--text-secondary);">
+        
+          <p>The compiler is the foundational layer. It accepts archives of any format, converts them to standard CSV structures, and applies relational joins based on timestamp and group keys. It separates tables into Fact tables (containing primary metrics) and Dimension tables (containing background metadata).</p>
+          <p>Once aligned, the engine performs left-outer index joins, then verifies that the final row counts are clean using a Cartesian Guard constraint checker.</p>
+        
+      </div>
+
+      <h4>Source Code Example</h4>
+      <div class="code-block">
+# Multi-format extension compiler parser
+def convert_to_csv(filepath: Path) -> Optional[Path]:
+    ext = filepath.suffix.lower()
+    if ext in (".csv", ".txt"):
+        return filepath
+    csv_path = filepath.with_suffix(".csv")
+    if ext in (".xlsx", ".xls"):
+        pd.read_excel(filepath).to_csv(csv_path, index=False)
+        return csv_path
+    elif ext == ".json":
+        pd.read_json(filepath).to_csv(csv_path, index=False)
+        return csv_path
+    return None
+      </div>
+    </section>
+
+    <!-- DOC-006 SECTION -->
+    <section id="doc-006" class="section-card">
+      <div class="doc-id">DOC-006</div>
+      <h2>DATASET PROFILER</h2>
+      <p style="font-size: 1.05rem; color: var(--text-secondary);">Computes dataset statistics and automates target family detection.</p>
+      
+      <h4>Process Flow Chart</h4>
+      <div class="svg-flowchart">
+        
+          <svg width="500" height="120" viewBox="0 0 500 120">
+            <rect x="10" y="35" width="110" height="50" fill="#1E47C8"/>
+            <text x="65" y="65" fill="white" font-size="11" text-anchor="middle">Stat Extraction</text>
+            <path d="M 120 60 L 180 60" stroke="#C8102E" stroke-width="2"/>
+            <rect x="180" y="35" width="120" height="50" fill="#0B1F4A"/>
+            <text x="240" y="65" fill="white" font-size="11" text-anchor="middle">Target Identification</text>
+            <path d="M 300 60 L 360 60" stroke="#C8102E" stroke-width="2"/>
+            <rect x="360" y="35" width="120" height="50" fill="#C8102E"/>
+            <text x="420" y="65" fill="white" font-size="11" text-anchor="middle">Task Classification</text>
+          </svg>
+        
+      </div>
+
+      <h4>Subsystem Logic</h4>
+      <div style="font-size: 1rem; color: var(--text-secondary);">
+        
+          <p>The Dataset Profiler analyzes compiled CSV files to map columns, determine null ratios, check value ranges, and compute metrics. If no target variable is defined, the system automatically checks column headers for words like <code>RUL</code>, <code>target</code>, or <code>label</code>.</p>
+          <p>The profiler outputs a diagnostic dictionary containing class distribution balances, column types (numeric vs categorical), and suggested ML families.</p>
+        
+      </div>
+
+      <h4>Source Code Example</h4>
+      <div class="code-block">
+# Profile and detect ML task
+def detect_task_family(df, target_col):
+    if df[target_col].nunique() <= 10 or df[target_col].dtype == object:
+        return "Classification"
+    else:
+        return "Regression"
+      </div>
+    </section>
+
+    <!-- DOC-007 SECTION -->
+    <section id="doc-007" class="section-card">
+      <div class="doc-id">DOC-007</div>
+      <h2>DAG</h2>
+      <p style="font-size: 1.05rem; color: var(--text-secondary);">Resolves node connections and directs execution flows.</p>
+      
+      <h4>Process Flow Chart</h4>
+      <div class="svg-flowchart">
+        
+          <svg width="500" height="120" viewBox="0 0 500 120">
+            <rect x="10" y="40" width="80" height="40" fill="#1D3D7A"/>
+            <text x="50" y="65" fill="white" font-size="11" text-anchor="middle">Prep</text>
+            <path d="M 90 60 L 130 60" stroke="#000" stroke-width="1.5"/>
+            <rect x="130" y="40" width="80" height="40" fill="#1E47C8"/>
+            <text x="170" y="65" fill="white" font-size="11" text-anchor="middle">Feat Eng</text>
+            <path d="M 210 60 L 250 60" stroke="#000" stroke-width="1.5"/>
+            <rect x="250" y="40" width="80" height="40" fill="#0B1F4A"/>
+            <text x="290" y="65" fill="white" font-size="11" text-anchor="middle">Split/Train</text>
+            <path d="M 330 60 L 370 60" stroke="#000" stroke-width="1.5"/>
+            <rect x="370" y="40" width="100" height="40" fill="#C8102E"/>
+            <text x="420" y="65" fill="white" font-size="11" text-anchor="middle">Evaluate/Deploy</text>
+          </svg>
+        
+      </div>
+
+      <h4>Subsystem Logic</h4>
+      <div style="font-size: 1rem; color: var(--text-secondary);">
+        
+          <p>The Directed Acyclic Graph (DAG) defines how data flows between services. Rather than executing random scripts, each run maps to a strict graph schema. For example, <code>DAG_514</code> represents a standard regression sequence.</p>
+          <p>The resolver checks that data preparation completes successfully before calling the feature builder, splitting arrays, fitting estimators, evaluating error metrics, and activating predicting routes.</p>
+        
+      </div>
+
+      <h4>Source Code Example</h4>
+      <div class="code-block">
+# DAG Step Definition
+DAG_514 = {
+    "id": "DAG_514",
+    "name": "Regression Pipeline",
+    "steps": ["PREPARE", "FEATURE_ENG", "SPLIT", "TRAIN", "EVAL", "DEPLOY"]
+}
+      </div>
+    </section>
+
+    <!-- DOC-008 SECTION -->
+    <section id="doc-008" class="section-card">
+      <div class="doc-id">DOC-008</div>
+      <h2>RECIPE ORCHESTRATOR</h2>
+      <p style="font-size: 1.05rem; color: var(--text-secondary);">Compiles step specifications into serialized manifest recipes.</p>
+      
+      <h4>Process Flow Chart</h4>
+      <div class="svg-flowchart">
+        
+          <svg width="500" height="120" viewBox="0 0 500 120">
+            <rect x="10" y="35" width="110" height="50" fill="#1E47C8"/>
+            <text x="65" y="65" fill="white" font-size="11" text-anchor="middle">DAG Definition</text>
+            <path d="M 120 60 L 180 60" stroke="#C8102E" stroke-width="2"/>
+            <rect x="180" y="35" width="130" height="50" fill="#0B1F4A"/>
+            <text x="245" y="65" fill="white" font-size="11" text-anchor="middle">Recipe Compiler</text>
+            <path d="M 310 60 L 370 60" stroke="#C8102E" stroke-width="2"/>
+            <rect x="370" y="35" width="110" height="50" fill="#C8102E"/>
+            <text x="425" y="65" fill="white" font-size="11" text-anchor="middle">JSON Manifest</text>
+          </svg>
+        
+      </div>
+
+      <h4>Subsystem Logic</h4>
+      <div style="font-size: 1rem; color: var(--text-secondary);">
+        
+          <p>The Recipe Orchestrator compiles abstract pipeline configurations into concrete execution definitions. It generates a standardized manifest dict containing the specific endpoints, workspace directory paths, timeout limits, and step parameters.</p>
+          <p>The output manifest acts as a progress-tracking file, allowing services to check progress and resume processing from saved states if interrupted.</p>
+        
+      </div>
+
+      <h4>Source Code Example</h4>
+      <div class="code-block">
+# Build step manifest recipe
+def compile_recipe_manifest(dag_def, run_id, base_dir):
+    return {
+        "run_id": run_id,
+        "dag_id": dag_def["id"],
+        "steps": [
+            {"name": step, "status": "PENDING", "params": {}}
+            for step in dag_def["steps"]
+        ]
+    }
+      </div>
+    </section>
+
+    <!-- DOC-009 SECTION -->
+    <section id="doc-009" class="section-card">
+      <div class="doc-id">DOC-009</div>
+      <h2>PREPARE</h2>
+      <p style="font-size: 1.05rem; color: var(--text-secondary);">Details missing values imputation, standard scaling, and one-hot encoding operations.</p>
+      
+      <h4>Process Flow Chart</h4>
+      <div class="svg-flowchart">
+        
+          <svg width="500" height="120" viewBox="0 0 500 120">
+            <rect x="10" y="35" width="110" height="50" fill="#1E47C8"/>
+            <text x="65" y="65" fill="white" font-size="11" text-anchor="middle">Raw CSV Input</text>
+            <path d="M 120 60 L 180 60" stroke="#C8102E" stroke-width="2"/>
+            <rect x="180" y="35" width="130" height="50" fill="#0B1F4A"/>
+            <text x="245" y="65" fill="white" font-size="11" text-anchor="middle">Missing Imputations</text>
+            <path d="M 310 60 L 370 60" stroke="#C8102E" stroke-width="2"/>
+            <rect x="370" y="35" width="110" height="50" fill="#C8102E"/>
+            <text x="425" y="65" fill="white" font-size="11" text-anchor="middle">Prepared CSV</text>
+          </svg>
+        
+      </div>
+
+      <h4>Subsystem Logic</h4>
+      <div style="font-size: 1rem; color: var(--text-secondary);">
+        
+          <p>The Data Preparation node cleans raw tables. To avoid missing value issues in scikit-learn models, the preparation script applies forward-fill (<code>ffill</code>) and backward-fill (<code>bfill</code>) strategies, falling back to column medians where needed.</p>
+          <p>Additionally, numerical columns are scaled to standard ranges, and categorical labels are transformed using one-hot encoding or index mapping before writing output tables.</p>
+        
+      </div>
+
+      <h4>Source Code Example</h4>
+      <div class="code-block">
+# Imputation & encoding pipeline execution
+def execute_prepare(input_csv: Path, output_csv: Path):
+    df = pd.read_csv(input_csv)
+    # Forward fill then backward fill
+    df = df.ffill().bfill()
+    df.to_csv(output_csv, index=False)
+    return True
+      </div>
+    </section>
+
+    <!-- DOC-010 SECTION -->
+    <section id="doc-010" class="section-card">
+      <div class="doc-id">DOC-010</div>
+      <h2>FEATURE ENGINEER</h2>
+      <p style="font-size: 1.05rem; color: var(--text-secondary);">Details rolling statistics generation, lag calculations, and sensor diff variables.</p>
+      
+      <h4>Process Flow Chart</h4>
+      <div class="svg-flowchart">
+        
+          <svg width="500" height="120" viewBox="0 0 500 120">
+            <rect x="10" y="35" width="110" height="50" fill="#1E47C8"/>
+            <text x="65" y="65" fill="white" font-size="11" text-anchor="middle">Prepared CSV</text>
+            <path d="M 120 60 L 180 60" stroke="#C8102E" stroke-width="2"/>
+            <rect x="180" y="35" width="130" height="50" fill="#0B1F4A"/>
+            <text x="245" y="65" fill="white" font-size="11" text-anchor="middle">Rolling & Lags</text>
+            <path d="M 310 60 L 370 60" stroke="#C8102E" stroke-width="2"/>
+            <rect x="370" y="35" width="110" height="50" fill="#C8102E"/>
+            <text x="425" y="65" fill="white" font-size="11" text-anchor="middle">Engineered CSV</text>
+          </svg>
+        
+      </div>
+
+      <h4>Subsystem Logic</h4>
+      <div style="font-size: 1rem; color: var(--text-secondary);">
+        
+          <p>Feature Engineering converts static sensor points into temporal trend inputs. For high-frequency industrial sensors (e.g. SCADA telemetry), the absolute value at a single timestamp has less signal than the direction and variance of that value over time.</p>
+          <p>The feature builder generates rolling averages, sliding variances, difference signals, and past lag indicators (window sizes: 10, 20 intervals), saving the enriched columns into an <code>engineered.csv</code> file.</p>
+        
+      </div>
+
+      <h4>Source Code Example</h4>
+      <div class="code-block">
+# Rolling mean calculation for sensor columns
+def compute_rolling_features(df, sensor_cols, window=10):
+    for col in sensor_cols:
+        df[f"{col}_roll_mean"] = df[col].rolling(window=window, min_periods=1).mean()
+        df[f"{col}_roll_std"]  = df[col].rolling(window=window, min_periods=1).std().fillna(0)
+    return df
+      </div>
+    </section>
+
+    <!-- DOC-011 SECTION -->
+    <section id="doc-011" class="section-card">
+      <div class="doc-id">DOC-011</div>
+      <h2>SPLIT, TRAIN & EVALUATE</h2>
+      <p style="font-size: 1.05rem; color: var(--text-secondary);">Splitting logic, fitting models, and generating regression/classification scorecards.</p>
+      
+      <h4>Process Flow Chart</h4>
+      <div class="svg-flowchart">
+        
+          <svg width="500" height="120" viewBox="0 0 500 120">
+            <rect x="10" y="35" width="100" height="50" fill="#1E47C8"/>
+            <text x="60" y="65" fill="white" font-size="11" text-anchor="middle">Split data</text>
+            <path d="M 110 60 L 170 60" stroke="#C8102E" stroke-width="2"/>
+            <rect x="170" y="35" width="110" height="50" fill="#0B1F4A"/>
+            <text x="225" y="65" fill="white" font-size="11" text-anchor="middle">Fit estimators</text>
+            <path d="M 280 60 L 340 60" stroke="#C8102E" stroke-width="2"/>
+            <rect x="340" y="35" width="130" height="50" fill="#C8102E"/>
+            <text x="405" y="65" fill="white" font-size="11" text-anchor="middle">Compile scorecards</text>
+          </svg>
+        
+      </div>
+
+      <h4>Subsystem Logic</h4>
+      <div style="font-size: 1rem; color: var(--text-secondary);">
+        
+          <p>These three backend services run consecutively:
+            <ul>
+              <li><strong>Split</strong>: Splits data into train and test segments. For temporal datasets, standard random splitting can leak information. The partitioner therefore supports sequential splitting to preserve temporal order.</li>
+              <li><strong>Train</strong>: Fits regression (e.g. Ridge Regression, Random Forests) or classification models in independent tasks to avoid main thread timeouts.</li>
+              <li><strong>Evaluate</strong>: Generates error scorecards (RMSE, MAE, R2 scores for regression, or Accuracy, Precision, Recall, F1 for classification).</li>
+            </ul>
+          </p>
+        
+      </div>
+
+      <h4>Source Code Example</h4>
+      <div class="code-block">
+# Sequential split for time series data
+def split_sequential(df, test_size=0.2):
+    split_idx = int(len(df) * (1 - test_size))
+    train = df.iloc[:split_idx]
+    test = df.iloc[split_idx:]
+    return train, test
+      </div>
+    </section>
+
+    <!-- DOC-012 SECTION -->
+    <section id="doc-012" class="section-card">
+      <div class="doc-id">DOC-012</div>
+      <h2>VALIDATION GATEWAY 1 (VG-1)</h2>
+      <p style="font-size: 1.05rem; color: var(--text-secondary);">Ensures metric quality satisfies accuracy thresholds.</p>
+      
+      <h4>Process Flow Chart</h4>
+      <div class="svg-flowchart">
+        
+          <svg width="500" height="120" viewBox="0 0 500 120">
+            <rect x="10" y="35" width="110" height="50" fill="#1E47C8"/>
+            <text x="65" y="65" fill="white" font-size="11" text-anchor="middle">Quality metrics</text>
+            <path d="M 120 60 L 180 60" stroke="#C8102E" stroke-width="2"/>
+            <polygon points="180,60 220,30 260,60 220,90" fill="#0B1F4A" stroke="var(--border-ui)"/>
+            <text x="220" y="64" fill="white" font-size="10" text-anchor="middle">R2 >= 0.90?</text>
+            <path d="M 260 60 L 320 60" stroke="#C8102E" stroke-width="2"/>
+            <rect x="320" y="35" width="150" height="50" fill="#C8102E"/>
+            <text x="395" y="65" fill="white" font-size="11" text-anchor="middle">Pass -> Deploy active</text>
+          </svg>
+        
+      </div>
+
+      <h4>Subsystem Logic</h4>
+      <div style="font-size: 1rem; color: var(--text-secondary);">
+        
+          <p>Validation Gateway 1 (VG-1) checks that training metric scores satisfy production standards before model deployment. If the evaluation scorecard reveals low performance, VG-1 blocks the pipeline execution.</p>
+          <p>The standard gate rules are:
+            <ul>
+              <li>For Regression tasks: Coefficient of determination (<code>R2 Score</code>) must be greater than or equal to 0.90.</li>
+              <li>For Classification tasks: F1 Score / accuracy must be greater than or equal to 0.90.</li>
+            </ul>
+          </p>
+        
+      </div>
+
+      <h4>Source Code Example</h4>
+      <div class="code-block">
+# Metric Gate validation rules
+def validate_vg_1(metrics, task_family):
+    if task_family == "Regression":
+        return metrics.get("r2", 0.0) >= 0.90
+    elif task_family == "Classification":
+        return metrics.get("accuracy", 0.0) >= 0.90
+    return False
+      </div>
+    </section>
+
+    <!-- DOC-013 SECTION -->
+    <section id="doc-013" class="section-card">
+      <div class="doc-id">DOC-013</div>
+      <h2>VALIDATION GATEWAY 2 (VG-2)</h2>
+      <p style="font-size: 1.05rem; color: var(--text-secondary);">Measures average inference latency to satisfy millisecond constraints.</p>
+      
+      <h4>Process Flow Chart</h4>
+      <div class="svg-flowchart">
+        
+          <svg width="500" height="120" viewBox="0 0 500 120">
+            <rect x="10" y="35" width="110" height="50" fill="#1E47C8"/>
+            <text x="65" y="65" fill="white" font-size="11" text-anchor="middle">Latency run loops</text>
+            <path d="M 120 60 L 180 60" stroke="#C8102E" stroke-width="2"/>
+            <polygon points="180,60 230,30 280,60 230,90" fill="#0B1F4A" stroke="var(--border-ui)"/>
+            <text x="230" y="64" fill="white" font-size="10" text-anchor="middle">Mean <= 50ms?</text>
+            <path d="M 280 60 L 340 60" stroke="#C8102E" stroke-width="2"/>
+            <rect x="340" y="35" width="140" height="50" fill="#C8102E"/>
+            <text x="410" y="65" fill="white" font-size="11" text-anchor="middle">Pass -> Deploy active</text>
+          </svg>
+        
+      </div>
+
+      <h4>Subsystem Logic</h4>
+      <div style="font-size: 1rem; color: var(--text-secondary);">
+        
+          <p>Validation Gateway 2 (VG-2) measures model inference latency to ensure real-time suitability. Highly accurate estimators (like deep neural networks) might fail this check if they process slow matrix multiplications.</p>
+          <p>The gate runs 100 test prediction loops on the deployment server:
+            <ul>
+              <li>If the average response time per batch exceeds 50ms, VG-2 blocks deployment to prevent system lag.</li>
+            </ul>
+          </p>
+        
+      </div>
+
+      <h4>Source Code Example</h4>
+      <div class="code-block">
+# Latency Gate validation check
+def validate_vg_2(predict_func, sample_data, max_latency_ms=50.0):
+    import time
+    start = time.time()
+    for _ in range(100):
+        predict_func(sample_data)
+    mean_lat = ((time.time() - start) / 100.0) * 1000
+    return mean_lat <= max_latency_ms, mean_lat
+      </div>
+    </section>
+
+    <!-- DOC-014 SECTION -->
+    <section id="doc-014" class="section-card">
+      <div class="doc-id">DOC-014</div>
+      <h2>DEPLOYMENT</h2>
+      <p style="font-size: 1.05rem; color: var(--text-secondary);">Details FastAPI predictor endpoints and serializer loading processes.</p>
+      
+      <h4>Process Flow Chart</h4>
+      <div class="svg-flowchart">
+        
+          <svg width="500" height="120" viewBox="0 0 500 120">
+            <rect x="10" y="35" width="110" height="50" fill="#1E47C8"/>
+            <text x="65" y="65" fill="white" font-size="11" text-anchor="middle">Gateways Pass</text>
+            <path d="M 120 60 L 180 60" stroke="#C8102E" stroke-width="2"/>
+            <rect x="180" y="35" width="120" height="50" fill="#0B1F4A"/>
+            <text x="240" y="65" fill="white" font-size="11" text-anchor="middle">Pickle Serialization</text>
+            <path d="M 300 60 L 360 60" stroke="#C8102E" stroke-width="2"/>
+            <rect x="360" y="35" width="120" height="50" fill="#C8102E"/>
+            <text x="420" y="65" fill="white" font-size="11" text-anchor="middle">Predict Route Online</text>
+          </svg>
+        
+      </div>
+
+      <h4>Subsystem Logic</h4>
+      <div style="font-size: 1rem; color: var(--text-secondary);">
+        
+          <p>Models that clear both VG-1 and VG-2 are registered inside the workspace model store. The Deploy API activates a prediction route exposing the model via REST:
+            <pre>POST http://127.0.0.1:8001/api/v1/predict/[run_id]</pre>
+          </p>
+          <p>Clients send telemetry sensor arrays to this URL and retrieve real-time Remaining Useful Life (RUL) estimates or failure class predictions.</p>
+        
+      </div>
+
+      <h4>Source Code Example</h4>
+      <div class="code-block">
+# FastAPI Inference Deployment Loader
+@app.post("/api/v1/predict/{run_id}")
+async def fetch_predictions(run_id: str, payload: dict):
+    model = load_model_from_workspace(run_id)
+    raw_array = preprocess_input(payload["data"])
+    predictions = model.predict(raw_array)
+    return {"predictions": predictions.tolist()}
+      </div>
+    </section>
+
+    <!-- DOC-015 SECTION -->
+    <section id="doc-015" class="section-card">
+      <div class="doc-id">DOC-015</div>
+      <h2>MONITORING</h2>
+      <p style="font-size: 1.05rem; color: var(--text-secondary);">Tracks prediction latency, resource usage, and data drift over active streams.</p>
+      
+      <h4>Process Flow Chart</h4>
+      <div class="svg-flowchart">
+        
+          <svg width="500" height="120" viewBox="0 0 500 120">
+            <rect x="10" y="35" width="110" height="50" fill="#1E47C8"/>
+            <text x="65" y="65" fill="white" font-size="11" text-anchor="middle">Live Predictions</text>
+            <path d="M 120 60 L 180 60" stroke="#C8102E" stroke-width="2"/>
+            <rect x="180" y="35" width="130" height="50" fill="#0B1F4A"/>
+            <text x="245" y="65" fill="white" font-size="11" text-anchor="middle">Telemetry Metrics Log</text>
+            <path d="M 310 60 L 370 60" stroke="#C8102E" stroke-width="2"/>
+            <rect x="370" y="35" width="110" height="50" fill="#C8102E"/>
+            <text x="425" y="65" fill="white" font-size="11" text-anchor="middle">Drift Alarm checks</text>
+          </svg>
+        
+      </div>
+
+      <h4>Subsystem Logic</h4>
+      <div style="font-size: 1rem; color: var(--text-secondary);">
+        
+          <p>The monitoring service runs in the background. It measures CPU/memory usage, requests metrics (QPS), and data drift. If the statistics of incoming SCADA logs drift from the training distribution, the system triggers alerts to prompt model retraining.</p>
+        
+      </div>
+
+      <h4>Source Code Example</h4>
+      <div class="code-block">
+# Check for statistical data drift
+def compute_data_drift_score(train_df, stream_df, column):
+    # Perform Kolmogorov-Smirnov check to detect distribution shift
+    from scipy.stats import ks_2samp
+    stat, p_value = ks_2samp(train_df[column], stream_df[column])
+    return p_value < 0.05  # True indicates significant drift
+      </div>
+    </section>
+
+    <!-- DOC-016 SECTION -->
+    <section id="doc-016" class="section-card">
+      <div class="doc-id">DOC-016</div>
+      <h2>AGENTS</h2>
+      <p style="font-size: 1.05rem; color: var(--text-secondary);">Describes the conversational AI Data Agent and interactive pipeline copilot.</p>
+      
+      <h4>Process Flow Chart</h4>
+      <div class="svg-flowchart">
+        
+          <svg width="500" height="120" viewBox="0 0 500 120">
+            <rect x="10" y="35" width="110" height="50" fill="#1E47C8"/>
+            <text x="65" y="65" fill="white" font-size="11" text-anchor="middle">User Text Query</text>
+            <path d="M 120 60 L 180 60" stroke="#C8102E" stroke-width="2"/>
+            <rect x="180" y="35" width="130" height="50" fill="#0B1F4A"/>
+            <text x="245" y="65" fill="white" font-size="11" text-anchor="middle">Natural Language NLP</text>
+            <path d="M 310 60 L 370 60" stroke="#C8102E" stroke-width="2"/>
+            <rect x="370" y="35" width="110" height="50" fill="#C8102E"/>
+            <text x="425" y="65" fill="white" font-size="11" text-anchor="middle">Pipeline Exec call</text>
+          </svg>
+        
+      </div>
+
+      <h4>Subsystem Logic</h4>
+      <div style="font-size: 1rem; color: var(--text-secondary);">
+        
+          <p>The studio integrates an intelligent AI Data Agent. Rather than navigating menus manually, users can converse with a copilot that writes SQL-like filters, compiles archives, explains validation scorecards, and triggers pipeline executions.</p>
+          <p>The agent operates within a glass slide-over drawer panel, providing real-time code fixes and pipeline status indicators.</p>
+        
+      </div>
+
+      <h4>Source Code Example</h4>
+      <div class="code-block">
+# NLP command translator pattern
+def parse_agent_command(user_message: str):
+    msg = user_message.lower()
+    if "run pipeline" in msg or "train" in msg:
+        return {"action": "TRIGGER_DAG", "dag_id": "DAG_514"}
+    elif "show stats" in msg:
+        return {"action": "DISPLAY_STATS"}
+    return {"action": "CHAT_RESPONSE", "reply": "I can help you run pipelines."}
+      </div>
+    </section>
+
+
+  </main>
+
+  <footer style="margin-top: 6rem; padding: 2rem; border-top: 1px solid var(--border-ui); text-align: center; font-size: 0.85rem; color: var(--text-muted);">
+    &copy; 2026 AI-CONNEXX Suite. Total Automation Solutions.
+  </footer>
+</body>
+</html>

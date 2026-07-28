@@ -1,0 +1,72 @@
+{
+  "CLASSIFICATION": [
+    {
+      "dag_id": "DAG_001",
+      "algorithm": "Random Forest",
+      "variant": "Classifier"
+    }
+  ],
+  "REGRESSION": [
+    {
+      "dag_id": "DAG_241",
+      "algorithm": "Linear Regression",
+      "variant": "Standard"
+    }
+  ],
+  "ANOMALY DETECTION": [
+    {
+      "dag_id": "DAG_486",
+      "algorithm": "Isolation Forest",
+      "variant": "Standard"
+    }
+  ],
+  "CLUSTERING": [
+    {
+      "dag_id": "DAG_696",
+      "algorithm": "K-Means",
+      "variant": "Standard"
+    }
+  ],
+  "TIME-SERIES": [
+    {
+      "dag_id": "DAG_906",
+      "algorithm": "ARIMA",
+      "variant": "Standard"
+    }
+  ],
+  "DIGITAL TWIN": [
+    {
+      "dag_id": "DAG_1131",
+      "algorithm": "Physics-Based",
+      "variant": "Standard"
+    }
+  ],
+  "REINFORCEMENT LEARNING": [
+    {
+      "dag_id": "DAG_1241",
+      "algorithm": "Deep Q-Network",
+      "variant": "Standard"
+    }
+  ],
+  "RECOMMENDATION": [
+    {
+      "dag_id": "DAG_1341",
+      "algorithm": "Collaborative Filtering",
+      "variant": "Standard"
+    }
+  ],
+  "NLP/TEXT-CLASSIFICATION": [
+    {
+      "dag_id": "DAG_1451",
+      "algorithm": "BERT",
+      "variant": "Classifier"
+    }
+  ],
+  "COMPUTER VISION": [
+    {
+      "dag_id": "DAG_1561",
+      "algorithm": "ResNet",
+      "variant": "Classifier"
+    }
+  ]
+}

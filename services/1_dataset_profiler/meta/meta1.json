@@ -1,0 +1,374 @@
+{
+  "status": "success",
+  "filename": "group_x_merged.csv",
+  "profile": {
+    "dataset_info": {
+      "num_rows": 1338,
+      "num_columns": 7,
+      "total_memory_bytes": 96728,
+      "duplicate_rows": 1,
+      "duplicate_rows_pct": 0.0007473841554559044
+    },
+    "columns": [
+      {
+        "name": "age",
+        "dtype": "int64",
+        "semantic_type": "numeric",
+        "missing_count": 0,
+        "missing_pct": 0.0,
+        "unique_count": 47,
+        "unique_pct": 0.035127055306427506,
+        "is_constant": false,
+        "stats": {
+          "min": 18.0,
+          "max": 64.0,
+          "mean": 39.20702541106129,
+          "median": 39.0,
+          "std": 14.049960379216154,
+          "variance": 197.40138665754375,
+          "skewness": 0.05567251565299186,
+          "kurtosis": -1.2450876526418673,
+          "percentiles": {
+            "1%": 18.0,
+            "5%": 18.0,
+            "10%": 19.0,
+            "25%": 27.0,
+            "50%": 39.0,
+            "75%": 51.0,
+            "90%": 59.0,
+            "95%": 62.0,
+            "99%": 64.0
+          },
+          "outlier_count_iqr": 0,
+          "outlier_pct_iqr": 0.0,
+          "outlier_count_zscore": 0,
+          "outlier_pct_zscore": 0.0,
+          "histogram": {
+            "counts": [
+              222,
+              140,
+              109,
+              128,
+              102,
+              137,
+              144,
+              114,
+              128,
+              114
+            ],
+            "bin_edges": [
+              18.0,
+              22.6,
+              27.2,
+              31.799999999999997,
+              36.4,
+              41.0,
+              45.599999999999994,
+              50.199999999999996,
+              54.8,
+              59.4,
+              64.0
+            ]
+          }
+        }
+      },
+      {
+        "name": "sex",
+        "dtype": "str",
+        "semantic_type": "categorical",
+        "missing_count": 0,
+        "missing_pct": 0.0,
+        "unique_count": 2,
+        "unique_pct": 0.0014947683109118087,
+        "is_constant": false,
+        "stats": {
+          "top_categories": {
+            "male": 676,
+            "female": 662
+          },
+          "mode": "male",
+          "mode_frequency": 676,
+          "mode_pct": 0.5052316890881914,
+          "entropy": 0.6930924384196063
+        }
+      },
+      {
+        "name": "bmi",
+        "dtype": "float64",
+        "semantic_type": "numeric",
+        "missing_count": 0,
+        "missing_pct": 0.0,
+        "unique_count": 548,
+        "unique_pct": 0.40956651718983555,
+        "is_constant": false,
+        "stats": {
+          "min": 15.96,
+          "max": 53.13,
+          "mean": 30.66339686098655,
+          "median": 30.4,
+          "std": 6.098186911679014,
+          "variance": 37.18788360977323,
+          "skewness": 0.2840471105987448,
+          "kurtosis": -0.05073153135467834,
+          "percentiles": {
+            "1%": 17.895149999999997,
+            "5%": 21.256000000000004,
+            "10%": 22.99,
+            "25%": 26.29625,
+            "50%": 30.4,
+            "75%": 34.69375,
+            "90%": 38.619499999999995,
+            "95%": 41.105999999999995,
+            "99%": 46.40789999999996
+          },
+          "outlier_count_iqr": 9,
+          "outlier_pct_iqr": 0.006726457399103139,
+          "outlier_count_zscore": 4,
+          "outlier_pct_zscore": 0.0029895366218236174,
+          "histogram": {
+            "counts": [
+              30,
+              127,
+              234,
+              319,
+              288,
+              195,
+              96,
+              32,
+              14,
+              3
+            ],
+            "bin_edges": [
+              15.96,
+              19.677,
+              23.394000000000002,
+              27.111,
+              30.828000000000003,
+              34.545,
+              38.262,
+              41.979,
+              45.696,
+              49.413000000000004,
+              53.13
+            ]
+          }
+        }
+      },
+      {
+        "name": "children",
+        "dtype": "int64",
+        "semantic_type": "numeric",
+        "missing_count": 0,
+        "missing_pct": 0.0,
+        "unique_count": 6,
+        "unique_pct": 0.004484304932735426,
+        "is_constant": false,
+        "stats": {
+          "min": 0.0,
+          "max": 5.0,
+          "mean": 1.0949177877429,
+          "median": 1.0,
+          "std": 1.205492739781914,
+          "variance": 1.453212745666905,
+          "skewness": 0.9383804401702414,
+          "kurtosis": 0.2024541467168901,
+          "percentiles": {
+            "1%": 0.0,
+            "5%": 0.0,
+            "10%": 0.0,
+            "25%": 0.0,
+            "50%": 1.0,
+            "75%": 2.0,
+            "90%": 3.0,
+            "95%": 3.0,
+            "99%": 5.0
+          },
+          "outlier_count_iqr": 0,
+          "outlier_pct_iqr": 0.0,
+          "outlier_count_zscore": 18,
+          "outlier_pct_zscore": 0.013452914798206279,
+          "histogram": {
+            "counts": [
+              574,
+              0,
+              324,
+              0,
+              240,
+              0,
+              157,
+              0,
+              25,
+              18
+            ],
+            "bin_edges": [
+              0.0,
+              0.5,
+              1.0,
+              1.5,
+              2.0,
+              2.5,
+              3.0,
+              3.5,
+              4.0,
+              4.5,
+              5.0
+            ]
+          }
+        }
+      },
+      {
+        "name": "smoker",
+        "dtype": "str",
+        "semantic_type": "categorical",
+        "missing_count": 0,
+        "missing_pct": 0.0,
+        "unique_count": 2,
+        "unique_pct": 0.0014947683109118087,
+        "is_constant": false,
+        "stats": {
+          "top_categories": {
+            "no": 1064,
+            "yes": 274
+          },
+          "mode": "no",
+          "mode_frequency": 1064,
+          "mode_pct": 0.7952167414050823,
+          "entropy": 0.5069623513566172
+        }
+      },
+      {
+        "name": "region",
+        "dtype": "str",
+        "semantic_type": "categorical",
+        "missing_count": 0,
+        "missing_pct": 0.0,
+        "unique_count": 4,
+        "unique_pct": 0.0029895366218236174,
+        "is_constant": false,
+        "stats": {
+          "top_categories": {
+            "southeast": 364,
+            "southwest": 325,
+            "northwest": 325,
+            "northeast": 324
+          },
+          "mode": "southeast",
+          "mode_frequency": 364,
+          "mode_pct": 0.27204783258594917,
+          "entropy": 1.3850214683034072
+        }
+      },
+      {
+        "name": "charges",
+        "dtype": "float64",
+        "semantic_type": "numeric",
+        "missing_count": 0,
+        "missing_pct": 0.0,
+        "unique_count": 1337,
+        "unique_pct": 0.9992526158445441,
+        "is_constant": false,
+        "stats": {
+          "min": 1121.8739,
+          "max": 63770.42801,
+          "mean": 13270.422265141257,
+          "median": 9382.033,
+          "std": 12110.011236694001,
+          "variance": 146652372.15285498,
+          "skewness": 1.5158796580240388,
+          "kurtosis": 1.6062986532967907,
+          "percentiles": {
+            "1%": 1252.97273,
+            "5%": 1757.7534,
+            "10%": 2346.5336150000003,
+            "25%": 4740.28715,
+            "50%": 9382.033,
+            "75%": 16639.912515,
+            "90%": 34831.7197,
+            "95%": 41181.827787499926,
+            "99%": 48537.480726
+          },
+          "outlier_count_iqr": 139,
+          "outlier_pct_iqr": 0.1038863976083707,
+          "outlier_count_zscore": 7,
+          "outlier_pct_zscore": 0.00523168908819133,
+          "histogram": {
+            "counts": [
+              536,
+              398,
+              129,
+              86,
+              35,
+              59,
+              57,
+              32,
+              2,
+              4
+            ],
+            "bin_edges": [
+              1121.8739,
+              7386.729311000001,
+              13651.584722000001,
+              19916.440133,
+              26181.295544,
+              32446.150955,
+              38711.006366,
+              44975.861777000006,
+              51240.717188,
+              57505.572599,
+              63770.42801
+            ]
+          }
+        }
+      }
+    ],
+    "correlation_summary": {
+      "warnings": [],
+      "high_correlation_pairs": []
+    },
+    "missing_data_summary": {
+      "total_missing_cells": 0,
+      "overall_missing_pct": 0.0,
+      "columns_above_20pct_missing": []
+    },
+    "outlier_summary": {
+      "overall_outlier_ratio": 0.027653213751868463,
+      "top_outlier_columns": [
+        {
+          "column": "charges",
+          "outlier_ratio": 0.1038863976083707
+        },
+        {
+          "column": "bmi",
+          "outlier_ratio": 0.006726457399103139
+        }
+      ]
+    },
+    "dimensionality": {
+      "pca_95pct_components": 4,
+      "components_needed_ratio": 1.0,
+      "explained_variance_ratio": [
+        0.35701730878465515,
+        0.2481235251307745,
+        0.22413089833267802,
+        0.1707282677518924
+      ]
+    },
+    "warnings": [
+      "Dataset has 1 duplicate rows.",
+      "Column 'charges' has a high percentage of outliers (10.4%)."
+    ],
+    "data_topology": "tabular",
+    "algorithm_family": "Miscellaneous",
+    "family_confidence": 0.8,
+    "family_reason": "No target column detected for supervised learning (Regression/Classification); mixed categorical/numeric columns without label, suggesting clustering or rule association.",
+    "detected_target": null,
+    "suggested_task": "Clustering / Association Rules",
+    "recommended_dag_id": "DAG_949",
+    "recommended_algorithm": "K-Means",
+    "recommended_variant": "Standard",
+    "recommended_special_handling": null,
+    "raw_file_path": "C:\\Users\\admin.DESKTOP-17T37DJ\\Desktop\\aic\\services\\workspace_data\\group_x_merged\\group_x_merged.csv",
+    "num_rows": 1338,
+    "num_cols": 7
+  }
+}

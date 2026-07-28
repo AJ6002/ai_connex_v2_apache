@@ -1,0 +1,10 @@
+{
+  "algorithm": "Vector Autoregression",
+  "variant": "CV",
+  "hyperparameters": {
+    "fit_intercept": true
+  },
+  "use_gpu": false,
+  "early_stopping": false,
+  "class_weight": null
+}

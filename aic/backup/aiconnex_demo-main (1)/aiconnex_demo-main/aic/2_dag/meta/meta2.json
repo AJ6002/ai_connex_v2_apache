@@ -1,0 +1,33 @@
+{
+  "dag_id": "DAG_241",
+  "family": "Regression",
+  "suggested_task": "Regression",
+  "prepare_recipe": {},
+  "feature_engineering_recipe": {
+    "polynomial_degree": 2,
+    "interaction_features": true,
+    "pca_components": 0,
+    "feature_selection_method": "k_best",
+    "k_best_features": 15,
+    "create_aggregate_features": true
+  },
+  "splitting_recipe": {
+    "test_size": 0.2,
+    "validation_strategy": "kfold",
+    "random_state": 42
+  },
+  "training_recipe": {
+    "algorithm": "SVM",
+    "variant": "Multi-class",
+    "validation_metrics": [
+      "accuracy",
+      "f1",
+      "precision",
+      "recall"
+    ],
+    "hyperparameters": {
+      "fit_intercept": true,
+      "alpha": 1.0
+    }
+  }
+}

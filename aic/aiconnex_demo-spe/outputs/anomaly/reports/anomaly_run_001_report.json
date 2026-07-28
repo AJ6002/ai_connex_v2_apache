@@ -1,0 +1,64 @@
+{
+  "pipeline_run_id": "anomaly_run_001",
+  "ml_task": "anomaly",
+  "timestamp": "2026-07-20T07:28:56.819300",
+  "best_algorithm": "Isolation Forest",
+  "best_params": null,
+  "evaluation": {
+    "mode": "unsupervised_score_only",
+    "mean_score": -0.0451,
+    "p99_score": 0.0077,
+    "pct_flagged": 0.0056
+  },
+  "threshold_calibration": {
+    "method": "percentile",
+    "percentile": 99.0,
+    "threshold": 0.013208,
+    "estimated_far_on_val": 0.01
+  },
+  "robustness": null,
+  "validation_gates": {
+    "vg_1": {
+      "gate": "VG_1",
+      "passed": true,
+      "checks": {
+        "no_high_null_columns": {
+          "passed": true,
+          "detail": "OK"
+        },
+        "no_stuck_sensors": {
+          "passed": true,
+          "detail": "OK (stuck sensors allowed)"
+        },
+        "schema_contract": {
+          "passed": true,
+          "detail": "OK"
+        },
+        "timestamp_monotonic": {
+          "passed": true,
+          "detail": "OK"
+        },
+        "sufficient_train_rows": {
+          "passed": true,
+          "detail": "73574 rows (minimum: 50)"
+        }
+      }
+    },
+    "vg_2": {
+      "gate": "VG_2",
+      "ml_task": "anomaly",
+      "passed": true,
+      "checks": {}
+    }
+  },
+  "model_path": "outputs/anomaly/best_model.pkl",
+  "scaler_path": "outputs/anomaly/scaler.pkl",
+  "completed_steps": [
+    "scope",
+    "acquire",
+    "split",
+    "feature_engineering",
+    "anomaly_training",
+    "deploy"
+  ]
+}

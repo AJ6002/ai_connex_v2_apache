@@ -1,0 +1,8 @@
+{
+    "impute_strategy": "mean",
+    "outlier_method": "none",
+    "scale_method": "standard",
+    "encode_strategy": "one-hot",
+    "text_clean": false,
+    "time_align": false
+}

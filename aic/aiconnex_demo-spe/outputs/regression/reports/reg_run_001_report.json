@@ -1,0 +1,229 @@
+{
+  "pipeline_run_id": "reg_run_001",
+  "ml_task": "regression",
+  "timestamp": "2026-07-20T07:22:15.990846",
+  "best_algorithm": "XGBoost",
+  "best_params": {
+    "subsample": 1.0,
+    "reg_lambda": 5.0,
+    "reg_alpha": 1.0,
+    "n_estimators": 500,
+    "max_depth": 9,
+    "learning_rate": 0.05,
+    "colsample_bytree": 0.6
+  },
+  "evaluation": {
+    "train": {
+      "rmse": 0.0782,
+      "mae": 0.0477,
+      "mape": 0.0012,
+      "r2": 1.0,
+      "nrmse": 0.0003,
+      "rul_asymmetric_score": 0.0042
+    },
+    "val": {
+      "rmse": 0.0796,
+      "mae": 0.0486,
+      "mape": 0.0014,
+      "r2": 1.0,
+      "nrmse": 0.0003,
+      "rul_asymmetric_score": 0.0043
+    },
+    "test": {
+      "rmse": 23.9925,
+      "mae": 18.3902,
+      "mape": 0.2661,
+      "r2": 0.8161,
+      "nrmse": 0.1132,
+      "rul_asymmetric_score": 28.777
+    },
+    "bootstrap_ci_rmse": {
+      "mean": 24.006,
+      "lower": 23.0213,
+      "upper": 25.1622
+    },
+    "train_val_rmse_gap": 0.0014,
+    "per_entity": {
+      "8": {
+        "rmse": 32.2369,
+        "mae": 29.3813,
+        "mape": 0.4562,
+        "r2": 0.4457,
+        "nrmse": 0.2164,
+        "rul_asymmetric_score": 32.3469
+      },
+      "15": {
+        "rmse": 17.4804,
+        "mae": 14.364,
+        "mape": 0.1934,
+        "r2": 0.9144,
+        "nrmse": 0.0849,
+        "rul_asymmetric_score": 6.3045
+      },
+      "19": {
+        "rmse": 25.8114,
+        "mae": 21.7582,
+        "mape": 0.2914,
+        "r2": 0.6797,
+        "nrmse": 0.1644,
+        "rul_asymmetric_score": 16.8074
+      },
+      "21": {
+        "rmse": 14.627,
+        "mae": 12.2991,
+        "mape": 0.1546,
+        "r2": 0.9325,
+        "nrmse": 0.0754,
+        "rul_asymmetric_score": 2.2687
+      },
+      "29": {
+        "rmse": 14.5515,
+        "mae": 12.2536,
+        "mape": 0.2145,
+        "r2": 0.9044,
+        "nrmse": 0.0898,
+        "rul_asymmetric_score": 3.663
+      },
+      "39": {
+        "rmse": 47.9031,
+        "mae": 43.2723,
+        "mape": 0.7326,
+        "r2": -0.6808,
+        "nrmse": 0.3772,
+        "rul_asymmetric_score": 208.1316
+      },
+      "43": {
+        "rmse": 13.1714,
+        "mae": 10.4145,
+        "mape": 0.1278,
+        "r2": 0.9514,
+        "nrmse": 0.0639,
+        "rul_asymmetric_score": 3.0418
+      },
+      "51": {
+        "rmse": 13.8633,
+        "mae": 10.7715,
+        "mape": 0.0678,
+        "r2": 0.7215,
+        "nrmse": 0.154,
+        "rul_asymmetric_score": 2.8436
+      }
+    }
+  },
+  "threshold_calibration": null,
+  "robustness": {
+    "baseline_rmse": 23.9925,
+    "max_allowed_degradation_pct": 50.0,
+    "noise_tests": [
+      {
+        "sigma_fraction": 0.05,
+        "rmse": 26.0844,
+        "degradation_pct": 8.72,
+        "passed": true
+      },
+      {
+        "sigma_fraction": 0.1,
+        "rmse": 26.0667,
+        "degradation_pct": 8.65,
+        "passed": true
+      },
+      {
+        "sigma_fraction": 0.15,
+        "rmse": 25.9964,
+        "degradation_pct": 8.35,
+        "passed": true
+      },
+      {
+        "sigma_fraction": 0.2,
+        "rmse": 26.1445,
+        "degradation_pct": 8.97,
+        "passed": true
+      }
+    ],
+    "dropout_tests": [
+      {
+        "dropout_fraction": 0.1,
+        "rmse": 23.5982,
+        "degradation_pct": -1.64,
+        "passed": true
+      },
+      {
+        "dropout_fraction": 0.2,
+        "rmse": 25.7352,
+        "degradation_pct": 7.26,
+        "passed": true
+      },
+      {
+        "dropout_fraction": 0.3,
+        "rmse": 29.4238,
+        "degradation_pct": 22.64,
+        "passed": true
+      }
+    ],
+    "overall_passed": true
+  },
+  "validation_gates": {
+    "vg_1": {
+      "gate": "VG_1",
+      "passed": true,
+      "checks": {
+        "no_high_null_columns": {
+          "passed": true,
+          "detail": "OK"
+        },
+        "no_stuck_sensors": {
+          "passed": true,
+          "detail": "OK (stuck sensors allowed)"
+        },
+        "schema_contract": {
+          "passed": true,
+          "detail": "OK"
+        },
+        "timestamp_monotonic": {
+          "passed": true,
+          "detail": "OK"
+        },
+        "sufficient_train_rows": {
+          "passed": true,
+          "detail": "6873 rows (minimum: 50)"
+        }
+      }
+    },
+    "vg_2": {
+      "gate": "VG_2",
+      "ml_task": "regression",
+      "passed": true,
+      "checks": {
+        "rmse": {
+          "passed": true,
+          "required": "\u2264 45.0",
+          "actual": 23.9925
+        },
+        "r2": {
+          "passed": true,
+          "required": "\u2265 0.3",
+          "actual": 0.8161
+        },
+        "mape_pct": {
+          "passed": true,
+          "required": "\u2264 35.0%",
+          "actual": 26.61
+        },
+        "robustness": {
+          "passed": true,
+          "detail": "All noise/dropout tests passed"
+        }
+      }
+    }
+  },
+  "model_path": "outputs/regression/best_model.pkl",
+  "scaler_path": "outputs/regression/scaler.pkl",
+  "completed_steps": [
+    "scope",
+    "acquire",
+    "split",
+    "feature_engineering",
+    "regression_training",
+    "deploy"
+  ]
+}

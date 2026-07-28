@@ -1,0 +1,13 @@
+{
+    "algorithm": "ETS",
+    "variant": "Standard",
+    "validation_metrics": [
+        "r2",
+        "rmse",
+        "mae"
+    ],
+    "hyperparameters": {
+        "fit_intercept": true,
+        "alpha": 1.0
+    }
+}

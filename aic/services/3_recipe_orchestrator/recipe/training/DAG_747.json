@@ -1,0 +1,11 @@
+{
+  "algorithm": "One-class SVM",
+  "variant": "GPU-accelerated",
+  "hyperparameters": {
+    "kernel": "rbf",
+    "C": 1.0
+  },
+  "use_gpu": true,
+  "early_stopping": false,
+  "class_weight": null
+}
