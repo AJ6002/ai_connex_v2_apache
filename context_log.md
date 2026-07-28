@@ -1463,6 +1463,15 @@
 **Current system state:** Direct CSV upload feature implemented, verified, and committed.
 ---
 
+## Query 137 — 2026-07-28 18:16
+**Input:** User reported error still persisting when re-triggering file upload in UI.
+**Response summary:** Diagnosed 2 issues: 1) Active Dataset Profiler process `27392` on port 8000 was running pre-fix code in memory; 2) `services/1_dataset_profiler/main.py` referenced `res.artifacts` causing `UnboundLocalError`. Updated `main.py` to use `duration_sec`, `merged_files_list`, `combined_file_path`, added try/except fallbacks for `llm_client` in `format_detector.py` and `schema_analyzer.py`, restarted microservices, and verified direct CSV upload returns `HTTP 200 OK` (Status: success).
+**Files changed:** services/1_dataset_profiler/main.py, aiconnex_zip_compiler/intelligence/format_detector.py, aiconnex_zip_compiler/intelligence/schema_analyzer.py, context_log.md
+**Architectural decisions:** Fixed backend memory process stale state and `res` object binding in compile endpoint.
+**Current system state:** Direct CSV compile API verified HTTP 200 OK; microservices active on ports 8000-8008.
+---
+
+
 
 
 
