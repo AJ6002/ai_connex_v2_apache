@@ -1471,6 +1471,15 @@
 **Current system state:** Direct CSV compile API verified HTTP 200 OK; microservices active on ports 8000-8008.
 ---
 
+## Query 138 — 2026-07-28 18:31
+**Input:** User asked if the data/raw folder was cleaned up.
+**Response summary:** Audited `data/raw/` directory. Confirmed zero files were deleted or cleaned up. All 4 original raw dataset archives (`2.+Composites.zip`, `Dataset-TAS.zip`, `NASA C-MAPSS-1 Turbofan Engine Degradation Dataset.zip`, `suyash2.zip`) are 100% intact on disk.
+**Files changed:** context_log.md
+**Architectural decisions:** Confirmed raw data files remain untouched.
+**Current system state:** data/raw folder audited; all 4 datasets intact.
+---
+
+
 
 
 
