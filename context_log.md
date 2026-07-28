@@ -1382,3 +1382,21 @@
 **Architectural decisions:** Agent does NOT replace the compiler — it improves it. No LLM in the hot compilation path. Sandbox isolation is non-negotiable. Every agent patch requires a regression test. Max 3 revision attempts before human escalation.
 **Current system state:** Scout Agent architecture specification complete and awaiting user review/approval before implementation begins.
 ---
+
+## Query 127 — 2026-07-28 11:28
+**Input:** Make a new branch from main named '28_july_agentic' and explain the architecture & status of main regarding compiler and agents.
+**Response summary:** Stashed WIP on `feature/agentic-scout-compiler`, checked out `main`, created and checked out fresh branch `28_july_agentic`. Audited codebase on `main`: confirmed `main` contains v1.0 basic compiler, 0 agent modules (`aiconnex_agent/` absent), and full 10-node ML pipeline (`aiconnex_ml/` & 9 microservices in `aic/`).
+**Files changed:** context_log.md
+**Architectural decisions:** Created clean isolated working branch `28_july_agentic` from `main` for agentic & compiler evolution.
+**Current system state:** Active branch is `28_july_agentic` branched from `main`.
+---
+
+## Query 128 — 2026-07-28 11:36
+**Input:** Clean up any pre-existing agent modules to ensure a 100% clean baseline for re-designing the agentic + compiler package on branch 28_july_agentic.
+**Response summary:** Audited working directory and permanently removed leftover untracked `aiconnex_agent/` directory and agent scratch scripts (`scratch/test_aiconnex_agent.py`, `scratch/test_suyash2_agent.py`). Confirmed workspace on branch `28_july_agentic` is 100% clean with zero pre-existing agent code.
+**Files changed:** Deleted `aiconnex_agent/`, `scratch/test_aiconnex_agent.py`, `scratch/test_suyash2_agent.py` · Modified `context_log.md`
+**Architectural decisions:** Purged all legacy agent code and untracked artifacts from the branch to guarantee a clean slate for the new agentic + compiler design.
+**Current system state:** Branch `28_july_agentic` is completely clean of any prior agent packages/code.
+---
+
+
