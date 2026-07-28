@@ -72,17 +72,30 @@ async def compile_zip(file: UploadFile = File(...)):
         output_dir = os.path.join(services_dir, "workspace_data", zip_dir_name)
         os.makedirs(output_dir, exist_ok=True)
         
-        compiler = UnifiedCompiler(temp_zip_path, output_dir)
-        res = compiler.compile()
-        
-        if not res.success:
-            raise HTTPException(
-                status_code=500,
-                detail=f"Compilation failed: {res.error}"
-            )
+        # If direct CSV or TSV upload, skip ZIP compiler and save directly
+        if file.filename.lower().endswith(".csv") or file.filename.lower().endswith(".tsv"):
+            dest_csv_path = os.path.join(output_dir, file.filename)
+            shutil.copy(temp_zip_path, dest_csv_path)
+            first_csv = dest_csv_path
+            duration_sec = 0.01
+            merged_files_list = [dest_csv_path]
+            combined_file_path = dest_csv_path
+        else:
+            from aiconnex_zip_compiler.compiler import UnifiedCompiler
+            compiler = UnifiedCompiler(temp_zip_path, output_dir, enable_intelligence=False)
+            res = compiler.compile()
             
-        # Get details of the first compiled file for profiling
-        first_csv = res.merged_files[0] if res.merged_files else (res.combined_file or "")
+            if not res.success:
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Compilation failed: {res.error}"
+                )
+                
+            first_csv = res.merged_files[0] if res.merged_files else (res.combined_file or "")
+            duration_sec = res.duration_seconds
+            merged_files_list = res.merged_files
+            combined_file_path = res.combined_file
+
         
         # Create manifest.json inside output_dir
         manifest_path = os.path.join(output_dir, "manifest.json")
@@ -92,9 +105,9 @@ async def compile_zip(file: UploadFile = File(...)):
             "status": "compiled",
             "pipeline_step": "compile",
             "compiler_report": {
-                "duration_seconds": res.duration_seconds,
-                "merged_files": res.merged_files,
-                "combined_file": res.combined_file,
+                "duration_seconds": duration_sec,
+                "merged_files": merged_files_list,
+                "combined_file": combined_file_path,
             }
         }
         try:
@@ -109,7 +122,8 @@ async def compile_zip(file: UploadFile = File(...)):
             sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
             import sqlite_tracker
             sqlite_tracker.init_run(run_id=zip_dir_name, dataset_name=zip_stem, dag_id="", family="", suggested_task="")
-            sqlite_tracker.log_step(run_id=zip_dir_name, step_name="Compile (Unified Compiler)", status="success", output_file=first_csv, metrics={"duration_seconds": res.duration_seconds})
+            sqlite_tracker.log_step(run_id=zip_dir_name, step_name="Compile (Unified Compiler)", status="success", output_file=first_csv, metrics={"duration_seconds": duration_sec})
+
             sqlite_tracker.update_run_manifest(run_id=zip_dir_name, manifest_dict=manifest)
         except Exception as sqle:
             print(f"Error logging compile step to SQLite: {sqle}")
