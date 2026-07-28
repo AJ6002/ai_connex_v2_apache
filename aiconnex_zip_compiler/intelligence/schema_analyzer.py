@@ -19,7 +19,12 @@ import json
 import logging
 from typing import Any, Dict, List, Optional
 
-from .llm_client import LLMClient, LLMUnavailableError
+try:
+    from .llm_client import LLMClient, LLMUnavailableError
+except ImportError:
+    class LLMUnavailableError(Exception): pass
+    LLMClient = None
+
 from .models import SchemaRoles, TableMetadata, TableRelationship
 from .validation import safe_confidence
 

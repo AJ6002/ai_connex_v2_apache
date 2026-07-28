@@ -159,30 +159,43 @@ async def compile_zip(file: UploadFile = File(...)):
                 
         # Load dataset card and join audit details
         dataset_card = {}
-        if os.path.exists(res.artifacts.dataset_card_json):
-            with open(res.artifacts.dataset_card_json, "r", encoding="utf-8") as card_f:
-                dataset_card = json.load(card_f)
+        card_file = os.path.join(output_dir, "dataset_card.json")
+        if os.path.exists(card_file):
+            try:
+                with open(card_file, "r", encoding="utf-8") as card_f:
+                    dataset_card = json.load(card_f)
+            except Exception:
+                pass
                 
         join_audits = []
-        if os.path.exists(res.artifacts.join_audit_json):
-            with open(res.artifacts.join_audit_json, "r", encoding="utf-8") as audit_f:
-                join_audits = json.load(audit_f).get("audits", [])
+        audit_file = os.path.join(output_dir, "join_audit.json")
+        if os.path.exists(audit_file):
+            try:
+                with open(audit_file, "r", encoding="utf-8") as audit_f:
+                    join_audits = json.load(audit_f).get("audits", [])
+            except Exception:
+                pass
                 
         schema_map = {}
-        if os.path.exists(res.artifacts.schema_map_json):
-            with open(res.artifacts.schema_map_json, "r", encoding="utf-8") as schema_f:
-                schema_map = json.load(schema_f)
+        schema_file = os.path.join(output_dir, "schema_map.json")
+        if os.path.exists(schema_file):
+            try:
+                with open(schema_file, "r", encoding="utf-8") as schema_f:
+                    schema_map = json.load(schema_f)
+            except Exception:
+                pass
                 
         return {
             "status": "success",
             "filename": file.filename,
-            "duration_seconds": res.duration_seconds,
+            "duration_seconds": duration_sec,
             "output_dir": output_dir,
-            "merged_files": res.merged_files,
-            "combined_file": res.combined_file,
+            "merged_files": merged_files_list,
+            "combined_file": combined_file_path,
             "first_csv": first_csv,
             "total_rows": total_rows,
             "total_cols": total_cols,
+
             "preview_columns": preview_cols,
             "preview_rows": preview_rows,
             "dataset_card": dataset_card,

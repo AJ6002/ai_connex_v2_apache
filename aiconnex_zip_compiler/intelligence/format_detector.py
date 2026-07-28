@@ -20,7 +20,12 @@ import logging
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-from .llm_client import LLMClient, LLMUnavailableError
+try:
+    from .llm_client import LLMClient, LLMUnavailableError
+except ImportError:
+    class LLMUnavailableError(Exception): pass
+    LLMClient = None
+
 from .models import ArchiveNode, FileFingerprint
 
 logger = logging.getLogger(__name__)
