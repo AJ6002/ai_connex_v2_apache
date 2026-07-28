@@ -1,8 +1,9 @@
 # ==========================================
 # 1. Datasets & Raw Files
 # ==========================================
-data/
+/data/
 workspace_data/
+
 testing_ds/
 *.zip
 *.csv
