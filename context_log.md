@@ -1447,6 +1447,24 @@
 **Current system state:** Vite build error resolved; `npm run build` succeeds cleanly in 2.50s.
 ---
 
+## Query 135 — 2026-07-28 18:11
+**Input:** User requested root cause explanation of `[Dataset Profiler] HTTP 500 Compilation failed: [WinError 3] The system cannot find the path specified`.
+**Response summary:** Identified 2 root causes: 1) Windows MAX_PATH (260 character limit) path truncation on deeply nested extraction subfolders (`11. Randomized Battery Usage Data Set/...`); 2) Missing module exception (`No module named 'aiconnex_zip_compiler.intelligence.llm_client'`) when default `enable_intelligence=True` attempts to load removed legacy dynamic LLM modules.
+**Files changed:** context_log.md
+**Architectural decisions:** Root cause diagnosis provided.
+**Current system state:** Root cause identified.
+---
+
+## Query 136 — 2026-07-28 18:13
+**Input:** User asked if they can skip the ZIP compiler and upload a compiled dataset CSV directly.
+**Response summary:** Implemented direct `.csv` / `.tsv` upload bypass in `services/1_dataset_profiler/main.py`. Node 1 Dataset Profiler now detects `.csv` uploads, skips `UnifiedCompiler`, places the CSV into `workspace_data/`, profiles column statistics, and assigns DAG IDs natively.
+**Files changed:** services/1_dataset_profiler/main.py, context_log.md
+**Architectural decisions:** Enabled direct CSV upload pipeline bypass for pre-compiled tabular datasets.
+**Current system state:** Direct CSV upload feature implemented, verified, and committed.
+---
+
+
+
 
 
 
