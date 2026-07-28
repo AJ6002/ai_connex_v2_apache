@@ -7,8 +7,25 @@ aiconnex_agent.runner.
 
 from __future__ import annotations
 
+import os
+import sys
 import time
+from pathlib import Path
 from typing import List, Dict, Any
+
+# Ensure project root is in sys.path when running tui_app.py directly
+ROOT_DIR = Path(__file__).resolve().parent.parent
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+# Ensure UTF-8 stdout on Windows console
+if sys.platform == "win32":
+    os.environ["PYTHONUTF8"] = "1"
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 from rich.console import Console
 from rich.layout import Layout
 from rich.live import Live
@@ -72,6 +89,5 @@ def run_tui_session(
 
 
 if __name__ == "__main__":
-    import sys
     prompt = sys.argv[1] if len(sys.argv) > 1 else "Compile and profile suyash2.zip archive"
     run_tui_session(prompt)

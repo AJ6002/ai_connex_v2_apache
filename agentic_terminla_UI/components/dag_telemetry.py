@@ -19,7 +19,7 @@ def render_telemetry_panel(events: List[Dict[str, Any]]) -> Panel:
         for idx, ev in enumerate(events[-10:], 1):
             node_name = ev.get("node", "unknown")
             text.append(f"[{idx:02d}] ", style="bold dim")
-            text.append(f"⚡ Executed Node: ", style="bold yellow")
+            text.append(">> Executed Node: ", style="bold yellow")
             text.append(f"{node_name}\n", style="bold green")
             
-    return Panel(text, title="[bold yellow]📡 LangGraph Agent Telemetry Stream[/bold yellow]", border_style="yellow")
+    return Panel(text, title="[bold yellow][Stream] LangGraph Agent Telemetry Stream[/bold yellow]", border_style="yellow")

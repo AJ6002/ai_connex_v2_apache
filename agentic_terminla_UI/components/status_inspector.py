@@ -26,4 +26,4 @@ def render_status_inspector(state: MasterAgentState) -> Panel:
     table.add_row("Stage 2 Scout Status: ", str(state.scout_enriched.upload.status))
     table.add_row("Stage 4 & 5 DIC Rows: ", str(state.dic.compiled_dataset.rows))
     
-    return Panel(table, title="[bold magenta]📋 AIConnex Contract & Session Inspector[/bold magenta]", border_style="blue")
+    return Panel(table, title="[bold magenta][Inspect] AIConnex Contract & Session Inspector[/bold magenta]", border_style="blue")
