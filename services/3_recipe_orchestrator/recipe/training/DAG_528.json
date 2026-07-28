@@ -1,0 +1,11 @@
+{
+  "algorithm": "SVRRegressor",
+  "variant": "Linear",
+  "hyperparameters": {
+    "kernel": "linear",
+    "C": 1.0
+  },
+  "use_gpu": false,
+  "early_stopping": false,
+  "class_weight": null
+}

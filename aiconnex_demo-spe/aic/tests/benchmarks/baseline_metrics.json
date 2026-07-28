@@ -1,0 +1,16 @@
+{
+  "version": "2.0.0",
+  "baseline_date": "2026-07-20",
+  "regression": {
+    "report_path": "outputs/regression/reports/reg_run_001_report.json",
+    "expected_best_algorithm": "XGBoost",
+    "max_allowed_rmse": 25.0,
+    "min_allowed_r2": 0.80,
+    "max_allowed_rul_asymmetric_score": 35.0
+  },
+  "anomaly": {
+    "report_path": "outputs/anomaly/reports/anomaly_run_001_report.json",
+    "expected_best_algorithm": "Isolation Forest",
+    "max_allowed_p99_score": 0.05
+  }
+}

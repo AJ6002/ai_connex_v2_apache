@@ -1,0 +1,14 @@
+{
+    "algorithm": "Na\u00efve Bayes",
+    "variant": "Fairness",
+    "validation_metrics": [
+        "accuracy",
+        "f1",
+        "precision",
+        "recall"
+    ],
+    "hyperparameters": {
+        "fit_intercept": true,
+        "alpha": 1.0
+    }
+}

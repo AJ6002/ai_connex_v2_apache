@@ -1,0 +1,12 @@
+{
+  "algorithm": "CatBoostClassifier",
+  "variant": "Quantile",
+  "hyperparameters": {
+    "iterations": 500,
+    "learning_rate": 0.05,
+    "depth": 6
+  },
+  "use_gpu": false,
+  "early_stopping": false,
+  "class_weight": null
+}

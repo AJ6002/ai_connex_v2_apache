@@ -1,0 +1,14 @@
+{
+    "algorithm": "Model-Based RL",
+    "variant": "Standard",
+    "validation_metrics": [
+        "accuracy",
+        "f1",
+        "precision",
+        "recall"
+    ],
+    "hyperparameters": {
+        "fit_intercept": true,
+        "alpha": 1.0
+    }
+}

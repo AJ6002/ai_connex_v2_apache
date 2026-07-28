@@ -1,0 +1,10 @@
+{
+  "algorithm": "Decision TreeRegressor",
+  "variant": "Streaming",
+  "hyperparameters": {
+    "max_depth": 6
+  },
+  "use_gpu": false,
+  "early_stopping": false,
+  "class_weight": null
+}

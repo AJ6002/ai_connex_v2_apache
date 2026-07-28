@@ -1,0 +1,14 @@
+{
+    "algorithm": "Anomaly Detection",
+    "variant": "Real-time",
+    "validation_metrics": [
+        "accuracy",
+        "f1",
+        "precision",
+        "recall"
+    ],
+    "hyperparameters": {
+        "fit_intercept": true,
+        "alpha": 1.0
+    }
+}
