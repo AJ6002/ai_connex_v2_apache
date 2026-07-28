@@ -1,23 +1,32 @@
 """
-aiconnex_agent/state.py - LangGraph AgentState TypedDict
-=========================================================
-State definition tracking session messages, intent JSON, HITL questions,
-compiler results, and orchestration stage across graph execution steps.
+aiconnex_agent/state.py - Master LangGraph State Definition
+===========================================================
+Defines the MasterAgentState Pydantic model integrating the 5-stage contract pipeline.
 """
 
 from __future__ import annotations
 
-from typing import Dict, List, Optional, Any, TypedDict
-from langchain_core.messages import BaseMessage
+from typing import Any, Dict, List, Optional
+from pydantic import BaseModel, Field
+
+from aiconnex_agent.schemas import (
+    ConversationUnderstandingContract,
+    ScoutEnrichedContract,
+    PreCompilerContract,
+    DatasetIntelligenceContract,
+)
 
 
-class AgentState(TypedDict):
-    session_id: str
-    messages: List[BaseMessage]          # Full conversation history
-    intent: Dict[str, Any]               # UserIntentJSON dictionary representation
-    zip_path: Optional[str]              # Path to input ZIP/dataset file
-    hitl_pending: List[Dict[str, Any]]   # Pending HITLQuestion items
-    compiler_result: Dict[str, Any]      # CompilerOutputJSON dictionary representation
-    pipeline_result: Dict[str, Any]      # 9-node pipeline output representation
-    stage: str                           # Current orchestration stage name
-    error: Optional[str]                 # Error message string if failed
+class MasterAgentState(BaseModel):
+    """Master State for LangGraph Orchestration."""
+    messages: List[Dict[str, Any]] = Field(default_factory=list, description="Chat message history")
+    cuc: ConversationUnderstandingContract = Field(default_factory=ConversationUnderstandingContract, description="Stage 1: Pre-Upload CUC")
+    scout_enriched: ScoutEnrichedContract = Field(default_factory=ScoutEnrichedContract, description="Stage 2: During Upload Scout Enriched")
+    pre_compiler: PreCompilerContract = Field(default_factory=PreCompilerContract, description="Stage 3: Pre-Compiler Contract")
+    dic: DatasetIntelligenceContract = Field(default_factory=DatasetIntelligenceContract, description="Stage 4 & 5: Post-Compiler DIC")
+    active_agent: Optional[str] = Field(default="parser", description="Current active agent/node name")
+    current_step_index: int = Field(default=0, description="Step pointer in multi-agent execution plan")
+    plan_steps: List[Dict[str, Any]] = Field(default_factory=list, description="List of planned task steps")
+    confidence_score: float = Field(default=1.0, description="Overall parser/routing confidence score [0.0 - 1.0]")
+    interrupt_reason: Optional[str] = Field(default=None, description="Reason for HITL interrupt if paused")
+    memory_context: Dict[str, Any] = Field(default_factory=dict, description="Session and memory bank context")
