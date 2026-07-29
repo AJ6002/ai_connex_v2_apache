@@ -46,3 +46,7 @@ env/
 .idea/
 .DS_Store
 Thumbs.db
+guardrails-temp/
+aic-ui/
+
+Thumbs.db

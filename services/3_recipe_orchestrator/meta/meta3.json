@@ -1,14 +1,14 @@
 {
-  "dag_id": "DAG_949",
+  "dag_id": "DAG_120",
   "suggested_task": "Miscellaneous",
-  "resolved_at": "1785008270.1162975",
+  "resolved_at": "1785239635.484587",
   "recipe_sources": {
-    "database": "C:\\Users\\admin.DESKTOP-17T37DJ\\Desktop\\aic\\Documentation\\transit_mappings\\algorithm_dags_transit_mapping.json"
+    "database": "X:\\TAS\\AICONNEX\\Documentation\\transit_mappings\\algorithm_dags_transit_mapping.json"
   },
   "recipes": {
     "preparing_recipe": {
-      "impute_strategy": "median",
-      "scale_method": "minmax",
+      "impute_strategy": "mode",
+      "scale_method": "standard",
       "categorical_encoding": "onehot"
     },
     "feature_engineering_recipe": {
@@ -19,12 +19,12 @@
       "k_best_features": 10
     },
     "splitting_recipe": {
-      "split_method": "none",
+      "split_method": "random",
       "test_size": 0.2,
       "random_state": 42
     },
     "training_recipe": {
-      "algorithm": "K-Means",
+      "algorithm": "LightGBMClassifier",
       "variant": "Standard",
       "hyperparameters": {
         "random_state": 42

@@ -1,8 +1,11 @@
 """
-aiconnex_agent/schemas.py - Canonical Pydantic Schemas for Agent/Backend Communication
-========================================================================================
-Defines the UserIntentJSON and CompilerOutputJSON Pydantic contracts used across
-the LangGraph orchestration framework and CompilerAdapter.
+aiconnex_agent/schemas.py - Exact 5-Stage Contract Pipeline Pydantic Models
+=============================================================================
+Defines the 5 canonical JSON contracts specified for the AIConnex Agentic Compiler System:
+  1. ConversationUnderstandingContract (CUC - Pre-Upload)
+  2. ScoutEnrichedContract (During Upload)
+  3. PreCompilerContract (Input to UnifiedCompiler)
+  4 & 5. DatasetIntelligenceContract (DIC - Post-Compiler Output)
 """
 
 from __future__ import annotations
@@ -11,52 +14,139 @@ from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field
 
 
-class CompilerHints(BaseModel):
-    sheet_selection: Optional[str] = Field(default=None, description="Sheet name or preference")
-    header_row_depth: Optional[int] = Field(default=None, description="Number of header rows to collapse")
-    delta_from_cumulative: Optional[bool] = Field(default=None, description="Whether to compute daily delta from cumulative column")
-    formula_error_handling: Optional[str] = Field(default="null_fill", description="Strategy for Excel errors like #DIV/0!")
-    dedup_strategy: Optional[str] = Field(default="keep_last", description="Row deduplication strategy")
-    include_zero_columns: Optional[bool] = Field(default=True, description="Keep columns with mostly zero values")
+# ---------------------------------------------------------------------------
+# 1. Pre-Upload CUC (Conversation Understanding Contract)
+# ---------------------------------------------------------------------------
 
+class ConversationUnderstandingContract(BaseModel):
+    """1. Pre-Upload CUC - Built strictly from conversation before upload."""
+    conversation: Dict[str, Any] = Field(default_factory=dict, description="Session, prompt and interaction metadata")
+    goal: Dict[str, Any] = Field(default_factory=dict, description="User primary goal and task family")
+    observed: Dict[str, Any] = Field(default_factory=dict, description="Explicitly mentioned entities, files, columns")
+    inferred: Dict[str, Any] = Field(default_factory=dict, description="Inferred domain, target candidates, entity columns")
+    constraints: Dict[str, Any] = Field(default_factory=dict, description="User-specified constraints and tolerances")
+    dataset_expectation: Dict[str, Any] = Field(default_factory=dict, description="Expected formats, multi-table layout")
+    clarifications_required: List[str] = Field(default_factory=list, description="Questions needed from user before compilation")
+    planning_hints: Dict[str, Any] = Field(default_factory=dict, description="Hints for downsteam Agent Routing")
+
+
+# ---------------------------------------------------------------------------
+# 2. Upload & Scout Agent Enriched Sub-Models
+# ---------------------------------------------------------------------------
 
 class UploadMetadata(BaseModel):
-    filename: Optional[str] = Field(default=None, description="Name of uploaded file or zip")
-    file_count: Optional[int] = Field(default=None, description="Number of files in archive")
-    file_type: Optional[str] = Field(default=None, description="Primary extension")
+    status: str = Field(default="uploaded", description="uploaded | pending | failed")
+    upload_time: str = Field(default="", description="ISO timestamp")
+    archive_name: str = Field(default="", description="File name of uploaded archive")
+    archive_type: str = Field(default="", description="zip | csv | xlsx | mat | parquet | tdms")
+    archive_size: str = Field(default="", description="Human-readable file size")
+    checksum: str = Field(default="", description="SHA-256 or MD5 hash")
 
 
-class UserIntentJSON(BaseModel):
-    schema_version: str = Field(default="1.0")
-    session_id: str = Field(..., description="Unique session ID")
-    user_goal: str = Field(..., description="Raw or parsed goal string from the user")
-    task_type: Optional[str] = Field(default="auto", description="time_series | regression | anomaly | clustering | auto")
-    target_column: Optional[str] = Field(default=None, description="Specified target column or null for auto-detect")
-    entity_column: Optional[str] = Field(default=None, description="Specified entity grouping column")
-    time_column: Optional[str] = Field(default=None, description="Specified date/timestamp column")
-    domain: Optional[str] = Field(default=None, description="Industrial domain classification")
-    upload: Optional[UploadMetadata] = Field(default_factory=UploadMetadata)
-    compiler_hints: CompilerHints = Field(default_factory=CompilerHints)
-    hitl_answers: Dict[str, Any] = Field(default_factory=dict, description="Answers provided to HITL questions")
+class ArchiveDiscovery(BaseModel):
+    root_structure: List[str] = Field(default_factory=list, description="Top-level folders/files")
+    files_detected: List[str] = Field(default_factory=list, description="All discovered file paths")
+    directories: List[str] = Field(default_factory=list, description="All discovered subdirectories")
+    total_files: int = Field(default=0, description="Total file count in archive")
 
 
-class HITLQuestion(BaseModel):
-    key: str = Field(..., description="Unique question identifier key (e.g. Q1_sheet_selection)")
-    question: str = Field(..., description="Human readable question text")
-    options: List[str] = Field(default_factory=list, description="Choice options")
-    blocking: bool = Field(default=True, description="Whether this question blocks compilation")
-    reason: Optional[str] = Field(default=None, description="Rationale for asking this question")
+class FileInventoryItem(BaseModel):
+    filename: str = Field(default="", description="Relative path of file")
+    type: str = Field(default="", description="File extension / format")
+    role: str = Field(default="", description="fact_table | dimension | metadata | unknown")
+    parser_candidate: str = Field(default="", description="Recommended parser plugin ID")
 
 
-class CompilerOutputJSON(BaseModel):
-    session_id: str = Field(..., description="Session ID matching input")
-    status: str = Field(..., description="success | partial | hitl_required | unsupported_format | failed")
-    compiled_csv_path: Optional[str] = Field(default=None, description="Absolute or relative path to compiled CSV")
-    row_count: Optional[int] = Field(default=None, description="Total row count of compiled dataset")
-    column_count: Optional[int] = Field(default=None, description="Total feature column count")
-    detected_schema: Dict[str, str] = Field(default_factory=dict, description="Column name -> dtype mapping")
-    hitl_required: bool = Field(default=False, description="True if compiler needs human clarification")
-    hitl_questions: List[HITLQuestion] = Field(default_factory=list, description="List of questions for the user")
-    compiler_decisions: Dict[str, Any] = Field(default_factory=dict, description="Decisions made during compilation")
-    warnings: List[str] = Field(default_factory=list, description="Warnings emitted during compilation")
-    error: Optional[str] = Field(default=None, description="Error message if status is failed/unsupported_format")
+class ParserSelection(BaseModel):
+    selected_parsers: List[str] = Field(default_factory=list, description="List of chosen parser plugins")
+    unsupported_files: List[str] = Field(default_factory=list, description="List of unparseable files")
+    confidence: float = Field(default=0.0, description="Parser selection confidence score [0.0 - 1.0]")
+
+
+class ScoutEnrichedContract(BaseModel):
+    """2. During Upload Contract - Appends upload, discovery & parser selection to CUC."""
+    conversation_contract: ConversationUnderstandingContract = Field(default_factory=ConversationUnderstandingContract)
+    upload: UploadMetadata = Field(default_factory=UploadMetadata)
+    archive_discovery: ArchiveDiscovery = Field(default_factory=ArchiveDiscovery)
+    file_inventory: List[FileInventoryItem] = Field(default_factory=list)
+    parser_selection: ParserSelection = Field(default_factory=ParserSelection)
+
+
+# ---------------------------------------------------------------------------
+# 3. Pre-Compiler Contract
+# ---------------------------------------------------------------------------
+
+class CompilerRequest(BaseModel):
+    compile_mode: str = Field(default="automatic", description="automatic | interactive | batch")
+    canonical_schema: bool = Field(default=True, description="Enforce snake_case & ISO 8601 timestamps")
+    generate_dataset_card: bool = Field(default=True, description="Emit dataset_card.json")
+    generate_statistics: bool = Field(default=True, description="Compute column null/duplicate statistics")
+    infer_problem_candidates: bool = Field(default=True, description="Detect Regression/Anomaly/Hybrid tracks")
+    infer_targets: bool = Field(default=True, description="Identify target column candidates")
+    generate_quality_report: bool = Field(default=True, description="Emit join & quality audit report")
+
+
+class PreCompilerContract(BaseModel):
+    """3. Pre-Compiler Contract - Enriched Contract + CompilerRequest passed to UnifiedCompiler."""
+    conversation_contract: ConversationUnderstandingContract = Field(default_factory=ConversationUnderstandingContract)
+    upload: UploadMetadata = Field(default_factory=UploadMetadata)
+    archive_discovery: ArchiveDiscovery = Field(default_factory=ArchiveDiscovery)
+    file_inventory: List[FileInventoryItem] = Field(default_factory=list)
+    parser_selection: ParserSelection = Field(default_factory=ParserSelection)
+    compiler_request: CompilerRequest = Field(default_factory=CompilerRequest)
+
+
+# ---------------------------------------------------------------------------
+# 4 & 5. Post-Compiler Contract (Dataset Intelligence Contract - DIC)
+# ---------------------------------------------------------------------------
+
+class DatasetIdentity(BaseModel):
+    name: str = Field(default="", description="Name of compiled dataset")
+    family: str = Field(default="", description="Domain classification (e.g. Aircraft Engine Prognostics)")
+    domain: Optional[str] = Field(default=None, description="Industrial sub-domain")
+
+
+class CompiledDatasetSummary(BaseModel):
+    tables: int = Field(default=0, description="Number of compiled condition tables")
+    rows: int = Field(default=0, description="Total compiled record count")
+    columns: int = Field(default=0, description="Total feature column count")
+    output_path: Optional[str] = Field(default=None, description="Output directory path")
+    combined_csv_path: Optional[str] = Field(default=None, description="Path to all_groups_combined.csv")
+
+
+class DatasetStatistics(BaseModel):
+    missing_values: Dict[str, int] = Field(default_factory=dict, description="Null count per column")
+    duplicates: int = Field(default=0, description="Duplicate row count")
+    sampling: str = Field(default="unknown", description="Sampling rate/pattern (e.g. per_cycle, 3min)")
+
+
+class QualityReport(BaseModel):
+    constant_columns: List[str] = Field(default_factory=list, description="Zero variance columns")
+    warnings: List[str] = Field(default_factory=list, description="Compilation warnings")
+    cartesian_guard_passed: bool = Field(default=True, description="Whether Cartesian explosion guard passed")
+
+
+class ProblemCandidate(BaseModel):
+    family: str = Field(..., description="Regression | Anomaly | Hybrid | Time_Series")
+    confidence: float = Field(..., description="Confidence score [0.0 - 1.0]")
+
+
+class BranchingHints(BaseModel):
+    available_branches: List[str] = Field(default_factory=list, description="Available recipe branch paths (e.g. A1, B1)")
+
+
+class DatasetIntelligenceContract(BaseModel):
+    """4 & 5. Post-Compiler Contract (DIC) - Output from UnifiedCompiler execution."""
+    dataset_identity: DatasetIdentity = Field(default_factory=DatasetIdentity)
+    compiled_dataset: CompiledDatasetSummary = Field(default_factory=CompiledDatasetSummary)
+    schema_map: Dict[str, str] = Field(default_factory=dict, description="Column -> Data type mapping")
+    dataset_card: Dict[str, Any] = Field(default_factory=dict, description="Full dataset_card.json metadata")
+    statistics: DatasetStatistics = Field(default_factory=DatasetStatistics)
+    quality_report: QualityReport = Field(default_factory=QualityReport)
+    derived_features: List[str] = Field(default_factory=list, description="Synthesized features (e.g. rul_piecewise)")
+    problem_candidates: List[ProblemCandidate] = Field(default_factory=list, description="ML task track recommendations")
+    target_candidates: List[str] = Field(default_factory=list, description="Recommended target columns")
+    feature_catalog: Dict[str, Any] = Field(default_factory=dict, description="Categorized feature descriptions")
+    branching_hints: BranchingHints = Field(default_factory=BranchingHints)
+    compiler_warnings: List[str] = Field(default_factory=list)
+    clarifications_required: List[str] = Field(default_factory=list)
