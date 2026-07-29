@@ -50,3 +50,6 @@ guardrails-temp/
 aic-ui/
 
 Thumbs.db
+
+# mem0 embedded on-disk Qdrant vector store (local dev data, not source)
+.mem0_qdrant/

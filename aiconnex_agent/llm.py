@@ -46,8 +46,9 @@ def get_ollama_llm(
     Returns an initialized LangChain Ollama LLM client.
 
     Defaults to OLLAMA_MODEL=gpt-oss:120b-cloud (Ollama Cloud) - requires
-    `ollama signin`. Set OLLAMA_MODEL to a non "-cloud" tag (e.g. llama3.1)
-    for a fully local model instead.
+    `ollama signin`. Model quality is prioritized over local latency, by
+    explicit decision - this default is intentionally kept even though it
+    requires network access and an active ollama.com sign-in.
     """
     model_name = model or os.getenv("OLLAMA_MODEL", "gpt-oss:120b-cloud")
     host_url = base_url or os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")

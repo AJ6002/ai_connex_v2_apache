@@ -1,9 +1,15 @@
 """
 aiconnex_agent/memory/backends/mem0_adapter.py
 ==================================================
-Real production SemanticMemoryBackend, backed by mem0 (fully local: Ollama
-LLM + Ollama embedder + embedded on-disk Qdrant - no API keys, no cloud
-accounts). This module is only imported when AICONNEX_MEMORY_BACKEND=mem0
+Real production SemanticMemoryBackend, backed by mem0. LLM extraction reuses
+the SAME Ollama model as the rest of the agent (OLLAMA_MODEL, e.g.
+gpt-oss:120b-cloud) - quality over local latency, consistent with
+aiconnex_agent/llm.py. Only the embedder is required to be a real Ollama
+model (nomic-embed-text) since Ollama Cloud does not serve an embeddings
+endpoint the same way - so a one-time `ollama pull nomic-embed-text` is
+still needed, but no separate local LLM (e.g. llama3.1) is forced anymore.
+Vector storage is an embedded on-disk Qdrant instance - no server, no
+account. This module is only imported when AICONNEX_MEMORY_BACKEND=mem0
 is explicitly set (see factory.py) - its absence must never break any
 other part of the test suite.
 
@@ -34,10 +40,11 @@ from aiconnex_agent.memory.backends.base import SemanticMemoryBackend
 
 _DEFAULT_OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 _DEFAULT_EMBEDDER_MODEL = os.getenv("AICONNEX_MEM0_EMBEDDER_MODEL", "nomic-embed-text")
-# Deliberately NOT reusing OLLAMA_MODEL's cloud model by default - see plan doc:
-# mem0 extraction defaults to a genuinely local, non "-cloud" Ollama model so
-# memory writes never depend on an ollama.com account/network round-trip.
-_DEFAULT_LLM_MODEL = os.getenv("AICONNEX_MEM0_LLM_MODEL", "llama3.1")
+# Reuses OLLAMA_MODEL - the SAME model the rest of the agent uses
+# (aiconnex_agent/llm.py, default gpt-oss:120b-cloud). Model quality is
+# prioritized over local latency, by explicit decision - mem0's memory
+# extraction gets the same model as everything else, not a separate one.
+_DEFAULT_LLM_MODEL = os.getenv("AICONNEX_MEM0_LLM_MODEL") or os.getenv("OLLAMA_MODEL", "gpt-oss:120b-cloud")
 _DEFAULT_QDRANT_PATH = os.getenv("AICONNEX_MEM0_QDRANT_PATH", "./.mem0_qdrant")
 _EMBEDDING_DIMS = 768  # nomic-embed-text output dimension
 
