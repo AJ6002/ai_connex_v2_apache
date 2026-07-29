@@ -81,3 +81,20 @@ def sample_manifest(tmp_path):
 
     manifest["paths"] = {"manifest_self": str(manifest_file)}
     return manifest
+
+
+@pytest.fixture(autouse=True)
+def _reset_memory_event_store():
+    """
+    Autouse fixture: resets the process-wide Memory Agent EventStore singleton
+    before every test. Without this, any test exercising the full LangGraph
+    (which routes through the real event-sourced Memory Agent node) leaks
+    events into the shared singleton, silently polluting whatever test runs
+    next in the same pytest session (Phase 5a).
+    """
+    try:
+        from aiconnex_agent.memory.event_store import reset_event_store
+        reset_event_store()
+    except ImportError:
+        pass
+    yield

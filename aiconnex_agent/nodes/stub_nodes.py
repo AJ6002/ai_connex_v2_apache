@@ -55,18 +55,9 @@ def stub_clarification_node(state: MasterAgentState) -> Dict[str, Any]:
 
 
 def stub_planning_engine_node(state: MasterAgentState) -> Dict[str, Any]:
-    """Stub Planning Engine Node."""
-    logger.info("[StubNode] Executing stub_planning_engine_node")
-    steps = [
-        {"step_id": "step_1", "target_agent": "scout", "task": "Discover and parse archive"},
-        {"step_id": "step_2", "target_agent": "platform", "task": "Train ML model"},
-        {"step_id": "step_3", "target_agent": "memory", "task": "Save session memory"},
-    ]
-    return {
-        "plan_steps": steps,
-        "current_step_index": 0,
-        "active_agent": "scout",
-    }
+    """Delegates to the real IntentPlanMapper + PlanValidator Planning Engine Node."""
+    from aiconnex_agent.planning.planning_engine import real_planning_engine_node
+    return real_planning_engine_node(state)
 
 
 def stub_scout_agent_node(state: MasterAgentState) -> Dict[str, Any]:
@@ -95,14 +86,9 @@ def stub_platform_agent_node(state: MasterAgentState) -> Dict[str, Any]:
 
 
 def stub_memory_agent_node(state: MasterAgentState) -> Dict[str, Any]:
-    """Stub Memory Agent Node."""
-    logger.info("[StubNode] Executing stub_memory_agent_node")
-    mem_ctx = dict(state.memory_context)
-    mem_ctx["last_saved_session"] = "session_stub_101"
-    return {
-        "memory_context": mem_ctx,
-        "active_agent": "evaluator",
-    }
+    """Delegates to the real event-sourced Memory Agent Node."""
+    from aiconnex_agent.memory.memory_agent import real_memory_agent_node
+    return real_memory_agent_node(state)
 
 
 def stub_plan_evaluator_node(state: MasterAgentState) -> Dict[str, Any]:
