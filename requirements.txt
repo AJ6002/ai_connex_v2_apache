@@ -19,3 +19,19 @@ ruff>=0.1.0
 
 # ─── Env / Config ────────────────────────────────────────────────────────────
 packaging>=23.0
+
+# ─── Agentic Memory (Phase 5a) ────────────────────────────────────────────────
+langgraph>=0.2.0
+langchain-community>=0.2.0
+pydantic>=2.0.0
+
+# mem0ai is an OPTIONAL semantic-memory backend (Phase 5a.6, Sprint 2).
+# It is NOT required for the default test suite or for local_fake backend use -
+# aiconnex_agent/memory/backends/mem0_adapter.py guards this import and raises
+# a clear RuntimeError if used without installing it. Only install this if you
+# explicitly set AICONNEX_MEMORY_BACKEND=mem0.
+# Setup (fully local, no API keys/cloud accounts required):
+#   pip install mem0ai
+#   ollama pull nomic-embed-text
+#   ollama pull llama3.1
+# mem0ai>=2.0.0
