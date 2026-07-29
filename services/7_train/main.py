@@ -666,4 +666,4 @@ def _update_manifest(manifest_path: Optional[str], manifest: Dict[str, Any], ext
 if __name__ == "__main__":
     import uvicorn
     should_reload = os.environ.get("AIC_RELOAD", "0").lower() in ("true", "1", "yes")
-    uvicorn.run("main:app", host="127.0.0.1", port=8006, reload=should_reload)
+    uvicorn.run("main:app", host="0.0.0.0", port=8006, reload=should_reload)

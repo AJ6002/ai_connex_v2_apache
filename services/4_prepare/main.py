@@ -336,4 +336,4 @@ def compare_datasets(payload: ComparePayload):
 if __name__ == "__main__":
     import uvicorn
     should_reload = os.environ.get("AIC_RELOAD", "0").lower() in ("true", "1", "yes")
-    uvicorn.run("main:app", host="127.0.0.1", port=8003, reload=should_reload)
+    uvicorn.run("main:app", host="0.0.0.0", port=8003, reload=should_reload)
