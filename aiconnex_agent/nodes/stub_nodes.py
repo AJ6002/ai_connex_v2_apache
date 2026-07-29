@@ -30,19 +30,10 @@ logger = logging.getLogger(__name__)
 
 
 def stub_conversation_parser_node(state: MasterAgentState) -> Dict[str, Any]:
-    """Stub Conversation Parser Node."""
-    logger.info("[StubNode] Executing stub_conversation_parser_node")
-    cuc_dict = state.cuc.model_dump() if hasattr(state.cuc, "model_dump") else state.cuc.dict()
-    cuc_dict["goal"] = {"raw_prompt": state.messages[-1]["content"] if state.messages else "", "primary_intent": "compile_zip"}
-    cuc_dict["inferred"] = {"domain": "Industrial Sensor Telemetry"}
-    
-    # If message contains "ambiguous", lower confidence to trigger clarification stub
-    confidence = 0.50 if state.messages and "ambiguous" in state.messages[-1].get("content", "") else 0.95
-    return {
-        "cuc": cuc_dict,
-        "active_agent": "clarification" if confidence < 0.85 else "planner",
-        "confidence_score": confidence,
-    }
+    """Delegates to the real 6-module Conversation Parser Node."""
+    from aiconnex_agent.parser.conversation_parser import real_conversation_parser_node
+    return real_conversation_parser_node(state)
+
 
 
 def stub_clarification_node(state: MasterAgentState) -> Dict[str, Any]:
