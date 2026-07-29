@@ -211,7 +211,7 @@ export const TemplatesView: React.FC = () => {
   const fetchConfig = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch('http://localhost:8000/api/v1/master/config');
+      const res = await fetch(`http://${window.location.hostname}:8000/api/v1/master/config`);
       if (res.ok) {
         const data = await res.json();
         setConfig(data);
@@ -251,7 +251,7 @@ export const TemplatesView: React.FC = () => {
     setIsSaving(true);
     setMessage(null);
     try {
-      const res = await fetch('http://localhost:8000/api/v1/master/config', {
+      const res = await fetch(`http://${window.location.hostname}:8000/api/v1/master/config`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

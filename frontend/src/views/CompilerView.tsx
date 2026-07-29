@@ -260,7 +260,7 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
     let profileData: any = null;
  
     // Trigger api call in parallel
-    const apiCall = fetch('http://localhost:8000/api/v1/compile', {
+    const apiCall = fetch(`http://${window.location.hostname}:8000/api/v1/compile`, {
       method: 'POST',
       body: formData
     }).then(async (res) => {
@@ -290,7 +290,7 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
           if (customTimestamp) profilerForm.append('timestamp_column', customTimestamp);
           if (customProblemType) profilerForm.append('problem_type', customProblemType);
 
-          const profileRes = await fetch('http://localhost:8000/api/v1/profile', {
+          const profileRes = await fetch(`http://${window.location.hostname}:8000/api/v1/profile`, {
             method: 'POST',
             body: profilerForm
           });

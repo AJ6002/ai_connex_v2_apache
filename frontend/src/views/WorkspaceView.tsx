@@ -15,7 +15,7 @@ export const WorkspaceView: React.FC = () => {
   const fetchWorkspaceFiles = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch('http://localhost:8000/api/v1/workspace/files');
+      const res = await fetch(`http://${window.location.hostname}:8000/api/v1/workspace/files`);
       if (res.ok) {
         const data = await res.json();
         setItems(data.items || []);
