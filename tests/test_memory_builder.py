@@ -71,3 +71,52 @@ def test_discarded_event_types_are_dropped():
     bank = builder.build(log)
     assert bank.decisions == []
     assert bank.entities == {}
+
+
+# --- Phase 5a.6 Task 2: semantic backend mirroring (Entity layer only) ---
+
+class _SpyBackend:
+    """Test spy implementing SemanticMemoryBackend to record add() calls."""
+
+    def __init__(self):
+        self.add_calls = []
+
+    def add(self, text, metadata):
+        self.add_calls.append({"text": text, "metadata": metadata})
+
+    def search(self, query, limit=5):
+        return []
+
+
+def test_entity_events_mirror_into_semantic_backend():
+    spy = _SpyBackend()
+    builder = MemoryBuilder(MemoryPolicyEngine(), semantic_backend=spy)
+    log = [
+        make_event("DatasetCompiled", "wf_1", "scout", "dataset", "ds_nasa_fd001", {"rows": 26898}),
+    ]
+    builder.build(log)
+    assert len(spy.add_calls) == 1
+    assert spy.add_calls[0]["metadata"]["subject_id"] == "ds_nasa_fd001"
+
+
+def test_decision_and_procedural_events_never_call_semantic_backend():
+    spy = _SpyBackend()
+    builder = MemoryBuilder(MemoryPolicyEngine(), semantic_backend=spy)
+    log = [
+        make_event("ClarificationAnswered", "wf_1", "clarification", "decision", "wf_1", {"question": "mode?", "answer": "auto"}),
+        make_event("ArchiveUploaded", "wf_1", "scout", "conversation", "wf_1", {}, outcome="failure"),
+        make_event("ConversationParsed", "wf_1", "parser", "conversation", "wf_1", {"intent": "train_rul"}),
+    ]
+    builder.build(log)
+    assert spy.add_calls == []
+
+
+def test_semantic_backend_defaults_to_get_semantic_backend_singleton():
+    from aiconnex_agent.memory.backends.factory import get_semantic_backend, reset_semantic_backend
+    from aiconnex_agent.memory.backends.local_fake import LocalFakeBackend
+
+    reset_semantic_backend()
+    builder = MemoryBuilder(MemoryPolicyEngine())
+    assert isinstance(builder.semantic_backend, LocalFakeBackend)
+    assert builder.semantic_backend is get_semantic_backend()
+    reset_semantic_backend()

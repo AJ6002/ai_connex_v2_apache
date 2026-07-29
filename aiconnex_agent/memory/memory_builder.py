@@ -14,7 +14,7 @@ never independently mutated state.
 
 from __future__ import annotations
 
-from typing import List
+from typing import List, Optional
 
 from aiconnex_agent.memory.events import BaseEvent
 from aiconnex_agent.memory.policy_engine import MemoryPolicyEngine
@@ -25,13 +25,27 @@ from aiconnex_agent.memory.memory_layers import (
     DecisionMemory,
     MemoryBank,
 )
+from aiconnex_agent.memory.backends.base import SemanticMemoryBackend
 
 
 class MemoryBuilder:
-    """Projects an event log into a MemoryBank per the configured MemoryPolicyEngine."""
+    """Projects an event log into a MemoryBank per the configured MemoryPolicyEngine.
 
-    def __init__(self, policy: MemoryPolicyEngine):
+    Entity memory is additionally mirrored into a SemanticMemoryBackend (Phase
+    5a.6), so fuzzy cross-session recall becomes possible over exactly the same
+    facts that are deterministically recorded here. Decision and Procedural
+    memory are NEVER mirrored - see docs/superpowers/plans/2026-07-29-phase5a6-
+    mem0-sprint2.md for the guardrail rationale (HITL decisions and failure
+    patterns must stay fully deterministic/auditable, never LLM-derived).
+    """
+
+    def __init__(self, policy: MemoryPolicyEngine, semantic_backend: Optional[SemanticMemoryBackend] = None):
         self.policy = policy
+        if semantic_backend is not None:
+            self.semantic_backend = semantic_backend
+        else:
+            from aiconnex_agent.memory.backends.factory import get_semantic_backend
+            self.semantic_backend = get_semantic_backend()
 
     def build(self, events: List[BaseEvent]) -> MemoryBank:
         """Deterministically project the event log into a fresh MemoryBank."""
@@ -67,13 +81,19 @@ class MemoryBuilder:
             if intent:
                 session.last_intent = intent
 
-    @staticmethod
-    def _route_entity(bank: MemoryBank, event: BaseEvent) -> None:
+    def _route_entity(self, bank: MemoryBank, event: BaseEvent) -> None:
         entity = bank.entities.get(event.subject_id)
         if entity is None:
             entity = EntityMemory(subject_id=event.subject_id, subject_type=event.subject_type)
             bank.entities[event.subject_id] = entity
         entity.observations.append(dict(event.payload))
+
+        # Mirror into the semantic backend - Entity layer only (see class docstring).
+        summary = f"{event.subject_type} {event.subject_id}: {event.event_type} {event.payload}"
+        self.semantic_backend.add(
+            text=summary,
+            metadata={"subject_id": event.subject_id, "subject_type": event.subject_type},
+        )
 
     @staticmethod
     def _route_decision(bank: MemoryBank, event: BaseEvent) -> None:
