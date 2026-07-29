@@ -7,6 +7,7 @@ fixtures across unit, matrix, contract, and scenario tests.
 
 import os
 import json
+import re
 import tempfile
 import pytest
 import numpy as np
@@ -112,6 +113,48 @@ def _reset_semantic_memory_backend():
     try:
         from aiconnex_agent.memory.backends.factory import reset_semantic_backend
         reset_semantic_backend()
+    except ImportError:
+        pass
+    yield
+
+
+class _FakeLLMResponse:
+    """Mimics a LangChain AIMessage's .content attribute."""
+    def __init__(self, content: str):
+        self.content = content
+
+
+class _FakeSemanticExtractionLLM:
+    """
+    Deterministic stand-in for the real LLM client (Ollama/OpenAI) used ONLY
+    inside SemanticExtractor's _extract_via_llm() during tests. It reuses
+    SemanticExtractor's own deterministic heuristic to generate its "response" -
+    so the REAL LLM code path (invoke -> parse JSON -> validate -> normalize)
+    is genuinely exercised in tests, without any live network call.
+    """
+    def invoke(self, prompt: str):
+        match = re.search(r"User Prompt:\s*(.*)", prompt, re.DOTALL)
+        user_prompt = match.group(1).strip() if match else prompt
+
+        from aiconnex_agent.parser.semantic_extractor import SemanticExtractor
+        payload = SemanticExtractor(use_llm=False)._extract_heuristic(user_prompt)
+        return _FakeLLMResponse(json.dumps(payload))
+
+
+@pytest.fixture(autouse=True)
+def _fake_llm_for_semantic_extractor(monkeypatch):
+    """
+    Autouse fixture: SemanticExtractor now makes a REAL LLM call by default
+    (use_llm=True). This fixture replaces only the network boundary
+    (aiconnex_agent.parser.semantic_extractor.get_llm) with a deterministic
+    fake so the test suite never depends on a live Ollama/OpenAI connection -
+    the extractor's actual call/parse/validate/normalize logic still runs.
+    Tests that want to exercise the real network path explicitly construct
+    their own SemanticExtractor and monkeypatch get_llm themselves instead.
+    """
+    try:
+        import aiconnex_agent.parser.semantic_extractor as se_module
+        monkeypatch.setattr(se_module, "get_llm", lambda *a, **kw: _FakeSemanticExtractionLLM())
     except ImportError:
         pass
     yield
