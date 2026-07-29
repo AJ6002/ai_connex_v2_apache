@@ -35,3 +35,12 @@ pydantic>=2.0.0
 #   ollama pull nomic-embed-text
 #   ollama pull llama3.1
 # mem0ai>=2.0.0
+
+# langchain-openai is an OPTIONAL LLM backend (aiconnex_agent/llm.py).
+# The agent defaults to Ollama (AICONNEX_LLM_BACKEND=ollama, or unset) and
+# currently stays on the Ollama Cloud model gpt-oss:120b-cloud by design -
+# model quality was prioritized over local latency (requires `ollama signin`).
+# Switch to OpenAI by setting AICONNEX_LLM_BACKEND=openai and OPENAI_API_KEY.
+# get_openai_llm() guards this import and raises a clear RuntimeError if
+# langchain-openai isn't installed or OPENAI_API_KEY isn't set.
+# langchain-openai>=0.2.0
