@@ -158,3 +158,86 @@ def _fake_llm_for_semantic_extractor(monkeypatch):
     except ImportError:
         pass
     yield
+
+
+class _FakeConfidenceScorerLLM:
+    """
+    Deterministic stand-in for the real LLM client used ONLY inside
+    ConfidenceScorer's _score_via_llm() during tests. Reuses ConfidenceScorer's
+    own rule-based ladder to generate its "response" - so the REAL LLM code
+    path (invoke -> parse JSON -> validate range) is genuinely exercised in
+    tests, without any live network call.
+    """
+    def invoke(self, prompt: str):
+        match = re.search(r"Primary intent:\s*(\S+)", prompt)
+        intent = match.group(1) if match else "general"
+        files_match = re.search(r"Mentioned files:\s*(\[.*?\])", prompt)
+        has_files = files_match is not None and files_match.group(1) != "[]"
+
+        if intent != "general" and has_files:
+            confidence = 0.95
+        elif intent != "general":
+            confidence = 0.88
+        elif has_files:
+            confidence = 0.86
+        else:
+            confidence = 0.50
+
+        return _FakeLLMResponse(json.dumps({"confidence": confidence, "reasoning": "fake test LLM"}))
+
+
+class _FakeClarificationGeneratorLLM:
+    """
+    Deterministic stand-in for the real LLM client used ONLY inside
+    ClarificationGenerator's _generate_via_llm() during tests. Reuses
+    ClarificationGenerator's own template heuristic to generate its
+    "response" - so the REAL LLM code path is genuinely exercised in tests,
+    without any live network call.
+    """
+    def invoke(self, prompt: str):
+        from aiconnex_agent.schemas import ConversationUnderstandingContract
+        from aiconnex_agent.parser.clarification_generator import ClarificationGenerator
+
+        intent_match = re.search(r"Primary intent extracted so far:\s*(\S+)", prompt)
+        intent = intent_match.group(1) if intent_match else "general"
+        files_match = re.search(r"Mentioned files:\s*(\[.*?\])", prompt)
+        has_files = files_match is not None and files_match.group(1) != "[]"
+
+        cuc = ConversationUnderstandingContract(
+            goal={"primary_intent": intent},
+            observed={"mentioned_files": ["placeholder.zip"] if has_files else []},
+        )
+        questions = ClarificationGenerator(use_llm=False)._generate_heuristic(cuc)
+        return _FakeLLMResponse(json.dumps({"questions": questions}))
+
+
+@pytest.fixture(autouse=True)
+def _fake_llm_for_confidence_scorer(monkeypatch):
+    """
+    Autouse fixture: ConfidenceScorer now makes a REAL LLM call by default
+    (use_llm=True). Replaces only the network boundary
+    (aiconnex_agent.parser.confidence_scorer.get_llm) with a deterministic
+    fake so tests never depend on a live LLM connection.
+    """
+    try:
+        import aiconnex_agent.parser.confidence_scorer as cs_module
+        monkeypatch.setattr(cs_module, "get_llm", lambda *a, **kw: _FakeConfidenceScorerLLM())
+    except ImportError:
+        pass
+    yield
+
+
+@pytest.fixture(autouse=True)
+def _fake_llm_for_clarification_generator(monkeypatch):
+    """
+    Autouse fixture: ClarificationGenerator now makes a REAL LLM call by
+    default (use_llm=True). Replaces only the network boundary
+    (aiconnex_agent.parser.clarification_generator.get_llm) with a
+    deterministic fake so tests never depend on a live LLM connection.
+    """
+    try:
+        import aiconnex_agent.parser.clarification_generator as cg_module
+        monkeypatch.setattr(cg_module, "get_llm", lambda *a, **kw: _FakeClarificationGeneratorLLM())
+    except ImportError:
+        pass
+    yield

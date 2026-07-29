@@ -1,26 +1,103 @@
 """
 aiconnex_agent/parser/clarification_generator.py
 =================================================
-Sub-module 6: Generates targeted clarification questions when confidence < 0.85.
+Sub-module 6: Generates targeted clarification questions when confidence <
+0.85, via a REAL LLM call (the primary, configured path - see
+aiconnex_agent/llm.py). The fixed template strings below exist ONLY as a
+resilience fallback for when the LLM call genuinely fails - it is not the
+default question-generation mechanism.
 """
 
 from __future__ import annotations
-from typing import List
+
+import json
+import logging
+import re
+from typing import List, Optional
+
 from aiconnex_agent.schemas import ConversationUnderstandingContract
+from aiconnex_agent.llm import get_llm
+
+logger = logging.getLogger(__name__)
 
 
 class ClarificationGenerator:
-    """Generates clarification question strings for low-confidence prompts."""
+    """Generates clarification questions via a real LLM call, with template fallback on failure."""
+
+    def __init__(self, use_llm: bool = True):
+        self.use_llm = use_llm
+        self._llm = None  # lazily constructed on first real use
 
     def generate(self, cuc: ConversationUnderstandingContract) -> List[str]:
-        """Generate questions based on missing or ambiguous contract fields."""
+        """Generate 1+ targeted clarification questions via a real LLM call.
+
+        Falls back to fixed templates ONLY if the LLM call raises or returns
+        an unparseable/empty response - never as the default path.
+        """
+        if self.use_llm:
+            try:
+                result = self._generate_via_llm(cuc)
+                if result:
+                    return result
+            except Exception as exc:
+                logger.warning(f"[ClarificationGenerator] LLM generation failed, falling back to templates: {exc}")
+
+        return self._generate_heuristic(cuc)
+
+    def _generate_via_llm(self, cuc: ConversationUnderstandingContract) -> Optional[List[str]]:
+        """Calls the configured LLM to compose targeted clarification questions."""
+        if self._llm is None:
+            self._llm = get_llm()
+
+        prompt = self._build_prompt(cuc)
+        response = self._llm.invoke(prompt)
+        text = response.content if hasattr(response, "content") else str(response)
+
+        parsed = self._parse_json_response(text)
+        questions = parsed.get("questions")
+
+        if not isinstance(questions, list) or not all(isinstance(q, str) for q in questions):
+            raise ValueError(f"LLM response missing valid 'questions' list: {parsed!r}")
+        if not questions:
+            raise ValueError("LLM returned an empty questions list")
+
+        return questions
+
+    @staticmethod
+    def _build_prompt(cuc: ConversationUnderstandingContract) -> str:
+        return (
+            "A user's request was parsed but is too ambiguous to proceed confidently. "
+            "Write 1-2 short, specific, natural clarifying questions to ask the user, "
+            "based ONLY on what is actually missing or unclear below - do not ask "
+            "about anything already provided.\n\n"
+            f"Primary intent extracted so far: {cuc.goal.get('primary_intent', 'general')}\n"
+            f"Mentioned files: {cuc.observed.get('mentioned_files', [])}\n"
+            f"Mentioned columns: {cuc.observed.get('mentioned_columns', [])}\n"
+            f"Raw user prompt: {cuc.goal.get('raw_prompt', '')}\n\n"
+            'Respond with ONLY a JSON object: {"questions": ["<question 1>", "<question 2>"]}'
+        )
+
+    @staticmethod
+    def _parse_json_response(text: str) -> dict:
+        try:
+            return json.loads(text)
+        except (json.JSONDecodeError, TypeError):
+            pass
+        match = re.search(r"\{.*\}", text, re.DOTALL)
+        if not match:
+            raise ValueError(f"No JSON object found in LLM response: {text[:200]!r}")
+        return json.loads(match.group(0))
+
+    @staticmethod
+    def _generate_heuristic(cuc: ConversationUnderstandingContract) -> List[str]:
+        """Deterministic fallback path - used ONLY when the real LLM call above fails."""
         intent = cuc.goal.get("primary_intent", "general")
         files = cuc.observed.get("mentioned_files", [])
         questions = []
-        
+
         if not files:
             questions.append("Which dataset file or archive would you like to process?")
         if intent == "general":
             questions.append("Would you like to compile a raw dataset, train an ML model, or run anomaly detection?")
-            
+
         return questions or ["Could you please specify your dataset or project goal?"]

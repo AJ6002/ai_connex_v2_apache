@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import logging
 from typing import Any, Dict
-from langgraph.types import interrupt
 
 from aiconnex_agent.state import MasterAgentState
 from aiconnex_agent.schemas import (
@@ -37,21 +36,9 @@ def stub_conversation_parser_node(state: MasterAgentState) -> Dict[str, Any]:
 
 
 def stub_clarification_node(state: MasterAgentState) -> Dict[str, Any]:
-    """Stub Clarification Node using LangGraph interrupt()."""
-    logger.info("[StubNode] Executing stub_clarification_node (HITL Interrupt)")
-    user_answer = interrupt({
-        "question": "Which processing mode would you like?",
-        "options": ["Automatic Pipeline", "Interactive Step-by-Step"],
-        "reason": "Low parser confidence threshold"
-    })
-    
-    cuc_dict = state.cuc.model_dump() if hasattr(state.cuc, "model_dump") else state.cuc.dict()
-    cuc_dict["planning_hints"] = {"user_choice": user_answer}
-    return {
-        "cuc": cuc_dict,
-        "active_agent": "planner",
-        "confidence_score": 1.0,
-    }
+    """Delegates to the real ClarificationGenerator-backed Clarification Node."""
+    from aiconnex_agent.parser.clarification_node import real_clarification_node
+    return real_clarification_node(state)
 
 
 def stub_planning_engine_node(state: MasterAgentState) -> Dict[str, Any]:
