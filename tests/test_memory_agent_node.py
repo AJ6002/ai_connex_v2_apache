@@ -93,3 +93,59 @@ def test_default_state_produces_no_dataset_entity():
     bank = res["memory_context"]["memory_bank"]
     assert bank["entities"] == {}
     assert res["active_agent"] == "evaluator"
+
+
+# --- Phase 5a.6 Task 3: semantic search on query_status read path ---
+
+def test_query_status_returns_semantic_hits_for_matching_prompt():
+    from aiconnex_agent.memory.backends.factory import reset_semantic_backend
+
+    reset_semantic_backend()
+
+    # Write path first: compile a dataset so an Entity-layer fact exists,
+    # which memory_builder.py mirrors into the semantic backend.
+    write_state = MasterAgentState(
+        cuc=ConversationUnderstandingContract(
+            conversation={"session_id": "wf_semantic_1"},
+            goal={"primary_intent": "compile_zip"},
+        ),
+        dic=DatasetIntelligenceContract(
+            dataset_identity={"name": "NASA FD001", "family": "Aircraft Engine"},
+            compiled_dataset={"rows": 26898, "columns": 253, "tables": 1},
+        ),
+    )
+    real_memory_agent_node(write_state)
+
+    # Read path: query_status with a matching prompt should surface semantic_hits.
+    read_state = MasterAgentState(
+        messages=[{"role": "user", "content": "what happened with the NASA FD001 dataset"}],
+        cuc=ConversationUnderstandingContract(
+            conversation={"session_id": "wf_semantic_1"},
+            goal={"primary_intent": "query_status"},
+        ),
+    )
+    res = real_memory_agent_node(read_state)
+
+    assert "semantic_hits" in res["memory_context"]
+    assert len(res["memory_context"]["semantic_hits"]) > 0
+    # memory_bank structure is unaffected - still has the standard 4 keys.
+    bank = res["memory_context"]["memory_bank"]
+    assert set(bank.keys()) == {"session", "entities", "procedures", "decisions"}
+
+    reset_semantic_backend()
+
+
+def test_query_status_with_no_messages_returns_empty_semantic_hits():
+    state = MasterAgentState(
+        cuc=ConversationUnderstandingContract(goal={"primary_intent": "query_status"}),
+    )
+    res = real_memory_agent_node(state)
+    assert res["memory_context"]["semantic_hits"] == []
+
+
+def test_write_path_intent_does_not_populate_semantic_hits():
+    state = MasterAgentState(
+        cuc=ConversationUnderstandingContract(goal={"primary_intent": "compile_zip"}),
+    )
+    res = real_memory_agent_node(state)
+    assert res["memory_context"]["semantic_hits"] == []

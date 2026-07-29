@@ -41,11 +41,20 @@ class MemoryBuilder:
 
     def __init__(self, policy: MemoryPolicyEngine, semantic_backend: Optional[SemanticMemoryBackend] = None):
         self.policy = policy
-        if semantic_backend is not None:
-            self.semantic_backend = semantic_backend
-        else:
-            from aiconnex_agent.memory.backends.factory import get_semantic_backend
-            self.semantic_backend = get_semantic_backend()
+        # Stored as _explicit_semantic_backend rather than resolved eagerly: when no
+        # explicit backend is given, self.semantic_backend resolves get_semantic_backend()
+        # freshly on every access (see property below). This matters because MemoryBuilder
+        # is used as a long-lived module-level singleton (see memory_agent.py) - caching the
+        # default backend once at __init__ time would go stale the moment anything calls
+        # reset_semantic_backend() (as tests do), silently writing to an orphaned instance.
+        self._explicit_semantic_backend = semantic_backend
+
+    @property
+    def semantic_backend(self) -> SemanticMemoryBackend:
+        if self._explicit_semantic_backend is not None:
+            return self._explicit_semantic_backend
+        from aiconnex_agent.memory.backends.factory import get_semantic_backend
+        return get_semantic_backend()
 
     def build(self, events: List[BaseEvent]) -> MemoryBank:
         """Deterministically project the event log into a fresh MemoryBank."""

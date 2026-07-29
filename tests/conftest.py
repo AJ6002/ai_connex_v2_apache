@@ -98,3 +98,20 @@ def _reset_memory_event_store():
     except ImportError:
         pass
     yield
+
+
+@pytest.fixture(autouse=True)
+def _reset_semantic_memory_backend():
+    """
+    Autouse fixture: resets the process-wide SemanticMemoryBackend singleton
+    before every test (Phase 5a.6). Same rationale as _reset_memory_event_store -
+    any test exercising the real Memory Agent write/read paths mirrors Entity
+    memory into this singleton, which would otherwise leak semantic search hits
+    across unrelated test files in the same pytest session.
+    """
+    try:
+        from aiconnex_agent.memory.backends.factory import reset_semantic_backend
+        reset_semantic_backend()
+    except ImportError:
+        pass
+    yield
