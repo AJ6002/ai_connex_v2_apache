@@ -150,3 +150,23 @@ class DatasetIntelligenceContract(BaseModel):
     branching_hints: BranchingHints = Field(default_factory=BranchingHints)
     compiler_warnings: List[str] = Field(default_factory=list)
     clarifications_required: List[str] = Field(default_factory=list)
+
+
+# ---------------------------------------------------------------------------
+# 6. Planning Engine Contracts
+# ---------------------------------------------------------------------------
+
+from typing import Literal
+
+
+class TaskStep(BaseModel):
+    """A single routed unit of work targeting one downstream agent."""
+    step_id: str = Field(..., description="Sequential step identifier, e.g. step_1")
+    target_agent: Literal["scout", "platform", "memory"] = Field(..., description="Agent responsible for this step")
+    task: str = Field(..., description="Human-readable task description")
+
+
+class ExecutionPlan(BaseModel):
+    """Ordered set of TaskSteps produced by the Planning Engine for one CUC."""
+    steps: List[TaskStep] = Field(default_factory=list)
+    source_intent: str = Field(default="general", description="primary_intent that produced this plan")

@@ -17,10 +17,13 @@ def test_stub_conversation_parser_node():
 
 
 def test_stub_planning_engine_node():
+    # Default MasterAgentState() has no primary_intent -> resolves to "general"
+    # which the real Planning Engine maps to a single scout discovery step.
     state = MasterAgentState()
     res = stub_planning_engine_node(state)
-    assert len(res["plan_steps"]) == 3
+    assert len(res["plan_steps"]) == 1
     assert res["plan_steps"][0]["target_agent"] == "scout"
+    assert res["active_agent"] == "scout"
 
 
 def test_stub_scout_agent_node():
