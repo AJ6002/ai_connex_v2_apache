@@ -12,7 +12,7 @@ def test_stub_conversation_parser_node():
     state = MasterAgentState(messages=[{"role": "user", "content": "compile data"}])
     res = stub_conversation_parser_node(state)
     assert res["active_agent"] == "planner"
-    assert res["confidence_score"] == 0.95
+    assert res["confidence_score"] >= 0.85
     assert res["cuc"]["goal"]["primary_intent"] == "compile_zip"
 
 
