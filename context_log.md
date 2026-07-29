@@ -1591,6 +1591,15 @@
 **Current system state:** Active branch is `28_july_agentic`, 100% committed and pushed to `origin/28_july_agentic`. Working tree clean.
 ---
 
+## Query 153 — 2026-07-29 11:05
+**Input:** User asked if the merged branch `ui-27JUL` is still visible on GitHub branches list after merging with `28_july_agentic`.
+**Response summary:** Audited remote branches via `git branch -r`. Confirmed `origin/ui-27JUL` is still visible on GitHub because Git merge does not auto-delete source branches. Explained that all `ui-27JUL` code is merged into `28_july_agentic`, and offered optional delete command if user wants to clean up `origin/ui-27JUL`.
+**Files changed:** context_log.md
+**Architectural decisions:** Clarified Git remote branch retention behavior after merging.
+**Current system state:** Remote branch `origin/ui-27JUL` confirmed present; `origin/28_july_agentic` updated with full merge.
+---
+
+
 
 
 
