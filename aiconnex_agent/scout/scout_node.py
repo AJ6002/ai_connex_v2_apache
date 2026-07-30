@@ -147,6 +147,7 @@ def real_scout_agent_node(state: MasterAgentState) -> Dict[str, Any]:
             "cuc": cuc_dict,
             "interrupt_reason": "compile_failure",
             "active_agent": "scout",
+            "compile_error": last_error or "Compilation failed",
         }
 
     # -- Gap 2: adapt the real CompileResult into the agent's contracts --
