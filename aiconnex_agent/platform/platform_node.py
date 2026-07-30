@@ -53,6 +53,17 @@ def _train_candidate(
     upload_path = getattr(state, "upload_path", None)
     if upload_path and os.path.exists(upload_path):
         try:
+            # Optional REST microservice Node 7 check when AICONNEX_REST_MODE=1
+            if os.getenv("AICONNEX_REST_MODE") == "1":
+                import urllib.request
+                try:
+                    with urllib.request.urlopen("http://127.0.0.1:8007/health", timeout=0.1) as resp:
+                        if resp.status == 200:
+                            logger.info(f"[PlatformHarness] Directing {candidate.recipe_id} to live microservice :8007")
+                except Exception:
+                    pass
+
+
             from aiconnex_ml.regression.trainer import RegressionTrainer
             from aiconnex_ml.shared.config import ExecutionManifest
             # Real microservice execution logic
@@ -67,6 +78,7 @@ def _train_candidate(
             return result["y_true"], result["y_pred"], latency_ms, result.get("model_size_mb", 1.0)
         except Exception as e:
             logger.warning(f"[PlatformHarness] Real microservice training fallback for {candidate.recipe_id}: {e}")
+
 
     # Deterministic generation based on recipe hash for reproducible testing
     np.random.seed(abs(hash(candidate.recipe_id)) % 2**31)

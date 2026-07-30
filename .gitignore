@@ -27,6 +27,8 @@ scratch/
 *.log
 .system_generated/
 .tempmediaStorage/
+.langgraph_api/
+mlruns/
 
 # ==========================================
 # 4. Python Environment & Caches

@@ -1,0 +1,9 @@
+{
+  "dependencies": [
+    "."
+  ],
+  "graphs": {
+    "aiconnex_master_supervisor": "./aiconnex_agent/studio.py:graph"
+  },
+  "env": ".env"
+}

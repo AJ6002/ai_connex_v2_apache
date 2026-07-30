@@ -28,17 +28,24 @@ from aiconnex_agent.memory.backends.mem0_adapter import Mem0Backend, _build_mem0
 _LIVE_INTEGRATION_ENABLED = os.getenv("AICONNEX_RUN_LIVE_MEM0_TESTS") == "1"
 
 
-def test_mem0_backend_config_reuses_ollama_model_and_qdrant():
+def test_mem0_backend_config_uses_openrouter_when_key_present(monkeypatch):
+    monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-v1-testkey")
+    config = _build_mem0_config()
+    assert config["llm"]["provider"] == "openai"
+    assert config["llm"]["config"]["model"] == "qwen/qwen-2.5-coder-32b-instruct"
+    assert config["llm"]["config"]["openai_base_url"] == "https://openrouter.ai/api/v1"
+    assert config["embedder"]["provider"] == "ollama"
+    assert config["vector_store"]["provider"] == "qdrant"
+    assert config["embedder"]["config"]["model"] == "nomic-embed-text"
+    assert config["vector_store"]["config"]["embedding_model_dims"] == 768
+
+
+def test_mem0_backend_config_falls_back_to_ollama_when_no_openrouter_key(monkeypatch):
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     config = _build_mem0_config()
     assert config["llm"]["provider"] == "ollama"
     assert config["embedder"]["provider"] == "ollama"
     assert config["vector_store"]["provider"] == "qdrant"
-    # Deliberately REUSES OLLAMA_MODEL (default gpt-oss:120b-cloud) - same
-    # model as the rest of the agent. Quality over local latency, by
-    # explicit decision - see mem0_adapter.py module docstring.
-    assert config["llm"]["config"]["model"] == os.getenv("OLLAMA_MODEL", "gpt-oss:120b-cloud")
-    # The embedder still must be a real local model - Ollama Cloud does not
-    # serve embeddings the same way, so this one stays a genuine pull.
     assert config["embedder"]["config"]["model"] == "nomic-embed-text"
     assert config["vector_store"]["config"]["embedding_model_dims"] == 768
 

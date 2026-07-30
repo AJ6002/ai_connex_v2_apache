@@ -16,16 +16,19 @@ from langchain_community.llms import Ollama
 
 @pytest.fixture(autouse=True)
 def _clean_env():
-    for key in ("AICONNEX_LLM_BACKEND", "OPENAI_API_KEY", "OPENAI_MODEL", "OLLAMA_MODEL", "OLLAMA_BASE_URL"):
+    for key in ("AICONNEX_LLM_BACKEND", "OPENROUTER_API_KEY", "OPENAI_API_KEY", "OPENAI_MODEL", "OLLAMA_MODEL", "OLLAMA_BASE_URL"):
         os.environ.pop(key, None)
     yield
-    for key in ("AICONNEX_LLM_BACKEND", "OPENAI_API_KEY", "OPENAI_MODEL", "OLLAMA_MODEL", "OLLAMA_BASE_URL"):
+    for key in ("AICONNEX_LLM_BACKEND", "OPENROUTER_API_KEY", "OPENAI_API_KEY", "OPENAI_MODEL", "OLLAMA_MODEL", "OLLAMA_BASE_URL"):
         os.environ.pop(key, None)
 
 
-def test_get_llm_defaults_to_ollama_when_unset():
+def test_get_llm_defaults_to_openrouter_when_unset(monkeypatch):
+    monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-v1-testkey")
     llm = get_llm()
-    assert isinstance(llm, Ollama)
+    from langchain_openai import ChatOpenAI
+    assert isinstance(llm, ChatOpenAI)
+    assert llm.model_name == "qwen/qwen-2.5-coder-32b-instruct"
 
 
 def test_get_llm_uses_ollama_when_explicitly_set():
@@ -81,11 +84,13 @@ def test_get_openai_llm_raises_actionable_error_when_dependency_missing(monkeypa
     assert "pip install" in str(excinfo.value).lower()
 
 
-def test_get_llm_raises_on_unknown_backend():
+def test_get_llm_defaults_to_openrouter_on_unknown_backend(monkeypatch):
+    monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-v1-testkey")
     os.environ["AICONNEX_LLM_BACKEND"] = "some_unsupported_provider"
-    with pytest.raises(ValueError) as excinfo:
-        get_llm()
-    assert "some_unsupported_provider" in str(excinfo.value)
+    llm = get_llm()
+    from langchain_openai import ChatOpenAI
+    assert isinstance(llm, ChatOpenAI)
+    assert llm.model_name == "qwen/qwen-2.5-coder-32b-instruct"
 
 
 def test_get_llm_backend_selection_is_case_insensitive():

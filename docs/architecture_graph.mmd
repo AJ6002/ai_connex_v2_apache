@@ -1,0 +1,20 @@
+---
+config:
+  flowchart:
+    curve: linear
+---
+graph TD;
+	__start__(<p>__start__</p>)
+	conversation_parser_node(conversation_parser_node)
+	clarification_node(clarification_node)
+	planning_engine_node(planning_engine_node)
+	scout_agent_node(scout_agent_node)
+	platform_agent_node(platform_agent_node)
+	memory_agent_node(memory_agent_node)
+	plan_evaluator_node(plan_evaluator_node)
+	__end__(<p>__end__</p>)
+	__start__ --> conversation_parser_node;
+	conversation_parser_node --> __end__;
+	classDef default fill:#f2f0ff,line-height:1.2
+	classDef first fill-opacity:0
+	classDef last fill:#bfb6fc

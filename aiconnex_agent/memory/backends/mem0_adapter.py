@@ -40,24 +40,33 @@ from aiconnex_agent.memory.backends.base import SemanticMemoryBackend
 
 _DEFAULT_OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 _DEFAULT_EMBEDDER_MODEL = os.getenv("AICONNEX_MEM0_EMBEDDER_MODEL", "nomic-embed-text")
-# Reuses OLLAMA_MODEL - the SAME model the rest of the agent uses
-# (aiconnex_agent/llm.py, default gpt-oss:120b-cloud). Model quality is
-# prioritized over local latency, by explicit decision - mem0's memory
-# extraction gets the same model as everything else, not a separate one.
-_DEFAULT_LLM_MODEL = os.getenv("AICONNEX_MEM0_LLM_MODEL") or os.getenv("OLLAMA_MODEL", "gpt-oss:120b-cloud")
 _DEFAULT_QDRANT_PATH = os.getenv("AICONNEX_MEM0_QDRANT_PATH", "./.mem0_qdrant")
 _EMBEDDING_DIMS = 768  # nomic-embed-text output dimension
 
 
 def _build_mem0_config() -> Dict[str, Any]:
-    return {
-        "llm": {
+    openrouter_key = os.getenv("OPENROUTER_API_KEY")
+    if openrouter_key:
+        llm_config = {
+            "provider": "openai",
+            "config": {
+                "model": os.getenv("OPENROUTER_MODEL", "qwen/qwen-2.5-coder-32b-instruct"),
+                "api_key": openrouter_key,
+                "openai_base_url": os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1"),
+            },
+        }
+    else:
+        llm_model = os.getenv("AICONNEX_MEM0_LLM_MODEL") or os.getenv("OLLAMA_MODEL", "gpt-oss:120b-cloud")
+        llm_config = {
             "provider": "ollama",
             "config": {
-                "model": _DEFAULT_LLM_MODEL,
+                "model": llm_model,
                 "ollama_base_url": _DEFAULT_OLLAMA_BASE_URL,
             },
-        },
+        }
+
+    return {
+        "llm": llm_config,
         "embedder": {
             "provider": "ollama",
             "config": {

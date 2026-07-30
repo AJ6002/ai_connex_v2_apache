@@ -36,7 +36,9 @@ def log_experiment(
     scorer_reports: List[ScorerReport],
     judge_reports: List[JudgeReport],
     ensemble_weights: Optional[np.ndarray] = None,
+    model_artifact_path: Optional[str] = None,
 ) -> Dict[str, Any]:
+
     """Log the full multi-candidate experiment to MLflow.
 
     Args:
@@ -102,7 +104,15 @@ def log_experiment(
         mlflow.set_tag("leaderboard_summary", lb_summary[:250])
         mlflow.set_tag("selection_rationale", selection_result.selection_rationale[:250])
 
+        # Log model binary artifact if provided (Gap 3)
+        if model_artifact_path and os.path.exists(model_artifact_path):
+            try:
+                mlflow.log_artifact(model_artifact_path, artifact_path="model_binaries")
+            except Exception as e:
+                logger.debug(f"[MLflowLogger] Could not log model artifact: {e}")
+
         run_id = run.info.run_id
+
 
     logger.info(f"[MLflowLogger] Experiment '{experiment_name}' logged. Run ID: {run_id}")
     return {
