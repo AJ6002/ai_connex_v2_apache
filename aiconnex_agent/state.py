@@ -24,6 +24,7 @@ class MasterAgentState(BaseModel):
     scout_enriched: ScoutEnrichedContract = Field(default_factory=ScoutEnrichedContract, description="Stage 2: During Upload Scout Enriched")
     pre_compiler: PreCompilerContract = Field(default_factory=PreCompilerContract, description="Stage 3: Pre-Compiler Contract")
     dic: DatasetIntelligenceContract = Field(default_factory=DatasetIntelligenceContract, description="Stage 4 & 5: Post-Compiler DIC")
+    upload_path: Optional[str] = Field(default=None, description="Filesystem path to the real uploaded dataset archive/file, set by the caller before graph invocation (Phase 5b gap 1)")
     active_agent: Optional[str] = Field(default="parser", description="Current active agent/node name")
     current_step_index: int = Field(default=0, description="Step pointer in multi-agent execution plan")
     plan_steps: List[Dict[str, Any]] = Field(default_factory=list, description="List of planned task steps")

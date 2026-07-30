@@ -48,16 +48,9 @@ def stub_planning_engine_node(state: MasterAgentState) -> Dict[str, Any]:
 
 
 def stub_scout_agent_node(state: MasterAgentState) -> Dict[str, Any]:
-    """Stub Scout Agent Node."""
-    logger.info("[StubNode] Executing stub_scout_agent_node")
-    scout_dict = state.scout_enriched.model_dump() if hasattr(state.scout_enriched, "model_dump") else state.scout_enriched.dict()
-    scout_dict["upload"] = {"status": "uploaded", "archive_name": "suyash2.zip", "archive_type": "zip"}
-    scout_dict["archive_discovery"] = {"total_files": 4, "files_detected": ["suyash2.csv"]}
-    scout_dict["file_inventory"] = [{"filename": "suyash2.csv", "type": "csv", "role": "fact_table"}]
-    return {
-        "scout_enriched": scout_dict,
-        "active_agent": "evaluator",
-    }
+    """Delegates to the real UnifiedCompiler-backed Scout Agent Node (Phase 5b)."""
+    from aiconnex_agent.scout.scout_node import real_scout_agent_node
+    return real_scout_agent_node(state)
 
 
 def stub_platform_agent_node(state: MasterAgentState) -> Dict[str, Any]:

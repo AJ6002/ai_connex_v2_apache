@@ -51,10 +51,17 @@ def make_layout(state: MasterAgentState, events: List[Dict[str, Any]]) -> Layout
 def run_tui_session(
     user_prompt: str,
     thread_id: str = "tui_session_1",
-    live_display: bool = True
+    live_display: bool = True,
+    upload_path: str | None = None,
 ) -> List[Dict[str, Any]]:
-    """Run execution stream with live Rich TUI display."""
-    initial_state = MasterAgentState(messages=[{"role": "user", "content": user_prompt}])
+    """Run execution stream with live Rich TUI display.
+
+    upload_path: real filesystem path to the dataset file/archive being
+    discussed, if any (Phase 5b gap 1) - without it, the real Scout Agent
+    node will correctly raise a clarification interrupt instead of
+    fabricating fake dataset info.
+    """
+    initial_state = MasterAgentState(messages=[{"role": "user", "content": user_prompt}], upload_path=upload_path)
     collected_events = []
     current_state = initial_state
     

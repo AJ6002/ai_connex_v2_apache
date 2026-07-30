@@ -1,5 +1,6 @@
 # tests/test_stub_nodes.py
 import pytest
+from unittest.mock import patch
 from aiconnex_agent.state import MasterAgentState
 from aiconnex_agent.nodes.stub_nodes import (
     stub_conversation_parser_node,
@@ -26,8 +27,13 @@ def test_stub_planning_engine_node():
     assert res["active_agent"] == "scout"
 
 
-def test_stub_scout_agent_node():
+def test_stub_scout_agent_node_flags_missing_upload_path():
+    """Delegates to the real Scout node (Phase 5b). With no upload_path set,
+    Scout must flag this via a real clarification interrupt (Gap 1 safety net),
+    never silently fabricate a fake dataset like the old stub used to."""
     state = MasterAgentState(plan_steps=[{"target_agent": "scout", "step_id": "step_1"}])
-    res = stub_scout_agent_node(state)
-    assert res["scout_enriched"]["upload"]["status"] == "uploaded"
+    with patch("aiconnex_agent.scout.scout_node.interrupt", return_value="ok") as mock_interrupt:
+        res = stub_scout_agent_node(state)
+    assert mock_interrupt.called
+    assert "no dataset file" in mock_interrupt.call_args[0][0]["questions"][0]
     assert res["active_agent"] == "evaluator"
