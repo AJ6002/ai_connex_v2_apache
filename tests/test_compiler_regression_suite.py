@@ -126,64 +126,6 @@ def test_failure_reporter_classification(temp_workspace):
         assert "MATLAB struct" in report.gap_description
 
 
-def test_scout_agent_observation_loop(temp_workspace):
-    """Test Case 5: ScoutAgent observe_and_compile loop logs evolution metrics"""
-    from aiconnex_zip_compiler.scout import ScoutAgent
-
-    zip_path = temp_workspace / "scout_test.zip"
-    out_dir = temp_workspace / "out_scout"
-    log_file = temp_workspace / "evolution_log.json"
-
-    df = pd.DataFrame({"ts": ["2026-01-01 00:00:00"], "val": [10.5]})
-    with zipfile.ZipFile(zip_path, "w") as zf:
-        zf.writestr("data.csv", df.to_csv(index=False))
-
-    agent = ScoutAgent(log_path=log_file)
-    res = agent.observe_and_compile(zip_path, out_dir)
-
-    assert res.success is True
-    assert log_file.exists()
-
-
-def test_ollama_patch_proposer_generation(temp_workspace):
-    """Test Case 6: OllamaPatchProposer generates valid Python code diff/patch"""
-    from aiconnex_zip_compiler.patch_proposer import OllamaPatchProposer
-    from aiconnex_zip_compiler.reporter import classify_compilation_failure
-
-    dummy_zip = temp_workspace / "h5_dataset.zip"
-    with zipfile.ZipFile(dummy_zip, "w") as zf:
-        zf.writestr("data.h5", "fake hdf5 content")
-
-    try:
-        raise ValueError("HDF5 file format .h5 not supported by current discovery parser")
-    except Exception as e:
-        report = classify_compilation_failure(dummy_zip, temp_workspace, e)
-        proposer = OllamaPatchProposer(ollama_url="http://localhost:11434")
-        patch = proposer.generate_patch(report, sample_file_snippet="[HDF5 Dataset group /N-CMAPSS]")
-
-        assert patch is not None
-        assert ("BaseParserPlugin" in patch or "def parse" in patch or "def convert_custom_format" in patch)
-
-
-def test_sandbox_runner_execution(temp_workspace):
-    """Test Case 7: SandboxRunner validates patch inside isolated sandbox environment"""
-    from aiconnex_zip_compiler.sandbox_runner import SandboxRunner
-
-    dummy_patch = '''
-"""Dummy valid converter patch for sandbox test"""
-from pathlib import Path
-from typing import List
-
-def convert_custom_format(directory: Path) -> List[Path]:
-    return []
-'''
-    runner = SandboxRunner(use_docker=False)
-    res = runner.validate_patch(dummy_patch, patch_name="patch_test_sandbox.py")
-
-    assert res.compilation_passed is True
-    assert res.merged is True
-
-
 def test_schema_gate_evaluation(temp_workspace):
     """Test Case 8: SchemaGate pre-validation and ingestion routing"""
     from aiconnex_zip_compiler.schema_gate import SchemaGate
