@@ -19,7 +19,6 @@ from __future__ import annotations
 
 import logging
 import re
-import uuid
 from typing import Any, Dict
 
 from aiconnex_agent.state import MasterAgentState
@@ -47,8 +46,9 @@ def _slugify(name: str, default: str = "unknown_dataset") -> str:
 
 
 def _resolve_workflow_id(state: MasterAgentState) -> str:
-    session_id = state.cuc.conversation.get("session_id") if state.cuc.conversation else None
-    return session_id or f"wf_{uuid.uuid4().hex[:8]}"
+    """Bug #2 fix: read state.session_id, which is generated once at state
+    construction and survives checkpointer serialization across turns."""
+    return state.session_id
 
 
 def real_memory_agent_node(state: MasterAgentState) -> Dict[str, Any]:

@@ -484,6 +484,18 @@
 **Files changed:** context_log.md (updated)
 **Architectural decisions:** Verified clean shutdown of background tasks.
 **Current system state:** Active branch: 28_july_agentic. All background processes stopped.
+## Query 201 -- 2026-07-30 11:12
+**Input:** User requested a detailed document covering the problems faced on HTDS/LTDS datasets, the challenge of pipeline re-wiring vs genericity, and a deep-dive into the applied fixes and their internal hidden flaws (SelectKBest lag dropping, MoE data fragmentation, log transform distortion, recency weighting noise).
+**Response summary:** Created htds_ltds_pipeline_rewiring_and_genericity_audit.md artifact detailing dataset-specific code-poisoning traps, initial failure modes, hidden flaws in 4 ML fixes, and the final 3-layer Gated Platform & Agentic Ephemeral Profile Architecture solution.
+**Files changed:** htds_ltds_pipeline_rewiring_and_genericity_audit.md (artifact) · context_log.md (updated)
+**Architectural decisions:** Documented comprehensive post-mortem of HTDS/LTDS pipeline re-wiring and flaw analysis in applied ML fixes.
+**Current system state:** Active branch: 28_july_agentic. Architectural audit report generated.
+## Query 202 -- 2026-07-30 11:13
+**Input:** User requested updating the htds_ltds_pipeline_rewiring_and_genericity_audit.md document to strictly remove all proposed fixes, solutions, and recommendations, keeping it strictly focused on problem analysis and flaws in attempted fixes.
+**Response summary:** Updated htds_ltds_pipeline_rewiring_and_genericity_audit.md artifact to remove Section 5 (proposed architectures/fixes) and focused purely on initial pipeline failure points, code-poisoning rewiring traps, and hidden flaws inside 4 attempted ML fixes.
+**Files changed:** htds_ltds_pipeline_rewiring_and_genericity_audit.md (artifact) · context_log.md (updated)
+**Architectural decisions:** Strict problem-only audit document formatting.
+**Current system state:** Active branch: 28_july_agentic. Forensic audit document updated.
 ---
 
 ## Query 158 -- 2026-07-24 14:38

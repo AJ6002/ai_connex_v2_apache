@@ -29,11 +29,14 @@ def test_stub_planning_engine_node():
 
 def test_stub_scout_agent_node_flags_missing_upload_path():
     """Delegates to the real Scout node (Phase 5b). With no upload_path set,
-    Scout must flag this via a real clarification interrupt (Gap 1 safety net),
-    never silently fabricate a fake dataset like the old stub used to."""
+    Scout must flag via a real clarification interrupt (Gap 1 safety net) and
+    route back to 'scout' — NOT 'evaluator' — so the graph does not advance
+    the plan with an empty/fake DIC. (Bug #1 fix verification.)"""
     state = MasterAgentState(plan_steps=[{"target_agent": "scout", "step_id": "step_1"}])
     with patch("aiconnex_agent.scout.scout_node.interrupt", return_value="ok") as mock_interrupt:
         res = stub_scout_agent_node(state)
     assert mock_interrupt.called
     assert "no dataset file" in mock_interrupt.call_args[0][0]["questions"][0]
-    assert res["active_agent"] == "evaluator"
+    # Bug #1 fix: must route back to scout (not evaluator) and set interrupt_reason
+    assert res["active_agent"] == "scout"
+    assert res["interrupt_reason"] == "missing_upload_path"

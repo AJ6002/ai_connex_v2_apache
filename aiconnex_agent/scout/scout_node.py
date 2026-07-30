@@ -42,11 +42,11 @@ _DEFAULT_OUTPUT_ROOT = Path("scratch") / "scout_output"
 
 
 def _resolve_output_dir(state: MasterAgentState, upload_path: Path) -> Path:
-    """Gap 6: exact location doesn't matter, only that DIC.compiled_dataset.output_path
-    can retrieve it later - one session-scoped folder per workflow, keyed by upload name."""
-    session_id = state.cuc.conversation.get("session_id") if state.cuc.conversation else None
-    workflow_id = session_id or upload_path.stem
-    return _DEFAULT_OUTPUT_ROOT / workflow_id
+    """Bug #2 fix: use state.session_id (stable across all nodes in a conversation)
+    instead of state.cuc.conversation['session_id'] (which was never populated).
+    Also resolves Bug #5: two users uploading a file named data.zip no longer
+    collide on the same output folder since session_id is unique per state."""
+    return _DEFAULT_OUTPUT_ROOT / state.session_id
 
 
 def _ask_user_to_choose_strategy(options) -> str:
@@ -66,8 +66,11 @@ def _ask_user_to_choose_strategy(options) -> str:
 
 
 def _flag_compile_failure(error_message: str) -> str:
-    """Gap 3: after retry still fails, ask the user via a real LangGraph interrupt
-    instead of silently proceeding with an empty/fake DatasetIntelligenceContract."""
+    """Gap 3: after retry still fails, ask the user via a real LangGraph interrupt.
+
+    Returns the user's answer so the caller can store it and re-route correctly.
+    Never called for its side-effect alone — the return value must be used.
+    """
     return interrupt({
         "questions": [
             f"I couldn't process this file: {error_message}. "
@@ -86,9 +89,17 @@ def real_scout_agent_node(state: MasterAgentState) -> Dict[str, Any]:
     if not state.upload_path:
         # Gap 1 safety net: no real file was ever provided - this is a genuine
         # ambiguity, not something to paper over with fake data.
-        _flag_compile_failure("no dataset file was provided")
-        scout_dict = state.scout_enriched.model_dump() if hasattr(state.scout_enriched, "model_dump") else state.scout_enriched.dict()
-        return {"scout_enriched": scout_dict, "active_agent": "evaluator"}
+        # Capture the user's answer; store it in planning_hints so the next
+        # turn can surface it. Route back to "scout" (not "evaluator") so the
+        # graph waits for a real file before advancing the plan.
+        user_answer = _flag_compile_failure("no dataset file was provided")
+        cuc_dict = state.cuc.model_dump() if hasattr(state.cuc, "model_dump") else state.cuc.dict()
+        cuc_dict["planning_hints"] = {"reupload_response": user_answer}
+        return {
+            "cuc": cuc_dict,
+            "interrupt_reason": "missing_upload_path",
+            "active_agent": "scout",
+        }
 
     upload_path = Path(state.upload_path)
     output_dir = _resolve_output_dir(state, upload_path)
@@ -125,9 +136,18 @@ def real_scout_agent_node(state: MasterAgentState) -> Dict[str, Any]:
         logger.warning(f"[ScoutAgent] Compile attempt {attempt + 1} failed: {last_error}")
 
     if result is None or not result.success:
-        _flag_compile_failure(last_error or "unknown compilation error")
-        scout_dict = state.scout_enriched.model_dump() if hasattr(state.scout_enriched, "model_dump") else state.scout_enriched.dict()
-        return {"scout_enriched": scout_dict, "active_agent": "evaluator"}
+        # Bug #1 fix: capture the interrupt() return value (the user's response
+        # to the "please re-upload" prompt) and store it in planning_hints.
+        # Route back to "scout" so the graph does not advance to the evaluator
+        # with an empty/fake DIC — it will re-enter this node on resume.
+        user_answer = _flag_compile_failure(last_error or "unknown compilation error")
+        cuc_dict = state.cuc.model_dump() if hasattr(state.cuc, "model_dump") else state.cuc.dict()
+        cuc_dict["planning_hints"] = {"reupload_response": user_answer}
+        return {
+            "cuc": cuc_dict,
+            "interrupt_reason": "compile_failure",
+            "active_agent": "scout",
+        }
 
     # -- Gap 2: adapt the real CompileResult into the agent's contracts --
     scout_dict = state.scout_enriched.model_dump() if hasattr(state.scout_enriched, "model_dump") else state.scout_enriched.dict()
