@@ -40,3 +40,9 @@ class MasterAgentState(BaseModel):
     confidence_score: float = Field(default=1.0, description="Overall parser/routing confidence score [0.0 - 1.0]")
     interrupt_reason: Optional[str] = Field(default=None, description="Reason for HITL interrupt if paused")
     memory_context: Dict[str, Any] = Field(default_factory=dict, description="Session and memory bank context")
+    candidate_recipes: List[Dict[str, Any]] = Field(default_factory=list, description="Resolved candidate DAG recipes for parallel training")
+    oof_predictions: Dict[str, Any] = Field(default_factory=dict, description="Out-of-fold CV prediction matrices keyed by recipe_id")
+    scorer_reports: List[Dict[str, Any]] = Field(default_factory=list, description="ScorerAgent metric reports per candidate")
+    judge_reports: List[Dict[str, Any]] = Field(default_factory=list, description="JudgeAgent qualitative reports per candidate")
+    selection_result: Dict[str, Any] = Field(default_factory=dict, description="SelectionResult from SelectorAgent MCDA")
+

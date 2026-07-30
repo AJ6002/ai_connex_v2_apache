@@ -197,5 +197,41 @@ class SelectionResult(BaseModel):
 | **Phases 1–5b Agent Modules** | Integrated | LangGraph graph, Conv Parser, Rich TUI, Scout, and Memory Agent are preserved and extended. |
 
 ---
-*Document Version: v3.0 (Master Final Architecture)*  
+
+## 6. Phase 5c Critical Design Decisions & Operational Guardrails
+
+To prevent silent failures, resource contention, and ad-hoc architecture drift during Phase 5c implementation, the following 9 operational guardrails are locked into the system design:
+
+### 1. Unified Session Identity Model (`workflow_id`)
+- Every candidate recipe execution, OOF prediction matrix, scorer metric, judge report, and leaderboard entry MUST trace back to `state.session_id` (`wf_<hex>`).
+- The `workflow_id` is passed as a single immutable key across all worker threads and Memory Agent event store appends to preserve 100% audit correlation.
+
+### 2. Candidate-Level Partial Failure Semantics
+- Individual worker failures (e.g. XGBoost OOM, recipe shape mismatch) do NOT crash the parent ensemble pipeline or trigger silent fallthroughs.
+- Failed workers emit a `CandidateFailedEvent`, get excluded from the candidate pool, and the Stacked Ensemble Meta-Learner proceeds using the remaining successful candidates ($K \ge 2$).
+
+### 3. Concurrency Ceiling & CPU-Bound Process Management
+- Parallel worker execution uses `ProcessPoolExecutor` (or bounded `ThreadPoolExecutor` capped at **`max_workers = min(3, os.cpu_count())`**) to prevent CPU thrashing and RAM exhaustion during heavy multi-model training.
+
+### 4. Standardized Judge LLM Call Pattern
+- The Judge Agent follows the standard AIConnex LLM pattern: primary LLM call via `get_llm()`, strict Pydantic response validation, and a deterministic fallback (`"qualitative_unavailable"`) on network/API failure.
+
+### 5. Independent Evaluator Fail-Soft Logic
+- The Selector Agent functions independently of the Judge Agent. If LLM qualitative evaluation fails or is disabled, Selector selects the winning model using Scorer Agent hard mathematical metrics ($R^2$, RMSE, MAE, MAPE) alone.
+
+### 6. Single-Owner Drift Monitoring Boundary
+- Node 9 (`9_deploy_monitor`) strictly owns production Population Stability Index (PSI) and feature drift detection on live REST payloads (`:8001`). Scout Agent acts as a downstream consumer of Node 9 drift alerts.
+
+### 7. Local-First MLflow Tracking URI (`./mlruns`)
+- MLflow experiment tracking uses local file store persistence at `./mlruns` (zero external server dependencies), matching the offline local-first design of mem0/Qdrant (`./.mem0_qdrant`).
+
+### 8. Empirical DAG & Recipe Inventory Verification
+- All multi-candidate routing logic dynamically inspects actual on-disk counts in `dag_conditions_mapping.json` (1,993 DAG specifications) and `aic/3_recipe_orchestrator/recipe/` (6,760 pre-compiled stage JSON recipes) at runtime.
+
+### 9. Empirical Test-Driven Zero-Regression Verification
+- Zero-regression is verified empirically by running full microservice regression test suites (`pytest tests/`) pre-implementation and post-implementation, confirming zero test failures.
+
+---
+*Document Version: v3.1 (Master Final Architecture - Guardrails Locked)*  
 *Authoritative Status: APPROVED & LOCKED FOR PHASE 5C EXECUTION*
+

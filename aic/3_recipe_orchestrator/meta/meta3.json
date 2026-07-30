@@ -1,12 +1,12 @@
 {
-  "dag_id": "DAG_595",
-  "suggested_task": "Anomaly Detection",
-  "resolved_at": "1784719792.8268309",
+  "dag_id": "DAG_414",
+  "suggested_task": "Regression",
+  "resolved_at": "1784719792.639926",
   "recipe_sources": {
-    "preparing": "X:\\TAS\\AICONNEX\\aic\\3_recipe_orchestrator\\recipe\\preparing\\DAG_595.json",
-    "feature_engineering": "X:\\TAS\\AICONNEX\\aic\\3_recipe_orchestrator\\recipe\\feature_engineering\\DAG_595.json",
-    "splitting": "X:\\TAS\\AICONNEX\\aic\\3_recipe_orchestrator\\recipe\\splitting\\DAG_595.json",
-    "training": "X:\\TAS\\AICONNEX\\aic\\3_recipe_orchestrator\\recipe\\training\\DAG_595.json"
+    "preparing": "X:\\TAS\\AICONNEX\\aic\\3_recipe_orchestrator\\recipe\\preparing\\DAG_414.json",
+    "feature_engineering": "X:\\TAS\\AICONNEX\\aic\\3_recipe_orchestrator\\recipe\\feature_engineering\\DAG_414.json",
+    "splitting": "X:\\TAS\\AICONNEX\\aic\\3_recipe_orchestrator\\recipe\\splitting\\DAG_414.json",
+    "training": "X:\\TAS\\AICONNEX\\aic\\3_recipe_orchestrator\\recipe\\training\\DAG_414.json"
   },
   "recipes": {
     "preparing_recipe": {
@@ -23,7 +23,24 @@
       "pca_components": 0,
       "feature_selection_method": "k_best",
       "k_best_features": 15,
-      "create_aggregate_features": true
+      "create_aggregate_features": true,
+      "include_target_lags": true,
+      "target_lag_steps": [
+        1,
+        2,
+        3
+      ],
+      "target_rolling_windows": [
+        5,
+        10
+      ],
+      "adaptive_k_ratio": 20,
+      "target_diff_mode": "none",
+      "pairwise_ratios": false,
+      "enable_regime_detection": false,
+      "recency_weighting": false,
+      "auto_target_transform": false,
+      "collapse_to_timestamp_grain": false
     },
     "splitting_recipe": {
       "test_size": 0.2,
@@ -31,18 +48,20 @@
       "random_state": 42
     },
     "training_recipe": {
-      "algorithm": "Isolation Forest",
+      "algorithm": "LightGBM",
       "variant": "Standard",
       "validation_metrics": [
-        "accuracy",
-        "f1",
-        "precision",
-        "recall"
+        "r2",
+        "rmse",
+        "mae"
       ],
       "hyperparameters": {
-        "n_estimators": 100,
-        "contamination": 0.05,
-        "random_state": 42
+        "n_estimators": 500,
+        "learning_rate": 0.03,
+        "num_leaves": 63,
+        "max_depth": 10,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8
       }
     }
   }

@@ -1,7 +1,7 @@
 {
-  "dag_id": "DAG_595",
-  "family": "Anomaly_Detection",
-  "suggested_task": "Anomaly Detection",
+  "dag_id": "DAG_414",
+  "family": "Regression",
+  "suggested_task": "Regression",
   "prepare_recipe": {},
   "feature_engineering_recipe": {
     "polynomial_degree": 2,
@@ -9,7 +9,24 @@
     "pca_components": 0,
     "feature_selection_method": "k_best",
     "k_best_features": 15,
-    "create_aggregate_features": true
+    "create_aggregate_features": true,
+    "include_target_lags": true,
+    "target_lag_steps": [
+      1,
+      2,
+      3
+    ],
+    "target_rolling_windows": [
+      5,
+      10
+    ],
+    "adaptive_k_ratio": 20,
+    "target_diff_mode": "none",
+    "pairwise_ratios": false,
+    "enable_regime_detection": false,
+    "recency_weighting": false,
+    "auto_target_transform": false,
+    "collapse_to_timestamp_grain": false
   },
   "splitting_recipe": {
     "test_size": 0.2,
@@ -17,17 +34,20 @@
     "random_state": 42
   },
   "training_recipe": {
-    "algorithm": "Autoencoder",
-    "variant": "Streaming",
+    "algorithm": "LightGBM",
+    "variant": "Standard",
     "validation_metrics": [
-      "accuracy",
-      "f1",
-      "precision",
-      "recall"
+      "r2",
+      "rmse",
+      "mae"
     ],
     "hyperparameters": {
-      "fit_intercept": true,
-      "alpha": 1.0
+      "n_estimators": 500,
+      "learning_rate": 0.03,
+      "num_leaves": 63,
+      "max_depth": 10,
+      "subsample": 0.8,
+      "colsample_bytree": 0.8
     }
   }
 }

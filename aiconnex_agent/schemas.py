@@ -170,3 +170,60 @@ class ExecutionPlan(BaseModel):
     """Ordered set of TaskSteps produced by the Planning Engine for one CUC."""
     steps: List[TaskStep] = Field(default_factory=list)
     source_intent: str = Field(default="general", description="primary_intent that produced this plan")
+
+
+# ---------------------------------------------------------------------------
+# 7. Phase 5c: Multi-Candidate Ensemble & Evaluation Triad Contracts
+# ---------------------------------------------------------------------------
+
+
+class CandidateRecipe(BaseModel):
+    """A single candidate DAG recipe resolved for parallel training."""
+    recipe_id: str = Field(..., description="Unique recipe identifier, e.g. recipe_dag414_lgbm")
+    dag_id: str = Field(..., description="DAG ID from dag_conditions_mapping.json, e.g. DAG_414")
+    algo_family: str = Field(..., description="Algorithm family, e.g. REGRESSION, ANOMALY DETECTION")
+    hyperparameters: Dict[str, Any] = Field(default_factory=dict, description="Algorithm hyperparameters")
+    feature_config: Dict[str, Any] = Field(default_factory=dict, description="Feature engineering config (lags, rolling, etc.)")
+
+
+class ScorerReport(BaseModel):
+    """Hard quantitative metrics for one trained candidate model."""
+    recipe_id: str = Field(..., description="Recipe that produced this model")
+    r2_score: float = Field(..., description="R² coefficient of determination")
+    rmse: float = Field(..., description="Root Mean Squared Error")
+    mae: float = Field(..., description="Mean Absolute Error")
+    mape: float = Field(..., description="Mean Absolute Percentage Error")
+    latency_ms: float = Field(default=0.0, description="Inference latency in milliseconds")
+    model_size_mb: float = Field(default=0.0, description="Serialized model binary size in MB")
+
+
+class JudgeReport(BaseModel):
+    """LLM-based qualitative risk evaluation for one candidate model."""
+    recipe_id: str = Field(..., description="Recipe that produced this model")
+    qualitative_score: float = Field(default=0.5, description="Overall qualitative score [0.0 - 1.0]")
+    rubric_ratings: Dict[str, float] = Field(default_factory=dict, description="Per-rubric scores")
+    reasoning: str = Field(default="", description="LLM reasoning text")
+    risk_assessment: str = Field(default="", description="Risk summary")
+
+
+class LeaderboardEntry(BaseModel):
+    """A single row in the multi-candidate competition leaderboard."""
+    rank: int = Field(..., description="1-indexed rank position")
+    model_id: str = Field(..., description="Unique model identifier")
+    dag_id: str = Field(..., description="DAG ID that produced this model")
+    algo_name: str = Field(..., description="Human-readable algorithm name")
+    composite_score: float = Field(..., description="MCDA composite score")
+    r2_score: float = Field(default=0.0)
+    rmse: float = Field(default=0.0)
+    mae: float = Field(default=0.0)
+    is_winner: bool = Field(default=False, description="True for the selected winner")
+
+
+class SelectionResult(BaseModel):
+    """Output of the Selector Agent: the winner and full leaderboard."""
+    winner_model_id: str = Field(..., description="Model ID of the selected winner")
+    winner_dag_id: str = Field(..., description="DAG ID of the winner")
+    is_ensemble: bool = Field(default=False, description="True if winner is the Stacked Ensemble")
+    selection_rationale: str = Field(default="", description="Human-readable rationale for selection")
+    leaderboard: List[LeaderboardEntry] = Field(default_factory=list, description="Full ranked leaderboard")
+

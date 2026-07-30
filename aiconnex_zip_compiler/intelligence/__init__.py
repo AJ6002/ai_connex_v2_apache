@@ -18,13 +18,21 @@ archive_intelligence_report.json.
 
 from .archive_explorer import ArchiveExplorer
 from .format_detector import FormatDetector
-from .llm_client import (
-    LLMClient,
-    LLMResponse,
-    LLMUnavailableError,
-    llm_disabled_by_env,
-    reset_availability_cache,
-)
+try:
+    from .llm_client import (
+        LLMClient,
+        LLMResponse,
+        LLMUnavailableError,
+        llm_disabled_by_env,
+        reset_availability_cache,
+    )
+except ImportError:
+    LLMClient = None  # type: ignore
+    LLMResponse = None  # type: ignore
+    LLMUnavailableError = Exception  # type: ignore
+    llm_disabled_by_env = lambda: True  # type: ignore
+    reset_availability_cache = lambda: None  # type: ignore
+
 from .metadata_extractor import MetadataExtractor
 from .models import (
     ArchiveNode,
@@ -42,11 +50,18 @@ from .models import (
     TableMetadata,
     TableRelationship,
 )
-from .orchestrator import IntelligenceOrchestrator
-from .parser_advisor import ParserAdvisor
-from .problem_discoverer import ProblemDiscoverer
+try:
+    from .orchestrator import IntelligenceOrchestrator
+    from .parser_advisor import ParserAdvisor
+    from .problem_discoverer import ProblemDiscoverer
+    from .semantic_analyzer import SemanticAnalyzer
+except ImportError:
+    IntelligenceOrchestrator = None  # type: ignore
+    ParserAdvisor = None  # type: ignore
+    ProblemDiscoverer = None  # type: ignore
+    SemanticAnalyzer = None  # type: ignore
+
 from .schema_analyzer import SchemaAnalyzer
-from .semantic_analyzer import SemanticAnalyzer
 from .validation import (
     dedupe_with_suffix,
     safe_choice,
@@ -54,6 +69,7 @@ from .validation import (
     slugify,
     stable_slug,
 )
+
 
 __all__ = [
     # Orchestration

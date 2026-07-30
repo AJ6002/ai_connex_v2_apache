@@ -54,15 +54,10 @@ def stub_scout_agent_node(state: MasterAgentState) -> Dict[str, Any]:
 
 
 def stub_platform_agent_node(state: MasterAgentState) -> Dict[str, Any]:
-    """Stub Platform Agent Node."""
-    logger.info("[StubNode] Executing stub_platform_agent_node")
-    dic_dict = state.dic.model_dump() if hasattr(state.dic, "model_dump") else state.dic.dict()
-    dic_dict["dataset_identity"] = {"name": "Suyash2 Telemetry", "family": "Compressor SCADA"}
-    dic_dict["compiled_dataset"] = {"tables": 1, "rows": 26898, "columns": 253}
-    return {
-        "dic": dic_dict,
-        "active_agent": "evaluator",
-    }
+    """Delegates to the real multi-candidate Platform Agent Node (Phase 5c)."""
+    from aiconnex_agent.platform.platform_node import real_platform_agent_node
+    return real_platform_agent_node(state)
+
 
 
 def stub_memory_agent_node(state: MasterAgentState) -> Dict[str, Any]:
