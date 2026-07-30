@@ -57,8 +57,9 @@ def test_scout_flags_missing_upload_path_instead_of_faking_data():
 
     assert mock_interrupt.called
     assert "no dataset file" in mock_interrupt.call_args[0][0]["questions"][0]
-    # Must NOT fabricate a fake "suyash2.zip"-style upload record.
-    assert res["scout_enriched"]["upload"]["archive_name"] == ""
+    # Bug #1 fix: routes back to scout (not evaluator) and sets interrupt_reason
+    assert res["active_agent"] == "scout"
+    assert res["interrupt_reason"] == "missing_upload_path"
 
 
 # --- Gap 2 + Gap 1 success path: real compile -> real contract fields ---
@@ -90,7 +91,9 @@ def test_scout_retries_once_then_flags_failure(tmp_path):
     assert mock_interrupt.called
     payload = mock_interrupt.call_args[0][0]
     assert "couldn't process this file" in payload["questions"][0]
-    assert res["active_agent"] == "evaluator"
+    # Bug #1 fix: routes back to scout (not evaluator) and sets interrupt_reason
+    assert res["active_agent"] == "scout"
+    assert res["interrupt_reason"] == "compile_failure"
 
 
 def test_scout_compile_retry_actually_runs_compile_twice_on_failure(tmp_path):
