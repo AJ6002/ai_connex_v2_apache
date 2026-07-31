@@ -163,8 +163,20 @@ def real_scout_agent_node(state: MasterAgentState) -> Dict[str, Any]:
     dic_dict["statistics"] = adapter.build_dataset_statistics(result).model_dump()
     dic_dict["quality_report"] = adapter.build_quality_report(result).model_dump()
 
+    # --- Telemetry: emit dataset compilation profile ---
+    try:
+        from aiconnex_agent.telemetry.emitters import ScoutEmitter
+        ScoutEmitter().emit(
+            session_id=state.session_id,
+            dic_dict=dic_dict,
+            scout_dict=scout_dict,
+        )
+    except Exception as exc:
+        logger.debug(f"[ScoutAgent] Telemetry emit skipped: {exc}")
+
     return {
         "scout_enriched": scout_dict,
         "dic": dic_dict,
         "active_agent": "evaluator",
     }
+

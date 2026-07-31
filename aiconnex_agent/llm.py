@@ -1,6 +1,6 @@
 """
-aiconnex_agent/llm.py - Unified Multi-Backend LLM Engine & MLflow Tracing SDK
-=============================================================================
+aiconnex_agent/llm.py - Unified Multi-Backend LLM Engine
+==========================================================
 Provides a single entry point, get_llm(), that returns the configured LLM
 client for LangGraph agent node calls. Backends:
 
@@ -8,8 +8,9 @@ client for LangGraph agent node calls. Backends:
   AICONNEX_LLM_BACKEND=ollama                       - local/cloud Ollama fallback
   AICONNEX_LLM_BACKEND=openai                       - standard OpenAI client
 
-Integrated with MLflow Tracing SDK for full trace span visualization of prompt inputs,
-LLM outputs, latency, and token consumption under ./mlruns.
+MLflow LangChain autolog tracing is bootstrapped via the cross-cutting
+telemetry service: aiconnex_agent.telemetry.llm_tracer.init_llm_tracing().
+This module is now a pure LLM factory — it does not own observability.
 """
 
 from __future__ import annotations
@@ -25,25 +26,17 @@ logger = logging.getLogger(__name__)
 # Load local .env if present
 load_dotenv()
 
-_TRACING_INITIALIZED = False
-
-
 def _enable_mlflow_tracing() -> None:
-    """Enables MLflow Tracing SDK for LangChain LLM calls."""
-    global _TRACING_INITIALIZED
-    if _TRACING_INITIALIZED:
-        return
+    """Bootstrap LangChain autolog via the cross-cutting telemetry service.
+
+    Delegates to aiconnex_agent.telemetry.llm_tracer.init_llm_tracing().
+    Kept for backward compatibility — internal calls use this shim.
+    """
     try:
-        import os
-        import mlflow
-        os.environ["MLFLOW_ALLOW_FILE_STORE"] = "true"
-        mlflow.set_tracking_uri("./mlruns")
-        if hasattr(mlflow, "langchain") and hasattr(mlflow.langchain, "autolog"):
-            mlflow.langchain.autolog(log_traces=True, disable=False)
-            logger.info("[MLflowTracing] Enabled mlflow.langchain.autolog() for agent LLM traces.")
-        _TRACING_INITIALIZED = True
-    except Exception as e:
-        logger.debug(f"[MLflowTracing] Could not enable autolog: {e}")
+        from aiconnex_agent.telemetry.llm_tracer import init_llm_tracing
+        init_llm_tracing()
+    except Exception as exc:
+        logger.debug(f"[LLM] Could not init LLM tracing: {exc}")
 
 
 

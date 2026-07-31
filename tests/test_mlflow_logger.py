@@ -1,5 +1,12 @@
 # tests/test_mlflow_logger.py
-"""Tests for MLflow Logger (Phase 5c). Uses mock MLflow to avoid real tracking dependency."""
+"""Tests for MLflow Logger facade (refactored to cross-cutting telemetry service).
+
+The facade ``aiconnex_agent.platform.mlflow_logger.log_experiment()`` now
+delegates to ``PlatformEmitter``. These tests verify:
+  1. The facade API contract is preserved (correct return dict).
+  2. PlatformEmitter.log_experiment() is called with the right arguments.
+  3. Graceful no-op fallback when mlflow is unavailable.
+"""
 
 from __future__ import annotations
 import pytest
@@ -33,43 +40,51 @@ def _make_test_data():
     return scorers, judges, selection
 
 
-@patch("aiconnex_agent.platform.mlflow_logger.mlflow")
-def test_log_experiment_returns_run_info(mock_mlflow):
-    """log_experiment should return a dict with run_id and experiment_name."""
-    mock_run = MagicMock()
-    mock_run.info.run_id = "abc123"
-    mock_mlflow.start_run.return_value.__enter__ = MagicMock(return_value=mock_run)
-    mock_mlflow.start_run.return_value.__exit__ = MagicMock(return_value=False)
-
+def test_log_experiment_returns_run_info():
+    """log_experiment() facade should return a dict with session_id and status."""
     scorers, judges, selection = _make_test_data()
-    result = log_experiment("wf_test1234", selection, scorers, judges)
+    # Patch PlatformEmitter.log_experiment in the telemetry layer
+    mock_result = {
+        "status": "logged",
+        "run_id": "abc123",
+        "experiment_name": "aiconnex_wf_test1234",
+        "tracking_uri": "./mlruns",
+        "session_id": "wf_test1234",
+    }
+    with patch(
+        "aiconnex_agent.telemetry.emitters.PlatformEmitter.log_experiment",
+        return_value=mock_result,
+    ) as mock_emit:
+        result = log_experiment("wf_test1234", selection, scorers, judges)
 
-    assert "run_id" in result
-    assert "experiment_name" in result
-    mock_mlflow.set_experiment.assert_called_once()
+    assert "session_id" in result
+    assert result["session_id"] == "wf_test1234"
+    assert "status" in result
+    mock_emit.assert_called_once()
 
 
-@patch("aiconnex_agent.platform.mlflow_logger.mlflow")
-def test_log_experiment_logs_winner_metrics(mock_mlflow):
-    """Should log the winner's metrics via mlflow.log_metrics."""
-    mock_run = MagicMock()
-    mock_run.info.run_id = "xyz789"
-    mock_mlflow.start_run.return_value.__enter__ = MagicMock(return_value=mock_run)
-    mock_mlflow.start_run.return_value.__exit__ = MagicMock(return_value=False)
-
+def test_log_experiment_logs_winner_metrics():
+    """log_experiment() facade should invoke PlatformEmitter with scorer/judge reports."""
     scorers, judges, selection = _make_test_data()
-    log_experiment("wf_test5678", selection, scorers, judges)
 
-    mock_mlflow.log_metrics.assert_called()
+    with patch(
+        "aiconnex_agent.telemetry.emitters.PlatformEmitter.log_experiment",
+        return_value={"status": "logged", "session_id": "wf_test5678"},
+    ) as mock_emit:
+        log_experiment("wf_test5678", selection, scorers, judges)
+
+    # Verify PlatformEmitter received the scorer and judge reports
+    call_kwargs = mock_emit.call_args.kwargs
+    assert call_kwargs["scorer_reports"] == scorers
+    assert call_kwargs["judge_reports"] == judges
+    assert call_kwargs["selection_result"] == selection
 
 
 def test_log_experiment_graceful_without_mlflow():
-    """If mlflow is not installed, log_experiment should return a fallback dict."""
-    with patch.dict("sys.modules", {"mlflow": None}):
-        import importlib
-        import aiconnex_agent.platform.mlflow_logger as mod
-        importlib.reload(mod)
-
+    """If mlflow is not installed (tracker has _HAS_MLFLOW=False), log_experiment must not raise."""
+    with patch("aiconnex_agent.telemetry.tracker._HAS_MLFLOW", False):
         scorers, judges, selection = _make_test_data()
-        result = mod.log_experiment("wf_nomlflow", selection, scorers, judges)
-        assert result.get("status") in ("mlflow_unavailable", "logged")
+        result = log_experiment("wf_nomlflow", selection, scorers, judges)
+    # Must return a dict with at least session_id (either logged or no-run graceful)
+    assert isinstance(result, dict)
+    assert "session_id" in result

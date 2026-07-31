@@ -5,6 +5,9 @@ Main Planning Engine Orchestrator running the 2 sub-modules:
   1. IntentPlanMapper
   2. PlanValidator
 Replaces stub_planning_engine_node with real deterministic CUC -> ExecutionPlan routing.
+
+Telemetry: emits execution plan DAG and intent to the cross-cutting
+AgentTelemetry service via PlannerEmitter.
 """
 
 from __future__ import annotations
@@ -33,6 +36,17 @@ def real_planning_engine_node(state: MasterAgentState) -> Dict[str, Any]:
 
     plan_steps = [step.model_dump() if hasattr(step, "model_dump") else step.dict() for step in plan.steps]
     first_agent = plan_steps[0]["target_agent"]
+
+    # --- Telemetry: emit to cross-cutting observability service ---
+    try:
+        from aiconnex_agent.telemetry.emitters import PlannerEmitter
+        PlannerEmitter().emit(
+            session_id=state.session_id,
+            intent=intent,
+            plan_steps=plan_steps,
+        )
+    except Exception as exc:
+        logger.debug(f"[PlanningEngine] Telemetry emit skipped: {exc}")
 
     return {
         "plan_steps": plan_steps,

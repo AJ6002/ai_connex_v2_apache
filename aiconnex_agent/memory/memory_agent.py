@@ -63,16 +63,31 @@ def real_memory_agent_node(state: MasterAgentState) -> Dict[str, Any]:
         _write_path(store, state, workflow_id, intent)
 
     bank = _builder.build(store.all())
+    all_events = store.all()
 
     mem_ctx = dict(state.memory_context)
     mem_ctx["memory_bank"] = bank.to_context()
     mem_ctx["last_saved_session"] = workflow_id
-    mem_ctx["semantic_hits"] = _read_semantic_hits(state, intent)
+    semantic_hits = _read_semantic_hits(state, intent)
+    mem_ctx["semantic_hits"] = semantic_hits
+
+    # --- Telemetry: emit memory layer stats ---
+    try:
+        from aiconnex_agent.telemetry.emitters import MemoryEmitter
+        MemoryEmitter().emit(
+            session_id=workflow_id,
+            event_count=len(all_events),
+            memory_bank_summary=bank.to_context() if hasattr(bank, "to_context") else {},
+            semantic_hits=len(semantic_hits) if isinstance(semantic_hits, list) else 0,
+        )
+    except Exception as exc:
+        logger.debug(f"[MemoryAgent] Telemetry emit skipped: {exc}")
 
     return {
         "memory_context": mem_ctx,
         "active_agent": "evaluator",
     }
+
 
 
 def _read_semantic_hits(state: MasterAgentState, intent: str) -> list:
