@@ -19,7 +19,8 @@ from aiconnex_agent.planning.planning_engine import real_planning_engine_node as
 from aiconnex_agent.scout.scout_node import real_scout_agent_node as scout_agent_node
 from aiconnex_agent.platform.platform_node import real_platform_agent_node as platform_agent_node
 from aiconnex_agent.memory.memory_agent import real_memory_agent_node as memory_agent_node
-from aiconnex_agent.nodes.stub_nodes import stub_plan_evaluator_node as plan_evaluator_node
+from aiconnex_agent.nodes.plan_evaluator import real_plan_evaluator_node as plan_evaluator_node
+
 
 logger = logging.getLogger(__name__)
 

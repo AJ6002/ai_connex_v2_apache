@@ -6,7 +6,7 @@ Sub-module 4: Validates extraction dict against ConversationUnderstandingContrac
 
 from __future__ import annotations
 from typing import Dict, Any
-from aiconnex_agent.schemas import ConversationUnderstandingContract
+from aiconnex_agent.schemas import ConversationUnderstandingContract, Goal
 
 
 class StructuredOutputValidator:
@@ -17,8 +17,11 @@ class StructuredOutputValidator:
         try:
             return ConversationUnderstandingContract(**raw_dict)
         except Exception:
+            goal_raw = raw_dict.get("goal", {})
+            goal_obj = Goal(**goal_raw) if isinstance(goal_raw, dict) else Goal()
             return ConversationUnderstandingContract(
-                goal=raw_dict.get("goal", {}),
+                goal=goal_obj,
                 observed=raw_dict.get("observed", {}),
                 inferred=raw_dict.get("inferred", {}),
             )
+

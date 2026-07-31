@@ -65,15 +65,17 @@ class ClarificationGenerator:
 
     @staticmethod
     def _build_prompt(cuc: ConversationUnderstandingContract) -> str:
+        intent = cuc.goal.primary_intent if hasattr(cuc.goal, "primary_intent") else cuc.goal.get("primary_intent", "general")
+        raw_prompt = cuc.goal.raw_prompt if hasattr(cuc.goal, "raw_prompt") else cuc.goal.get("raw_prompt", "")
         return (
             "A user sent a message to AIConnex Chatbot. "
             "Write 1-2 friendly, natural, conversational responses/questions to ask the user. "
             "If the user said a simple greeting (like 'hi' or 'hello'), greet them warmly first, "
             "then ask what dataset file or ML pipeline goal (training, profiling, anomaly detection) they would like to work on.\n\n"
-            f"Primary intent extracted so far: {cuc.goal.get('primary_intent', 'general')}\n"
+            f"Primary intent extracted so far: {intent}\n"
             f"Mentioned files: {cuc.observed.get('mentioned_files', [])}\n"
             f"Mentioned columns: {cuc.observed.get('mentioned_columns', [])}\n"
-            f"Raw user prompt: {cuc.goal.get('raw_prompt', '')}\n\n"
+            f"Raw user prompt: {raw_prompt}\n\n"
             'Respond with ONLY a JSON object: {"questions": ["<friendly greeting / clarifying question 1>", "<question 2>"]}'
         )
 
@@ -91,8 +93,9 @@ class ClarificationGenerator:
     @staticmethod
     def _generate_heuristic(cuc: ConversationUnderstandingContract) -> List[str]:
         """Deterministic fallback path - used ONLY when the real LLM call above fails."""
-        intent = cuc.goal.get("primary_intent", "general")
-        raw = str(cuc.goal.get("raw_prompt", "")).strip().lower()
+        intent = cuc.goal.primary_intent if hasattr(cuc.goal, "primary_intent") else cuc.goal.get("primary_intent", "general")
+        raw_prompt = cuc.goal.raw_prompt if hasattr(cuc.goal, "raw_prompt") else cuc.goal.get("raw_prompt", "")
+        raw = str(raw_prompt).strip().lower()
         files = cuc.observed.get("mentioned_files", [])
         questions = []
 

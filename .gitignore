@@ -37,9 +37,13 @@ __pycache__/
 *.py[cod]
 *$py.class
 .venv/
+.venv311/
 venv/
 env/
 .pytest_cache/
+mlflow.db*
+*.db
+
 
 # ==========================================
 # 5. IDE & Tooling Local Metadata

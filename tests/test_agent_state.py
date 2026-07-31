@@ -14,5 +14,6 @@ def test_master_agent_state_initialization():
         current_step_index=0
     )
     assert state.active_agent == "scout"
-    assert state.cuc.goal["primary_intent"] == "compile_zip"
+    assert state.cuc.goal.primary_intent == "compile_zip"
+
     assert state.current_step_index == 0

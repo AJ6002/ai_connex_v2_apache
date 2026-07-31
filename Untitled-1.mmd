@@ -1,0 +1,30 @@
+---
+id: dc67f08e-f170-4d92-867c-ae878f47f3a0
+---
+graph TD
+    subgraph "Layer 0 — Chatbot Interaction"
+        FE["React 19 Frontend<br/>MainChatView.tsx + Dropzone"] -->|"POST /api/chat"| FLASK["Flask API Backend<br/>app.py :5000"]
+        FLASK --> EXT["OpenRouter Qwen 32B<br/>Intent Extraction"]
+        FLASK --> DISP["Dispatcher<br/>dispatcher.py"]
+    end
+
+    subgraph "Layer 1 — LangGraph Orchestrator"
+        DISP -->|"Workflow Intent"| ST["StateGraph<br/>graph.py"]
+        ST --> CP["Conversation Parser"]
+        CP -->|"conf < 0.85"| HITL["Clarification Node (HITL)"]
+        CP -->|"conf ≥ 0.85"| PE["Planning Engine"]
+        PE --> SC["Scout Agent (Compiler)"]
+        PE --> PL["Platform Agent (H2O Ensemble)"]
+        PE --> ME["Memory Agent (Event Store)"]
+    end
+
+    subgraph "Layer 2 — Industrial ML Pipeline Engine"
+        PL -->|"DAG Execution"| ML["aiconnex_ml 10-Node Pipeline"]
+        ML --> G02["G-02 Quality Repair Loop"]
+        ML --> G03["G-03 Model Mutation Loop"]
+        ML --> DEPLOY["FastAPI Serving /api/v1/predict"]
+    end
+
+    subgraph "Layer 3 — Terminal UI"
+        TUI["Rich TUI Dashboard<br/>tui_app.py --chat"] --> ST
+    end

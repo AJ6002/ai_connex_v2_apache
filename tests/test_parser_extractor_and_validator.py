@@ -31,7 +31,8 @@ def test_structured_output_validator():
     }
     cuc = validator.validate(raw_dict)
     assert isinstance(cuc, ConversationUnderstandingContract)
-    assert cuc.goal["primary_intent"] == "compile_zip"
+    assert cuc.goal.primary_intent == "compile_zip"
+
 
 
 # --- Real LLM call path tests (SemanticExtractor now defaults to use_llm=True) ---

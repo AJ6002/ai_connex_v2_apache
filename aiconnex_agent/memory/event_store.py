@@ -35,12 +35,28 @@ class EventStore:
                     if line:
                         self._events.append(BaseEvent(**json.loads(line)))
 
+    def _is_duplicate(self, event: BaseEvent) -> bool:
+        """Check if an identical domain event was already appended for this workflow."""
+        for e in reversed(self._events):
+            if (
+                e.workflow_id == event.workflow_id
+                and e.event_type == event.event_type
+                and e.subject_type == event.subject_type
+                and e.subject_id == event.subject_id
+                and e.payload == event.payload
+            ):
+                return True
+        return False
+
     def append(self, event: BaseEvent) -> None:
-        """Append one event to the log. Never mutates prior events."""
+        """Append one event to the log. Skips exact duplicate appends for idempotency."""
+        if self._is_duplicate(event):
+            return
         self._events.append(event)
         if self.backend == "jsonl" and self.path:
             with self.path.open("a", encoding="utf-8") as f:
                 f.write(event.model_dump_json() + "\n")
+
 
     def all(self) -> List[BaseEvent]:
         """Return all recorded events in insertion order."""

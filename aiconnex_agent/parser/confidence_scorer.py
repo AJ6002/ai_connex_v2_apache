@@ -72,7 +72,7 @@ class ConfidenceScorer:
             "was extracted from a user's request. Rate your confidence that the extracted "
             "intent and entities are correct and complete enough to proceed WITHOUT asking "
             "the user a clarifying question.\n\n"
-            f"Primary intent: {cuc.goal.get('primary_intent', 'general')}\n"
+            f"Primary intent: {cuc.goal.primary_intent if hasattr(cuc.goal, 'primary_intent') else cuc.goal.get('primary_intent', 'general')}\n"
             f"Mentioned files: {cuc.observed.get('mentioned_files', [])}\n"
             f"Mentioned columns: {cuc.observed.get('mentioned_columns', [])}\n"
             f"Inferred domain: {cuc.inferred.get('domain')}\n\n"
@@ -96,7 +96,8 @@ class ConfidenceScorer:
     @staticmethod
     def _score_heuristic(cuc: ConversationUnderstandingContract) -> float:
         """Deterministic fallback path - used ONLY when the real LLM call above fails."""
-        intent = cuc.goal.get("primary_intent", "general")
+        intent = cuc.goal.primary_intent if hasattr(cuc.goal, "primary_intent") else cuc.goal.get("primary_intent", "general")
+
         files = cuc.observed.get("mentioned_files", [])
 
         if intent != "general" and files:

@@ -65,3 +65,7 @@ def test_mem0_backend_selection_without_install_raises_clear_error():
         # that's fine, just skip the assertion in that case.
     except RuntimeError as e:
         assert "mem0ai" in str(e).lower()
+    except ConnectionError:
+        # mem0ai is installed but Ollama is not running — this is an infrastructure
+        # issue, not a code bug. Skip instead of fail.
+        pytest.skip("Ollama service not running; skipping mem0 backend selection test")

@@ -30,7 +30,9 @@ def test_full_graph_execution_happy_path(synthetic_upload_zip):
 
     res = graph.invoke(initial_state, config=config)
     assert res["active_agent"] == "complete"
-    assert res["current_step_index"] == 3
+    # train_rul now produces a 2-step plan (scout + memory).
+    # Platform steps are enqueued dynamically after HITL recipe selection.
+    assert res["current_step_index"] == 2
     # NOTE: not asserting dic.compiled_dataset.rows here - stub_platform_agent_node
     # (Phase 5c, not yet built) still unconditionally overwrites it with a fake
     # hardcoded value after Scout runs. Scout's own real-row-count behavior is

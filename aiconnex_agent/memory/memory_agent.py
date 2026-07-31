@@ -51,42 +51,46 @@ def _resolve_workflow_id(state: MasterAgentState) -> str:
     return state.session_id
 
 
+def _emit_memory_telemetry(workflow_id: str, event_count: int, bank_context: dict, semantic_hits: list) -> None:
+    """Emit telemetry metrics for the memory layer."""
+    try:
+        from aiconnex_agent.telemetry.emitters import MemoryEmitter
+        MemoryEmitter().emit(
+            session_id=workflow_id,
+            event_count=event_count,
+            memory_bank_summary=bank_context,
+            semantic_hits=len(semantic_hits) if isinstance(semantic_hits, list) else 0,
+        )
+    except Exception as exc:
+        logger.debug(f"[MemoryAgent] Telemetry emit skipped: {exc}")
+
+
 def real_memory_agent_node(state: MasterAgentState) -> Dict[str, Any]:
     """Real Memory Agent Node: event-sourced write/read against the EventStore."""
     logger.info("[MemoryAgent] Executing event-sourced memory node")
 
     store = get_event_store()
     workflow_id = _resolve_workflow_id(state)
-    intent = state.cuc.goal.get("primary_intent", "general")
+    intent = state.cuc.goal.primary_intent if hasattr(state.cuc.goal, "primary_intent") else state.cuc.goal.get("primary_intent", "general")
 
     if intent != "query_status":
         _write_path(store, state, workflow_id, intent)
 
     bank = _builder.build(store.all())
-    all_events = store.all()
+    semantic_hits = _read_semantic_hits(state, intent)
 
     mem_ctx = dict(state.memory_context)
     mem_ctx["memory_bank"] = bank.to_context()
     mem_ctx["last_saved_session"] = workflow_id
-    semantic_hits = _read_semantic_hits(state, intent)
     mem_ctx["semantic_hits"] = semantic_hits
 
-    # --- Telemetry: emit memory layer stats ---
-    try:
-        from aiconnex_agent.telemetry.emitters import MemoryEmitter
-        MemoryEmitter().emit(
-            session_id=workflow_id,
-            event_count=len(all_events),
-            memory_bank_summary=bank.to_context() if hasattr(bank, "to_context") else {},
-            semantic_hits=len(semantic_hits) if isinstance(semantic_hits, list) else 0,
-        )
-    except Exception as exc:
-        logger.debug(f"[MemoryAgent] Telemetry emit skipped: {exc}")
+    _emit_memory_telemetry(workflow_id, len(store.all()), bank.to_context(), semantic_hits)
 
     return {
         "memory_context": mem_ctx,
         "active_agent": "evaluator",
     }
+
 
 
 

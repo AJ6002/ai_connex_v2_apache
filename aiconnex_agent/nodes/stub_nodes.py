@@ -67,12 +67,7 @@ def stub_memory_agent_node(state: MasterAgentState) -> Dict[str, Any]:
 
 
 def stub_plan_evaluator_node(state: MasterAgentState) -> Dict[str, Any]:
-    """Stub Plan Evaluator Node."""
-    logger.info("[StubNode] Executing stub_plan_evaluator_node")
-    next_idx = state.current_step_index + 1
-    more_steps = next_idx < len(state.plan_steps)
-    next_agent = state.plan_steps[next_idx]["target_agent"] if more_steps else "complete"
-    return {
-        "current_step_index": next_idx,
-        "active_agent": next_agent,
-    }
+    """Delegates to the real Plan Evaluator Node."""
+    from aiconnex_agent.nodes.plan_evaluator import real_plan_evaluator_node
+    return real_plan_evaluator_node(state)
+

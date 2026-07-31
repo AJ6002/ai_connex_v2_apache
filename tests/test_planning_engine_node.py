@@ -7,10 +7,10 @@ from aiconnex_agent.planning.planning_engine import real_planning_engine_node
 
 @pytest.mark.parametrize("intent,expected_first_agent,expected_len", [
     ("compile_zip", "scout", 2),
-    ("train_rul", "scout", 3),
-    ("detect_anomalies", "scout", 3),
+    ("train_rul", "scout", 2),      # scout + memory (platform enqueued after HITL)
+    ("detect_anomalies", "scout", 2),  # scout + memory
     ("query_status", "memory", 1),
-    ("general", "scout", 1),
+    ("general", "scout", 2),        # fallback now also has memory step
 ])
 def test_planning_engine_routes_by_intent(intent, expected_first_agent, expected_len):
     state = MasterAgentState(cuc=ConversationUnderstandingContract(goal={"primary_intent": intent}))

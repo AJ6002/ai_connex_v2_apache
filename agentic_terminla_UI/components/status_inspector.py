@@ -22,7 +22,9 @@ def render_status_inspector(state: MasterAgentState) -> Panel:
     table.add_row("Active Agent Node: ", f"[{agent_color}]{agent_name}[/{agent_color}]")
     table.add_row("Confidence Score: ", f"{state.confidence_score * 100:.1f}%")
     table.add_row("Current Step Index: ", f"{state.current_step_index}")
-    table.add_row("Stage 1 CUC Intent: ", str(state.cuc.goal.get("primary_intent", "N/A")))
+    intent_str = state.cuc.goal.primary_intent if hasattr(state.cuc.goal, "primary_intent") else state.cuc.goal.get("primary_intent", "N/A")
+    table.add_row("Stage 1 CUC Intent: ", str(intent_str))
+
     table.add_row("Stage 2 Scout Status: ", str(state.scout_enriched.upload.status))
     table.add_row("Stage 4 & 5 DIC Rows: ", str(state.dic.compiled_dataset.rows))
     

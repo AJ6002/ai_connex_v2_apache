@@ -49,35 +49,43 @@ def _resolve_output_dir(state: MasterAgentState, upload_path: Path) -> Path:
     return _DEFAULT_OUTPUT_ROOT / state.session_id
 
 
+from aiconnex_agent.schemas import InterruptPayload, InterruptOption
+
+
 def _ask_user_to_choose_strategy(options) -> str:
-    """Gap 7: a real LangGraph interrupt using the compiler's own IntentOption labels."""
-    question_payload = {
-        "questions": [
+    """Gap 7: a real LangGraph interrupt using typed InterruptPayload."""
+    payload = InterruptPayload(
+        interrupt_type="strategy_choice",
+        questions=[
             f"Your dataset supports {len(options)} different processing strategies. "
             "Which would you like?"
         ],
-        "options": [
-            {"option_id": o.option_id, "label": o.label, "description": o.description}
-            for o in options
+        options=[
+            InterruptOption(
+                option_id=getattr(o, "option_id", f"opt_{i}"),
+                label=getattr(o, "label", f"Strategy {i+1}"),
+                description=getattr(o, "description", "")
+            )
+            for i, o in enumerate(options)
         ],
-        "reason": "Scout detected multiple valid compilation strategies",
-    }
-    return interrupt(question_payload)
+        reason="Scout detected multiple valid compilation strategies",
+    )
+    return interrupt(payload.model_dump() if hasattr(payload, "model_dump") else payload.dict())
 
 
 def _flag_compile_failure(error_message: str) -> str:
-    """Gap 3: after retry still fails, ask the user via a real LangGraph interrupt.
-
-    Returns the user's answer so the caller can store it and re-route correctly.
-    Never called for its side-effect alone — the return value must be used.
-    """
-    return interrupt({
-        "questions": [
+    """Gap 3: after retry still fails, ask the user via a typed LangGraph interrupt."""
+    payload = InterruptPayload(
+        interrupt_type="compile_failure",
+        questions=[
             f"I couldn't process this file: {error_message}. "
             "Could you check the file and re-upload it?"
         ],
-        "reason": "Scout compile failure after retry",
-    })
+        options=[],
+        reason="Scout compile failure after retry",
+    )
+    return interrupt(payload.model_dump() if hasattr(payload, "model_dump") else payload.dict())
+
 
 
 def real_scout_agent_node(state: MasterAgentState) -> Dict[str, Any]:
@@ -162,6 +170,40 @@ def real_scout_agent_node(state: MasterAgentState) -> Dict[str, Any]:
     dic_dict["compiled_dataset"] = adapter.build_compiled_dataset_summary(result).model_dump()
     dic_dict["statistics"] = adapter.build_dataset_statistics(result).model_dump()
     dic_dict["quality_report"] = adapter.build_quality_report(result).model_dump()
+
+    # -- Issue 6: DIC post-compile completeness validation --
+    from aiconnex_agent.scout.dic_validator import DICValidator
+    validator = DICValidator()
+    is_valid, validation_warnings = validator.validate(dic_dict)
+    existing_warnings = dic_dict.get("compiler_warnings", [])
+    dic_dict["compiler_warnings"] = list(set(existing_warnings + validation_warnings))
+
+    # -- Recipe Catalog: analyze compiled CSV to populate intelligence fields --
+    combined_csv = result.combined_file
+    if not combined_csv and result.merged_files:
+        combined_csv = result.merged_files[0]
+
+    if combined_csv:
+        try:
+            from aiconnex_agent.scout.recipe_catalog_builder import build_recipe_catalog
+            catalog = build_recipe_catalog(str(combined_csv))
+            dic_dict["dataset_card"] = catalog["dataset_card"]
+            dic_dict["schema_map"] = catalog["schema_map"]
+            dic_dict["target_candidates"] = catalog["target_candidates"]
+            dic_dict["problem_candidates"] = catalog["problem_candidates"]
+            dic_dict["feature_catalog"] = catalog["feature_catalog"]
+            dic_dict["recipes"] = catalog["recipes"]
+            dic_dict["branching_hints"] = catalog["branching_hints"]
+            logger.info(
+                f"[ScoutAgent] Recipe catalog built: {len(catalog['recipes'])} recipes, "
+                f"{len(catalog['target_candidates'])} targets"
+            )
+        except Exception as exc:
+            logger.warning(f"[ScoutAgent] Recipe catalog build failed (non-fatal): {exc}")
+
+
+
+
 
     # --- Telemetry: emit dataset compilation profile ---
     try:

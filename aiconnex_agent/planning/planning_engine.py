@@ -29,7 +29,8 @@ plan_validator = PlanValidator()
 def real_planning_engine_node(state: MasterAgentState) -> Dict[str, Any]:
     """Real Planning Engine Node: CUC primary_intent -> validated ExecutionPlan."""
     logger.info("[PlanningEngine] Executing intent -> plan routing")
-    intent = state.cuc.goal.get("primary_intent", "general")
+    intent = state.cuc.goal.primary_intent if hasattr(state.cuc.goal, "primary_intent") else state.cuc.goal.get("primary_intent", "general")
+
 
     raw_steps = intent_plan_mapper.get_plan(intent)
     plan = plan_validator.validate(raw_steps, source_intent=intent)
