@@ -66,15 +66,15 @@ class ClarificationGenerator:
     @staticmethod
     def _build_prompt(cuc: ConversationUnderstandingContract) -> str:
         return (
-            "A user's request was parsed but is too ambiguous to proceed confidently. "
-            "Write 1-2 short, specific, natural clarifying questions to ask the user, "
-            "based ONLY on what is actually missing or unclear below - do not ask "
-            "about anything already provided.\n\n"
+            "A user sent a message to AIConnex Chatbot. "
+            "Write 1-2 friendly, natural, conversational responses/questions to ask the user. "
+            "If the user said a simple greeting (like 'hi' or 'hello'), greet them warmly first, "
+            "then ask what dataset file or ML pipeline goal (training, profiling, anomaly detection) they would like to work on.\n\n"
             f"Primary intent extracted so far: {cuc.goal.get('primary_intent', 'general')}\n"
             f"Mentioned files: {cuc.observed.get('mentioned_files', [])}\n"
             f"Mentioned columns: {cuc.observed.get('mentioned_columns', [])}\n"
             f"Raw user prompt: {cuc.goal.get('raw_prompt', '')}\n\n"
-            'Respond with ONLY a JSON object: {"questions": ["<question 1>", "<question 2>"]}'
+            'Respond with ONLY a JSON object: {"questions": ["<friendly greeting / clarifying question 1>", "<question 2>"]}'
         )
 
     @staticmethod
@@ -92,8 +92,14 @@ class ClarificationGenerator:
     def _generate_heuristic(cuc: ConversationUnderstandingContract) -> List[str]:
         """Deterministic fallback path - used ONLY when the real LLM call above fails."""
         intent = cuc.goal.get("primary_intent", "general")
+        raw = str(cuc.goal.get("raw_prompt", "")).strip().lower()
         files = cuc.observed.get("mentioned_files", [])
         questions = []
+
+        if raw in ("hi", "hello", "hey", "greetings", "hi there", "hello there"):
+            questions.append("Hello! 👋 I'm the AIConnex Autonomous MLOps Agent.")
+            questions.append("Which dataset file or project goal (data compilation, predictive model training, or anomaly detection) would you like to work on?")
+            return questions
 
         if not files:
             questions.append("Which dataset file or archive would you like to process?")

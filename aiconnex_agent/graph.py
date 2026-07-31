@@ -12,15 +12,14 @@ from langgraph.graph import StateGraph, START, END
 from langgraph.checkpoint.memory import MemorySaver
 
 from aiconnex_agent.state import MasterAgentState
-from aiconnex_agent.nodes.stub_nodes import (
-    stub_conversation_parser_node,
-    stub_clarification_node,
-    stub_planning_engine_node,
-    stub_scout_agent_node,
-    stub_platform_agent_node,
-    stub_memory_agent_node,
-    stub_plan_evaluator_node,
-)
+from aiconnex_agent.state import MasterAgentState
+from aiconnex_agent.parser.conversation_parser import real_conversation_parser_node as conversation_parser_node
+from aiconnex_agent.parser.clarification_node import real_clarification_node as clarification_node
+from aiconnex_agent.planning.planning_engine import real_planning_engine_node as planning_engine_node
+from aiconnex_agent.scout.scout_node import real_scout_agent_node as scout_agent_node
+from aiconnex_agent.platform.platform_node import real_platform_agent_node as platform_agent_node
+from aiconnex_agent.memory.memory_agent import real_memory_agent_node as memory_agent_node
+from aiconnex_agent.nodes.stub_nodes import stub_plan_evaluator_node as plan_evaluator_node
 
 logger = logging.getLogger(__name__)
 
@@ -74,13 +73,13 @@ def build_graph(with_checkpointer: bool = True):
     workflow = StateGraph(MasterAgentState)
 
     # --- Nodes ---
-    workflow.add_node("conversation_parser_node", stub_conversation_parser_node)
-    workflow.add_node("clarification_node", stub_clarification_node)
-    workflow.add_node("planning_engine_node", stub_planning_engine_node)
-    workflow.add_node("scout_agent_node", stub_scout_agent_node)
-    workflow.add_node("platform_agent_node", stub_platform_agent_node)
-    workflow.add_node("memory_agent_node", stub_memory_agent_node)
-    workflow.add_node("plan_evaluator_node", stub_plan_evaluator_node)
+    workflow.add_node("conversation_parser_node", conversation_parser_node)
+    workflow.add_node("clarification_node", clarification_node)
+    workflow.add_node("planning_engine_node", planning_engine_node)
+    workflow.add_node("scout_agent_node", scout_agent_node)
+    workflow.add_node("platform_agent_node", platform_agent_node)
+    workflow.add_node("memory_agent_node", memory_agent_node)
+    workflow.add_node("plan_evaluator_node", plan_evaluator_node)
 
     # --- Entry ---
     workflow.add_edge(START, "conversation_parser_node")
