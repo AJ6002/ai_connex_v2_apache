@@ -52,17 +52,17 @@ def c(text, col):  return f"{col}{text}{RST}"
 def header(title, col=CYN):
     w = 64
     print()
-    print(c("═" * w, col))
+    print(c("=" * w, col))
     print(c(f"  {title}", BOLD + col))
-    print(c("═" * w, col))
-def tick(s):       print(f"  {c('✔', GRN)} {s}")
+    print(c("=" * w, col))
+def tick(s):       print(f"  {c('[OK]', GRN)} {s}")
 def info(k, v):    print(f"  {c(k + ':', YLW)} {v}")
 def sysline(s):    print(c(f"  [{s}]", DIM))
-def divider():     print(c("  " + "─" * 58, DIM))
+def divider():     print(c("  " + "-" * 58, DIM))
 def ai(msg):
     print()
     for line in msg.split("\n"):
-        print(f"  {c('AIConnex ›', CYN)} {line}" if line.startswith("  ") or not line else f"  {c('AIConnex ›', CYN)} {line}")
+        print(f"  {c('AIConnex >', CYN)} {line}" if line.startswith("  ") or not line else f"  {c('AIConnex >', CYN)} {line}")
     print()
 
 
@@ -108,8 +108,9 @@ def run_cuc_phase(session_id: str) -> dict:
     from aiconnex_agent.telemetry.tracker import get_telemetry
 
     print()
-    print(f"  {c('AIConnex ›', CYN)} Welcome to AIConnex Terminal Pipeline.")
-    print(f"  {c('AIConnex ›', CYN)} Tell me what you want to accomplish with your data.")
+    print(f"  {c('AIConnex >', CYN)} Welcome to AIConnex Terminal Pipeline.")
+    print(f"  {c('AIConnex >', CYN)} I can help you build Target Regression Models, Time-Series Forecasting, or Anomaly Detection Pipelines.")
+    print(f"  {c('AIConnex >', CYN)} Tell me what you want to accomplish with your data.")
     print()
 
     sid      = ""
@@ -119,7 +120,7 @@ def run_cuc_phase(session_id: str) -> dict:
 
     while True:
         turn += 1
-        user_msg = input(c("  You › ", WHT)).strip()
+        user_msg = input(c("  You > ", WHT)).strip()
         if not user_msg:
             continue
         if user_msg.lower() in ("quit", "exit", "q"):
@@ -588,10 +589,10 @@ def main():
     session_id = f"wf_{uuid.uuid4().hex[:8]}"
 
     print()
-    print(c("╔══════════════════════════════════════════════════════════════╗", CYN))
-    print(c("║         AIConnex Terminal Pipeline  —  End-to-End            ║", BOLD + CYN))
-    print(c("║  CUC · Scout · HITL · DIC · Manifest · ML Pipeline · Export║", CYN))
-    print(c("╚══════════════════════════════════════════════════════════════╝", CYN))
+    print(c("+--------------------------------------------------------------+", CYN))
+    print(c("|         AIConnex Terminal Pipeline  --  End-to-End           |", BOLD + CYN))
+    print(c("|  CUC . Scout . HITL . DIC . Manifest . ML Pipeline . Export  |", CYN))
+    print(c("+--------------------------------------------------------------+", CYN))
     print()
     info("  Session ID ", session_id)
     info("  MLflow URI ", MLFLOW_URI)
