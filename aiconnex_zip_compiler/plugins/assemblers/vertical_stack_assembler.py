@@ -55,7 +55,24 @@ class VerticalStackAssemblerPlugin(BaseAssemblerPlugin):
             if merge_rule == "keep_separate":
                 raise ValueError("Vertical stacking assembly is incompatible with strategy merge_rule='keep_separate'")
 
-        valid_dfs = [df for df in parsed_tables.values() if not df.empty]
+        valid_dfs = []
+        for df in parsed_tables.values():
+            if not df.empty:
+                df_copy = df.copy()
+                if not df_copy.columns.is_unique:
+                    cols = []
+                    seen = {}
+                    for col in df_copy.columns:
+                        col_str = str(col).strip()
+                        if col_str in seen:
+                            seen[col_str] += 1
+                            cols.append(f"{col_str}_{seen[col_str]}")
+                        else:
+                            seen[col_str] = 0
+                            cols.append(col_str)
+                    df_copy.columns = cols
+                valid_dfs.append(df_copy.reset_index(drop=True))
+
         if not valid_dfs:
             return {}
 

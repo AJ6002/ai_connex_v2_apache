@@ -139,4 +139,18 @@ class CsvParserPlugin(BaseParserPlugin):
                 except Exception:
                     pass
 
+        # -- Deduplicate column names if any duplicates exist ------------------
+        if df is not None and not df.empty and not df.columns.is_unique:
+            cols = []
+            seen = {}
+            for col in df.columns:
+                col_str = str(col).strip()
+                if col_str in seen:
+                    seen[col_str] += 1
+                    cols.append(f"{col_str}_{seen[col_str]}")
+                else:
+                    seen[col_str] = 0
+                    cols.append(col_str)
+            df.columns = cols
+
         return df if df is not None else pd.DataFrame()

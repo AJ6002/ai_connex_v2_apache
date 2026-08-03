@@ -56,9 +56,17 @@ def _train_candidate(
             from aiconnex_agent.platform.manifest_builder import build_manifest, save_manifest_to_file
             from aiconnex_ml.runner import PipelineRunner
 
-            dic_dict = state.dic.model_dump() if hasattr(state.dic, "model_dump") else (state.dic if isinstance(state.dic, dict) else {})
+            if hasattr(state.dic, "model_dump"):
+                dic_dict = state.dic.model_dump()
+            elif isinstance(state.dic, dict):
+                dic_dict = state.dic
+            else:
+                dic_dict = {}
+
             recipes = dic_dict.get("recipes", [])
             selected_rec = recipes[0] if recipes else {"id": candidate.recipe_id, "title": "Model Training", "target": "TDS", "task": "REGRESSION"}
+            if hasattr(selected_rec, "model_dump"):
+                selected_rec = selected_rec.model_dump()
 
             manifest_dict = build_manifest(
                 dic=dic_dict,
@@ -74,7 +82,9 @@ def _train_candidate(
             res_manifest = runner.run()
 
             latency_ms = (time.time() - start_time) * 1000.0
-            n_samples = dic_dict.get("compiled_dataset", {}).get("rows", 100) or 100
+            compiled = dic_dict.get("compiled_dataset", {})
+            n_samples = compiled.get("rows", 100) if isinstance(compiled, dict) else getattr(compiled, "rows", 100)
+            n_samples = n_samples or 100
             y_true = np.random.randn(n_samples) * 10 + 50
             y_pred = y_true + np.random.randn(n_samples) * 2.0
             return y_true, y_pred, latency_ms, 1.5
@@ -84,9 +94,14 @@ def _train_candidate(
 
 
     # Deterministic generation based on recipe hash for reproducible testing
-    np.random.seed(abs(hash(candidate.recipe_id)) % 2**31)
-    n_samples = state.dic.compiled_dataset.rows or 100
-    n_samples = min(n_samples, 1000)
+    if hasattr(state.dic, "compiled_dataset"):
+        n_samples = getattr(state.dic.compiled_dataset, "rows", 100) or 100
+    elif isinstance(state.dic, dict):
+        compiled = state.dic.get("compiled_dataset", {})
+        n_samples = compiled.get("rows", 100) if isinstance(compiled, dict) else getattr(compiled, "rows", 100)
+    else:
+        n_samples = 100
+    n_samples = min(n_samples or 100, 1000)
     y_true = np.random.randn(n_samples) * 10 + 50
     noise_scale = np.random.uniform(1.0, 5.0)
     y_pred = y_true + np.random.randn(n_samples) * noise_scale
@@ -192,10 +207,23 @@ def real_platform_agent_node(state: MasterAgentState) -> Dict[str, Any]:
 
     # --- Step 5: Judge all candidates ---
     judge_reports: List[JudgeReport] = []
+    if hasattr(state.dic, "compiled_dataset"):
+        rows_val = getattr(state.dic.compiled_dataset, "rows", 0)
+        cols_val = getattr(state.dic.compiled_dataset, "columns", 0)
+        name_val = getattr(state.dic.dataset_identity, "name", "dataset")
+    elif isinstance(state.dic, dict):
+        comp = state.dic.get("compiled_dataset", {})
+        rows_val = comp.get("rows", 0) if isinstance(comp, dict) else getattr(comp, "rows", 0)
+        cols_val = comp.get("columns", 0) if isinstance(comp, dict) else getattr(comp, "columns", 0)
+        ident = state.dic.get("dataset_identity", {})
+        name_val = ident.get("name", "dataset") if isinstance(ident, dict) else getattr(ident, "name", "dataset")
+    else:
+        rows_val, cols_val, name_val = 0, 0, "dataset"
+
     dataset_summary = {
-        "rows": state.dic.compiled_dataset.rows,
-        "columns": state.dic.compiled_dataset.columns,
-        "name": state.dic.dataset_identity.name,
+        "rows": rows_val,
+        "columns": cols_val,
+        "name": name_val,
     }
     for sr in scorer_reports:
         jr = judge_candidate(sr.recipe_id, sr, dataset_summary)
