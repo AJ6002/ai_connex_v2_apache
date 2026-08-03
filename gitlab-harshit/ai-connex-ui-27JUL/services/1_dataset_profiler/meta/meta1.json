@@ -1,0 +1,512 @@
+{
+  "status": "success",
+  "filename": "group_default_merged.csv",
+  "profile": {
+    "dataset_info": {
+      "num_rows": 1158,
+      "num_columns": 9,
+      "total_memory_bytes": 125399,
+      "duplicate_rows": 0,
+      "duplicate_rows_pct": 0.0
+    },
+    "columns": [
+      {
+        "name": "company_name",
+        "dtype": "str",
+        "semantic_type": "categorical",
+        "missing_count": 0,
+        "missing_pct": 0.0,
+        "unique_count": 1,
+        "unique_pct": 0.0008635578583765112,
+        "is_constant": true,
+        "stats": {
+          "top_categories": {
+            "Laurus Labs Ltd(Unit-3)-JNPC": 1158
+          },
+          "mode": "Laurus Labs Ltd(Unit-3)-JNPC",
+          "mode_frequency": 1158,
+          "mode_pct": 1.0,
+          "entropy": 0.0
+        }
+      },
+      {
+        "name": "recived_date",
+        "dtype": "str",
+        "semantic_type": "datetime",
+        "missing_count": 689,
+        "missing_pct": 0.5949913644214162,
+        "unique_count": 204,
+        "unique_pct": 0.17616580310880828,
+        "is_constant": false,
+        "stats": {
+          "min": "2024-01-01 00:00:00",
+          "max": "2025-12-05 00:00:00",
+          "range_days": 704.0
+        }
+      },
+      {
+        "name": "effluent_type",
+        "dtype": "str",
+        "semantic_type": "categorical",
+        "missing_count": 0,
+        "missing_pct": 0.0,
+        "unique_count": 1,
+        "unique_pct": 0.0008635578583765112,
+        "is_constant": true,
+        "stats": {
+          "top_categories": {
+            "LTDS": 1158
+          },
+          "mode": "LTDS",
+          "mode_frequency": 1158,
+          "mode_pct": 1.0,
+          "entropy": 0.0
+        }
+      },
+      {
+        "name": "volume_m3",
+        "dtype": "float64",
+        "semantic_type": "numeric",
+        "missing_count": 0,
+        "missing_pct": 0.0,
+        "unique_count": 414,
+        "unique_pct": 0.35751295336787564,
+        "is_constant": false,
+        "stats": {
+          "min": 4.51,
+          "max": 222.839,
+          "mean": 174.18921416234886,
+          "median": 200.06,
+          "std": 48.50989334154098,
+          "variance": 2353.209752007682,
+          "skewness": -1.5612659274506788,
+          "kurtosis": 0.9673629113586371,
+          "percentiles": {
+            "1%": 29.554199999999998,
+            "5%": 78.71549999999999,
+            "10%": 90.0,
+            "25%": 178.23,
+            "50%": 200.06,
+            "75%": 200.2,
+            "90%": 200.47299999999998,
+            "95%": 202.422,
+            "99%": 206.01660000000004
+          },
+          "outlier_count_iqr": 253,
+          "outlier_pct_iqr": 0.21848013816925735,
+          "outlier_count_zscore": 10,
+          "outlier_pct_zscore": 0.008635578583765112,
+          "histogram": {
+            "counts": [
+              9,
+              21,
+              20,
+              139,
+              22,
+              30,
+              24,
+              27,
+              786,
+              80
+            ],
+            "bin_edges": [
+              4.51,
+              26.3429,
+              48.1758,
+              70.00870000000002,
+              91.84160000000001,
+              113.67450000000001,
+              135.50740000000002,
+              157.3403,
+              179.1732,
+              201.0061,
+              222.839
+            ]
+          }
+        }
+      },
+      {
+        "name": "ph",
+        "dtype": "float64",
+        "semantic_type": "numeric",
+        "missing_count": 0,
+        "missing_pct": 0.0,
+        "unique_count": 30,
+        "unique_pct": 0.025906735751295335,
+        "is_constant": false,
+        "stats": {
+          "min": 5.0,
+          "max": 8.5,
+          "mean": 7.180051813471502,
+          "median": 7.1,
+          "std": 0.5451833538132052,
+          "variance": 0.29722488927501445,
+          "skewness": 0.0689899993032469,
+          "kurtosis": 0.7898011903970739,
+          "percentiles": {
+            "1%": 5.657,
+            "5%": 6.5,
+            "10%": 6.5,
+            "25%": 6.8,
+            "50%": 7.1,
+            "75%": 7.5,
+            "90%": 7.9,
+            "95%": 8.2,
+            "99%": 8.5
+          },
+          "outlier_count_iqr": 15,
+          "outlier_pct_iqr": 0.012953367875647668,
+          "outlier_count_zscore": 11,
+          "outlier_pct_zscore": 0.009499136442141624,
+          "histogram": {
+            "counts": [
+              6,
+              6,
+              6,
+              0,
+              228,
+              263,
+              318,
+              161,
+              110,
+              60
+            ],
+            "bin_edges": [
+              5.0,
+              5.35,
+              5.7,
+              6.05,
+              6.4,
+              6.75,
+              7.1,
+              7.449999999999999,
+              7.8,
+              8.15,
+              8.5
+            ]
+          }
+        }
+      },
+      {
+        "name": "tds",
+        "dtype": "int64",
+        "semantic_type": "numeric",
+        "missing_count": 0,
+        "missing_pct": 0.0,
+        "unique_count": 677,
+        "unique_pct": 0.5846286701208981,
+        "is_constant": false,
+        "stats": {
+          "min": 196.0,
+          "max": 14220.0,
+          "mean": 923.2245250431779,
+          "median": 728.0,
+          "std": 929.0241009474964,
+          "variance": 863085.7801413041,
+          "skewness": 7.58549664854375,
+          "kurtosis": 85.7081731455538,
+          "percentiles": {
+            "1%": 294.42,
+            "5%": 376.4,
+            "10%": 421.7,
+            "25%": 498.0,
+            "50%": 728.0,
+            "75%": 971.75,
+            "90%": 1550.0,
+            "95%": 2192.9999999999973,
+            "99%": 3715.800000000004
+          },
+          "outlier_count_iqr": 100,
+          "outlier_pct_iqr": 0.08635578583765112,
+          "outlier_count_zscore": 12,
+          "outlier_pct_zscore": 0.010362694300518135,
+          "histogram": {
+            "counts": [
+              1046,
+              88,
+              17,
+              1,
+              1,
+              1,
+              0,
+              2,
+              0,
+              2
+            ],
+            "bin_edges": [
+              196.0,
+              1598.4,
+              3000.8,
+              4403.200000000001,
+              5805.6,
+              7208.0,
+              8610.400000000001,
+              10012.800000000001,
+              11415.2,
+              12817.6,
+              14220.0
+            ]
+          }
+        }
+      },
+      {
+        "name": "cod",
+        "dtype": "int64",
+        "semantic_type": "numeric",
+        "missing_count": 0,
+        "missing_pct": 0.0,
+        "unique_count": 687,
+        "unique_pct": 0.5932642487046632,
+        "is_constant": false,
+        "stats": {
+          "min": 208.0,
+          "max": 38628.0,
+          "mean": 3053.2901554404143,
+          "median": 2698.5,
+          "std": 2100.1056520543534,
+          "variance": 4410443.749790641,
+          "skewness": 8.341108481250563,
+          "kurtosis": 128.40719242442577,
+          "percentiles": {
+            "1%": 434.85,
+            "5%": 1066.85,
+            "10%": 1490.4,
+            "25%": 2000.0,
+            "50%": 2698.5,
+            "75%": 3625.25,
+            "90%": 5013.0,
+            "95%": 5870.0499999999965,
+            "99%": 8077.830000000012
+          },
+          "outlier_count_iqr": 47,
+          "outlier_pct_iqr": 0.04058721934369603,
+          "outlier_count_zscore": 7,
+          "outlier_pct_zscore": 0.006044905008635579,
+          "histogram": {
+            "counts": [
+              941,
+              204,
+              9,
+              2,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2
+            ],
+            "bin_edges": [
+              208.0,
+              4050.0,
+              7892.0,
+              11734.0,
+              15576.0,
+              19418.0,
+              23260.0,
+              27102.0,
+              30944.0,
+              34786.0,
+              38628.0
+            ]
+          }
+        }
+      },
+      {
+        "name": "an",
+        "dtype": "int64",
+        "semantic_type": "numeric",
+        "missing_count": 0,
+        "missing_pct": 0.0,
+        "unique_count": 41,
+        "unique_pct": 0.03540587219343696,
+        "is_constant": false,
+        "stats": {
+          "min": 0.0,
+          "max": 840.0,
+          "mean": 25.459412780656304,
+          "median": 22.0,
+          "std": 33.19143281180938,
+          "variance": 1101.6712121008563,
+          "skewness": 14.879875214525072,
+          "kurtosis": 329.8922967348317,
+          "percentiles": {
+            "1%": 0.0,
+            "5%": 0.0,
+            "10%": 11.0,
+            "25%": 14.0,
+            "50%": 22.0,
+            "75%": 28.0,
+            "90%": 42.0,
+            "95%": 50.0,
+            "99%": 112.0
+          },
+          "outlier_count_iqr": 82,
+          "outlier_pct_iqr": 0.07081174438687392,
+          "outlier_count_zscore": 8,
+          "outlier_pct_zscore": 0.0069084628670120895,
+          "histogram": {
+            "counts": [
+              1134,
+              19,
+              2,
+              1,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1
+            ],
+            "bin_edges": [
+              0.0,
+              84.0,
+              168.0,
+              252.0,
+              336.0,
+              420.0,
+              504.0,
+              588.0,
+              672.0,
+              756.0,
+              840.0
+            ]
+          }
+        }
+      },
+      {
+        "name": "ss",
+        "dtype": "int64",
+        "semantic_type": "numeric",
+        "missing_count": 0,
+        "missing_pct": 0.0,
+        "unique_count": 161,
+        "unique_pct": 0.13903281519861832,
+        "is_constant": false,
+        "stats": {
+          "min": 14.0,
+          "max": 4100.0,
+          "mean": 237.28411053540586,
+          "median": 196.0,
+          "std": 195.44270940613765,
+          "variance": 38197.852660011966,
+          "skewness": 8.440549528086743,
+          "kurtosis": 140.49223004259122,
+          "percentiles": {
+            "1%": 44.0,
+            "5%": 88.0,
+            "10%": 100.0,
+            "25%": 140.0,
+            "50%": 196.0,
+            "75%": 279.0,
+            "90%": 396.0,
+            "95%": 560.0,
+            "99%": 890.880000000001
+          },
+          "outlier_count_iqr": 77,
+          "outlier_pct_iqr": 0.06649395509499137,
+          "outlier_count_zscore": 16,
+          "outlier_pct_zscore": 0.013816925734024179,
+          "histogram": {
+            "counts": [
+              1060,
+              82,
+              14,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              1
+            ],
+            "bin_edges": [
+              14.0,
+              422.6,
+              831.2,
+              1239.8000000000002,
+              1648.4,
+              2057.0,
+              2465.6000000000004,
+              2874.2000000000003,
+              3282.8,
+              3691.4,
+              4100.0
+            ]
+          }
+        }
+      }
+    ],
+    "correlation_summary": {
+      "warnings": [],
+      "high_correlation_pairs": []
+    },
+    "missing_data_summary": {
+      "total_missing_cells": 689,
+      "overall_missing_pct": 0.06611015160237958,
+      "columns_above_20pct_missing": [
+        "recived_date"
+      ]
+    },
+    "outlier_summary": {
+      "overall_outlier_ratio": 0.08261370178468624,
+      "top_outlier_columns": [
+        {
+          "column": "volume_m3",
+          "outlier_ratio": 0.21848013816925735
+        },
+        {
+          "column": "tds",
+          "outlier_ratio": 0.08635578583765112
+        },
+        {
+          "column": "an",
+          "outlier_ratio": 0.07081174438687392
+        },
+        {
+          "column": "ss",
+          "outlier_ratio": 0.06649395509499137
+        },
+        {
+          "column": "cod",
+          "outlier_ratio": 0.04058721934369603
+        },
+        {
+          "column": "ph",
+          "outlier_ratio": 0.012953367875647668
+        }
+      ]
+    },
+    "dimensionality": {
+      "pca_95pct_components": 6,
+      "components_needed_ratio": 1.0,
+      "explained_variance_ratio": [
+        0.35345550298467904,
+        0.18409317176261406,
+        0.16772528616270238,
+        0.14934451675608992,
+        0.08754115521287609,
+        0.05784036712103869
+      ]
+    },
+    "warnings": [
+      "Column 'company_name' is constant (only has 1 unique value) and has no predictive power.",
+      "Column 'recived_date' has a high percentage of missing values (59.5%).",
+      "Column 'effluent_type' is constant (only has 1 unique value) and has no predictive power.",
+      "Column 'volume_m3' has a high percentage of outliers (21.8%).",
+      "Column 'tds' has a high percentage of outliers (8.6%)."
+    ],
+    "data_topology": "time_series",
+    "algorithm_family": "Anomaly Detection",
+    "family_confidence": 0.82,
+    "family_reason": "Temporal column detected without explicit target \u2014 routes to Anomaly Detection for unsupervised health-index scoring on continuous sensor telemetry.",
+    "detected_target": null,
+    "suggested_task": "Anomaly Detection",
+    "recommended_dag_id": "DAG_654",
+    "recommended_algorithm": "Isolation Forest",
+    "recommended_variant": "Standard",
+    "recommended_special_handling": null,
+    "raw_file_path": "C:\\Users\\admin.DESKTOP-17T37DJ\\Desktop\\aic\\services\\workspace_data\\group_default_merged\\group_default_merged.csv",
+    "num_rows": 1158,
+    "num_cols": 9
+  }
+}

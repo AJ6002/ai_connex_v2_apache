@@ -1,0 +1,10 @@
+{
+  "algorithm": "Autoencoder",
+  "variant": "Early-stopping",
+  "hyperparameters": {
+    "random_state": 42
+  },
+  "use_gpu": false,
+  "early_stopping": true,
+  "class_weight": null
+}

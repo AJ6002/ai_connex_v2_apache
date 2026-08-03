@@ -1,0 +1,14 @@
+{
+    "algorithm": "Policy Gradient",
+    "variant": "Standard",
+    "validation_metrics": [
+        "accuracy",
+        "f1",
+        "precision",
+        "recall"
+    ],
+    "hyperparameters": {
+        "fit_intercept": true,
+        "alpha": 1.0
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "algorithm": "Time-series AD",
+    "variant": "Multi-variate",
+    "validation_metrics": [
+        "accuracy",
+        "f1",
+        "precision",
+        "recall"
+    ],
+    "hyperparameters": {
+        "fit_intercept": true,
+        "alpha": 1.0
+    }
+}

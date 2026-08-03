@@ -1,0 +1,10 @@
+{
+  "algorithm": "Elliptic Envelope",
+  "variant": "Real-time",
+  "hyperparameters": {
+    "random_state": 42
+  },
+  "use_gpu": false,
+  "early_stopping": false,
+  "class_weight": null
+}

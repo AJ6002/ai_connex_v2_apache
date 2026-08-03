@@ -1,0 +1,10 @@
+{
+  "algorithm": "DBSCAN",
+  "variant": "GPU-accelerated",
+  "hyperparameters": {
+    "random_state": 42
+  },
+  "use_gpu": true,
+  "early_stopping": false,
+  "class_weight": null
+}

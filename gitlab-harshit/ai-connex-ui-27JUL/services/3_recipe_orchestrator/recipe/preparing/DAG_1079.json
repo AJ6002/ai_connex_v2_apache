@@ -1,0 +1,5 @@
+{
+  "impute_strategy": "mean",
+  "scale_method": "minmax",
+  "categorical_encoding": "none"
+}

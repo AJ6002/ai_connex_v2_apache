@@ -1,0 +1,6 @@
+{
+  "name": "AI Connexx Suite",
+  "description": "AI-Connexx Suite - Operational maintenance, AI calculation platform, DAG schema compiler, and automated recipe training environment.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

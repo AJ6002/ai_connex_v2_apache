@@ -1,0 +1,10 @@
+{
+  "algorithm": "ARIMA",
+  "variant": "Scalable",
+  "hyperparameters": {
+    "random_state": 42
+  },
+  "use_gpu": false,
+  "early_stopping": false,
+  "class_weight": null
+}

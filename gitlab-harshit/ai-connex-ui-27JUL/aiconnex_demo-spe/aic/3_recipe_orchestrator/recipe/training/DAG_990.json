@@ -1,0 +1,14 @@
+{
+    "algorithm": "Mean Shift",
+    "variant": "Cross-validated",
+    "validation_metrics": [
+        "accuracy",
+        "f1",
+        "precision",
+        "recall"
+    ],
+    "hyperparameters": {
+        "fit_intercept": true,
+        "alpha": 1.0
+    }
+}

@@ -1,0 +1,25 @@
+{
+  "pipeline_run_id": "run-test-001",
+  "project": "test_project",
+  "domain": "regression",
+  "algorithm": "random_forest",
+  "hyperparameters": {
+    "n_estimators": 5,
+    "random_state": 42
+  },
+  "thresholds": {
+    "max_missing_rate": 0.02,
+    "max_collinearity": 0.98,
+    "min_r2": 0.0
+  },
+  "schema": {
+    "target_column": "RUL",
+    "features": [
+      "sensor_2", "sensor_3", "sensor_4", "sensor_7",
+      "sensor_8", "sensor_9", "sensor_11", "sensor_12", "sensor_13",
+      "setting_1", "setting_2", "setting_3"
+    ],
+    "time_index": "cycle",
+    "identifier": "global_engine_id"
+  }
+}

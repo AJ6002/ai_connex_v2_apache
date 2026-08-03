@@ -1,0 +1,12 @@
+{
+  "algorithm": "XGBoostClassifier",
+  "variant": "GPU-accelerated",
+  "hyperparameters": {
+    "max_depth": 5,
+    "n_estimators": 200,
+    "tree_method": "gpu_hist"
+  },
+  "use_gpu": true,
+  "early_stopping": false,
+  "class_weight": null
+}
