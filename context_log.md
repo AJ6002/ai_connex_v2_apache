@@ -2507,6 +2507,14 @@
 **Current system state:** Pipeline-driven chatbot active. Both frontend and backend TypeScript clean and committed.
 ---
 
+## Query 236 — 2026-08-04 09:56
+**Input:** Add halt/stop generation button to Chatbot input bar while processing responses.
+**Response summary:** Added `AbortController` signal management to `handleSend` and `handleFileUpload` in `LandingView.tsx`. When `isGenerating === true`, the Send button transforms into a pulsing red **Halt button (⏹️ Halt)**. Clicking it invokes `abortController.abort()`, halts the active HTTP request, and logs `⏹️ Process response generation halted by operator.` cleanly into the chat. `npx tsc --noEmit` clean (0 errors). Committed as `9dd7d44`.
+**Files changed:** frontend/src/views/LandingView.tsx, walkthrough.md
+**Architectural decisions:** Added AbortController HTTP request cancellation and dynamic Halt button toggle to chat input bar.
+**Current system state:** Chatbot input bar includes live Halt (⏹️ Stop) button active during response generation.
+---
+
 ## Query 235 — 2026-08-04 09:54
 **Input:** Explain how dataset resolution/upload works in the UI Chatbox vs CLI -upload_file parameter.
 **Response summary:** Explained that the CLI terminal runner hardcodes `STATIC_DATASET` (`HTDS-v1.csv`) for terminal execution, whereas the UI Chatbox provides real dataset upload capabilities. Added a direct File Attachment button (📎) right in the `LandingView.tsx` chat input bar that posts attached dataset files (`.csv`, `.zip`, `.parquet`, `.json`) directly to `http://localhost:8000/api/upload` via `FormData`, triggering Scout Agent `UnifiedCompiler` and returning compilation telemetry inside the chat thread. `npx tsc --noEmit` clean (0 errors). Committed as `488f430`.
