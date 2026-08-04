@@ -193,18 +193,22 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
   const port = ports[nodeNumber];
   const host = `http://localhost:${port}`;
 
-  // Check health of the microservice
+  // Check health of the microservice (with fallback to unified backend on 8000)
   useEffect(() => {
     const checkHealth = async () => {
       setStatus({ online: false, checking: true });
       try {
-        const res = await fetch(`${host}/api/v1/health`);
-        if (res.ok) {
+        let res = await fetch(`${host}/api/v1/health`).catch(() => null);
+        if (!res || !res.ok) {
+          // Fallback to main unified backend on port 8000
+          res = await fetch('http://localhost:8000/api/v1/health').catch(() => null);
+        }
+        if (res && res.ok) {
           const data = await res.json();
           setStatus({
             online: true,
             checking: false,
-            name: data.service,
+            name: data.service || `Node ${nodeNumber} Microservice`,
             version: data.version || '1.0.0'
           });
         } else {

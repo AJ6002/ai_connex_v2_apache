@@ -58,8 +58,14 @@ _PENDING_CONFIRMATIONS: dict[str, dict] = {}
 
 
 @app.route("/api/health", methods=["GET"])
+@app.route("/api/v1/health", methods=["GET"])
 def health():
-    return jsonify({"status": "operational", "servicesOnline": 9})
+    return jsonify({
+        "status": "operational",
+        "service": "AI Connexx Microservice Engine",
+        "servicesOnline": 9,
+        "version": "1.0.0"
+    })
 
 
 @app.route("/api/chat", methods=["POST"])
