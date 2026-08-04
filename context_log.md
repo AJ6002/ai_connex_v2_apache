@@ -2507,6 +2507,14 @@
 **Current system state:** Pipeline-driven chatbot active. Both frontend and backend TypeScript clean and committed.
 ---
 
+## Query 234 — 2026-08-04 09:47
+**Input:** Remove input-hindering upload popup; unify Chatbot UI to Terminal Runner CUC pipeline; delete all duplicate chatbot versions.
+**Response summary:** Rewrote `frontend/src/views/LandingView.tsx` to use pure CUC pre-upload chat (`/api/pre_upload/chat`) with multi-turn session tracking and real-time confidence bar matching `terminal_runner.py`. Chat input remains 100% active and visible at all times — removed the popup button that replaced the input row. Deleted `chatbot/frontend/` subproject completely (6,000+ lines removed). `npx tsc --noEmit` clean (0 errors). Committed as `f38f6ba`.
+**Files changed:** frontend/src/views/LandingView.tsx, frontend/src/App.tsx, walkthrough.md, deleted chatbot/frontend/ (21 files)
+**Architectural decisions:** Terminal Runner CUC engine (`pre_upload_flow.py`) is now the single authoritative conversational backend for the UI. Deleted unneeded duplicate chatbot frontend subproject.
+**Current system state:** Single unified Terminal Runner CUC Chatbot active in main UI. Chat input always active. Zero duplicate chatbot code.
+---
+
 ## Query 233 — 2026-08-04 09:39
 **Input:** Clarify chatbot versions between chatbot folder and main frontend LandingView; remove hardcoded LandingView options.
 **Response summary:** Identified that `frontend/src/views/LandingView.tsx` maintained its own local hardcoded question wizard (`FAMILY_CONFIGS`). Refactored `LandingView.tsx` to post directly to `http://localhost:8000/api/chat` and removed all hardcoded choice buttons (`FAMILY_CONFIGS`, `msg.options`). Now both `LandingView.tsx` and `MainChatView.tsx` route 100% through the real backend NLP pipeline. `npx tsc --noEmit` clean (0 errors). Committed as `a1f60f1`.
