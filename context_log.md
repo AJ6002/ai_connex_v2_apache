@@ -2507,6 +2507,14 @@
 **Current system state:** Pipeline-driven chatbot active. Both frontend and backend TypeScript clean and committed.
 ---
 
+## Query 235 — 2026-08-04 09:54
+**Input:** Explain how dataset resolution/upload works in the UI Chatbox vs CLI -upload_file parameter.
+**Response summary:** Explained that the CLI terminal runner hardcodes `STATIC_DATASET` (`HTDS-v1.csv`) for terminal execution, whereas the UI Chatbox provides real dataset upload capabilities. Added a direct File Attachment button (📎) right in the `LandingView.tsx` chat input bar that posts attached dataset files (`.csv`, `.zip`, `.parquet`, `.json`) directly to `http://localhost:8000/api/upload` via `FormData`, triggering Scout Agent `UnifiedCompiler` and returning compilation telemetry inside the chat thread. `npx tsc --noEmit` clean (0 errors). Committed as `488f430`.
+**Files changed:** frontend/src/views/LandingView.tsx, walkthrough.md
+**Architectural decisions:** Added direct file attachment (📎) to chat input bar, giving UI parity with CLI `-upload_file` parameter.
+**Current system state:** Chatbot input bar features direct 📎 dataset file attachment triggering Scout Agent compilation.
+---
+
 ## Query 234 — 2026-08-04 09:47
 **Input:** Remove input-hindering upload popup; unify Chatbot UI to Terminal Runner CUC pipeline; delete all duplicate chatbot versions.
 **Response summary:** Rewrote `frontend/src/views/LandingView.tsx` to use pure CUC pre-upload chat (`/api/pre_upload/chat`) with multi-turn session tracking and real-time confidence bar matching `terminal_runner.py`. Chat input remains 100% active and visible at all times — removed the popup button that replaced the input row. Deleted `chatbot/frontend/` subproject completely (6,000+ lines removed). `npx tsc --noEmit` clean (0 errors). Committed as `f38f6ba`.
