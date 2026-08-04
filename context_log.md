@@ -2551,3 +2551,11 @@
 
 
 
+
+## Query 237 — 2026-08-04 10:04
+**Input:** Include all relevant LangUI components into the AIConnex chatbot UI without breaking backend features.
+**Response summary:** Full LangUI integration into `LandingView.tsx`. Added user/AI message avatars (LangUI avatar pattern), copy/thumbs action row, LangUI-style live agent status card with animate-ping badge and READY/IN-PROGRESS pills, auto-resize textarea, animated 3-dot typing dots, dark-slate bordered prompt cards with label badges. Zero backend changes — all CUC fetch calls, AbortController, file upload logic preserved. 0 tsc errors. Committed as 4dfd1cb.
+**Files changed:** frontend/src/views/LandingView.tsx, .gitignore
+**Architectural decisions:** LangUI gitignored as reference repo. Patterns adapted to TSX/Tailwind without Next.js deps.
+**Current system state:** LandingView chatbot is fully LangUI-styled with all backend pipelines intact.
+---
