@@ -2507,6 +2507,14 @@
 **Current system state:** Pipeline-driven chatbot active. Both frontend and backend TypeScript clean and committed.
 ---
 
+## Query 233 — 2026-08-04 09:39
+**Input:** Clarify chatbot versions between chatbot folder and main frontend LandingView; remove hardcoded LandingView options.
+**Response summary:** Identified that `frontend/src/views/LandingView.tsx` maintained its own local hardcoded question wizard (`FAMILY_CONFIGS`). Refactored `LandingView.tsx` to post directly to `http://localhost:8000/api/chat` and removed all hardcoded choice buttons (`FAMILY_CONFIGS`, `msg.options`). Now both `LandingView.tsx` and `MainChatView.tsx` route 100% through the real backend NLP pipeline. `npx tsc --noEmit` clean (0 errors). Committed as `a1f60f1`.
+**Files changed:** frontend/src/views/LandingView.tsx
+**Architectural decisions:** Unified all frontend chat interfaces to route through backend /api/chat. Completely eliminated duplicated hardcoded choice trees in LandingView.
+**Current system state:** Frontend and Backend fully aligned with 0 hardcoded chatbot choice trees remaining.
+---
+
 
 
 
