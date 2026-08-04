@@ -63,10 +63,11 @@ export default function App() {
   };
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedWorkspace, setSelectedWorkspace] = useState('/cmapss');
-  const [compiledCsvPath, setCompiledCsvPath] = useState<string | null>(null);
-  const [activeRunId, setActiveRunId] = useState<string>('');
-  const [activeDagId, setActiveDagId] = useState<string>('');
-  const [activeFamily, setActiveFamily] = useState<string>('');
+  const [compiledCsvPath, setCompiledCsvPath] = useState<string | null>('x:/TAS/AICONNEX/workspace_data/suyash2_compiled/suyash2_telemetry_compiled.csv');
+  const [activeRunId, setActiveRunId] = useState<string>('run_suyash2_anomaly');
+  const [activeDagId, setActiveDagId] = useState<string>('DAG_91B_ANOMALY');
+  const [activeFamily, setActiveFamily] = useState<string>('Anomaly Detection');
+
   const [userPrompt, setUserPrompt] = useState<string>('');
   const [initialOnboardingInputs, setInitialOnboardingInputs] = useState<any>(null);
 
