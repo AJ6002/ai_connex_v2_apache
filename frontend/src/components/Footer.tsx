@@ -23,7 +23,7 @@ export const Footer: React.FC<FooterProps> = ({ sidebarStyle }) => {
           SYSTEM STATUS: OPERATIONAL
         </span>
         <span style={{color:'rgba(13,21,51,0.20)'}}>|</span>
-        <span>© 2026 AI-Connexx Suite. All Rights Reserved.</span>
+        <span className="inline-flex items-center gap-0.5">© 2026 AI-<img src="/connexx-dark.png" alt="Connexx" className="h-3.5 w-auto object-contain inline-block align-middle" /> Suite. All Rights Reserved.</span>
       </div>
 
       <div className="flex items-center gap-5 text-[11px]">

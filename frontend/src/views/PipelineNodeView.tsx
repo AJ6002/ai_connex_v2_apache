@@ -102,7 +102,7 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
     setComparisonData(null);
     try {
       // 1. Fetch recipe from Recipe Orchestrator (port 8002)
-      const orchRes = await fetch(`http://${window.location.hostname}:8002/api/v1/orchestrate`, {
+      const orchRes = await fetch('http://localhost:8002/api/v1/orchestrate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -122,7 +122,7 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
       const targetColumn = currentRawPath.toLowerCase().includes('insurance') ? 'charges' : (currentRawPath.toLowerCase().includes('house_prices') ? 'SalePrice' : (currentRawPath.toLowerCase().includes('manufacturing') ? 'RUL' : ''));
       const manifestPath = `services/workspace_data/${currentRunId}/training_manifest_${currentRunId}.json`;
       
-      const prepRes = await fetch(`http://${window.location.hostname}:8003/api/v1/prepare`, {
+      const prepRes = await fetch('http://localhost:8003/api/v1/prepare', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -146,7 +146,7 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
       }
 
       // 3. Trigger Compare API (port 8003)
-      const compRes = await fetch(`http://${window.location.hostname}:8003/api/v1/prepare/compare`, {
+      const compRes = await fetch('http://localhost:8003/api/v1/prepare/compare', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -191,7 +191,7 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
   };
 
   const port = ports[nodeNumber];
-  const host = `http://${window.location.hostname}:${port}`;
+  const host = `http://localhost:${port}`;
 
   // Check health of the microservice
   useEffect(() => {
@@ -579,7 +579,7 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
                       let fetchedRecipe: any = {};
                       if ([5, 7].includes(nodeNumber)) {
                         try {
-                          const orchRes = await fetch(`http://${window.location.hostname}:8002/api/v1/orchestrate`, {
+                          const orchRes = await fetch('http://localhost:8002/api/v1/orchestrate', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -647,7 +647,7 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
                           await new Promise(r => setTimeout(r, 1000));
                           attempts++;
                           try {
-                            const statusRes = await fetch(`http://${window.location.hostname}:8006/api/v1/train/status/${data.job_id}`);
+                            const statusRes = await fetch(`http://localhost:8006/api/v1/train/status/${data.job_id}`);
                             if (statusRes.ok) {
                               const statusData = await statusRes.json();
                               if (statusData.status === 'completed') {

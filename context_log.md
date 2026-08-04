@@ -2435,6 +2435,22 @@
 **Current system state:** Boot sequence completed. All context and memory loaded. System in planning mode.
 ---
 
+## Query 224 — 2026-08-04 11:08
+**Input:** Plan migration of all Frontend UI Snapshot from ai-connex-ui-27JUL folder to current repo
+**Response summary:** Performed granular file-by-file inventory of both frontend directories. Identified 8 new files (5 components + 3 brand PNGs), 28 overwrite targets, 1 preserved file (initialData.ts), and 8 CRLF-only diffs to skip. Created comprehensive implementation_plan.md with execution phases, risk callouts for DataExplorerView monolith→modular migration, and CSS expansion (418→1133 lines). Awaiting user approval on 2 open questions (brand assets, DataExplorer approach).
+**Files changed:** implementation_plan.md [NEW artifact]
+**Architectural decisions:** Proposed replacing monolithic DataExplorerView (Plotly CDN inline) with modular 4-stage sub-component architecture from source snapshot. Proposed preserving initialData.ts as post-snapshot addition.
+**Current system state:** Planning mode. Implementation plan created and awaiting user review/approval before execution.
+---
+
+## Query 225 — 2026-08-04 11:12
+**Input:** Replace current with source modular approach, migrate brand assets as well
+**Response summary:** Executed frontend UI snapshot migration from `ai-connex-ui-27JUL/frontend/` to `frontend/`. Created `frontend/src/views/DataExplorer/` directory containing `PrePrepare.tsx`, `PostPrepare.tsx`, `PostFE.tsx`, `PostTrain.tsx`, added `ConnexxBrand.tsx`, migrated 3 brand PNGs (`connex-logo.png`, `connexx-dark.png`, `connexx-white.png`), and updated all views/components/CSS. Preserved `initialData.ts`. Verified with `npm run lint` (`tsc --noEmit` clean: 0 errors).
+**Files changed:** frontend/src/views/DataExplorer/* [NEW 4 files], frontend/src/components/ConnexxBrand.tsx [NEW], frontend/public/*.png [NEW 3 files], frontend/src/index.css, frontend/src/views/DataExplorerView.tsx, frontend/src/App.tsx, frontend/server.ts, walkthrough.md [NEW artifact]
+**Architectural decisions:** Migrated to 4-stage modular DataExplorer architecture (Pre-Prepare, Post-Prepare, Post-FE, Post-Train). Added inline ConnexxBrand image components.
+**Current system state:** Frontend UI migration complete. `tsc --noEmit` passes with 0 errors. All assets and views aligned with `27JUL` snapshot.
+---
+
 
 
 

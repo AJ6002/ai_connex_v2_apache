@@ -76,7 +76,7 @@ const CATEGORIES: CategoryMeta[] = [
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const RECIPE_API = typeof window !== 'undefined' ? `http://${window.location.hostname}:8002` : 'http://localhost:8002';
+const RECIPE_API = 'http://localhost:8002';
 
 async function fetchDagList(category: Category): Promise<string[]> {
   try {

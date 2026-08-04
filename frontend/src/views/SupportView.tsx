@@ -6,7 +6,7 @@ export const SupportView: React.FC = () => {
       <div className="border-b border-slate-200 pb-4">
         <h1 className="font-headline text-3xl font-bold text-slate-900 tracking-tight">Documentation &amp; Support</h1>
         <p className="text-slate-500 text-xs mt-1">
-          AI-Connexx Total Automation Solutions architectural documentation &amp; support channels.
+          <span className="inline-flex items-center gap-0.5">AI-<img src="/connexx-dark.png" alt="Connexx" className="h-3.5 w-auto object-contain inline-block align-middle" /></span> Total Automation Solutions architectural documentation &amp; support channels.
         </p>
       </div>
 

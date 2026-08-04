@@ -80,7 +80,7 @@ export const SlimFloatingSidebar: React.FC<SlimFloatingSidebarProps> = ({
           {/* Brand Tooltip */}
           <div className="absolute left-full ml-3 px-3 py-1.5 glass-panel text-white text-xs font-mono font-bold rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 transition-all pointer-events-none whitespace-nowrap z-50 transform origin-left group-hover:translate-x-1 animate-fadeIn"
             style={{border:'1px solid rgba(200,16,46,0.30)'}}>
-            AI-Connexx Navigation
+            <span className="inline-flex items-center gap-0.5">AI-<img src="/connexx-white.png" alt="Connexx" className="h-3.5 w-auto object-contain inline-block align-middle" /> Navigation</span>
           </div>
         </div>
 

@@ -41,7 +41,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
           </nav>
           <h1 className="font-headline text-3xl font-bold text-slate-900 tracking-tight">Environment Variables</h1>
           <p className="text-slate-500 text-xs mt-1">
-            Manage global application settings and secure connection strings for the AI-Connexx production cluster.
+            Manage global application settings and secure connection strings for the <span className="inline-flex items-center gap-0.5">AI-<img src="/connexx-dark.png" alt="Connexx" className="h-3.5 w-auto object-contain inline-block align-middle" /></span> production cluster.
           </p>
         </div>
 
@@ -161,7 +161,7 @@ export const AdministrationView: React.FC<AdministrationViewProps> = ({
         <div>
           <h3 className="font-sans font-bold text-sm text-tas-red">Warning: Cluster Propagation</h3>
           <p className="text-slate-700 text-xs mt-1 leading-relaxed">
-            Changes to environment variables trigger an automated rolling restart of the AI-Connexx cluster. Expected downtime: <span className="font-bold font-mono">~0 seconds (Zero-Downtime)</span>.
+            Changes to environment variables trigger an automated rolling restart of the <span className="inline-flex items-center gap-0.5">AI-<img src="/connexx-dark.png" alt="Connexx" className="h-3.5 w-auto object-contain inline-block align-middle" /></span> cluster. Expected downtime: <span className="font-bold font-mono">~0 seconds (Zero-Downtime)</span>.
           </p>
         </div>
       </div>

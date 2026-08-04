@@ -44,7 +44,7 @@ export const Header: React.FC<HeaderProps> = ({
     { name: 'Node 9: Deploy & Monitor', port: 8008, status: 'Online', latency: '10ms' },
   ];
 
-  const getViewTitle = () => {
+  const getViewTitle = (): React.ReactNode => {
     switch (currentView) {
       case 'compiler':
         return 'Relational Compiler Suite';
@@ -65,7 +65,7 @@ export const Header: React.FC<HeaderProps> = ({
       case 'support':
         return 'Documentation & Support';
       default:
-        return 'AI-Connexx Suite';
+        return <span className="inline-flex items-center gap-1">AI-<img src="/connexx-white.png" alt="Connexx" className="h-4 w-auto object-contain inline-block align-middle" /> Suite</span>;
     }
   };
 

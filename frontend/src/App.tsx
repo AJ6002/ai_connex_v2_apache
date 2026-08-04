@@ -246,7 +246,7 @@ export default function App() {
         profilerForm.append('target_column', targetColumn);
       }
 
-      const profilerRes = await fetch(`http://${window.location.hostname}:8000/api/v1/profile`, {
+      const profilerRes = await fetch('http://localhost:8000/api/v1/profile', {
         method: 'POST',
         body: profilerForm
       });
@@ -280,7 +280,7 @@ export default function App() {
       });
 
       // Step 2: Call DAG Orchestrator (port 8001)
-      const orchestratorRes = await fetch(`http://${window.location.hostname}:8001/api/v1/pipeline/run`, {
+      const orchestratorRes = await fetch('http://localhost:8001/api/v1/pipeline/run', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ profile })
@@ -318,7 +318,7 @@ export default function App() {
       while (!isCompleted) {
         await new Promise(r => setTimeout(r, pollInterval));
 
-        const statusRes = await fetch(`http://${window.location.hostname}:8001/api/v1/pipeline/${runId}/status`);
+        const statusRes = await fetch(`http://localhost:8001/api/v1/pipeline/${runId}/status`);
         if (!statusRes.ok) {
           updateJobState(prev => ({
             ...prev,
@@ -575,7 +575,7 @@ export default function App() {
       profilerForm.append('target_column', targetColumn);
     }
 
-    const profilerRes = await fetch(`http://${window.location.hostname}:8000/api/v1/profile`, {
+    const profilerRes = await fetch('http://localhost:8000/api/v1/profile', {
       method: 'POST',
       body: profilerForm
     });
@@ -589,7 +589,7 @@ export default function App() {
     const profile = profileData.profile;
     const dagId = profile.recommended_dag_id;
 
-    const orchestratorRes = await fetch(`http://${window.location.hostname}:8001/api/v1/pipeline/run`, {
+    const orchestratorRes = await fetch('http://localhost:8001/api/v1/pipeline/run', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ profile })
@@ -610,7 +610,7 @@ export default function App() {
     while (!isCompleted) {
       await new Promise(r => setTimeout(r, pollInterval));
 
-      const statusRes = await fetch(`http://${window.location.hostname}:8001/api/v1/pipeline/${runId}/status`);
+      const statusRes = await fetch(`http://localhost:8001/api/v1/pipeline/${runId}/status`);
       if (!statusRes.ok) {
         continue;
       }
@@ -639,7 +639,7 @@ export default function App() {
     return {
       accuracy: accuracy > 0 ? accuracy : 91.5,
       latency: latency,
-      endpoint: finalResults?.endpoint_url || `http://${window.location.hostname}:8008/predict/${groupId}`,
+      endpoint: finalResults?.endpoint_url || `http://localhost:8008/predict/${groupId}`,
       dagId: dagId,
       duration: duration
     };

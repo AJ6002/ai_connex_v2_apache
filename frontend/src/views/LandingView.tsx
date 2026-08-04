@@ -12,7 +12,7 @@ interface LandingViewProps {
 
 interface Message {
   sender: 'user' | 'ai';
-  text: string;
+  text: React.ReactNode;
   options?: { label: string; value: string }[];
 }
 
@@ -68,7 +68,7 @@ export const LandingView: React.FC<LandingViewProps> = ({ onNavigateToUpload }) 
   const [messages, setMessages] = useState<Message[]>([
     {
       sender: 'ai',
-      text: 'Hello! I am the AI Connexx assistant. What calculation or prediction task would you like to solve using your dataset today?'
+      text: <span>Hello! I am the AI <img src="/connexx-dark.png" alt="Connexx" className="h-4 w-auto object-contain inline-block align-middle" /> assistant. What calculation or prediction task would you like to solve using your dataset today?</span>
     }
   ]);
   const [inputText, setInputText] = useState('');
@@ -239,7 +239,7 @@ export const LandingView: React.FC<LandingViewProps> = ({ onNavigateToUpload }) 
         ...currentMessages,
         {
           sender: 'ai',
-          text: `✨ Mapped to: ${config.name}.\n\n${config.questions[missing]}`
+          text: `✨ Mapped to: ${config.name}.\n\n${(config as any).questions?.[missing] || `Please select the ${missing} parameter.`}`
         }
       ]);
       return;
@@ -277,7 +277,7 @@ export const LandingView: React.FC<LandingViewProps> = ({ onNavigateToUpload }) 
         <div className={`flex flex-col items-center gap-3 transition-all duration-500 ${messages.length > 1 ? 'scale-90 opacity-90' : ''}`}>
           <TasLogo className="h-16 animate-pulse" showSubtitle={false} />
           <h1 className="font-headline text-3xl sm:text-4xl font-black tracking-tight text-[#0F172A]">
-            AI Connexx
+            <span className="inline-flex items-center gap-1">AI <img src="/connexx-dark.png" alt="Connexx" className="h-8 w-auto object-contain inline-block align-middle" /></span>
           </h1>
           <p className="text-sm font-mono text-slate-500 max-w-xl">
             Type your operational maintenance goals below. Our compiler will automatically assign optimal data topology, match DAG schemas, and compile training recipes.

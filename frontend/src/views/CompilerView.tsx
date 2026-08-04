@@ -260,7 +260,7 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
     let profileData: any = null;
  
     // Trigger api call in parallel
-    const apiCall = fetch(`http://${window.location.hostname}:8000/api/v1/compile`, {
+    const apiCall = fetch('http://localhost:8000/api/v1/compile', {
       method: 'POST',
       body: formData
     }).then(async (res) => {
@@ -290,7 +290,7 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
           if (customTimestamp) profilerForm.append('timestamp_column', customTimestamp);
           if (customProblemType) profilerForm.append('problem_type', customProblemType);
 
-          const profileRes = await fetch(`http://${window.location.hostname}:8000/api/v1/profile`, {
+          const profileRes = await fetch('http://localhost:8000/api/v1/profile', {
             method: 'POST',
             body: profilerForm
           });
@@ -392,7 +392,7 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
               <span className="text-cb font-bold">Relational Industrial Compiler</span>
             </div>
             <h1 className="font-headline text-2xl sm:text-3xl font-extrabold text-primary tracking-tight flex items-center gap-3">
-              <span>AI_CONNEX Pipeline Studio</span>
+              <span className="inline-flex items-center gap-1">AI_<img src="/connexx-dark.png" alt="Connexx" className="h-7 w-auto object-contain inline-block align-middle" /> Pipeline Studio</span>
               <span className="px-3 py-0.5 bg-tas-red/20 text-tas-red border border-tas-red/40 rounded-full text-xs font-mono font-bold">
                 9-Node Cascade Engine
               </span>
