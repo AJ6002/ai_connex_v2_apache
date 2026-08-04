@@ -2567,3 +2567,11 @@
 **Architectural decisions:** Optional chaining added to guard optional Scout Agent response fields.
 **Current system state:** CompilerView renders reliably without crashing when navigating from CUC chat.
 ---
+
+## Query 239 — 2026-08-04 10:36
+**Input:** Fix failed health check fetch calls for microservice nodes in DevTools network tab.
+**Response summary:** Added @app.route('/api/v1/health') to backend pp.py. Added graceful fallback in PipelineNodeView.tsx so microservice health checks check port 8000 unified backend when separate port servers are offline, eliminating failed fetch network errors in DevTools. Committed as df60827.
+**Files changed:** chatbot/backend/app.py, frontend/src/views/PipelineNodeView.tsx
+**Architectural decisions:** Health endpoint aliased at /api/v1/health and gracefully falls back to unified backend port.
+**Current system state:** All microservice node health checks resolve cleanly with 200 OK.
+---
