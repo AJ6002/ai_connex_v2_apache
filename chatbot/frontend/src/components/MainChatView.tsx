@@ -52,21 +52,13 @@ export const MainChatView: React.FC<MainChatViewProps> = ({ darkMode, onSelectSt
     setIsGenerating(true);
 
     try {
-      const res = await fetch('/api/pre_upload/chat', {
+      const res = await fetch('http://localhost:8000/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: prompt, session_id: sessionId }),
+        body: JSON.stringify({ message: prompt, history: messages }),
       });
 
       const data = await res.json();
-      if (data.session_id) {
-        setSessionId(data.session_id);
-      }
-
-      // Check if conversation is complete or prompt_for_upload is requested
-      const isUploadPrompt =
-        data.conversation_complete === true ||
-        data.recommended_next_action === 'prompt_for_upload';
 
       const assistantMsg: ChatMessage = {
         id: `assistant-${Date.now()}`,
@@ -76,7 +68,7 @@ export const MainChatView: React.FC<MainChatViewProps> = ({ darkMode, onSelectSt
         topologyAssigned: data.topologyAssigned,
         dagMatched: data.dagMatched,
         recipeCompiled: data.recipeCompiled,
-        showUploadCard: isUploadPrompt,
+        showUploadCard: false,
       };
 
       setMessages((prev) => [...prev, assistantMsg]);
@@ -85,7 +77,7 @@ export const MainChatView: React.FC<MainChatViewProps> = ({ darkMode, onSelectSt
       const errorMsg: ChatMessage = {
         id: `assistant-error-${Date.now()}`,
         sender: 'assistant',
-        text: 'Sorry, I encountered an error connecting to the server. Please make sure the backend is running.',
+        text: 'Sorry, I encountered an error connecting to the backend server (http://localhost:8000). Please verify the server is running.',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
       setMessages((prev) => [...prev, errorMsg]);
@@ -100,7 +92,7 @@ export const MainChatView: React.FC<MainChatViewProps> = ({ darkMode, onSelectSt
     formData.append('file', file);
 
     try {
-      const res = await fetch('/api/upload', {
+      const res = await fetch('http://localhost:8000/api/upload', {
         method: 'POST',
         body: formData,
       });
@@ -126,7 +118,7 @@ export const MainChatView: React.FC<MainChatViewProps> = ({ darkMode, onSelectSt
       const errorMsg: ChatMessage = {
         id: `assistant-upload-error-${Date.now()}`,
         sender: 'assistant',
-        text: `Error uploading file '${file.name}'. Please verify the backend is running on port 5000.`,
+        text: `Error uploading file '${file.name}'. Please verify the backend is running on port 8000.`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
       setMessages((prev) => [...prev, errorMsg]);
@@ -135,36 +127,38 @@ export const MainChatView: React.FC<MainChatViewProps> = ({ darkMode, onSelectSt
     }
   };
 
+
   const starterConfigurations = [
     {
-      title: 'Predictive Anomaly Detection',
+      title: 'Profile Anomaly Dataset',
       borderAccent: 'border-t-4 border-t-red-600',
       tagColor: 'bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-300',
-      prompt: 'Forecast equipment failure windows using real-time vibration, pressure & temperature telemetry streams.',
+      prompt: 'Profile and analyze dataset suyash2 for anomaly detection',
       icon: Activity,
     },
     {
-      title: 'Topology DAG & Sensor Routing',
+      title: 'Run DAG Verification',
       borderAccent: 'border-t-4 border-t-blue-600',
       tagColor: 'bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300',
-      prompt: 'Map multi-sensor stream topologies directly to Directed Acyclic Graph (DAG) execution schemas.',
+      prompt: 'Run DAG verification on dataset CMAPSS',
       icon: Layers,
     },
     {
-      title: 'Recipe Training Optimization',
+      title: 'Compile Training Recipe',
       borderAccent: 'border-t-4 border-t-amber-500',
       tagColor: 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300',
-      prompt: 'Compile automated hyperparameter training recipes to optimize throughput and energy consumption.',
+      prompt: 'Compile training recipe for dataset suyash2',
       icon: Zap,
     },
     {
-      title: 'Automated Goal Planner',
+      title: 'Deploy Model Pipeline',
       borderAccent: 'border-t-4 border-t-emerald-600',
       tagColor: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300',
-      prompt: 'Synthesize preventive operational maintenance schedules aligned with industrial throughput targets.',
+      prompt: 'Deploy pipeline for dataset CMAPSS',
       icon: Cpu,
     },
   ];
+
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-7rem)] py-8 px-4 pl-16 sm:pl-20 max-w-5xl mx-auto">
