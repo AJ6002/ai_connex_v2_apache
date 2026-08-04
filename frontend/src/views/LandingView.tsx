@@ -108,6 +108,56 @@ export const LandingView: React.FC<LandingViewProps> = ({ onNavigateToUpload }) 
     }
   };
 
+  const handleFileUpload = async (file: File) => {
+    if (isGenerating) return;
+
+    const userMsg: Message = {
+      id: `user-upload-${Date.now()}`,
+      sender: 'user',
+      text: `📎 Uploaded dataset file: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`
+    };
+
+    const updatedMessages = [...messages, userMsg];
+    setMessages(updatedMessages);
+    setIsGenerating(true);
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await fetch('http://localhost:8000/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+      const replyText = data.reply || `Dataset '${file.name}' successfully uploaded and compiled by Scout Agent!`;
+
+      const aiMsg: Message = {
+        id: `ai-upload-${Date.now()}`,
+        sender: 'ai',
+        text: replyText,
+        isComplete: true,
+        action: 'dataset_compiled'
+      };
+
+      setMessages([...updatedMessages, aiMsg]);
+      setConfidence(0.95);
+    } catch (err) {
+      console.error(err);
+      setMessages([
+        ...updatedMessages,
+        {
+          id: `err-upload-${Date.now()}`,
+          sender: 'ai',
+          text: `Error uploading dataset '${file.name}'. Please verify the backend is running at http://localhost:8000.`
+        }
+      ]);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <div className="min-h-[85vh] flex flex-col justify-center items-center px-4 relative select-none animate-fadeIn">
       {/* Background Glows */}
@@ -122,7 +172,7 @@ export const LandingView: React.FC<LandingViewProps> = ({ onNavigateToUpload }) 
             <span className="inline-flex items-center gap-1">AI <img src="/connexx-dark.png" alt="Connexx" className="h-8 w-auto object-contain inline-block align-middle" /></span>
           </h1>
           <p className="text-sm font-mono text-slate-500 max-w-xl">
-            Type your operational maintenance goals below. Our compiler will automatically assign optimal data topology, match DAG schemas, and compile training recipes.
+            Type your operational maintenance goals below or attach your dataset file. Our compiler will automatically assign optimal data topology, match DAG schemas, and compile training recipes.
           </p>
         </div>
 
@@ -160,8 +210,8 @@ export const LandingView: React.FC<LandingViewProps> = ({ onNavigateToUpload }) 
                         onClick={() => onNavigateToUpload(messages[1]?.text || 'Pipeline Studio configuration')}
                         className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-sans text-xs font-bold rounded-xl shadow-md transition-all flex items-center gap-2 border-none cursor-pointer active:scale-95"
                       >
-                        <span>Upload Dataset to Run Pipeline</span>
-                        <span className="material-symbols-outlined text-sm">upload_file</span>
+                        <span>Open Compiler & Run Pipeline</span>
+                        <span className="material-symbols-outlined text-sm">arrow_forward</span>
                       </button>
                     </div>
                   )}
@@ -172,14 +222,14 @@ export const LandingView: React.FC<LandingViewProps> = ({ onNavigateToUpload }) 
             {isGenerating && (
               <div className="flex items-center gap-2 p-3 rounded-xl bg-slate-100 text-xs font-mono text-slate-500 animate-pulse border border-slate-200 w-fit">
                 <span className="material-symbols-outlined text-base animate-spin text-blue-600">sync</span>
-                <span>AI Connexx CUC Parser extracting intent & parameters...</span>
+                <span>AI Connexx Scout Agent compiling dataset & extracting intent...</span>
               </div>
             )}
 
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Chat Input Action Row — ALWAYS VISIBLE */}
+          {/* Chat Input Action Row — ALWAYS VISIBLE WITH FILE ATTACHMENT */}
           <div className="border-t border-slate-100 pt-3">
             <form
               onSubmit={(e) => {
@@ -189,19 +239,38 @@ export const LandingView: React.FC<LandingViewProps> = ({ onNavigateToUpload }) 
               }}
               className="flex items-center gap-2 p-1 border border-slate-200 focus-within:border-blue-500 rounded-2xl bg-slate-50 transition-all"
             >
-              <span className="material-symbols-outlined text-slate-400 pl-2 pr-1 text-base select-none">chat</span>
+              {/* Direct Dataset File Attachment Button (acts like CLI -upload_file) */}
+              <label
+                title="Attach dataset file (.zip, .csv, .parquet, .json)"
+                className="p-1.5 hover:bg-slate-200/60 text-slate-500 hover:text-blue-600 rounded-xl cursor-pointer transition-colors flex items-center justify-center shrink-0"
+              >
+                <span className="material-symbols-outlined text-lg select-none">attach_file</span>
+                <input
+                  type="file"
+                  accept=".csv,.zip,.parquet,.json,.gz,.tar.gz"
+                  className="hidden"
+                  disabled={isGenerating}
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                      handleFileUpload(e.target.files[0]);
+                    }
+                  }}
+                />
+              </label>
+
               <input
                 type="text"
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 disabled={isGenerating}
-                placeholder="What operational task would you like to solve?..."
+                placeholder="Type your goal or click 📎 to attach dataset file..."
                 className="flex-1 bg-transparent border-none text-slate-800 placeholder-slate-400 focus:outline-none text-xs font-sans py-2.5 px-1"
               />
+
               <button
                 type="submit"
                 disabled={!inputText.trim() || isGenerating}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-xs font-mono font-bold rounded-xl shadow-md transition-all flex items-center gap-1 border-none cursor-pointer"
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-xs font-mono font-bold rounded-xl shadow-md transition-all flex items-center gap-1 border-none cursor-pointer shrink-0"
               >
                 <span>Send</span>
                 <span className="material-symbols-outlined text-xs">send</span>
@@ -209,6 +278,7 @@ export const LandingView: React.FC<LandingViewProps> = ({ onNavigateToUpload }) 
             </form>
           </div>
         </div>
+
 
         {/* Quick Sample Config Selection Cards (Only shown if chat has not started) */}
         {messages.length === 1 && (
