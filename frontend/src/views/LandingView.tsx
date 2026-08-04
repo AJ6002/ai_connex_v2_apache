@@ -32,6 +32,7 @@ export const LandingView: React.FC<LandingViewProps> = ({ onNavigateToUpload }) 
   ]);
   const [inputText, setInputText] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   // Scroll to bottom on new messages
   useEffect(() => {
@@ -43,6 +44,22 @@ export const LandingView: React.FC<LandingViewProps> = ({ onNavigateToUpload }) 
     { text: "Detect anomalies and drifts in multivariate industrial sensor streams.", icon: "insights", color: "#1E47C8" },
     { text: "Build a failure classification pipeline with custom outlier thresholds.", icon: "warning", color: "#eab308" }
   ];
+
+  const handleStopGeneration = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    setIsGenerating(false);
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: `stop-${Date.now()}`,
+        sender: 'ai',
+        text: '⏹️ Process response generation halted by operator.'
+      }
+    ]);
+  };
 
   const handleSend = async (text: string) => {
     const prompt = text.trim();
@@ -59,6 +76,9 @@ export const LandingView: React.FC<LandingViewProps> = ({ onNavigateToUpload }) 
     setInputText('');
     setIsGenerating(true);
 
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     try {
       const res = await fetch('http://localhost:8000/api/pre_upload/chat', {
         method: 'POST',
@@ -68,6 +88,7 @@ export const LandingView: React.FC<LandingViewProps> = ({ onNavigateToUpload }) 
           session_id: sessionId,
           conversation_id: conversationId
         }),
+        signal: controller.signal
       });
 
       const data = await res.json();
@@ -93,7 +114,8 @@ export const LandingView: React.FC<LandingViewProps> = ({ onNavigateToUpload }) 
       };
 
       setMessages([...updatedMessages, aiMsg]);
-    } catch (err) {
+    } catch (err: any) {
+      if (err.name === 'AbortError') return;
       console.error(err);
       setMessages([
         ...updatedMessages,
@@ -105,6 +127,7 @@ export const LandingView: React.FC<LandingViewProps> = ({ onNavigateToUpload }) 
       ]);
     } finally {
       setIsGenerating(false);
+      abortControllerRef.current = null;
     }
   };
 
@@ -121,6 +144,9 @@ export const LandingView: React.FC<LandingViewProps> = ({ onNavigateToUpload }) 
     setMessages(updatedMessages);
     setIsGenerating(true);
 
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     const formData = new FormData();
     formData.append('file', file);
 
@@ -128,6 +154,7 @@ export const LandingView: React.FC<LandingViewProps> = ({ onNavigateToUpload }) 
       const res = await fetch('http://localhost:8000/api/upload', {
         method: 'POST',
         body: formData,
+        signal: controller.signal
       });
 
       const data = await res.json();
@@ -143,7 +170,8 @@ export const LandingView: React.FC<LandingViewProps> = ({ onNavigateToUpload }) 
 
       setMessages([...updatedMessages, aiMsg]);
       setConfidence(0.95);
-    } catch (err) {
+    } catch (err: any) {
+      if (err.name === 'AbortError') return;
       console.error(err);
       setMessages([
         ...updatedMessages,
@@ -155,8 +183,10 @@ export const LandingView: React.FC<LandingViewProps> = ({ onNavigateToUpload }) 
       ]);
     } finally {
       setIsGenerating(false);
+      abortControllerRef.current = null;
     }
   };
+
 
   return (
     <div className="min-h-[85vh] flex flex-col justify-center items-center px-4 relative select-none animate-fadeIn">
@@ -267,14 +297,26 @@ export const LandingView: React.FC<LandingViewProps> = ({ onNavigateToUpload }) 
                 className="flex-1 bg-transparent border-none text-slate-800 placeholder-slate-400 focus:outline-none text-xs font-sans py-2.5 px-1"
               />
 
-              <button
-                type="submit"
-                disabled={!inputText.trim() || isGenerating}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-xs font-mono font-bold rounded-xl shadow-md transition-all flex items-center gap-1 border-none cursor-pointer shrink-0"
-              >
-                <span>Send</span>
-                <span className="material-symbols-outlined text-xs">send</span>
-              </button>
+              {isGenerating ? (
+                <button
+                  type="button"
+                  onClick={handleStopGeneration}
+                  className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-mono font-bold rounded-xl shadow-md transition-all flex items-center gap-1.5 border-none cursor-pointer shrink-0 animate-pulse"
+                >
+                  <span className="material-symbols-outlined text-sm">stop_circle</span>
+                  <span>Halt</span>
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  disabled={!inputText.trim()}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-xs font-mono font-bold rounded-xl shadow-md transition-all flex items-center gap-1 border-none cursor-pointer shrink-0"
+                >
+                  <span>Send</span>
+                  <span className="material-symbols-outlined text-xs">send</span>
+                </button>
+              )}
+
             </form>
           </div>
         </div>
