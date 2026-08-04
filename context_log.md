@@ -2559,3 +2559,11 @@
 **Architectural decisions:** LangUI gitignored as reference repo. Patterns adapted to TSX/Tailwind without Next.js deps.
 **Current system state:** LandingView chatbot is fully LangUI-styled with all backend pipelines intact.
 ---
+
+## Query 238 — 2026-08-04 10:20
+**Input:** Fix Uncaught TypeError: Cannot read properties of undefined (reading 'map') at CompilerView (CompilerView.tsx:366:35).
+**Response summary:** Safely optional-chained compiledData?.merged_files?.map(...) in CompilerView.tsx line 366. When compiledData is returned without a merged_files array, it now safely falls back to rchiveFiles instead of throwing an unhandled React error and crashing to a white screen. Clean tsc build. Committed as 6a42e6f.
+**Files changed:** frontend/src/views/CompilerView.tsx
+**Architectural decisions:** Optional chaining added to guard optional Scout Agent response fields.
+**Current system state:** CompilerView renders reliably without crashing when navigating from CUC chat.
+---
