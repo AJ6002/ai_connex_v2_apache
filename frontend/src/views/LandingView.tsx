@@ -41,10 +41,14 @@ export const LandingView: React.FC<LandingViewProps> = ({ onNavigateToUpload }) 
     text: 'Hello! I am the AI Connexx assistant. Tell me what operational task or prediction problem you would like to solve using your dataset today.'
   }]);
   const [inputText, setInputText]       = useState('');
+  const [isDragging, setIsDragging]     = useState(false);
   const messagesEndRef                  = useRef<HTMLDivElement>(null);
   const abortControllerRef             = useRef<AbortController | null>(null);
   const textareaRef                     = useRef<HTMLTextAreaElement>(null);
   const { copiedId, copy }              = useCopyText();
+
+  // Gate: conversation is complete when any AI message has isComplete===true
+  const conversationComplete = messages.some(m => m.isComplete === true);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -315,20 +319,7 @@ export const LandingView: React.FC<LandingViewProps> = ({ onNavigateToUpload }) 
                       </div>
                     )}
 
-                    {/* ── Pipeline-complete CTA ── */}
-                    {msg.sender === 'ai' && msg.isComplete && (
-                      <div className="mt-3 pt-2 border-t border-slate-200/60">
-                        <button
-                          onClick={() => onNavigateToUpload(messages[1]?.text || 'Pipeline Studio configuration')}
-                          className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-slate-50 hover:bg-blue-800 focus:outline-none focus:ring focus:ring-blue-300 transition-colors"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                            <path d="M14 6l7 7-4 4M5.828 18.172a2.828 2.828 0 0 0 4 0l10.586-10.586a2 2 0 0 0 0-2.829l-1.171-1.171a2 2 0 0 0-2.829 0L5.828 14.172a2.828 2.828 0 0 0 0 4z"/><path d="M4 20l1.768-1.768"/>
-                          </svg>
-                          Open Compiler &amp; Run Pipeline
-                        </button>
-                      </div>
-                    )}
+                    {/* CTA moved to bottom upload zone when conversation_complete */}
                   </div>
                 </div>
               </div>
@@ -359,80 +350,170 @@ export const LandingView: React.FC<LandingViewProps> = ({ onNavigateToUpload }) 
             <div ref={messagesEndRef} />
           </div>
 
-          {/* ── INPUT BAR (LangUI textarea pattern) ───────────────────────── */}
-          <div className="border-t border-slate-200 bg-white p-3">
-            <form
-              onSubmit={(e) => {
+          {/* ── BOTTOM ACTION ZONE — switches on conversation_complete ─── */}
+          {conversationComplete ? (
+            /* ══ UPLOAD DROP ZONE (replaces input when CUC is done) ════════ */
+            <div
+              className={`border-t-2 transition-all duration-300 ${
+                isDragging
+                  ? 'border-blue-500 bg-blue-50'
+                  : 'border-emerald-400 bg-emerald-50/60'
+              }`}
+              onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+              onDragEnter={(e) => { e.preventDefault(); setIsDragging(true); }}
+              onDragLeave={() => setIsDragging(false)}
+              onDrop={(e) => {
                 e.preventDefault();
-                if (!inputText.trim() || isGenerating) return;
-                handleSend(inputText);
+                setIsDragging(false);
+                const file = e.dataTransfer.files?.[0];
+                if (file) handleFileUpload(file);
               }}
             >
-              <div className="relative flex items-end gap-2">
+              {isGenerating ? (
+                /* Uploading spinner */
+                <div className="flex flex-col items-center justify-center gap-3 py-6 px-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M19.933 13.041a8 8 0 1 1-9.925-8.788c3.899-1 7.935 1.007 9.425 4.747"/>
+                      <path d="M20 4v5h-5"/>
+                    </svg>
+                  </div>
+                  <p className="text-sm font-semibold text-blue-700">Scout Agent compiling dataset…</p>
+                  <button
+                    type="button"
+                    onClick={handleStopGeneration}
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 px-4 py-1.5 text-xs font-semibold text-white transition-colors animate-pulse"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+                    Halt
+                  </button>
+                </div>
+              ) : (
+                /* Drop zone */
+                <label className="flex flex-col items-center justify-center gap-3 py-6 px-4 cursor-pointer">
+                  <div className={`flex h-14 w-14 items-center justify-center rounded-2xl shadow-lg transition-transform duration-200 ${
+                    isDragging ? 'scale-110 bg-blue-600' : 'bg-emerald-600'
+                  } text-white`}>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                      <polyline points="17 8 12 3 7 8"/>
+                      <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                  </div>
 
-                {/* Attach file button */}
-                <label
-                  title="Attach dataset file (.zip, .csv, .parquet, .json)"
-                  className="mb-1 shrink-0 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-500 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 transition-colors"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
-                  </svg>
+                  <div className="text-center">
+                    <p className="text-sm font-bold text-slate-800">
+                      {isDragging ? '📂 Drop dataset file here' : '✅ Intent complete — Upload your dataset'}
+                    </p>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Drag & drop or click to select · .csv · .zip · .parquet · .json
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <span className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 px-5 py-2 text-xs font-bold text-white shadow-md transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+                      </svg>
+                      Select Dataset File
+                    </span>
+                    <span className="text-xs text-slate-400">or</span>
+                    <button
+                      type="button"
+                      onClick={() => onNavigateToUpload(messages[1]?.text || 'Pipeline Studio')}
+                      className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white hover:border-blue-400 hover:text-blue-600 px-4 py-2 text-xs font-semibold text-slate-600 shadow-sm transition-colors"
+                    >
+                      Open Compiler
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+                    </button>
+                  </div>
+
                   <input
                     type="file"
                     accept=".csv,.zip,.parquet,.json,.gz,.tar.gz"
                     className="hidden"
-                    disabled={isGenerating}
                     onChange={(e) => {
                       if (e.target.files?.[0]) handleFileUpload(e.target.files[0]);
                     }}
                   />
                 </label>
-
-                {/* Auto-resizing textarea */}
-                <textarea
-                  ref={textareaRef}
-                  id="cuc-input"
-                  rows={1}
-                  value={inputText}
-                  onChange={(e) => setInputText(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  disabled={isGenerating}
-                  placeholder="Enter your operational goal here… (Shift+Enter for newline)"
-                  className="flex-1 resize-none rounded-xl border border-slate-200 bg-slate-50 p-3 pr-4 text-xs text-slate-800 shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all"
-                  style={{ minHeight: 40, maxHeight: 120, overflow: 'auto' }}
-                />
-
-                {/* Send / Halt button */}
-                {isGenerating ? (
-                  <button
-                    type="button"
-                    onClick={handleStopGeneration}
-                    className="mb-1 shrink-0 inline-flex items-center gap-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 px-3.5 py-2 text-xs font-semibold text-slate-50 shadow transition-colors animate-pulse focus:outline-none"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-                      <rect x="6" y="6" width="12" height="12" rx="2"/>
-                    </svg>
-                    Halt
-                  </button>
-                ) : (
-                  <button
-                    type="submit"
-                    disabled={!inputText.trim()}
-                    className="mb-1 shrink-0 inline-flex items-center gap-1.5 rounded-lg bg-blue-600 hover:bg-blue-800 disabled:opacity-40 px-3.5 py-2 text-xs font-semibold text-slate-50 shadow transition-colors focus:outline-none focus:ring focus:ring-blue-300"
+              )}
+            </div>
+          ) : (
+            /* ══ NORMAL CHAT INPUT BAR ════════════════════════════════════ */
+            <div className="border-t border-slate-200 bg-white p-3">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (!inputText.trim() || isGenerating) return;
+                  handleSend(inputText);
+                }}
+              >
+                <div className="relative flex items-end gap-2">
+                  {/* Attach file button */}
+                  <label
+                    title="Attach dataset file (.zip, .csv, .parquet, .json)"
+                    className="mb-1 shrink-0 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-500 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 transition-colors"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M10 14l11-11"/><path d="M21 3l-6.5 18a.55.55 0 0 1-1 0l-3.5-7-7-3.5a.55.55 0 0 1 0-1l18-6.5"/>
+                      <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
                     </svg>
-                    Send
-                  </button>
-                )}
-              </div>
-              <p className="mt-1.5 text-[10px] text-slate-400 font-mono pl-10">
-                Powered by CUC Pipeline · Qwen 32B · Session: {sessionId ? sessionId.slice(0, 8) + '…' : 'initializing'}
-              </p>
-            </form>
-          </div>
+                    <input
+                      type="file"
+                      accept=".csv,.zip,.parquet,.json,.gz,.tar.gz"
+                      className="hidden"
+                      disabled={isGenerating}
+                      onChange={(e) => {
+                        if (e.target.files?.[0]) handleFileUpload(e.target.files[0]);
+                      }}
+                    />
+                  </label>
+
+                  {/* Auto-resizing textarea */}
+                  <textarea
+                    ref={textareaRef}
+                    id="cuc-input"
+                    rows={1}
+                    value={inputText}
+                    onChange={(e) => setInputText(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    disabled={isGenerating}
+                    placeholder="Enter your operational goal here… (Shift+Enter for newline)"
+                    className="flex-1 resize-none rounded-xl border border-slate-200 bg-slate-50 p-3 pr-4 text-xs text-slate-800 shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all"
+                    style={{ minHeight: 40, maxHeight: 120, overflow: 'auto' }}
+                  />
+
+                  {/* Send / Halt button */}
+                  {isGenerating ? (
+                    <button
+                      type="button"
+                      onClick={handleStopGeneration}
+                      className="mb-1 shrink-0 inline-flex items-center gap-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 px-3.5 py-2 text-xs font-semibold text-slate-50 shadow transition-colors animate-pulse focus:outline-none"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="6" y="6" width="12" height="12" rx="2"/>
+                      </svg>
+                      Halt
+                    </button>
+                  ) : (
+                    <button
+                      type="submit"
+                      disabled={!inputText.trim()}
+                      className="mb-1 shrink-0 inline-flex items-center gap-1.5 rounded-lg bg-blue-600 hover:bg-blue-800 disabled:opacity-40 px-3.5 py-2 text-xs font-semibold text-slate-50 shadow transition-colors focus:outline-none focus:ring focus:ring-blue-300"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M10 14l11-11"/><path d="M21 3l-6.5 18a.55.55 0 0 1-1 0l-3.5-7-7-3.5a.55.55 0 0 1 0-1l18-6.5"/>
+                      </svg>
+                      Send
+                    </button>
+                  )}
+                </div>
+                <p className="mt-1.5 text-[10px] text-slate-400 font-mono pl-10">
+                  Powered by CUC Pipeline · Qwen 32B · Session: {sessionId ? sessionId.slice(0, 8) + '…' : 'initializing'}
+                </p>
+              </form>
+            </div>
+          )}
         </div>
 
         {/* ── STARTER PROMPT CARDS (LangUI dark slate card pattern) ─────── */}
