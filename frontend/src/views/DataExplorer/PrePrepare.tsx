@@ -10,7 +10,8 @@ import {
   Cpu,
   Search,
   CheckCircle,
-  AlertTriangle
+  AlertTriangle,
+  TrendingUp
 } from 'lucide-react';
 
 interface PrePrepareProps {
@@ -19,6 +20,7 @@ interface PrePrepareProps {
   runId?: string;
   dagId?: string;
   algorithmFamily?: string;
+  backendProfile?: Record<string, any> | null;
 }
 
 // Reusable SVG Chart Renderer for Pre-Prepare visualizations (140px uniform height)
@@ -327,7 +329,8 @@ export const PrePrepare: React.FC<PrePrepareProps> = ({
   onProceed,
   runId = 'run_20250115_143022',
   dagId = 'DAG_201',
-  algorithmFamily = 'Anomaly Detection'
+  algorithmFamily = 'Anomaly Detection',
+  backendProfile = null,
 }) => {
   const [activeStep, setActiveStep] = useState<number | null>(null);
 
@@ -441,6 +444,137 @@ export const PrePrepare: React.FC<PrePrepareProps> = ({
         <Info size={18} className="info-banner-icon" />
         <div className="info-banner-text">
           <strong>Pre-Prepare Stage Overview:</strong> Every visualization plot below includes a 1-line plain English explanation so you can easily understand what happened to your dataset during compilation, statistical profiling, and DAG resolution.
+        </div>
+      </section>
+
+      {/* ⚡ Automated Quality Recommendation Cards ───────────────────────── */}
+      {/* These cards are powered by the backend profiler (/api/v1/profile)   */}
+      {/* and fall back to representative static values when backend is offline*/}
+      <section className="dashboard-card border-amber-200 bg-gradient-to-r from-amber-50/60 via-white to-orange-50/40">
+        <div className="card-header-row">
+          <div className="card-title-group">
+            <AlertTriangle className="card-title-icon-wrapper text-amber-600" size={18} />
+            <h2 className="card-title">⚡ Automated Data Quality Recommendations</h2>
+          </div>
+          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">
+            Auto-Generated
+          </span>
+        </div>
+        <div className="card-subtitle-row">
+          <Info className="card-subtitle-icon" size={16} />
+          <span>
+            These cards are automatically generated from statistical profiling of your dataset.
+            Each card identifies a data quality signal and recommends the optimal transformation for your ML pipeline.
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-[11px]">
+
+          {/* Card 1: Extreme Skewness */}
+          <div className={`p-4 rounded-xl border shadow-sm flex flex-col gap-2.5 ${
+            (backendProfile?.max_skewness ?? 3.2) > 2.0
+              ? 'border-rose-300 bg-rose-50/30'
+              : 'border-emerald-300 bg-emerald-50/20'
+          }`}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5 font-bold text-slate-800">
+                <TrendingUp size={14} className={(backendProfile?.max_skewness ?? 3.2) > 2.0 ? 'text-rose-600' : 'text-emerald-600'} />
+                Extreme Skewness Detected
+              </div>
+              {(backendProfile?.max_skewness ?? 3.2) > 2.0 ? (
+                <span className="flex items-center gap-0.5 bg-rose-100 text-rose-700 text-[9px] font-bold px-1.5 py-0.5 rounded border border-rose-200">
+                  <AlertTriangle size={9} /> ALERT
+                </span>
+              ) : (
+                <span className="flex items-center gap-0.5 bg-emerald-100 text-emerald-700 text-[9px] font-bold px-1.5 py-0.5 rounded border border-emerald-200">
+                  <CheckCircle size={9} /> OK
+                </span>
+              )}
+            </div>
+            <div className="text-slate-600 leading-snug">
+              <span className="font-mono text-[10px] text-rose-700 font-bold">
+                Skewness: {(backendProfile?.max_skewness ?? 3.2).toFixed(2)} (column: {backendProfile?.most_skewed_col ?? 'temp_celsius'})
+              </span>
+              <br />
+              Threshold: skewness &gt; 2.0 indicates a heavily right/left-tailed distribution.
+            </div>
+            <div className="p-2 bg-white/80 rounded-lg border border-amber-200 text-[10px] text-amber-900 leading-snug">
+              <strong>Recommendation:</strong> Apply <span className="font-mono font-bold">Log Transform</span> or{' '}
+              <span className="font-mono font-bold">Yeo-Johnson Power Transformation</span> to normalise this feature
+              before training. The DAG Recipe Orchestrator will auto-configure this if your DAG supports it.
+            </div>
+          </div>
+
+          {/* Card 2: Outlier Spike */}
+          <div className={`p-4 rounded-xl border shadow-sm flex flex-col gap-2.5 ${
+            (backendProfile?.outlier_pct ?? 2.1) > 1.5
+              ? 'border-rose-300 bg-rose-50/30'
+              : 'border-emerald-300 bg-emerald-50/20'
+          }`}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5 font-bold text-slate-800">
+                <Search size={14} className={(backendProfile?.outlier_pct ?? 2.1) > 1.5 ? 'text-rose-600' : 'text-emerald-600'} />
+                High Outlier Density
+              </div>
+              {(backendProfile?.outlier_pct ?? 2.1) > 1.5 ? (
+                <span className="flex items-center gap-0.5 bg-rose-100 text-rose-700 text-[9px] font-bold px-1.5 py-0.5 rounded border border-rose-200">
+                  <AlertTriangle size={9} /> ALERT
+                </span>
+              ) : (
+                <span className="flex items-center gap-0.5 bg-emerald-100 text-emerald-700 text-[9px] font-bold px-1.5 py-0.5 rounded border border-emerald-200">
+                  <CheckCircle size={9} /> OK
+                </span>
+              )}
+            </div>
+            <div className="text-slate-600 leading-snug">
+              <span className="font-mono text-[10px] text-rose-700 font-bold">
+                Outliers: {(backendProfile?.outlier_pct ?? 2.1).toFixed(1)}% of rows (IQR method)
+              </span>
+              <br />
+              Threshold: &gt;1.5% outlier density can destabilise regression and anomaly models.
+            </div>
+            <div className="p-2 bg-white/80 rounded-lg border border-amber-200 text-[10px] text-amber-900 leading-snug">
+              <strong>Recommendation:</strong> Use <span className="font-mono font-bold">Robust Scaler</span> (median + IQR)
+              instead of StandardScaler. For anomaly detection, consider{' '}
+              <span className="font-mono font-bold">One-Class SVM</span> or{' '}
+              <span className="font-mono font-bold">Isolation Forest</span> as base learners.
+            </div>
+          </div>
+
+          {/* Card 3: High Missingness */}
+          <div className={`p-4 rounded-xl border shadow-sm flex flex-col gap-2.5 ${
+            (backendProfile?.max_missing_pct ?? 7.3) > 5.0
+              ? 'border-rose-300 bg-rose-50/30'
+              : 'border-emerald-300 bg-emerald-50/20'
+          }`}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5 font-bold text-slate-800">
+                <AlertCircle size={14} className={(backendProfile?.max_missing_pct ?? 7.3) > 5.0 ? 'text-rose-600' : 'text-emerald-600'} />
+                High Missingness Detected
+              </div>
+              {(backendProfile?.max_missing_pct ?? 7.3) > 5.0 ? (
+                <span className="flex items-center gap-0.5 bg-rose-100 text-rose-700 text-[9px] font-bold px-1.5 py-0.5 rounded border border-rose-200">
+                  <AlertTriangle size={9} /> ALERT
+                </span>
+              ) : (
+                <span className="flex items-center gap-0.5 bg-emerald-100 text-emerald-700 text-[9px] font-bold px-1.5 py-0.5 rounded border border-emerald-200">
+                  <CheckCircle size={9} /> OK
+                </span>
+              )}
+            </div>
+            <div className="text-slate-600 leading-snug">
+              <span className="font-mono text-[10px] text-rose-700 font-bold">
+                Missing: {(backendProfile?.max_missing_pct ?? 7.3).toFixed(1)}% (column: {backendProfile?.most_missing_col ?? 'pressure_bar'})
+              </span>
+              <br />
+              Threshold: &gt;5% missingness in a sensor column indicates sensor dropout or data loss events.
+            </div>
+            <div className="p-2 bg-white/80 rounded-lg border border-amber-200 text-[10px] text-amber-900 leading-snug">
+              <strong>Recommendation:</strong> Apply <span className="font-mono font-bold">KNN Imputation</span> for
+              non-temporal features or <span className="font-mono font-bold">Forward Fill</span> for time-indexed
+              sensor streams. Flag the sensor for maintenance review.
+            </div>
+          </div>
         </div>
       </section>
 

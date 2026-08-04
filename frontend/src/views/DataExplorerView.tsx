@@ -25,6 +25,7 @@ import PrePrepare from './DataExplorer/PrePrepare';
 import PostPrepare from './DataExplorer/PostPrepare';
 import PostFE from './DataExplorer/PostFE';
 import PostTrain from './DataExplorer/PostTrain';
+import AdHocExplorer from './DataExplorer/AdHocExplorer';
 
 interface DataExplorerViewProps {
   compiledCsvPath?: string;
@@ -41,7 +42,7 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({
   algorithmFamily = 'Anomaly Detection',
   onProceedToPrepare
 }) => {
-  const [activeTab, setActiveTab] = useState<'pre-prepare' | 'post-prepare' | 'post-fe' | 'post-train'>('pre-prepare');
+  const [activeTab, setActiveTab] = useState<'pre-prepare' | 'post-prepare' | 'post-fe' | 'post-train' | 'ad-hoc'>('pre-prepare');
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [actionsOpen, setActionsOpen] = useState(false);
   const [backendProfile, setBackendProfile] = useState<any>(null);
@@ -100,7 +101,8 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({
     { id: 'pre-prepare', label: 'Pre-Prepare', badge: 'Brain', number: 1 },
     { id: 'post-prepare', label: 'Post-Prepare', badge: 'Prepare', number: 2 },
     { id: 'post-fe', label: 'Post-F.E', badge: 'Feature Engineered', number: 3 },
-    { id: 'post-train', label: 'Post-Train', badge: 'Training', number: 4 }
+    { id: 'post-train', label: 'Post-Train', badge: 'Training', number: 4 },
+    { id: 'ad-hoc', label: 'Ad-Hoc Explorer', badge: 'Visual Query', number: 5 }
   ];
 
   // Render correct subpage
@@ -114,6 +116,7 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({
             runId={runId}
             dagId={dagId}
             algorithmFamily={algorithmFamily}
+            backendProfile={backendProfile}
           />
         );
       case 'post-prepare':
@@ -140,6 +143,15 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({
             compiledCsvPath={compiledCsvPath}
             runId={runId}
             dagId={dagId}
+          />
+        );
+      case 'ad-hoc':
+        return (
+          <AdHocExplorer
+            compiledCsvPath={compiledCsvPath}
+            runId={runId}
+            dagId={dagId}
+            algorithmFamily={algorithmFamily}
           />
         );
       default:
@@ -175,7 +187,7 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({
               onClick={() => setActiveTab(tab.id as any)}
             >
               <span className="stage-tab-text-title">{tab.label}</span>
-              <span className={`stage-badge stage-badge-${tab.id === 'pre-prepare' ? 'brain' : tab.id === 'post-prepare' ? 'prepare' : tab.id === 'post-fe' ? 'fe' : 'training'}`}>
+              <span className={`stage-badge stage-badge-${tab.id === 'pre-prepare' ? 'brain' : tab.id === 'post-prepare' ? 'prepare' : tab.id === 'post-fe' ? 'fe' : tab.id === 'post-train' ? 'training' : 'adhoc'}`}>
                 {tab.badge}
               </span>
               <span className="stage-tab-number">{tab.number}</span>

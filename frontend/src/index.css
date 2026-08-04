@@ -737,11 +737,13 @@
 .stage-badge-prepare { background-color: #f3f4f6; color: #374151; }
 .stage-badge-fe { background-color: #f3f4f6; color: #374151; }
 .stage-badge-training { background-color: #f3f4f6; color: #374151; }
+.stage-badge-adhoc { background-color: #fff7ed; color: #c2410c; }
 
 .stage-tab.active .stage-badge-brain { background-color: #1E47C8; color: white; }
 .stage-tab.active .stage-badge-prepare { background-color: #10b981; color: white; }
 .stage-tab.active .stage-badge-fe { background-color: #8b5cf6; color: white; }
 .stage-tab.active .stage-badge-training { background-color: #ec4899; color: white; }
+.stage-tab.active .stage-badge-adhoc { background-color: #f97316; color: white; }
 
 .stage-tab-number {
   background-color: rgba(255, 255, 255, 0.1);
