@@ -132,6 +132,16 @@ export const PostFE: React.FC<PostFEProps> = ({
   runId = 'run_20250115_143022',
   dagId = 'DAG_201'
 }) => {
+  const [nodeStatus, setNodeStatus] = React.useState<{ online: boolean; name?: string }>({ online: false });
+
+  React.useEffect(() => {
+    fetch('http://localhost:8004/api/v1/health')
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (data) setNodeStatus({ online: true, name: data.service || 'Feature Engineering API' });
+      })
+      .catch(() => setNodeStatus({ online: false }));
+  }, []);
   const postFEPlots = [
     {
       id: 'fe-1',
@@ -192,8 +202,8 @@ export const PostFE: React.FC<PostFEProps> = ({
           <div className="status-bar-details">
             <div className="status-bar-title-row">
               <span>Pipeline Stage 3 Transit: Post-F.E [Feature Engineered]</span>
-              <span className="status-run-badge">
-                Node 5: Feature Engineering Complete
+              <span className={`status-run-badge ${nodeStatus.online ? 'bg-purple-100 text-purple-800 font-bold' : ''}`}>
+                {nodeStatus.online ? '● Node 5: Feature Engineering Microservice (Port 8004) Online' : 'Node 5: Feature Engineering Complete'}
               </span>
             </div>
             <div className="status-bar-parameters">

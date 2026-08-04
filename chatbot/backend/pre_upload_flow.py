@@ -335,26 +335,17 @@ def _is_field_filled(contract: PreUploadContract, entry: FieldTierEntry) -> bool
 
 
 def _run_gap_analysis(contract: PreUploadContract) -> list[ClarificationItem]:
-    """Compare the merged contract against REQUIRED and RECOMMENDED lists.
-    Returns a list of ClarificationItems sorted by priority."""
+    """Compare the merged contract against REQUIRED fields ONLY.
+    Granular dataset traits (sensors, frequency, schema) are left for Scout Agent auto-detection."""
     items: list[ClarificationItem] = []
 
-    # Check REQUIRED fields first
+    # Check REQUIRED fields ONLY (Goal & Problem Type)
     for entry in REQUIRED_FIELDS:
         if not _is_field_filled(contract, entry):
             items.append(ClarificationItem(
                 question=_get_question_for_field(entry.path),
                 reason=f"Required field '{entry.label or entry.path}' is still missing",
                 priority="high",
-            ))
-
-    # Check RECOMMENDED fields
-    for entry in RECOMMENDED_FIELDS:
-        if not _is_field_filled(contract, entry):
-            items.append(ClarificationItem(
-                question=_get_question_for_field(entry.path),
-                reason=f"Recommended field '{entry.label or entry.path}' is still missing",
-                priority="medium",
             ))
 
     return items
@@ -375,16 +366,12 @@ def _select_question(
     if not clarifications:
         return None
 
-    # Sort by priority (high first), then by how many turns it's been missing
-    priority_order = {"high": 0, "medium": 1, "low": 2}
-    clarifications.sort(key=lambda c: priority_order.get(c.priority, 99))
-
     # Take the highest priority item
     return clarifications[0].question
 
 
 # ──────────────────────────────────────────────
-# Escalation detection
+# Escalation & Completion check
 # ──────────────────────────────────────────────
 
 
@@ -393,41 +380,19 @@ def _check_escalation(
     replies: list[dict],
     previous_contract: Optional[PreUploadContract],
 ) -> bool:
-    """Check if we should offer quick-select menu instead of another open-ended question.
-    Returns True if escalation is needed."""
+    """Only escalate on turn 1 if user gave a plain greeting like 'hi' without any goal."""
+    if contract.goal.primary_goal or contract.goal.candidate_ml_problem_types:
+        return False
     turn_num = getattr(contract.conversation, "conversation_turn", 1)
-
-    # Check 1: Turn 2+ and primary_goal is still un-filled (user giving repeated low-info inputs like 'hi', 'hi again')
-    if turn_num >= 2 and not contract.goal.primary_goal:
-        return True
-
-    # Check 2: ambiguity detected for 2+ consecutive turns
-    if contract.conversation_analysis.ambiguity_detected:
-        if previous_contract and previous_contract.conversation_analysis.ambiguity_detected:
-            return True
-
-    # Check 3: same field asked 2+ times without being filled
-    if len(replies) >= 2:
-        last_question = replies[-1].get("question", "") if replies else ""
-        if last_question:
-            count = sum(1 for r in replies if r.get("question") == last_question)
-            if count >= MAX_ASKED_SAME_FIELD:
-                return True
-
-    return False
-
-
-# ──────────────────────────────────────────────
-# Completion check
-# ──────────────────────────────────────────────
+    return turn_num == 1 and not contract.goal.primary_goal
 
 
 def _check_completion(contract: PreUploadContract) -> bool:
-    """Check if all REQUIRED fields are filled above threshold."""
-    for entry in REQUIRED_FIELDS:
-        if not _is_field_filled(contract, entry):
-            return False
-    return True
+    """Check if primary goal/problem type is identified OR conversation turn >= 1."""
+    if contract.goal.primary_goal or contract.goal.candidate_ml_problem_types:
+        return True
+    turn = getattr(contract.conversation, "conversation_turn", 1)
+    return turn >= 1
 
 
 # ──────────────────────────────────────────────
@@ -475,6 +440,27 @@ def process_turn(
 
     # Step 2: Merge
     contract = _merge_extraction(contract, extraction)
+
+    # Keyword fallback for instant intent recognition
+    msg_lower = message.lower()
+    if any(k in msg_lower for k in ["anomaly", "outlier", "spill", "fault", "defect"]):
+        contract.goal.primary_goal = "Anomaly & Outlier Detection"
+        if "anomaly" not in contract.goal.candidate_ml_problem_types:
+            contract.goal.candidate_ml_problem_types.append("anomaly")
+    elif any(k in msg_lower for k in ["regression", "predict", "predictive", "estimate", "tds", "rul"]):
+        contract.goal.primary_goal = "Target Prediction / Regression"
+        if "regression" not in contract.goal.candidate_ml_problem_types:
+            contract.goal.candidate_ml_problem_types.append("regression")
+    elif any(k in msg_lower for k in ["classify", "classification", "category"]):
+        contract.goal.primary_goal = "Classification"
+        if "classification" not in contract.goal.candidate_ml_problem_types:
+            contract.goal.candidate_ml_problem_types.append("classification")
+    elif any(k in msg_lower for k in ["forecast", "time-series", "trajectory", "trend"]):
+        contract.goal.primary_goal = "Time-Series Forecasting"
+        if "time-series" not in contract.goal.candidate_ml_problem_types:
+            contract.goal.candidate_ml_problem_types.append("time-series")
+    elif any(k in msg_lower for k in ["upload", "file", "dataset", "dataaet", "data", "ready", "proceed", "here", "csv", "zip"]):
+        contract.goal.primary_goal = "Custom ML Workflow"
 
     # Step 3: Gap analysis
     clarifications = _run_gap_analysis(contract)

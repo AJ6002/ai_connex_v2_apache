@@ -128,6 +128,17 @@ export const PostPrepare: React.FC<PostPrepareProps> = ({
   runId = 'run_20250115_143022',
   dagId = 'DAG_201'
 }) => {
+  const [nodeStatus, setNodeStatus] = React.useState<{ online: boolean; name?: string }>({ online: false });
+
+  React.useEffect(() => {
+    fetch('http://localhost:8003/api/v1/health')
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (data) setNodeStatus({ online: true, name: data.service || 'Prepare API' });
+      })
+      .catch(() => setNodeStatus({ online: false }));
+  }, []);
+
   const postPreparePlots = [
     {
       id: 'pp-1',
@@ -188,8 +199,8 @@ export const PostPrepare: React.FC<PostPrepareProps> = ({
           <div className="status-bar-details">
             <div className="status-bar-title-row">
               <span>Pipeline Stage 2 Transit: Post-Prepare [Prepare]</span>
-              <span className="status-run-badge">
-                Node 4: Data Cleaning &amp; Imputation Complete
+              <span className={`status-run-badge ${nodeStatus.online ? 'bg-emerald-100 text-emerald-800 font-bold' : ''}`}>
+                {nodeStatus.online ? '● Node 4: Prepare Microservice (Port 8003) Online' : 'Node 4: Data Cleaning & Imputation'}
               </span>
             </div>
             <div className="status-bar-parameters">

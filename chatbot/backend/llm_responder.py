@@ -51,7 +51,9 @@ def generate_llm_response(
         "1. Do NOT assume the user was already in the middle of uploading a dataset unless a dataset or file upload has actually been mentioned.\n"
         "2. If the user repeats a simple greeting or seems unsure (turn >= 2 with low information), DO NOT repeat the same broad open-ended question. "
         "Escalate by offering a clear menu of choices (e.g. 1. Regression / Target Prediction, 2. Time-Series Forecasting, 3. Anomaly Detection).\n"
-        "3. Do NOT output raw JSON or code blocks — output clear, human-like Markdown text.\n"
+        "3. Do NOT ask the user for granular physical dataset attributes such as sensor types, sampling frequency, or database storage formats. "
+        "These physical traits are auto-detected by the Scout Agent when the dataset is uploaded. Simply confirm their primary operational goal and invite them to upload their dataset.\n"
+        "4. Do NOT output raw JSON or code blocks — output clear, human-like Markdown text.\n"
         f"Intent Detected: {intent}{ctx_str}"
     )
 

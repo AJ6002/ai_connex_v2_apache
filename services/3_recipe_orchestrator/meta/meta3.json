@@ -1,13 +1,13 @@
 {
-  "dag_id": "DAG_120",
-  "suggested_task": "Miscellaneous",
+  "dag_id": "DAG_514",
+  "suggested_task": "Regression",
   "resolved_at": "1785239635.484587",
   "recipe_sources": {
     "database": "X:\\TAS\\AICONNEX\\Documentation\\transit_mappings\\algorithm_dags_transit_mapping.json"
   },
   "recipes": {
     "preparing_recipe": {
-      "impute_strategy": "mode",
+      "impute_strategy": "mean",
       "scale_method": "standard",
       "categorical_encoding": "onehot"
     },
@@ -24,10 +24,10 @@
       "random_state": 42
     },
     "training_recipe": {
-      "algorithm": "LightGBMClassifier",
+      "algorithm": "Ridge RegressionRegressor",
       "variant": "Standard",
       "hyperparameters": {
-        "random_state": 42
+        "fit_intercept": true
       },
       "use_gpu": false,
       "early_stopping": false,

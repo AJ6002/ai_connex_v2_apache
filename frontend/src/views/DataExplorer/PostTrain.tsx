@@ -406,10 +406,21 @@ function PostTrainChartRenderer({ type, id, flagged }: { type: string; id: strin
 }
 
 export const PostTrain: React.FC<PostTrainProps> = ({
+  compiledCsvPath,
   runId = 'run_20250115_143022',
   dagId = 'DAG_201'
 }) => {
-  const [activeCategory, setActiveCategory] = useState<'split' | 'train' | 'evaluate'>('split');
+  const [activeCategory, setActiveCategory] = useState<'split' | 'train' | 'eval'>('train');
+  const [nodesOnline, setNodesOnline] = useState({ train: false, eval: false });
+
+  React.useEffect(() => {
+    Promise.all([
+      fetch('http://localhost:8006/api/v1/health').then(r => r.ok).catch(() => false),
+      fetch('http://localhost:8007/api/v1/health').then(r => r.ok).catch(() => false)
+    ]).then(([train, evalOk]) => {
+      setNodesOnline({ train, eval: evalOk });
+    });
+  }, []);
 
   // Three sub-sections categories for split, train and evaluate
   const categories = [
@@ -574,8 +585,8 @@ export const PostTrain: React.FC<PostTrainProps> = ({
           <div className="status-bar-details">
             <div className="status-bar-title-row">
               <span>Pipeline Stage 4 Transit: Post-Train [Training &amp; Evaluation]</span>
-              <span className="status-run-badge">
-                <CheckCircle size={12} className="text-emerald-500" /> Model Compiled
+              <span className={`status-run-badge ${nodesOnline.train ? 'bg-pink-100 text-pink-800 font-bold' : ''}`}>
+                {nodesOnline.train ? '● Nodes 7 & 8: Train & Evaluate APIs (Ports 8006/8007) Online' : 'Model Compiled'}
               </span>
             </div>
             
