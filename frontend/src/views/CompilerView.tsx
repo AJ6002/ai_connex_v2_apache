@@ -363,7 +363,7 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
     }
   };
 
-  const filesList = compiledData?.merged_files.map((file: string) => {
+  const filesList = compiledData?.merged_files?.map((file: string) => {
     const parts = file.split(/[\\/]/);
     const name = parts[parts.length - 1];
     return { name, size: 'Compiled', encoding: 'utf-8', type: 'Compiled CSV', cols: compiledData.total_cols };
