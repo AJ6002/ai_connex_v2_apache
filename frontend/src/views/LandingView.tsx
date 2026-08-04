@@ -162,109 +162,51 @@ export const LandingView: React.FC<LandingViewProps> = ({ onNavigateToUpload }) 
     return { problemType, targetColumn, timestampColumn, entityColumn };
   };
 
-  const handleSend = (text: string) => {
-    if (!text.trim()) return;
+  const handleSend = async (text: string) => {
+    const prompt = text.trim();
+    if (!prompt) return;
 
     // Append User Message
-    const updatedMessages = [...messages, { sender: 'user' as const, text }];
+    const updatedMessages = [...messages, { sender: 'user' as const, text: prompt }];
     setMessages(updatedMessages);
+    setInputText('');
 
-    // If currently answering a targeted question:
-    if (activeQuestion) {
-      const cleanAnswer = text.trim();
-      const updatedInputs = { ...inputs };
+    try {
+      const res = await fetch('http://localhost:8000/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: prompt }),
+      });
 
-      if (activeQuestion === 'chooseProblemType') {
-        const val = cleanAnswer.toLowerCase();
-        if (val.includes('regression') || val.includes('continuous') || val.includes('number')) {
-          updatedInputs.problemType = 'regression';
-        } else if (val.includes('classify') || val.includes('categories') || val.includes('choice')) {
-          updatedInputs.problemType = 'classification';
-        } else if (val.includes('anomaly') || val.includes('outlier')) {
-          updatedInputs.problemType = 'anomaly';
-        } else if (val.includes('time') || val.includes('forecast')) {
-          updatedInputs.problemType = 'time-series';
-        } else {
-          updatedInputs.problemType = 'clustering';
-        }
-      } else {
-        updatedInputs[activeQuestion] = cleanAnswer;
+      const data = await res.json();
+      const replyText = data.reply || 'No response from server.';
+
+      // Extract problem type or dataset inputs if available from backend response
+      if (data.dataset_id) {
+        setInputs((prev) => ({ ...prev, targetColumn: data.dataset_id }));
       }
 
-      setInputs(updatedInputs);
-      evaluateNextStep(updatedInputs, updatedMessages);
-      return;
-    }
-
-    // Otherwise, parse initial request using NLP
-    const extracted = extractNLP(text);
-    const mergedInputs = {
-      targetColumn: extracted.targetColumn || inputs.targetColumn,
-      problemType: extracted.problemType || inputs.problemType,
-      timestampColumn: extracted.timestampColumn || inputs.timestampColumn,
-      entityColumn: extracted.entityColumn || inputs.entityColumn
-    };
-    setInputs(mergedInputs);
-
-    evaluateNextStep(mergedInputs, updatedMessages);
-  };
-
-  const evaluateNextStep = (currentInputs: ExtractedInputs, currentMessages: Message[]) => {
-    // 1. If problem type is not known, ask for it
-    if (!currentInputs.problemType) {
-      setActiveQuestion('chooseProblemType');
       setMessages([
-        ...currentMessages,
+        ...updatedMessages,
         {
           sender: 'ai',
-          text: 'What type of calculation should the AI model perform on your dataset?',
-          options: [
-            { label: 'Continuous Number (e.g. Price, Temperature, RUL)', value: 'regression' },
-            { label: 'Category Selection (e.g. yes/no outcomes or choice categories)', value: 'classification' },
-            { label: 'Unusual Patterns (e.g. anomaly or outlier detection)', value: 'anomaly' },
-            { label: 'Time Sequence Forecasting (e.g. trends over cycle counts or timestamp keys)', value: 'time-series' }
-          ]
-        }
+          text: replyText,
+        },
       ]);
-      return;
-    }
-
-    // 2. Identify required parameters for the active problem type
-    const config = FAMILY_CONFIGS[currentInputs.problemType] || { required: [], name: 'Custom Modeling' };
-    const missing = config.required.find(key => !currentInputs[key]);
-
-    if (missing) {
-      setActiveQuestion(missing);
+    } catch (err) {
+      console.error(err);
       setMessages([
-        ...currentMessages,
+        ...updatedMessages,
         {
           sender: 'ai',
-          text: `✨ Mapped to: ${config.name}.\n\n${(config as any).questions?.[missing] || `Please select the ${missing} parameter.`}`
-        }
+          text: 'Sorry, I encountered an error connecting to the backend server (http://localhost:8000). Please verify the server is running.',
+        },
       ]);
-      return;
     }
-
-    // 3. All required inputs solved!
-    setActiveQuestion(null);
-    const summaryList = [
-      `🎯 Problem Category: **${config.name}**`,
-      currentInputs.targetColumn ? `📊 Target Value Column: **"${currentInputs.targetColumn}"**` : null,
-      currentInputs.timestampColumn ? `📅 Timing Index Column: **"${currentInputs.timestampColumn}"**` : null,
-      currentInputs.entityColumn ? `⚙️ Device ID Column: **"${currentInputs.entityColumn}"**` : null
-    ].filter(Boolean).join('\n');
-
-    setMessages([
-      ...currentMessages,
-      {
-        sender: 'ai',
-        text: `🎉 **Onboarding Successful!** I have successfully extracted all parameters for your training pipeline:\n\n${summaryList}\n\nWe are now ready to compile your dataset schema. Click **Proceed to Upload** below to continue.`
-      }
-    ]);
   };
 
-  const isReadyToProceed = inputs.problemType && 
-    (FAMILY_CONFIGS[inputs.problemType]?.required.every(key => !!inputs[key]) ?? true);
+  const isReadyToProceed = messages.length > 1;
+
 
   return (
     <div className="min-h-[85vh] flex flex-col justify-center items-center px-4 relative select-none animate-fadeIn">
