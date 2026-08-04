@@ -108,7 +108,9 @@ export const LandingView: React.FC<LandingViewProps> = ({ onNavigateToUpload }) 
       const conf       = Math.round((0.50 + (filled / 4) * 0.45) * 100) / 100;
       setConfidence(conf);
 
-      const isComplete = data.conversation_complete === true || data.recommended_next_action === 'prompt_for_upload';
+      // Gate: exit ONLY when conversation_complete = True (not on recommended_next_action)
+      // Matches terminal_runner.py line 162: "exit ONLY when conversation_complete = True"
+      const isComplete = data.conversation_complete === true;
       setMessages([...updatedMessages, {
         id: `ai-${Date.now()}`,
         sender: 'ai',
