@@ -1,0 +1,156 @@
+[
+  {
+    "entry_id": "kb_001",
+    "entry_type": "knowledge_base",
+    "display_name": "Equipment Failure Patterns",
+    "description": "Knowledge base article covering common equipment failure patterns and their indicators",
+    "created_at": "2024-01-15T10:30:00Z",
+    "tags": [
+      "equipment",
+      "failures",
+      "patterns"
+    ],
+    "feature_fields": null,
+    "knowledge_base_fields": {
+      "source_path": "/kb/equipment-failure-patterns.md",
+      "article_count": 12,
+      "search_index_ref": "kb-idx-001"
+    },
+    "cheat_sheet_fields": null,
+    "policy_manual_fields": null,
+    "sop_fields": null,
+    "macro_template_fields": null
+  },
+  {
+    "entry_id": "cs_001",
+    "entry_type": "cheat_sheet",
+    "display_name": "Quick Reference: Sensor Data Validation",
+    "description": "Cheat sheet for validating sensor data quality and common issues",
+    "created_at": "2024-02-01T14:00:00Z",
+    "tags": [
+      "sensors",
+      "validation",
+      "quick-reference"
+    ],
+    "feature_fields": null,
+    "knowledge_base_fields": null,
+    "cheat_sheet_fields": {
+      "source_path": "/cheat-sheets/sensor-validation.md",
+      "topic": "Sensor Data Validation",
+      "last_verified_date": "2024-06-01"
+    },
+    "policy_manual_fields": null,
+    "sop_fields": null,
+    "macro_template_fields": null
+  },
+  {
+    "entry_id": "pm_001",
+    "entry_type": "policy_manual",
+    "display_name": "Data Retention Policy",
+    "description": "Official policy on data retention periods and deletion procedures",
+    "created_at": "2024-01-01T00:00:00Z",
+    "tags": [
+      "policy",
+      "retention",
+      "compliance"
+    ],
+    "feature_fields": null,
+    "knowledge_base_fields": null,
+    "cheat_sheet_fields": null,
+    "policy_manual_fields": {
+      "source_path": "/policies/data-retention.md",
+      "policy_domain": "Data Governance",
+      "effective_date": "2024-01-01",
+      "requires_approval_to_edit": true
+    },
+    "sop_fields": null,
+    "macro_template_fields": null
+  },
+  {
+    "entry_id": "sop_001",
+    "entry_type": "sop",
+    "display_name": "Standard Operating Procedure: DAG Verification",
+    "description": "Step-by-step procedure for verifying DAG schemas before deployment",
+    "created_at": "2024-03-01T09:00:00Z",
+    "tags": [
+      "dag",
+      "verification",
+      "deployment"
+    ],
+    "feature_fields": null,
+    "knowledge_base_fields": null,
+    "cheat_sheet_fields": null,
+    "policy_manual_fields": null,
+    "sop_fields": {
+      "source_path": "/sops/dag-verification.md",
+      "applies_to_task": "run_dag_verification",
+      "steps_count": 8
+    },
+    "macro_template_fields": null
+  },
+  {
+    "entry_id": "mt_001",
+    "entry_type": "macro_template",
+    "display_name": "Equipment Health Report Template",
+    "description": "Macro template for generating equipment health reports",
+    "created_at": "2024-04-01T11:00:00Z",
+    "tags": [
+      "report",
+      "equipment",
+      "health"
+    ],
+    "feature_fields": null,
+    "knowledge_base_fields": null,
+    "cheat_sheet_fields": null,
+    "policy_manual_fields": null,
+    "sop_fields": null,
+    "macro_template_fields": {
+      "template_text": "Equipment Health Report for {{equipment_id}}\nDate: {{report_date}}\nStatus: {{status}}\nRecommendations: {{recommendations}}",
+      "use_case": "Generate equipment health reports",
+      "variables": [
+        "equipment_id",
+        "report_date",
+        "status",
+        "recommendations"
+      ]
+    }
+  },
+  {
+    "entry_id": "kb_test",
+    "entry_type": "knowledge_base",
+    "display_name": "Test KB",
+    "description": "Test entry",
+    "created_at": "2024-01-01T00:00:00Z",
+    "tags": [
+      "test"
+    ],
+    "feature_fields": null,
+    "knowledge_base_fields": {
+      "source_path": "/kb/test.md",
+      "article_count": 1,
+      "search_index_ref": "test-idx"
+    },
+    "cheat_sheet_fields": null,
+    "policy_manual_fields": null,
+    "sop_fields": null,
+    "macro_template_fields": null
+  },
+  {
+    "entry_id": "sop_phase3_test",
+    "entry_type": "sop",
+    "display_name": "Phase 3 Test SOP",
+    "description": "",
+    "created_at": "",
+    "tags": [],
+    "feature_fields": null,
+    "knowledge_base_fields": null,
+    "cheat_sheet_fields": null,
+    "policy_manual_fields": null,
+    "sop_fields": {
+      "source_path": "/sops/test.md",
+      "applies_to_task": "",
+      "steps_count": 3
+    },
+    "macro_template_fields": null
+  }
+]

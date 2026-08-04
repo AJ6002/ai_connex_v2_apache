@@ -1,0 +1,6 @@
+__pycache__/
+*.py[cod]
+.env
+backend/data/sessions/
+backend/scratch/
+backend/mlruns/
