@@ -2491,6 +2491,22 @@
 **Current system state:** Working tree clean. `chatbot/` tracked directly in main repo. Ready for a single `git push origin Data_explorere_enhancement`.
 ---
 
+## Query 231 — 2026-08-04 07:16
+**Input:** Wire UI and BE microservices, run backend + frontend, and verify end-to-end via browser automation.
+**Response summary:** Added CORS headers to `chatbot/backend/app.py` and set default PORT=8000 in `.env`. Started Flask backend on `http://localhost:8000` and Vite frontend on `http://localhost:3000`. Executed browser subagent session verifying all 5 Data Explorer tabs (Pre-Prepare, Post-Prepare, Post-F.E, Post-Train, Ad-Hoc Explorer). All 5 stages render cleanly with zero console errors. Created `walkthrough.md` artifact.
+**Files changed:** chatbot/backend/app.py, chatbot/backend/.env, walkthrough.md [NEW artifact]
+**Architectural decisions:** Added Access-Control-Allow-Origin: * to app.py for seamless local cross-port fetch calls between Vite (:3000) and Flask (:8000).
+**Current system state:** Frontend (:3000) and Backend (:8000) microservices running live. All 5 Data Explorer tabs verified via browser automation.
+---
+
+## Query 232 — 2026-08-04 09:20
+**Input:** Replace hardcoded chatbot functionality with direct backend pipeline engine matching terminal runner pattern.
+**Response summary:** Updated `MainChatView.tsx` to post directly to `http://localhost:8000/api/chat` and `http://localhost:8000/api/upload`. Removed hardcoded pre-upload wizard templates and quick-choice buttons. Connected to real backend NLP extraction (OpenRouter Qwen 32B), LangGraph StateGraph, and 10-node ML pipeline. Both TypeScript builds (`frontend/` and `chatbot/frontend/`) compile clean with 0 errors. Committed as `4492eb7`.
+**Files changed:** chatbot/frontend/src/components/MainChatView.tsx, walkthrough.md
+**Architectural decisions:** Chatbot UI is now a clean thin client routing all intelligence through backend /api/chat. Eliminates all hardcoded frontend wizard choices.
+**Current system state:** Pipeline-driven chatbot active. Both frontend and backend TypeScript clean and committed.
+---
+
 
 
 
