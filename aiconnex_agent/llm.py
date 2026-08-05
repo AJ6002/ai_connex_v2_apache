@@ -76,11 +76,14 @@ def get_openrouter_llm(
     # Initialize MLflow Tracing SDK
     _enable_mlflow_tracing()
 
+    max_tokens = int(os.getenv("OPENROUTER_MAX_TOKENS", "1000"))
+
     return ChatOpenAI(
         model=model_name,
         openai_api_key=key,
         openai_api_base=url,
         temperature=temperature,
+        max_tokens=max_tokens,
         default_headers={"HTTP-Referer": "https://aiconnex.ai", "X-Title": "AIConnex MLOps OS"},
     )
 

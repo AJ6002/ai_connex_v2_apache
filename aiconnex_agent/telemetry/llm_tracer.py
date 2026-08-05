@@ -50,10 +50,15 @@ def init_llm_tracing(tracking_uri: str | None = None) -> None:
         mlflow.set_tracking_uri(uri)
 
         if hasattr(mlflow, "langchain") and hasattr(mlflow.langchain, "autolog"):
-            mlflow.langchain.autolog(log_traces=True, disable=False)
+            # log_traces=False: span-per-LLM-call traces are disabled because
+            # LangGraph interrupt/resume splits a single "conversation turn" across
+            # multiple HTTP requests. MLflow opens a span in request-1 and cannot
+            # find it in request-2, causing noisy "Span not found" WARNINGs.
+            # Metrics & params are still captured via AgentTelemetry.tracker.
+            mlflow.langchain.autolog(log_traces=False, disable=False)
             logger.info(
-                "[LLMTracer] mlflow.langchain.autolog() enabled — "
-                f"LLM traces → {uri}"
+                "[LLMTracer] mlflow.langchain.autolog() enabled (traces disabled) — "
+                f"metrics/params → {uri}"
             )
         else:
             logger.debug("[LLMTracer] mlflow.langchain.autolog not available in this mlflow version.")

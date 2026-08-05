@@ -2575,3 +2575,19 @@
 **Architectural decisions:** Health endpoint aliased at /api/v1/health and gracefully falls back to unified backend port.
 **Current system state:** All microservice node health checks resolve cleanly with 200 OK.
 ---
+
+## Query 240 — 2026-08-05 11:05
+**Input:** Rebuild chatbot on chatbot_5jul using assistant-ui + single LangGraph brain.
+**Response summary:** Rebuilt the chatbot frontend and backend using assistant-ui and aiconnex_agent LangGraph StateGraph as the single brain. Swapped MemorySaver for SqliteSaver in graph.py, built field-driven CUC manifest completion logic in cuc_completion.py, and added POST /api/agent/chat and POST /api/agent/resume SSE endpoints to app.py. Created ChatView.tsx with generative UI cards and mounted it inside LandingView.tsx.
+**Files changed:** .gitignore, README.md, aiconnex_agent/graph.py, aiconnex_agent/parser/clarification_node.py, aiconnex_agent/parser/cuc_completion.py, chatbot/backend/app.py, chatbot/backend/tests/test_agent_chat.py, chatbot/backend/tests/test_agent_resume.py, chatbot/backend/tests/test_cuc_completion.py, chatbot/backend/tests/test_upload_bridge.py, frontend/package.json, frontend/package-lock.json, frontend/src/App.tsx, frontend/src/views/LandingView.tsx, frontend/src/views/ChatView.tsx
+**Architectural decisions:** SqliteSaver adopted day-1 for thread persistence across Flask reloads. Minimal CUC gate defined as primary_intent != 'general', task_family != '', confidence >= 0.85 (dataset_expectation fields auto-detected by Scout). LandingView kept as home layout shell with ChatView mounted inside.
+**Current system state:** Chatbot rebuild is 100% complete and verified with 26/26 backend unit tests passing and 0 TypeScript compilation errors. Committed to branch chatbot_5jul (b19cbbf).
+---
+
+## Query 241 — 2026-08-05 13:12
+**Input:** Fix CORS policy blocked fetch and 500 Internal Server Error on /api/agent/chat.
+**Response summary:** Identified missing logger import and incorrect _uuid reference in app.py causing an unhandled NameError on /api/agent/chat POST. Replaced _uuid with uuid, added logger definition, added OPTIONS method support on all agent routes, and registered a global 500 exception handler with explicit CORS headers. Verified 26/26 agent backend tests pass.
+**Files changed:** chatbot/backend/app.py
+**Architectural decisions:** Added explicit OPTIONS preflight handling and global 500 error handler with Access-Control-Allow-* headers so backend errors never trigger opaque browser CORS blocks.
+**Current system state:** CORS and 500 internal errors resolved. 26/26 backend unit tests passing.
+---

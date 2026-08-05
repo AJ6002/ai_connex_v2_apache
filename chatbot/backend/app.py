@@ -16,27 +16,52 @@ natural language responses. Hardcoded templates act ONLY as emergency fallbacks.
 """
 
 import os
+import logging
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 
 load_dotenv()
 
-from intents import get_risk_tier, RiskTier
-from extraction import extract_intent
-from validation import validate
-from dispatcher import dispatch, _badges_for
+logger = logging.getLogger(__name__)
+
 from llm_responder import generate_llm_response
 from dictionary.loader import load_dictionary
 from dictionary.routes import bp as dictionary_bp
 
 app = Flask(__name__)
 
+try:
+    from flask_cors import CORS
+    CORS(app, resources={r"/*": {"origins": "*"}})
+except ImportError:
+    pass
+
+@app.before_request
+def handle_preflight():
+    if request.method == "OPTIONS":
+        from flask import Response
+        res = Response()
+        res.headers["Access-Control-Allow-Origin"] = "*"
+        res.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With"
+        res.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS, PUT, DELETE"
+        return res, 200
+
 @app.after_request
 def add_cors_headers(response):
     response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS, PUT, DELETE"
     return response
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    import traceback
+    logger.error(f"Unhandled Exception: {e}\n{traceback.format_exc()}")
+    res = jsonify({"error": str(e), "type": type(e).__name__})
+    res.headers["Access-Control-Allow-Origin"] = "*"
+    res.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-Requested-With"
+    res.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS, PUT, DELETE"
+    return res, 500
 
 # Load dictionary data at startup
 load_dictionary()
@@ -45,15 +70,9 @@ load_dictionary()
 app.register_blueprint(dictionary_bp)
 
 
-HIGH_CONFIDENCE = 0.85
-MEDIUM_CONFIDENCE = 0.5
-
 # Upload storage directory
 UPLOAD_FOLDER = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "scratch", "uploads"))
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
-# Simple in-memory pending-confirmation store, keyed by a client-provided conversation id.
-_PENDING_CONFIRMATIONS: dict[str, dict] = {}
 
 
 @app.route("/api/health", methods=["GET"])
@@ -70,67 +89,111 @@ def health():
 # ---------------------------------------------------------------------------
 # LangGraph Agent — SSE Streaming Endpoints (chatbot_5jul)
 # Replaces the pre_upload_flow.py chat loop with the real LangGraph brain.
-# ---------------------------------------------------------------------------
+import sys
+import os
+import uuid
+import json
 
-import uuid as _uuid
-import json as _json
-import sys as _sys
-import os as _os
-_sys.path.insert(0, _os.path.join(_os.path.dirname(__file__), "..", "..", "aiconnex_agent"))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
 
 from flask import Response, stream_with_context
 
 
 def _sse(event_type: str, data: dict) -> str:
     """Format a single SSE frame."""
-    return f"data: {_json.dumps({'type': event_type, **data})}\n\n"
+    return f"data: {json.dumps({'type': event_type, **data})}\n\n"
+
+
+def _interrupt_payload_from_update(update) -> dict | None:
+    """Extract a typed InterruptPayload dict from a LangGraph interrupt event.
+
+    In stream_mode='updates', an interrupt surfaces as the event key
+    '__interrupt__' whose value is a tuple of Interrupt objects. The payload
+    dict our nodes passed to interrupt() lives at Interrupt.value.
+
+    Handles: tuple/list of Interrupt objects, a single Interrupt object, or a
+    raw dict that already looks like an InterruptPayload.
+    """
+    # Tuple/list of Interrupt objects (the normal case)
+    if isinstance(update, (tuple, list)) and update:
+        first = update[0]
+        value = getattr(first, "value", None)
+        if isinstance(value, dict):
+            return value
+        if isinstance(first, dict) and "interrupt_type" in first:
+            return first
+        return None
+
+    # Single Interrupt object
+    value = getattr(update, "value", None)
+    if isinstance(value, dict) and "interrupt_type" in value:
+        return value
+
+    # Raw dict that already carries the payload
+    if isinstance(update, dict) and "interrupt_type" in update:
+        return update
+
+    return None
+
+
+def _compiled_csv_from_dic(dic) -> str | None:
+    """Pull the compiled combined-CSV path out of a DIC update, if present."""
+    if not isinstance(dic, dict):
+        return None
+    compiled = dic.get("compiled_dataset") or {}
+    if isinstance(compiled, dict):
+        path = compiled.get("combined_csv_path") or compiled.get("compiled_csv_path")
+        if path:
+            return path
+    return dic.get("compiled_csv_path")
 
 
 def _stream_agent_events(events_gen, session_id: str):
     """Translate LangGraph node-update events into SSE frames for the frontend.
 
     SSE event types emitted:
-      text      — assistant text delta (from clarification questions)
-      interrupt — HITL pause (clarification | strategy_choice | compile_failure)
+      text      — assistant text delta
+      interrupt — HITL pause (clarification | advise_upload | strategy_choice | compile_failure)
+      compiled  — Scout produced the compiled CSV (carries compiled_csv_path)
       done      — stream end, carries session_id
       error     — unexpected exception
     """
     try:
         for event in events_gen:
             node = event.get("node", "")
-            update = event.get("state_update", {})
-            update_str = str(update)
+            update = event.get("state_update")
 
-            # --- Detect typed InterruptPayload (clarification_node + scout_node) ---
-            # After chatbot_5jul fix, both nodes emit {interrupt_type, questions, options, reason}
-            interrupt_payload = None
-            if isinstance(update, dict):
-                if "interrupt_type" in update:
-                    # Direct interrupt payload dict at top level
-                    interrupt_payload = update
-                elif "__interrupt__" in update_str:
-                    # Fallback: extract from nested structure if present
-                    interrupt_payload = {"interrupt_type": "unknown", "questions": [], "options": []}
-
-            if interrupt_payload:
-                yield _sse("interrupt", {"payload": interrupt_payload, "session_id": session_id, "node": node})
+            # --- HITL interrupt: event key is '__interrupt__', payload at Interrupt.value ---
+            if node == "__interrupt__":
+                payload = _interrupt_payload_from_update(update)
+                if payload is not None:
+                    yield _sse("interrupt", {"payload": payload, "session_id": session_id, "node": node})
                 continue
 
-            # --- Extract assistant text from CUC updates ---
-            if isinstance(update, dict):
-                cuc = update.get("cuc")
-                if cuc and isinstance(cuc, dict):
-                    hints = cuc.get("planning_hints", {})
-                    clarification_q = hints.get("clarification_question") or hints.get("user_choice")
-                    if clarification_q and isinstance(clarification_q, str):
-                        yield _sse("text", {"delta": clarification_q, "node": node})
+            if not isinstance(update, dict):
+                continue
+
+            # --- Scout compiled the dataset ---
+            compiled_csv = _compiled_csv_from_dic(update.get("dic"))
+            if compiled_csv:
+                yield _sse("compiled", {"compiled_csv_path": compiled_csv, "session_id": session_id})
+
+            # --- Assistant acknowledgement text from CUC planning hints (post-resume) ---
+            cuc = update.get("cuc")
+            if isinstance(cuc, dict):
+                hints = cuc.get("planning_hints", {}) or {}
+                ack = hints.get("clarification_question")
+                if ack and isinstance(ack, str):
+                    yield _sse("text", {"delta": ack, "node": node})
 
         yield _sse("done", {"session_id": session_id})
     except Exception as exc:
         yield _sse("error", {"message": str(exc), "session_id": session_id})
 
 
-@app.route("/api/agent/chat", methods=["POST"])
+@app.route("/api/agent/chat", methods=["POST", "OPTIONS"])
 def agent_chat():
     """POST /api/agent/chat — start or continue a LangGraph conversation via SSE.
 
@@ -141,6 +204,9 @@ def agent_chat():
       { type: "done",      session_id: str }
       { type: "error",     message: str }
     """
+    if request.method == "OPTIONS":
+        return jsonify({"status": "ok"}), 200
+
     from aiconnex_agent.runner import execute_and_stream, resume_with_user_input, _compiled_graph
     from aiconnex_agent.state import MasterAgentState
 
@@ -153,7 +219,7 @@ def agent_chat():
 
     # Generate session_id on first turn
     if not session_id:
-        session_id = f"ag_{_uuid.uuid4().hex[:12]}"
+        session_id = f"ag_{uuid.uuid4().hex[:12]}"
 
     # Check if thread is already interrupted (resume path vs new-turn path)
     config = {"configurable": {"thread_id": session_id}}
@@ -183,13 +249,16 @@ def agent_chat():
     )
 
 
-@app.route("/api/agent/resume", methods=["POST"])
+@app.route("/api/agent/resume", methods=["POST", "OPTIONS"])
 def agent_resume():
     """POST /api/agent/resume — resume a paused HITL interrupt with an explicit answer.
 
     Body: { session_id: str, answer: str }
     SSE events: same schema as /api/agent/chat
     """
+    if request.method == "OPTIONS":
+        return jsonify({"status": "ok"}), 200
+
     from aiconnex_agent.runner import resume_with_user_input
 
     data = request.get_json(force=True) or {}
@@ -210,92 +279,7 @@ def agent_resume():
         },
     )
 
-@app.route("/api/chat", methods=["POST"])
-def chat():
-    data = request.get_json(force=True) or {}
-    message = (data.get("message") or "").strip()
-    history = data.get("history", [])
-    conversation_id = data.get("conversationId", "default")
-
-    if not message:
-        return jsonify({"reply": "I didn't receive a message.", **_badges_for(None)}), 400
-
-    # Handle a pending high-impact confirmation first
-    pending = _PENDING_CONFIRMATIONS.get(conversation_id)
-    if pending:
-        if message.strip().lower() in ("yes", "y", "confirm", "confirmed"):
-            del _PENDING_CONFIRMATIONS[conversation_id]
-            result = dispatch(pending["extracted"], raw_message=message)
-            return jsonify(result)
-        elif message.strip().lower() in ("no", "n", "cancel"):
-            del _PENDING_CONFIRMATIONS[conversation_id]
-            reply = generate_llm_response(
-                message,
-                intent="cancellation",
-                context_data={"status": "user_cancelled_action"}
-            )
-            return jsonify({"reply": reply, **_badges_for(None)})
-        # else: fall through and treat this message as a brand-new request
-
-    # 1. Extraction (the NLP step via Qwen 32B)
-    extracted = extract_intent(message, history)
-
-    # 2. Confidence-based routing — invoke dynamic LLM responder for non-high-confidence states
-    if extracted.confidence < MEDIUM_CONFIDENCE:
-        reply = generate_llm_response(
-            message,
-            intent=extracted.intent,
-            context_data={"status": "low_confidence", "confidence": extracted.confidence}
-        )
-        return jsonify({"reply": reply, **_badges_for(None)})
-
-    if extracted.confidence < HIGH_CONFIDENCE and extracted.intent not in ("greeting", "general_help"):
-        reply = generate_llm_response(
-            message,
-            intent=extracted.intent,
-            context_data={
-                "status": "confirm_intent",
-                "confidence": extracted.confidence,
-                "dataset_id": extracted.entities.dataset_id,
-            }
-        )
-        return jsonify({"reply": reply, **_badges_for(extracted.entities.dataset_id)})
-
-    # 3. Schema + state validation (deterministic safety gate)
-    outcome = validate(extracted)
-    if not outcome.ok:
-        reply = generate_llm_response(
-            message,
-            intent=extracted.intent,
-            context_data={
-                "status": "missing_entities",
-                "missing": outcome.missing_entities,
-                "errors": outcome.errors,
-                "dataset_id": extracted.entities.dataset_id,
-            }
-        )
-        return jsonify({"reply": reply, **_badges_for(extracted.entities.dataset_id)})
-
-    # 4. High-impact intents require explicit confirmation before dispatch
-    if outcome.needs_confirmation:
-        _PENDING_CONFIRMATIONS[conversation_id] = {"extracted": extracted}
-        reply = generate_llm_response(
-            message,
-            intent=extracted.intent,
-            context_data={
-                "status": "high_impact_confirmation_required",
-                "dataset_id": extracted.entities.dataset_id,
-                "intent": extracted.intent,
-            }
-        )
-        return jsonify({"reply": reply, **_badges_for(extracted.entities.dataset_id)})
-
-    # 5. Dispatch to LangGraph pipeline & LLM response generator
-    result = dispatch(extracted, raw_message=message)
-    return jsonify(result)
-
-
-@app.route("/api/upload", methods=["POST"])
+@app.route("/api/upload", methods=["POST", "OPTIONS"])
 def upload_dataset():
     """Upload dataset and advance the LangGraph thread into Scout.
 
@@ -312,6 +296,8 @@ def upload_dataset():
       { type: "done",      session_id: str, compiled_csv_path: str }
       { type: "error",     message: str }
     """
+    if request.method == "OPTIONS":
+        return jsonify({"status": "ok"}), 200
     if "file" not in request.files:
         return jsonify({"error": "No file uploaded."}), 400
 
@@ -332,48 +318,27 @@ def upload_dataset():
         from aiconnex_agent.runner import resume_with_user_input
 
         def _scout_events():
-            # Pass the upload path as the resume answer so planning_engine_node
-            # can read it from state.upload_path (set by Command resume mechanism).
+            # Resume the parked advise_upload_node with the saved file path.
+            # advise_upload_node captures the resume value into state.upload_path
+            # so planning_engine_node/scout_agent_node can read the real file.
             yield _sse("text", {"delta": f"Received '{filename}' — starting Scout analysis…", "node": "upload"})
             events_gen = resume_with_user_input(save_path, thread_id=session_id)
-            for event in events_gen:
-                node = event.get("node", "")
-                update = event.get("state_update", {})
-                update_str = str(update)
-
-                # Detect typed InterruptPayload (strategy_choice from Scout)
-                interrupt_payload = None
-                if isinstance(update, dict):
-                    if "interrupt_type" in update:
-                        interrupt_payload = update
-                    elif "__interrupt__" in update_str:
-                        interrupt_payload = {"interrupt_type": "unknown", "questions": [], "options": []}
-
-                if interrupt_payload:
-                    yield _sse("interrupt", {"payload": interrupt_payload, "session_id": session_id, "node": node})
+            saw_compiled = False
+            for frame in _stream_agent_events(events_gen, session_id):
+                # Suppress the terminal 'done' from the shared translator so we can
+                # emit a single upload-specific 'done' with filename below.
+                if '"type": "done"' in frame or '"type":"done"' in frame:
                     continue
+                if '"type": "compiled"' in frame or '"type":"compiled"' in frame:
+                    saw_compiled = True
+                yield frame
 
-                # Detect DIC-ready (compiled_csv_path present in dic)
-                if isinstance(update, dict):
-                    dic = update.get("dic", {})
-                    if isinstance(dic, dict):
-                        compiled_csv = (
-                            dic.get("compiled_dataset", {}).get("compiled_csv_path")
-                            or dic.get("compiled_csv_path")
-                        )
-                        if compiled_csv:
-                            yield _sse("done", {
-                                "session_id": session_id,
-                                "compiled_csv_path": compiled_csv,
-                                "filename": filename,
-                            })
-                            return
+            if not saw_compiled:
+                # Fallback: nothing reported a compiled path — hand back the raw upload
+                # so the UI can still proceed rather than hang.
+                yield _sse("compiled", {"compiled_csv_path": save_path, "session_id": session_id})
 
-            yield _sse("done", {
-                "session_id": session_id,
-                "compiled_csv_path": save_path,  # fallback: raw upload path
-                "filename": filename,
-            })
+            yield _sse("done", {"session_id": session_id, "filename": filename})
 
         return Response(
             stream_with_context(_scout_events()),

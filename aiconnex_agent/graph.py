@@ -40,7 +40,11 @@ def advise_upload_node(state: MasterAgentState) -> dict:
 
     Emits an InterruptPayload with interrupt_type='advise_upload' so the
     frontend SSE adapter renders the 'please upload your dataset' card.
-    Once the user uploads a file, /api/upload resumes this thread into Scout.
+    The graph parks here on interrupt(). When /api/upload resumes this thread
+    with the saved file path, interrupt() returns that path — which we MUST
+    capture into state.upload_path so route_after_upload advances into Scout
+    with the real file (previously the resume value was discarded, so Scout
+    always saw upload_path=None and fell into its 'no file' failure branch).
     """
     from langgraph.types import interrupt
     from aiconnex_agent.schemas import InterruptPayload
@@ -51,8 +55,12 @@ def advise_upload_node(state: MasterAgentState) -> dict:
         options=[],
         reason="Manifest complete, awaiting dataset upload",
     )
-    interrupt(payload.model_dump())
-    return {}  # Graph parks here until /api/upload resumes with upload_path
+    upload_path = interrupt(payload.model_dump())
+
+    # On resume, /api/upload passes the saved filesystem path as the resume value.
+    if isinstance(upload_path, str) and upload_path.strip():
+        return {"upload_path": upload_path.strip(), "active_agent": "planner"}
+    return {}
 
 
 # ---------------------------------------------------------------------------
@@ -178,14 +186,23 @@ def build_graph(with_checkpointer: bool = True):
     if with_checkpointer:
         try:
             # SqliteSaver: persists threads across Flask auto-reloads (debug=True)
-            # so Tasks 2-8 don't fight "session not found" phantom bugs.
+            # so multi-request conversations survive backend restarts.
             # *.db is already in .gitignore.
+            #
+            # NOTE: SqliteSaver.from_conn_string() returns a *context manager*,
+            # not a saver. For a long-lived, module-level graph singleton we
+            # instead open a persistent connection and construct SqliteSaver(conn)
+            # directly. check_same_thread=False is required because Flask serves
+            # requests on multiple worker threads that share this one graph.
+            import sqlite3
+
             _db_dir = os.path.join(
                 os.path.dirname(__file__), "..", "chatbot", "backend", "data", "sessions"
             )
             os.makedirs(_db_dir, exist_ok=True)
             _db_path = os.path.join(_db_dir, "agent_checkpoints.sqlite")
-            saver = SqliteSaver.from_conn_string(_db_path)
+            _conn = sqlite3.connect(_db_path, check_same_thread=False)
+            saver = SqliteSaver(_conn)
             logger.info(f"[Graph] Compiled with SqliteSaver at {_db_path}")
             return workflow.compile(checkpointer=saver)
         except Exception as exc:

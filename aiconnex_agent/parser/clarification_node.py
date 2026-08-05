@@ -50,9 +50,23 @@ def real_clarification_node(state: MasterAgentState) -> Dict[str, Any]:
     user_answer = interrupt(payload.model_dump())
 
     cuc_dict = state.cuc.model_dump() if hasattr(state.cuc, "model_dump") else state.cuc.dict()
-    cuc_dict["planning_hints"] = {"user_choice": user_answer}
-    return {
+    hints = dict(cuc_dict.get("planning_hints") or {})
+    hints["user_choice"] = user_answer
+    cuc_dict["planning_hints"] = hints
+
+    # Append the user's clarification answer to the message history so that
+    # conversation_parser_node re-extracts from the NEW answer on the next loop.
+    # Without this the parser would re-read the original message, re-produce the
+    # same low-confidence CUC, and clarify again forever (repeat-question bug).
+    result: Dict[str, Any] = {
         "cuc": cuc_dict,
         "active_agent": "planner",
         "confidence_score": 1.0,
     }
+    if isinstance(user_answer, str) and user_answer.strip():
+        # messages has no LangGraph reducer, so returning a list REPLACES it.
+        # Build the full appended history explicitly to preserve prior turns.
+        result["messages"] = list(state.messages) + [
+            {"role": "user", "content": user_answer.strip()}
+        ]
+    return result
