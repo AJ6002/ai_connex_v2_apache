@@ -159,6 +159,19 @@ aiconnex_demo/
 
 ---
 
+## 🤖 Chatbot Architecture (`chatbot_5jul`)
+
+The AIConnex Chatbot Rebuild features a single LangGraph conversational agent brain:
+
+- **Single Conversational Brain (`aiconnex_agent`)**: LangGraph StateGraph handles intent gathering (parser node), CUC completion check (`cuc_completion.py`), HITL clarification (`clarification_node.py`), upload advice (`advise_upload_node`), and Scout dataset profiling (`scout_node.py`).
+- **`SqliteSaver` Persistence**: Graph state persists to `agent_checkpoints.sqlite` across server auto-reloads and client sessions.
+- **`@assistant-ui/react` Integration**: Frontend `ChatView.tsx` streams SSE events (`text`, `interrupt`, `done`) and renders generative UI cards for HITL strategy selection and compiled CSV handoff.
+- **Port Mapping**:
+  - `3000`: React + Vite frontend (`http://localhost:3000`)
+  - `8000`: Flask Agent & Chat backend (`http://localhost:8000`)
+
+---
+
 ## 📜 License
 
 Distributed under the MIT License. See `LICENSE` for details.

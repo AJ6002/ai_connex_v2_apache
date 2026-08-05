@@ -781,6 +781,15 @@ export default function App() {
                 setInitialOnboardingInputs(initialInputs || null);
                 setCurrentView('compiler');
               }}
+              onDatasetCompiled={(sessionId, csvPath) => {
+                showToast(`Dataset compiled via Scout: ${csvPath.split(/[\\/]/).pop()}`);
+                setCompiledCsvPath(csvPath);
+                const randHex = Math.floor(Math.random() * 0xffffffff).toString(16).padStart(8, '0');
+                setActiveRunId('run_' + randHex);
+                setActiveDagId('DAG_514');
+                setActiveFamily('Regression');
+                setCurrentView('data_explorer');
+              }}
             />
           )}
 
