@@ -38,13 +38,12 @@ import { SettingsView } from './views/SettingsView';
 import { SupportView } from './views/SupportView';
 import { PipelineNodeView } from './views/PipelineNodeView';
 import { OrchestratorBoardView } from './views/OrchestratorBoardView';
-import { LandingView } from './views/LandingView';
 import { DataExplorerView } from './views/DataExplorerView';
 import { OrbitArcSidebar } from './components/OrbitArcSidebar';
 import { PageTransition } from './components/PageTransition';
 
 export default function App() {
-  const [currentView, setCurrentView] = useState<ViewMode>('landing');
+  const [currentView, setCurrentView] = useState<ViewMode>('compiler');
   const [pendingView, setPendingView] = useState<ViewMode | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
@@ -773,26 +772,6 @@ export default function App() {
         sidebarStyle === 'slim' ? 'pl-24 pr-6' : 'px-6'
       }`}>
         <div className="max-w-[1600px] mx-auto">
-          {currentView === 'landing' && (
-            <LandingView
-              onNavigateToUpload={(prompt, initialInputs) => {
-                showToast(`Prompt registered: "${prompt.substring(0, 40)}..."`);
-                setUserPrompt(prompt);
-                setInitialOnboardingInputs(initialInputs || null);
-                setCurrentView('compiler');
-              }}
-              onDatasetCompiled={(sessionId, csvPath) => {
-                showToast(`Dataset compiled via Scout: ${csvPath.split(/[\\/]/).pop()}`);
-                setCompiledCsvPath(csvPath);
-                const randHex = Math.floor(Math.random() * 0xffffffff).toString(16).padStart(8, '0');
-                setActiveRunId('run_' + randHex);
-                setActiveDagId('DAG_514');
-                setActiveFamily('Regression');
-                setCurrentView('data_explorer');
-              }}
-            />
-          )}
-
           {currentView === 'data_explorer' && (
             <DataExplorerView
               compiledCsvPath={compiledCsvPath || undefined}

@@ -2,31 +2,45 @@
 """
 terminal_runner.py — AIConnex End-to-End Terminal Pipeline
 ===========================================================
-Phase 1 Scope:
-  1. CUC Gathering     — LLM conversation loop, confidence-gated
-  2. Planner           — Execution plan + project summary
-  3. Dataset           — Static path: data/raw/HTDS-v1.csv
-  4. Scout Agent       — Real UnifiedCompiler + streaming output
-  5. HITL              — LLM-driven, non-technical, plant-manager questions
-                         (via hitl_flow.py / hitl_extraction.py / Qwen 32B)
-  6. DIC Export        — Full contract JSON + MLflow links
+Phase 1 Scope (rewired to drive the real LangGraph StateGraph — no more
+direct node calls, no more separate CUC re-implementation):
+  1+2+3+4. CUC + Planner + Dataset + Scout — one continuous interactive
+           drive of aiconnex_agent's compiled graph (execute_and_stream /
+           resume_with_user_input), the SAME graph used by
+           chatbot/backend/app.py's /api/agent/chat, /api/agent/resume,
+           and /api/agent/seed. A terminal session and a Postman-seeded
+           session are now interchangeable in the same SqliteSaver
+           checkpoint DB.
+  5. HITL — LLM-driven, non-technical, plant-manager questions
+            (via hitl_flow.py / hitl_extraction.py / Qwen 32B) — unchanged,
+            operates independently on the Scout output.
+  6. DIC Export — Full contract JSON + MLflow links
 
 MLflow: All nodes logged → open with:
     mlflow ui --backend-store-uri ./mlruns
 
 Phase 2 (next): Confirmation Gate → Platform Agent → Leaderboard
+
+KNOWN GAP (not introduced by this rewrite — applies equally to the chat/
+Postman paths): aiconnex_agent.schemas.Goal.confidence defaults to 1.0 and
+is never overwritten with the real ConfidenceScorer score (that score only
+lands in state.confidence_score, a separate field). Neither the LLM
+extractor nor its heuristic fallback ever sets goal.task_family. Since
+is_manifest_minimally_complete() requires task_family to be non-empty,
+a real conversation may never satisfy it unless the configured LLM happens
+to emit task_family explicitly. If clarification loops without visibly
+progressing, this is almost certainly why — see the diagnostic note this
+script prints after repeated clarification turns.
 """
 
 from __future__ import annotations
 
-import json
 import logging
 import os
 import sys
-import threading
-import time
 import uuid
 from pathlib import Path
+from typing import Any, Optional
 
 # ─── repo root + chatbot backend on path ─────────────────────────────────────
 REPO_ROOT = Path(__file__).resolve().parent
@@ -41,6 +55,7 @@ for _lib in ("httpx", "httpcore", "openai", "mlflow", "urllib3", "langgraph"):
 # ─── constants ────────────────────────────────────────────────────────────────
 STATIC_DATASET = REPO_ROOT / "data" / "raw" / "HTDS-v1.csv"
 MLFLOW_URI     = str(REPO_ROOT / "mlruns")
+CLARIFICATION_WARN_THRESHOLD = 6  # consecutive clarification turns before the diagnostic note
 
 # ─── ANSI colours ─────────────────────────────────────────────────────────────
 RST  = "\033[0m";  BOLD = "\033[1m";  DIM  = "\033[2m"
@@ -66,6 +81,21 @@ def ai(msg):
     print()
 
 
+def _abort():
+    print(c("\n  Session aborted.", RED))
+    sys.exit(0)
+
+
+def _prompt(label: str) -> str:
+    try:
+        msg = input(c(label, WHT)).strip()
+    except (EOFError, KeyboardInterrupt):
+        _abort()
+    if msg.lower() in ("quit", "exit", "q"):
+        _abort()
+    return msg
+
+
 # ══════════════════════════════════════════════════════════════════════════════
 # MLflow bootstrap
 # ══════════════════════════════════════════════════════════════════════════════
@@ -76,245 +106,235 @@ def _init_mlflow(session_id: str) -> None:
         t = get_telemetry()
         t._tracking_uri = MLFLOW_URI
         t.setup(session_id)
-        sysline(f"MLflow experiment 'aiconnex_{session_id}' → {MLFLOW_URI}")
+        sysline(f"MLflow experiment 'aiconnex_{session_id}' -> {MLFLOW_URI}")
         sysline("Open UI: mlflow ui --backend-store-uri ./mlruns")
     except Exception as exc:
         sysline(f"MLflow init skipped: {exc}")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# Phase 1 — CUC Gathering (confidence bug fixed)
+# Interrupt payload extraction (mirrors chatbot/backend/app.py's translator so
+# both entry points interpret the SAME graph event shape identically)
 # ══════════════════════════════════════════════════════════════════════════════
 
-def _compute_confidence(missing: list[str]) -> float:
+def _interrupt_payload_from_update(update: Any) -> Optional[dict]:
+    """Extract a typed InterruptPayload dict from a LangGraph interrupt event.
+
+    In stream_mode='updates', an interrupt surfaces as event key '__interrupt__'
+    whose value is a tuple of Interrupt objects; the payload dict our nodes
+    passed to interrupt() lives at Interrupt.value.
     """
-    Derive a displayable CUC confidence score from how many REQUIRED fields
-    are still missing.  Counts only lines containing 'Required field'.
-    Range: 0.50 (all 4 missing) → 0.95 (0 missing).
+    if isinstance(update, (tuple, list)) and update:
+        first = update[0]
+        value = getattr(first, "value", None)
+        if isinstance(value, dict):
+            return value
+        if isinstance(first, dict) and "interrupt_type" in first:
+            return first
+        return None
+    value = getattr(update, "value", None)
+    if isinstance(value, dict) and "interrupt_type" in value:
+        return value
+    if isinstance(update, dict) and "interrupt_type" in update:
+        return update
+    return None
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PHASE 1-4 (merged) — CUC → Planner → Dataset → Scout, all driven by the
+# real compiled LangGraph StateGraph (aiconnex_agent.runner._compiled_graph).
+# ══════════════════════════════════════════════════════════════════════════════
+
+def run_intake_and_scout_phase(session_id: str) -> dict:
+    """Drive the real graph interactively from the first user message through
+    a completed Scout compilation. Returns a scout_result dict shaped exactly
+    like real_scout_agent_node's own return value ({"dic": ..., "scout_enriched": ...}),
+    so run_hitl_phase / print_dic_summary need no changes.
     """
-    required_missing = sum(1 for m in missing if "Required field" in m)
-    filled = max(0, 4 - required_missing)
-    return round(0.50 + (filled / 4) * 0.45, 2)
-
-
-def run_cuc_phase(session_id: str) -> dict:
-    header("PHASE 1 — Conversation Understanding (CUC)", CYN)
-
-    from dotenv import load_dotenv
-    load_dotenv(REPO_ROOT / "chatbot" / "backend" / ".env")
-    load_dotenv(REPO_ROOT / ".env")
-
-    from pre_upload_flow import process_turn
+    from aiconnex_agent.runner import execute_and_stream, resume_with_user_input, _compiled_graph
+    from aiconnex_agent.state import MasterAgentState
     from aiconnex_agent.telemetry.tracker import get_telemetry
 
+    telemetry = get_telemetry()
+    config = {"configurable": {"thread_id": session_id}}
+
+    header("PHASE 1 — Conversation Understanding (CUC)", CYN)
     print()
     print(f"  {c('AIConnex >', CYN)} Welcome to AIConnex Terminal Pipeline.")
     print(f"  {c('AIConnex >', CYN)} I can help you build Target Regression Models, Time-Series Forecasting, or Anomaly Detection Pipelines.")
     print(f"  {c('AIConnex >', CYN)} Tell me what you want to accomplish with your data.")
     print()
 
-    sid      = ""
-    turn     = 0
-    last_res = {}
-    telemetry= get_telemetry()
-
-    while True:
-        turn += 1
-        user_msg = input(c("  You > ", WHT)).strip()
-        if not user_msg:
-            continue
-        if user_msg.lower() in ("quit", "exit", "q"):
-            print(c("\n  Session aborted.", RED)); sys.exit(0)
-
-        sysline(f"Conversation Parser running — turn {turn}...")
-
-        result   = process_turn(message=user_msg, session_id=sid,
-                                conversation_id=f"terminal_{session_id}")
-        sid      = result["session_id"]
-        last_res = result
-        missing  = result.get("missing_information", [])
-        complete = result.get("conversation_complete", False)
-        conf     = _compute_confidence(missing)
-
-        # MLflow: log each CUC turn
-        try:
-            with telemetry.node_run("cuc_parser", session_id):
-                telemetry.log_params({
-                    "cuc_turn": turn, "cuc_session_id": sid,
-                    "cuc_action": result.get("recommended_next_action", ""),
-                })
-                telemetry.log_metrics({
-                    "cuc_confidence": conf,
-                    "cuc_missing_fields": float(len(missing)),
-                })
-        except Exception:
-            pass
-
-        print()
-        sysline(f"CUC updated  —  Confidence: {c(str(conf), BLU)}  "
-                f"({'below threshold' if conf < 0.91 else c('THRESHOLD REACHED', GRN)})")
-        if missing:
-            sysline(f"Still missing: {', '.join(m for m in missing if 'Required' in m)}")
-        print()
-        print(f"  {c('AIConnex ›', CYN)} {result['reply']}")
-        divider()
-
-        # Gate: exit ONLY when conversation_complete = True (not on raw conf)
-        if complete:
-            print()
-            sysline(f"CUC Confidence: {c(str(conf), GRN)} — THRESHOLD REACHED")
-            sysline("CUC Status: READY")
-            tick("All required fields gathered")
-            break
-
-    return {"session_id": sid, "result": last_res}
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-# Phase 2 — Planner + Project Summary
-# ══════════════════════════════════════════════════════════════════════════════
-
-def run_planner_phase(cuc_data: dict, session_id: str) -> dict:
-    header("PHASE 2 — Planner (Execution Plan)", MGN)
-    sysline("Planner executing...")
-    time.sleep(0.3)
-
-    plan_steps = [
-        {"step": 1, "name": "Acquire Data",            "target_agent": "scout"},
-        {"step": 2, "name": "Dataset Intelligence",    "target_agent": "scout"},
-        {"step": 3, "name": "HITL Clarification",      "target_agent": "hitl"},
-        {"step": 4, "name": "Feature Engineering",     "target_agent": "platform"},
-        {"step": 5, "name": "Parallel Model Training", "target_agent": "platform"},
-        {"step": 6, "name": "Evaluation & Selection",  "target_agent": "platform"},
-        {"step": 7, "name": "MLflow Experiment Log",   "target_agent": "telemetry"},
-    ]
-
-    print()
-    print(c("  Execution Plan:", BOLD))
-    for s in plan_steps:
-        print(f"    {c(str(s['step']) + '.', YLW)} {s['name']:28s} → {c(s['target_agent'], CYN)}")
-
-    try:
-        from aiconnex_agent.telemetry.emitters import PlannerEmitter
-        PlannerEmitter().emit(
-            session_id=session_id,
-            intent=cuc_data["result"].get("recommended_next_action", "pre_upload_intent"),
-            plan_steps=plan_steps,
-        )
-        sysline("PlannerEmitter → MLflow ✔")
-    except Exception as exc:
-        sysline(f"PlannerEmitter skipped: {exc}")
-
-    print()
-    print(c("  ┌─────────────────────────────────────────────────────┐", DIM))
-    print(c("  │  Project Summary                                    │", BOLD + WHT))
-    print(c("  ├─────────────────────────────────────────────────────┤", DIM))
-    info("  Domain          ", "Industrial Effluent Treatment Plant (ETP)")
-    info("  Dataset         ", "HTDS-v1.csv — Laurus Labs Unit-3 Wastewater")
-    info("  Records         ", "883 daily batch deliveries (Jan 2024 → May 2025)")
-    info("  Parameters      ", "TDS, COD, PH, Volume, AN, SS")
-    info("  Status          ", "Dataset compiled — awaiting HITL configuration")
-    print(c("  └─────────────────────────────────────────────────────┘", DIM))
-
-    return {"plan_steps": plan_steps}
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-# Phase 3 — Dataset Resolution
-# ══════════════════════════════════════════════════════════════════════════════
-
-def resolve_dataset() -> Path:
-    header("PHASE 3 — Dataset Resolution", BLU)
-    path = STATIC_DATASET.resolve()
-    if not path.exists():
-        print(c(f"\n  ERROR: Dataset not found at {path}", RED)); sys.exit(1)
-    size_kb = path.stat().st_size / 1024
-    tick("Dataset located")
-    info("  Path  ", str(path))
-    info("  Size  ", f"{size_kb:.1f} KB")
-    info("  Format", "CSV — time-series sensor data (static Phase 1 path)")
-    sysline("Proceeding to Scout Agent...")
-    time.sleep(0.3)
-    return path
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-# Phase 4 — Scout Agent
-# ══════════════════════════════════════════════════════════════════════════════
-
-def run_scout_phase(upload_path: Path, session_id: str) -> dict:
-    header("PHASE 4 — Scout Agent (UnifiedCompiler)", YLW)
-    print()
-    print(f"  {c('AIConnex ›', CYN)} Dataset received. Running dataset discovery...")
-    print()
-
-    for s in ["File indexed", "Tables detected", "Reading metadata..."]:
-        tick(s); time.sleep(0.25)
-
-    print()
-    print(f"  {c('AIConnex ›', CYN)} Compiler started. Running semantic analysis...")
-    print()
-
-    from aiconnex_agent.state import MasterAgentState
-    from aiconnex_agent.scout.scout_node import real_scout_agent_node
-
-    state = MasterAgentState(
-        session_id=session_id,
-        messages=[{"role": "user",
-                   "content": "Profile HTDS-v1.csv — pharmaceutical wastewater TDS regression"}],
-        upload_path=str(upload_path),
+    first_message = _prompt("  You > ")
+    events_gen = execute_and_stream(
+        MasterAgentState(session_id=session_id, messages=[{"role": "user", "content": first_message}]),
+        thread_id=session_id,
     )
 
+    seen_phase2 = False
+    seen_phase3 = False
     scout_result: dict = {}
-    scout_error:  dict = {}
+    clarification_turns = 0
 
-    def _compile():
-        try:   scout_result.update(real_scout_agent_node(state))
-        except Exception as e: scout_error["error"] = str(e)
+    while True:
+        interrupt_payload: Optional[dict] = None
 
-    thread = threading.Thread(target=_compile, daemon=True)
-    thread.start()
+        for event in events_gen:
+            node = event.get("node", "")
+            update = event.get("state_update")
 
-    for label in ["Detecting schema...", "Checking missing values...",
-                  "Checking duplicates...", "Checking feature types...",
-                  "Checking time dependency...", "Checking entity IDs..."]:
-        tick(label); time.sleep(0.55)
-        if not thread.is_alive(): break
+            if node == "__interrupt__":
+                interrupt_payload = _interrupt_payload_from_update(update)
+                continue
 
-    thread.join(timeout=180)
+            if not isinstance(update, dict):
+                continue
 
-    if scout_error:
-        print(c(f"\n  ERROR: {scout_error['error']}", RED)); sys.exit(1)
+            if node == "conversation_parser_node":
+                conf = update.get("confidence_score")
+                if conf is not None:
+                    sysline(f"Conversation Parser ran — confidence: {c(f'{conf:.2f}', BLU)} "
+                             f"({'below threshold' if conf < 0.85 else c('THRESHOLD REACHED', GRN)})")
+
+            elif node == "planning_engine_node" and not seen_phase2:
+                seen_phase2 = True
+                header("PHASE 2 — Planner (Execution Plan)", MGN)
+                plan_steps = update.get("plan_steps", [])
+                print()
+                print(c("  Execution Plan (real, from IntentPlanMapper):", BOLD))
+                for s in plan_steps:
+                    print(f"    {c(str(s.get('step_id', '?')) + '.', YLW)} "
+                          f"{s.get('task', ''):45s} → {c(s.get('target_agent', ''), CYN)}")
+                tick("PlannerEmitter → MLflow (logged internally by planning_engine_node)")
+
+            elif node == "scout_agent_node":
+                if not seen_phase3:
+                    seen_phase3 = True
+                # Capture verbatim — same shape real_scout_agent_node always returned,
+                # so downstream HITL/DIC code needs zero changes.
+                scout_result = update
+                dic = update.get("dic", {}) or {}
+                compiled = dic.get("compiled_dataset", {}) or {}
+                rows = compiled.get("rows", "?")
+                cols = compiled.get("columns", "?")
+                tick(f"Scout compiled dataset — rows={rows}, columns={cols}")
+                try:
+                    from aiconnex_agent.telemetry.emitters import ScoutEmitter
+                    ScoutEmitter().emit(
+                        session_id=session_id,
+                        dic_dict=dic,
+                        scout_dict=update.get("scout_enriched", {}) or {},
+                    )
+                    sysline("ScoutEmitter → MLflow ✔")
+                except Exception as exc:
+                    sysline(f"ScoutEmitter skipped: {exc}")
+
+            elif node == "memory_agent_node":
+                sysline("Memory Agent persisted session context ✔")
+
+        # --- Stream exhausted: figure out whether it's an interrupt or real completion ---
+        if interrupt_payload is not None:
+            itype = interrupt_payload.get("interrupt_type", "unknown")
+            questions = interrupt_payload.get("questions", []) or []
+            options = interrupt_payload.get("options", []) or []
+
+            if itype == "clarification":
+                clarification_turns += 1
+                print()
+                for q in questions:
+                    print(f"  {c('AIConnex ›', CYN)} {q}")
+                divider()
+                if clarification_turns == CLARIFICATION_WARN_THRESHOLD:
+                    sysline(
+                        f"{clarification_turns} clarification turns without progressing — this can "
+                        "happen if the configured LLM never sets goal.task_family (a known parser gap). "
+                        "Try stating both your goal AND a problem type explicitly, e.g. "
+                        "'I want to run a regression to predict RUL'."
+                    )
+                answer = _prompt("  You › ")
+                try:
+                    with telemetry.node_run("cuc_parser", session_id):
+                        telemetry.log_params({"cuc_turn": clarification_turns, "cuc_session_id": session_id})
+                except Exception:
+                    pass
+                events_gen = resume_with_user_input(answer, thread_id=session_id)
+                continue
+
+            if itype == "advise_upload":
+                print()
+                for q in questions:
+                    print(f"  {c('AIConnex ›', CYN)} {q}")
+                tick("CUC Status: READY — manifest minimally complete")
+                header("PHASE 3 — Dataset Resolution", BLU)
+                default_path = STATIC_DATASET
+                raw = _prompt(f"  Dataset path (Enter for default: {default_path}) › ")
+                dataset_path = Path(raw) if raw else default_path
+                dataset_path = dataset_path.resolve()
+                if not dataset_path.exists():
+                    print(c(f"\n  ERROR: Dataset not found at {dataset_path}", RED))
+                    sys.exit(1)
+                tick("Dataset located")
+                info("  Path  ", str(dataset_path))
+                info("  Size  ", f"{dataset_path.stat().st_size / 1024:.1f} KB")
+                sysline("Resuming graph with real upload_path — routing into Planner -> Scout...")
+                header("PHASE 4 — Scout Agent (UnifiedCompiler)", YLW)
+                events_gen = resume_with_user_input(str(dataset_path), thread_id=session_id)
+                continue
+
+            if itype == "strategy_choice":
+                print()
+                for q in questions:
+                    print(f"  {c('AIConnex ›', CYN)} {q}")
+                for i, opt in enumerate(options, 1):
+                    label = opt.get("label", f"Option {i}")
+                    desc = opt.get("description", "")
+                    print(f"    {c(str(i) + '.', YLW)} {label} — {c(desc, DIM)}")
+                choice_raw = _prompt("  Choose option number or ID › ")
+                chosen_id = choice_raw
+                if choice_raw.isdigit():
+                    idx = int(choice_raw) - 1
+                    if 0 <= idx < len(options):
+                        chosen_id = options[idx].get("option_id", choice_raw)
+                events_gen = resume_with_user_input(chosen_id, thread_id=session_id)
+                continue
+
+            if itype == "compile_failure":
+                print()
+                for q in questions:
+                    print(f"  {c('AIConnex ›', CYN)} {q}")
+                retry = _prompt("  New dataset path (or 'abort') › ")
+                if retry.lower() == "abort":
+                    _abort()
+                events_gen = resume_with_user_input(retry, thread_id=session_id)
+                continue
+
+            # Unknown interrupt type — show it and let the user decide how to answer.
+            print()
+            sysline(f"Unhandled interrupt type '{itype}': {questions}")
+            answer = _prompt("  Your response › ")
+            events_gen = resume_with_user_input(answer, thread_id=session_id)
+            continue
+
+        # --- No interrupt: the graph genuinely reached END ---
+        snapshot = _compiled_graph.get_state(config)
+        if snapshot.next:
+            # Defensive: paused but we saw no __interrupt__ event this pass — resume
+            # with an empty nudge rather than silently looping forever.
+            events_gen = resume_with_user_input("", thread_id=session_id)
+            continue
+
+        break
+
     if not scout_result:
-        print(c("\n  ERROR: Scout timed out.", RED)); sys.exit(1)
-
-    dic      = scout_result.get("dic", {})
-    compiled = dic.get("compiled_dataset", {})
-    rows     = compiled.get("rows") or compiled.get("row_count", 0)
-    cols     = compiled.get("columns") or compiled.get("column_count", 0)
-    targets  = dic.get("target_candidates", [])
-    conf_pct = min(99, 70 + (10 if rows > 100 else 0) + (7 if cols > 5 else 0) + 10)
-
-    print()
-    sysline(f"Dataset Confidence: {c(str(conf_pct) + '%', GRN)}")
-
-    # MLflow
-    try:
-        from aiconnex_agent.telemetry.emitters import ScoutEmitter
-        ScoutEmitter().emit(
-            session_id=session_id,
-            dic_dict=dic,
-            scout_dict=scout_result.get("scout_enriched", {}),
-        )
-        sysline("ScoutEmitter → MLflow ✔")
-    except Exception as exc:
-        sysline(f"ScoutEmitter skipped: {exc}")
+        print(c("\n  ERROR: Graph completed without a Scout result — check compile logs above.", RED))
+        sys.exit(1)
 
     return scout_result
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# Phase 5 — HITL (LLM-driven, no hardcoded questions)
+# Phase 5 — HITL (LLM-driven, no hardcoded questions) — unchanged, independent
+# of the graph rewire above; operates purely on the Scout output dict.
 # ══════════════════════════════════════════════════════════════════════════════
 
 def run_hitl_phase(scout_result: dict, session_id: str) -> dict:
@@ -352,11 +372,7 @@ def run_hitl_phase(scout_result: dict, session_id: str) -> dict:
             break
 
         # Get user input (terminal halts here — no polling)
-        user_msg = input(c("  You › ", WHT)).strip()
-        if not user_msg:
-            continue
-        if user_msg.lower() in ("quit", "exit", "q"):
-            print(c("\n  Session aborted.", RED)); sys.exit(0)
+        user_msg = _prompt("  You › ")
 
         history.append({"role": "user",    "content": user_msg})
         history.append({"role": "assistant","content": result["reply"]})
@@ -372,37 +388,39 @@ def run_hitl_phase(scout_result: dict, session_id: str) -> dict:
         )
         contract = result["contract"]
 
-        # Show what was captured this turn
-        if contract.operational_goal:
-            sysline(f"DIC updated — operational_goal = '{contract.operational_goal}'")
-        if contract.primary_parameter:
-            sysline(f"DIC updated — primary_parameter = '{contract.primary_parameter}'")
-        if contract.alert_sensitivity:
-            sysline(f"DIC updated — alert_sensitivity = '{contract.alert_sensitivity}'")
-        if contract.display_format:
-            sysline(f"DIC updated — display_format = '{contract.display_format}'")
+        # Show what was captured this turn (v2 generic, dataset-driven fields)
+        if contract.selected_recipe_id:
+            sysline(f"DIC updated — selected_recipe_id = '{contract.selected_recipe_id}'")
+        if contract.target_column:
+            sysline(f"DIC updated — target_column = '{contract.target_column}'")
+        if contract.selected_task_family:
+            sysline(f"DIC updated — task_family = '{contract.selected_task_family}'")
+        if contract.operational_preferences:
+            prefs = ", ".join(f"{k}={v}" for k, v in contract.operational_preferences.items())
+            sysline(f"DIC updated — operational_preferences = {{{prefs}}}")
+        if contract.success_metrics:
+            sysline(f"DIC updated — success_metrics = {contract.success_metrics}")
 
         divider()
 
     # Final state
     contract = result["contract"]
     sysline("Dataset Intelligence Contract (DIC) Status: READY")
-    sysline(f"Resolved DAG Pool: {result.get('resolved_dag_pool', [])}")
-    sysline(f"Target Column: {result.get('target_column', '?')}")
-    sysline(f"Branch IDs: {result.get('branch_ids', [])}")
+    sysline(f"Selected Recipe: {result.get('selected_recipe_id') or '?'}")
+    sysline(f"Target Column: {result.get('target_column') or '?'}")
+    sysline(f"Task Family: {result.get('selected_task_family') or '?'}")
+    sysline(f"Operational Preferences: {result.get('operational_preferences') or {}}")
 
-    # MLflow: log HITL decisions
+    # MLflow: log HITL decisions (v2 generic field names)
     try:
         with telemetry.node_run("hitl", session_id):
             telemetry.log_params({
-                "hitl_operational_goal":  contract.operational_goal or "",
-                "hitl_primary_parameter": contract.primary_parameter or "",
-                "hitl_alert_sensitivity": contract.alert_sensitivity or "",
-                "hitl_display_format":    contract.display_format or "",
-                "hitl_dag_pool":          str(result.get("resolved_dag_pool", [])),
-                "hitl_target_column":     result.get("target_column") or "",
-                "hitl_branch_ids":        str(result.get("branch_ids", [])),
-                "hitl_turns":             contract.turn_count,
+                "hitl_selected_recipe_id":      contract.selected_recipe_id or "",
+                "hitl_target_column":           contract.target_column or "",
+                "hitl_selected_task_family":    contract.selected_task_family or "",
+                "hitl_operational_preferences": str(contract.operational_preferences),
+                "hitl_success_metrics":         str(contract.success_metrics),
+                "hitl_turns":                   contract.turn_count,
             })
             telemetry.log_tag("node_type", "hitl")
             telemetry.log_json_artifact(contract.model_dump(), "hitl_contract.json")
@@ -417,13 +435,12 @@ def run_hitl_phase(scout_result: dict, session_id: str) -> dict:
 # Phase 6 — DIC Export + Summary
 # ══════════════════════════════════════════════════════════════════════════════
 
-def print_dic_summary(scout_result: dict, hitl_result: dict, upload_path: Path) -> dict:
+def print_dic_summary(scout_result: dict, hitl_result: dict, upload_path_name: str) -> dict:
     header("PHASE 1 COMPLETE — Dataset Intelligence Contract (DIC)", GRN)
 
     dic      = scout_result.get("dic", {})
     compiled = dic.get("compiled_dataset", {})
     identity = dic.get("dataset_identity", {})
-    contract = hitl_result.get("contract")
     rows     = compiled.get("rows") or compiled.get("row_count", "?")
     cols     = compiled.get("columns") or compiled.get("column_count", "?")
     output   = compiled.get("output_path") or compiled.get("combined_csv_path", "")
@@ -440,11 +457,12 @@ def print_dic_summary(scout_result: dict, hitl_result: dict, upload_path: Path) 
     print(c("  ┌───────────────────────────────────────────────────────────┐", DIM))
     print(c("  │  Phase 1 State Summary                                    │", BOLD + WHT))
     print(c("  ├───────────────────────────────────────────────────────────┤", DIM))
-    info("  Dataset         ", identity.get("name", upload_path.name))
+    info("  Dataset         ", identity.get("name", upload_path_name))
     info("  Rows            ", str(rows))
     info("  Columns         ", str(cols))
     info("  Target Column   ", hitl_result.get("target_column", "TDS"))
     recipes = dic.get("recipes", [])
+    selected_rec = {"id": "R001", "title": "Predict TDS", "target": "TDS", "task": "REGRESSION"}
     if recipes:
         selected_id = dic.get("selected_recipe_id") or recipes[0].get("id", "R001")
         selected_rec = next((r for r in recipes if r.get("id") == selected_id), recipes[0])
@@ -456,7 +474,7 @@ def print_dic_summary(scout_result: dict, hitl_result: dict, upload_path: Path) 
     return {
         "dic": dic,
         "compiled_csv_path": output,
-        "selected_recipe": selected_rec if recipes else {"id": "R001", "title": "Predict TDS", "target": "TDS", "task": "REGRESSION"},
+        "selected_recipe": selected_rec,
     }
 
 
@@ -477,11 +495,11 @@ def run_confirmation_gate(phase1_export: dict) -> bool:
     info("  Compiled CSV  ", phase1_export.get('compiled_csv_path', 'N/A'))
     print()
 
-    choice = input(c("  Proceed with ML model training? (Y/n) › ", BOLD + WHT)).strip().lower()
-    if choice in ("n", "no"):
+    choice = _prompt("  Proceed with ML model training? (Y/n) › ")
+    if choice.lower() in ("n", "no"):
         print(c("\n  Training cancelled by user.", YLW))
         return False
-    
+
     tick("Confirmation granted — starting Phase 2 Execution")
     return True
 
@@ -585,6 +603,11 @@ def run_leaderboard_and_export_phase(final_manifest: dict, session_id: str):
 def main():
     if sys.platform == "win32":
         os.system("color")  # enable ANSI on Windows
+        try:
+            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+            sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
 
     session_id = f"wf_{uuid.uuid4().hex[:8]}"
 
@@ -596,16 +619,16 @@ def main():
     print()
     info("  Session ID ", session_id)
     info("  MLflow URI ", MLFLOW_URI)
+    sysline("This session_id is also usable as the LangGraph thread_id — the same "
+            "checkpoint DB is shared with /api/agent/chat and /api/agent/seed.")
 
     _init_mlflow(session_id)
 
-    # Phase 1: Conversation & Compilation & HITL
-    cuc_data       = run_cuc_phase(session_id)
-    planner_data   = run_planner_phase(cuc_data, session_id)
-    upload_path    = resolve_dataset()
-    scout_result   = run_scout_phase(upload_path, session_id)
+    # Phase 1-4 (merged): CUC → Planner → Dataset → Scout, all via the real graph.
+    scout_result   = run_intake_and_scout_phase(session_id)
+    upload_name    = scout_result.get("dic", {}).get("dataset_identity", {}).get("name", "dataset")
     hitl_result    = run_hitl_phase(scout_result, session_id)
-    phase1_export  = print_dic_summary(scout_result, hitl_result, upload_path)
+    phase1_export  = print_dic_summary(scout_result, hitl_result, upload_name)
 
     # Phase 2: Confirmation Gate → Manifest → ML Pipeline → Model Export
     if run_confirmation_gate(phase1_export):
@@ -616,4 +639,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

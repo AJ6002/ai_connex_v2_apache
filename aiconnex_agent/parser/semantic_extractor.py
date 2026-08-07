@@ -90,11 +90,21 @@ class SemanticExtractor:
         """Fills in any missing optional keys so downstream contract validation never KeyErrors."""
         goal = dict(parsed.get("goal", {}))
         goal.setdefault("raw_prompt", user_prompt)
+        prompt_lower = user_prompt.lower()
+        if not goal.get("task_family"):
+            if "regression" in prompt_lower or goal.get("primary_intent") == "train_rul":
+                goal["task_family"] = "regression"
+            elif "anomaly" in prompt_lower or goal.get("primary_intent") == "detect_anomalies":
+                goal["task_family"] = "anomaly_detection"
+            elif "forecast" in prompt_lower:
+                goal["task_family"] = "forecasting"
+
         return {
             "conversation": parsed.get("conversation") or {"raw_prompt": user_prompt},
             "goal": goal,
-            "observed": parsed.get("observed") or {"mentioned_files": [], "mentioned_columns": []},
+            "observed": parsed.get("observed") or {"mentioned_files": [], "mentioned_entities": []},
             "inferred": parsed.get("inferred") or {},
+            "business_context": parsed.get("business_context") or {},
             "constraints": parsed.get("constraints") or {"missing_value_tolerance": 0.2},
             "dataset_expectation": parsed.get("dataset_expectation") or {},
             "clarifications_required": parsed.get("clarifications_required") or [],
@@ -108,30 +118,34 @@ class SemanticExtractor:
         # Detect files
         files = re.findall(r'[\w\-\.]+\.(?:zip|csv|xlsx|mat|parquet|tdms|txt)', user_prompt, re.IGNORECASE)
 
-        # Detect primary intent.
-        # NOTE: Checked most-specific-first to avoid the bare "zip" keyword
-        # (needed to catch phrases like "zip file") from matching the
-        # substring "zip" inside ANY mentioned .zip filename (e.g. "suyash2.zip")
-        # and hijacking prompts that are actually about training/anomaly/status.
-        # "model" was dropped from train_rul's keywords for the same reason:
-        # it collided with query_status prompts like "what's my model accuracy".
+        # Detect primary intent & task_family
         intent = "general"
+        task_family = ""
         if any(w in prompt_lower for w in ["anomaly", "outlier", "isolation forest"]):
             intent = "detect_anomalies"
+            task_family = "anomaly_detection"
         elif any(w in prompt_lower for w in ["accuracy", "evaluate", "metrics", "score", "status"]):
             intent = "query_status"
         elif any(w in prompt_lower for w in ["train", "rul", "regression"]):
             intent = "train_rul"
+            task_family = "regression"
         elif any(w in prompt_lower for w in ["upload", "compile", "parse", "zip"]):
             intent = "compile_zip"
 
+        if "regression" in prompt_lower:
+            task_family = "regression"
+
         return {
             "conversation": {"raw_prompt": user_prompt},
-            "goal": {"raw_prompt": user_prompt, "primary_intent": intent},
-            "observed": {"mentioned_files": files, "mentioned_columns": []},
+            "goal": {"raw_prompt": user_prompt, "primary_intent": intent, "task_family": task_family},
+            "observed": {"mentioned_files": files, "mentioned_entities": []},
             "inferred": {"domain": "Industrial Telemetry" if files else None},
+            "business_context": {},
             "constraints": {"missing_value_tolerance": 0.2},
-            "dataset_expectation": {"expected_format": "zip" if any(f.endswith(".zip") for f in files) else None},
+            "dataset_expectation": {
+                "expected_format": "zip" if any(f.endswith(".zip") for f in files) else None,
+                "expected_source": "inferred",
+            },
             "clarifications_required": [],
             "planning_hints": {},
         }

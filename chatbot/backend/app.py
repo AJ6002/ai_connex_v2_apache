@@ -249,6 +249,128 @@ def agent_chat():
     )
 
 
+@app.route("/api/agent/seed", methods=["POST", "OPTIONS"])
+def agent_seed():
+    """POST /api/agent/seed — Postman/scripted-test bypass for the chat phase.
+
+    Accepts a manifest/CUC JSON body directly and seeds a fresh LangGraph
+    thread's checkpoint as if conversation_parser_node had just produced it,
+    then resumes execution so the graph's own routing (route_after_parser)
+    carries it straight to advise_upload_node and parks there — identical to
+    where a real chat conversation lands once intent is captured. No parser
+    or clarification LLM calls are made.
+
+    Body:
+      {
+        "session_id": "optional-reuse-existing-thread",
+        "manifest": {
+          "primary_intent": "predict_rul",        // required, must not be "" or "general"
+          "task_family": "regression",            // required, non-empty
+          "confidence": 0.95,                     // optional, defaults to 1.0 (must be >= 0.85)
+          "raw_prompt": "...",                    // optional, free text
+          "observed": {...}, "inferred": {...},   // optional, passthrough dict fields
+          "constraints": {...}, "dataset_expectation": {...}
+        }
+      }
+
+    Returns:
+      { "session_id": str, "manifest_accepted": bool, "ready_for_upload": bool }
+
+    Usage: seed a session here, then POST the dataset file to /api/upload with
+    the returned session_id in the form field to drive it into Scout.
+    """
+    if request.method == "OPTIONS":
+        return jsonify({"status": "ok"}), 200
+
+    from aiconnex_agent.runner import _compiled_graph
+    from aiconnex_agent.parser.cuc_completion import is_manifest_minimally_complete
+    from aiconnex_agent.schemas import ConversationUnderstandingContract, Goal
+
+    data = request.get_json(force=True) or {}
+    manifest = data.get("manifest") or {}
+    session_id = (data.get("session_id") or "").strip() or f"seed_{uuid.uuid4().hex[:12]}"
+
+    primary_intent = (manifest.get("primary_intent") or "").strip()
+    task_family = (manifest.get("task_family") or "").strip()
+    if not primary_intent or primary_intent == "general":
+        return jsonify({"error": "manifest.primary_intent is required and must not be 'general'."}), 400
+    if not task_family:
+        return jsonify({"error": "manifest.task_family is required."}), 400
+
+    confidence = manifest.get("confidence", 1.0)
+    try:
+        confidence = float(confidence)
+    except (TypeError, ValueError):
+        confidence = 1.0
+
+    goal = Goal(
+        primary_intent=primary_intent,
+        raw_prompt=manifest.get("raw_prompt", ""),
+        task_family=task_family,
+        confidence=confidence,
+    )
+    cuc = ConversationUnderstandingContract(
+        goal=goal,
+        observed=manifest.get("observed") or {},
+        inferred=manifest.get("inferred") or {},
+        constraints=manifest.get("constraints") or {},
+        dataset_expectation=manifest.get("dataset_expectation") or {},
+    )
+
+    if not is_manifest_minimally_complete(cuc):
+        return jsonify({
+            "error": "Seeded manifest does not satisfy is_manifest_minimally_complete "
+                     "(primary_intent != 'general', task_family set, confidence >= 0.85).",
+            "confidence": confidence,
+        }), 400
+
+    config = {"configurable": {"thread_id": session_id}}
+    cuc_dict = cuc.model_dump()
+
+    # Seed the checkpoint as if conversation_parser_node had just produced this CUC.
+    _compiled_graph.update_state(
+        config,
+        {"cuc": cuc_dict, "confidence_score": confidence, "active_agent": "parser"},
+        as_node="conversation_parser_node",
+    )
+
+    # Resume execution from the checkpoint: conversation_planner_node sees the
+    # manifest is complete and upload_path is empty, so it eventually routes to
+    # upload_gate_node, which parks on interrupt(interrupt_type='advise_upload').
+    #
+    # NOTE (Pre-Upload v1): conversation_planner_node inserts a mandatory
+    # 'summarize' turn before 'recommend_upload' on the first pass
+    # (always_summarize_before_upload registry rule) — this seed bypass has no
+    # human to read that summary and reply, so we auto-resume through it (and
+    # any other non-upload interrupt) with a no-op acknowledgment rather than
+    # stopping at the wrong interrupt, which would make /api/upload silently
+    # fall back to a non-compiled raw path instead of reaching Scout.
+    ready_for_upload = False
+    resume_input = None
+    for _ in range(5):  # generous bound; a fully-complete seeded CUC should reach it in 1-2 hops
+        stream = _compiled_graph.stream(resume_input, config=config, stream_mode="updates")
+        interrupt_payload = None
+        for event in stream:
+            if isinstance(event, dict) and "__interrupt__" in event:
+                interrupt_payload = _interrupt_payload_from_update(event["__interrupt__"])
+
+        if interrupt_payload is None:
+            break  # graph ran to completion with no further interrupt
+        if interrupt_payload.get("interrupt_type") == "advise_upload":
+            ready_for_upload = True
+            break
+        # Any other interrupt (e.g. the mandatory 'summarize' chat turn) —
+        # acknowledge and keep resuming toward the upload gate.
+        from langgraph.types import Command
+        resume_input = Command(resume="ok")
+
+    return jsonify({
+        "session_id": session_id,
+        "manifest_accepted": True,
+        "ready_for_upload": ready_for_upload,
+    })
+
+
 @app.route("/api/agent/resume", methods=["POST", "OPTIONS"])
 def agent_resume():
     """POST /api/agent/resume — resume a paused HITL interrupt with an explicit answer.
@@ -278,6 +400,104 @@ def agent_resume():
             "X-Accel-Buffering": "no",
         },
     )
+
+
+@app.route("/api/agent/state", methods=["GET", "OPTIONS"])
+def agent_state():
+    """GET /api/agent/state?session_id=<id> — Read-only state inspection endpoint.
+
+    Returns every artifact accumulated on the LangGraph checkpoint for a given
+    session thread. Pre-upload artifacts (CUC, Conversation Plan, Upload
+    Readiness), Scout 9-node split intermediates (archive_manifest through
+    dataset_exploration_manifest), HITL contract, pipeline_lock, and
+    workflow_manifest — the complete audit surface for one run.
+    """
+    if request.method == "OPTIONS":
+        return jsonify({"status": "ok"}), 200
+
+    session_id = (request.args.get("session_id") or "").strip()
+    if not session_id:
+        return jsonify({"error": "Query parameter 'session_id' is required."}), 400
+
+    from aiconnex_agent.runner import _compiled_graph
+
+    config = {"configurable": {"thread_id": session_id}}
+    try:
+        snapshot = _compiled_graph.get_state(config)
+    except Exception as exc:
+        return jsonify({"error": f"Failed to retrieve checkpoint state: {exc}"}), 500
+
+    if not snapshot or not snapshot.values:
+        return jsonify({"error": f"Session thread '{session_id}' not found or has no state."}), 404
+
+    state_values = snapshot.values or {}
+
+    def _dump(value):
+        # State fields may come back either as Pydantic models (fresh in-memory
+        # writes) or as plain dicts (SqliteSaver deserialised) — normalise both
+        # into the same JSON-safe shape.
+        if value is None:
+            return None
+        if hasattr(value, "model_dump"):
+            return value.model_dump()
+        return value
+
+    cuc = _dump(state_values.get("cuc"))
+    conversation_plan = _dump(state_values.get("conversation_plan"))
+    upload_readiness = _dump(state_values.get("upload_readiness"))
+
+    # Scout 8+1 node split intermediate artifacts (Tasks 2-10)
+    archive_manifest = _dump(state_values.get("archive_manifest"))
+    structure_analysis = _dump(state_values.get("structure_analysis"))
+    entity_inventory = _dump(state_values.get("entity_inventory"))
+    relationship_graph = _dump(state_values.get("relationship_graph"))
+    temporal_structure = _dump(state_values.get("temporal_structure"))
+    feature_catalog_v2 = _dump(state_values.get("feature_catalog_v2"))
+    quality_assessment = _dump(state_values.get("quality_assessment"))
+    statistical_profile = _dump(state_values.get("statistical_profile"))
+    dataset_exploration_manifest = _dump(state_values.get("dataset_exploration_manifest"))
+
+    # HITL + Planning artifacts (Tasks 11, 12, 13)
+    hitl_contract = _dump(state_values.get("hitl_contract"))
+    pipeline_lock = _dump(state_values.get("pipeline_lock"))
+    workflow_manifest = _dump(state_values.get("workflow_manifest"))
+
+    active_agent = state_values.get("active_agent")
+    confidence_score = state_values.get("confidence_score")
+    response_text = state_values.get("response_text")
+
+    ready_for_upload = False
+    if isinstance(upload_readiness, dict):
+        ready_for_upload = bool(upload_readiness.get("ready", False))
+
+    return jsonify({
+        "session_id": session_id,
+        # Pre-Upload phase
+        "cuc": cuc,
+        "conversation_plan": conversation_plan,
+        "upload_readiness": upload_readiness,
+        "manifest_ready": ready_for_upload,
+        # Scout 9-node split
+        "archive_manifest": archive_manifest,
+        "structure_analysis": structure_analysis,
+        "entity_inventory": entity_inventory,
+        "relationship_graph": relationship_graph,
+        "temporal_structure": temporal_structure,
+        "feature_catalog_v2": feature_catalog_v2,
+        "quality_assessment": quality_assessment,
+        "statistical_profile": statistical_profile,
+        "dataset_exploration_manifest": dataset_exploration_manifest,
+        # Planning phase
+        "hitl_contract": hitl_contract,
+        "pipeline_lock": pipeline_lock,
+        "workflow_manifest": workflow_manifest,
+        # Runtime metadata
+        "active_agent": active_agent,
+        "confidence_score": confidence_score,
+        "response_text": response_text,
+        "next_nodes": list(snapshot.next) if snapshot.next else [],
+    }), 200
+
 
 @app.route("/api/upload", methods=["POST", "OPTIONS"])
 def upload_dataset():

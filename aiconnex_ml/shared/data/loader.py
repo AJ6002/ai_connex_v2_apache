@@ -58,7 +58,7 @@ def load_dataset(manifest: Dict[str, Any]) -> tuple[pd.DataFrame, Dict[str, Any]
         df:       Loaded pandas DataFrame.
         manifest: Updated manifest dict with shape info.
     """
-    raw_path = manifest.get("paths", {}).get("raw_data")
+    raw_path = manifest.get("paths", {}).get("raw_data") or manifest.get("paths", {}).get("input_csv")
     if not raw_path:
         raise ValueError("manifest['paths']['raw_data'] is not set. Cannot load dataset.")
 

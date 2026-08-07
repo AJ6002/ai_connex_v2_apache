@@ -70,3 +70,5 @@ platform_llmaindex/
 langui/
 
 
+
+.worktrees/

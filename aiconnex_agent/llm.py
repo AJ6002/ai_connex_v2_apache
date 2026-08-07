@@ -77,6 +77,10 @@ def get_openrouter_llm(
     _enable_mlflow_tracing()
 
     max_tokens = int(os.getenv("OPENROUTER_MAX_TOKENS", "1000"))
+    # No timeout was previously set here, so a slow/unresponsive OpenRouter
+    # endpoint could hang the calling Flask request (and any graph node that
+    # invokes this LLM) indefinitely. Bound it with a sane default.
+    timeout_s = float(os.getenv("OPENROUTER_TIMEOUT_S", "20"))
 
     return ChatOpenAI(
         model=model_name,
@@ -84,6 +88,7 @@ def get_openrouter_llm(
         openai_api_base=url,
         temperature=temperature,
         max_tokens=max_tokens,
+        timeout=timeout_s,
         default_headers={"HTTP-Referer": "https://aiconnex.ai", "X-Title": "AIConnex MLOps OS"},
     )
 

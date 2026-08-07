@@ -1,102 +1,106 @@
 """
-hitl_schemas.py — Pydantic contract for the post-upload HITL phase.
+hitl_schemas.py — Generic, dataset-driven HITL contract (Task 1).
 
-Mirrors the pre_upload_schemas.py pattern:
+REPLACED (v2, dataset-driven): The prior version hardcoded ETP-domain fields
+(operational_goal / primary_parameter / alert_sensitivity / display_format)
+that only made sense for one specific test dataset (HTDS-v1.csv wastewater).
+This version generalises to any dataset by driving the conversation off the
+DIC's actual Recipe Catalog produced by Scout for the file the user uploaded.
+
   - HITLTurnExtraction: what the LLM returns each turn (structured JSON)
-  - HITLContract: the accumulated state across all HITL turns
+  - HITLContract:        the accumulated state across all HITL turns
 """
 
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field
 
 
 class HITLTurnExtraction(BaseModel):
     """Structured output the LLM produces each HITL turn.
-    Only fields that changed this turn are populated (same merge pattern as pre_upload)."""
 
-    # Q1: Primary Operational Goal
-    operational_goal: Optional[str] = Field(
-        default=None,
-        description="regression_forecast | anomaly_alert | hybrid_smart_activate"
-    )
-    operational_goal_confidence: float = Field(default=0.0)
+    Only fields that changed this turn are populated (same merge pattern as
+    pre_upload_flow). `selected_recipe_id` refers to a recipe.id in the DIC's
+    Recipe Catalog (e.g. 'R001', 'R002') — NOT a hardcoded ETP goal label.
+    """
 
-    # Q2: Chemical Parameter Focus
-    primary_parameter: Optional[str] = Field(
+    # PRIMARY DECISION: which recipe (from dic_context.recipes) did the user pick?
+    selected_recipe_id: Optional[str] = Field(
         default=None,
-        description="TDS | COD | both"
+        description="Recipe.id chosen from the DIC's Recipe Catalog this turn (e.g. 'R001')",
     )
-    primary_parameter_confidence: float = Field(default=0.0)
+    selected_recipe_confidence: float = Field(default=0.0)
 
-    # Q3: Alert Sensitivity (only if Q1 = anomaly_alert or hybrid)
-    alert_sensitivity: Optional[str] = Field(
-        default=None,
-        description="high | balanced | critical_only"
-    )
-    alert_sensitivity_confidence: float = Field(default=0.0)
+    # Free-form dict for recipe-specific follow-up answers the LLM elicits.
+    # Example keys the LLM may populate (never hardcoded per domain):
+    #   - {"forecast_horizon_days": 7}         for regression/forecasting
+    #   - {"alert_sensitivity": "balanced"}    for anomaly detection
+    #   - {"display_format": "traffic_light"}  for dashboards
+    # The recipe's own task/rationale dictates what follow-ups make sense.
+    operational_preferences: Dict[str, Any] = Field(default_factory=dict)
 
-    # Q4: Dashboard Display Format (only if Q1 = regression_forecast)
-    display_format: Optional[str] = Field(
-        default=None,
-        description="exact_number | traffic_light | both"
-    )
-    display_format_confidence: float = Field(default=0.0)
+    # Any success criteria the user stated in natural language.
+    success_metrics: List[str] = Field(default_factory=list)
 
     # LLM-generated conversational reply to show the user
     reply: str = Field(default="")
 
-    # True when the LLM has gathered all required fields for this path
+    # True once the LLM has gathered all required fields for the selected recipe
     hitl_complete: bool = Field(default=False)
 
 
 class HITLContract(BaseModel):
     """Accumulated HITL decision state across all turns."""
 
-    # Q1
-    operational_goal: Optional[str] = None
-    operational_goal_confidence: float = 0.0
+    # Primary decision — the recipe from DIC.recipes the user picked
+    selected_recipe_id: Optional[str] = None
+    selected_recipe_confidence: float = 0.0
 
-    # Q2
-    primary_parameter: Optional[str] = None
-    primary_parameter_confidence: float = 0.0
+    # Recipe-specific follow-up preferences (dataset-agnostic dict, keys chosen by LLM)
+    operational_preferences: Dict[str, Any] = Field(default_factory=dict)
 
-    # Q3 (only for anomaly / hybrid paths)
-    alert_sensitivity: Optional[str] = None
-    alert_sensitivity_confidence: float = 0.0
+    # Success criteria stated by the user
+    success_metrics: List[str] = Field(default_factory=list)
 
-    # Q4 (only for regression forecast path)
-    display_format: Optional[str] = None
-    display_format_confidence: float = 0.0
-
-    # Derived fields (resolved after all questions answered)
-    resolved_dag_pool: List[str] = Field(default_factory=list)
+    # Derived after recipe selection — resolved from the chosen recipe's own fields
     target_column: Optional[str] = None
-    branch_ids: List[str] = Field(default_factory=list)
+    selected_task_family: Optional[str] = None  # regression | anomaly | forecast | hybrid | ...
 
     # State flags
     hitl_complete: bool = False
     turn_count: int = 0
 
 
-def resolve_dag_pool(contract: HITLContract) -> HITLContract:
-    """DAG pool resolution is owned by Phase 2 Platform Agent (multi_dag_resolver.py).
-
-    HITL only captures the user's selected recipe ID; no static DAG IDs are hardcoded in Phase 1.
-    """
-    contract.resolved_dag_pool = []
-    contract.branch_ids = []
-    return contract
-
-
-
 def _is_complete(contract: HITLContract) -> bool:
-    """Check if all required HITL fields are collected for the chosen path."""
-    if not contract.operational_goal or not contract.primary_parameter:
-        return False
-    if contract.operational_goal == "regression_forecast":
-        return contract.display_format is not None
-    if contract.operational_goal in ("anomaly_alert", "hybrid_smart_activate"):
-        return contract.alert_sensitivity is not None
-    return False
+    """A contract is complete once the user has picked a recipe with real
+    confidence. Recipe-specific follow-up preferences are optional — they
+    refine training but do not block completion. This keeps HITL from
+    stalling on domain-specific extras that may or may not apply to a given
+    dataset; the Workflow Planner / Platform Agent can prompt for missing
+    refinements later if needed.
+    """
+    return bool(contract.selected_recipe_id) and contract.selected_recipe_confidence >= 0.5
+
+
+def apply_recipe_context(contract: HITLContract, dic_context: dict) -> HITLContract:
+    """Once the user has selected a recipe, derive `target_column` and
+    `selected_task_family` from the DIC's recipe entry itself — no hardcoded
+    ETP mapping. Idempotent: safe to call every turn.
+    """
+    if not contract.selected_recipe_id:
+        return contract
+
+    recipes = dic_context.get("recipes", []) or []
+    match = next(
+        (r for r in recipes if r.get("id") == contract.selected_recipe_id),
+        None,
+    )
+    if match is None:
+        return contract
+
+    contract.target_column = match.get("target") or contract.target_column
+    task = match.get("task")
+    if isinstance(task, str) and task.strip():
+        contract.selected_task_family = task.strip().lower()
+    return contract

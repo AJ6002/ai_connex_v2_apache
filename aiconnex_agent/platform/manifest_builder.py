@@ -39,7 +39,14 @@ def build_manifest(
         Dict representing complete manifest.json for PipelineRunner
     """
     path_csv = Path(compiled_csv_path).resolve()
-    base_dir = Path(output_dir) if output_dir else path_csv.parent
+    if path_csv.is_dir():
+        if (path_csv / "all_groups_combined.csv").exists():
+            path_csv = path_csv / "all_groups_combined.csv"
+        else:
+            csv_files = list(path_csv.glob("*.csv"))
+            if csv_files:
+                path_csv = csv_files[0]
+    base_dir = Path(output_dir) if output_dir else (path_csv.parent if path_csv.is_file() else path_csv)
 
     target_col = selected_recipe.get("target") or (
         dic.get("target_candidates", ["TDS"])[0] if dic.get("target_candidates") else "TDS"
@@ -103,6 +110,7 @@ def build_manifest(
             "final_features": raw_features,
         },
         "paths": {
+            "raw_data": str(path_csv),
             "input_csv": str(path_csv),
             "output_dir": str(base_dir),
             "reports": str(base_dir / "reports"),

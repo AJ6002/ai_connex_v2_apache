@@ -74,7 +74,7 @@ class ClarificationGenerator:
             "then ask what dataset file or ML pipeline goal (training, profiling, anomaly detection) they would like to work on.\n\n"
             f"Primary intent extracted so far: {intent}\n"
             f"Mentioned files: {cuc.observed.get('mentioned_files', [])}\n"
-            f"Mentioned columns: {cuc.observed.get('mentioned_columns', [])}\n"
+            f"Mentioned entities: {cuc.observed.get('mentioned_entities', [])}\n"
             f"Raw user prompt: {raw_prompt}\n\n"
             'Respond with ONLY a JSON object: {"questions": ["<friendly greeting / clarifying question 1>", "<question 2>"]}'
         )

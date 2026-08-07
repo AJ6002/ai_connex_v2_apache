@@ -23,7 +23,6 @@ export type ViewMode =
   | 'node8'
   | 'node9'
   | 'orchestrator_board'
-  | 'landing'
   | 'data_explorer';
 
 export type SidebarStyle = 'orbital' | 'slim';

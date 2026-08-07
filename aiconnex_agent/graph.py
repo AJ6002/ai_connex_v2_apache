@@ -15,17 +15,45 @@ import logging
 import os
 from typing import Dict, Any
 from langgraph.graph import StateGraph, START, END
-from langgraph.checkpoint.sqlite import SqliteSaver
 
 from aiconnex_agent.state import MasterAgentState
-from aiconnex_agent.parser.conversation_parser import real_conversation_parser_node as conversation_parser_node
-from aiconnex_agent.parser.clarification_node import real_clarification_node as clarification_node
+
+# Pre-Upload chain (unchanged from Task 8)
+from aiconnex_agent.parser.conversation_parser import (
+    real_conversation_parser_node,  # legacy — kept importable for older tests
+    conversation_manager_node,
+    intent_extraction_node,
+)
+from aiconnex_agent.parser.contract_manager import contract_manager_node
+from aiconnex_agent.parser.conversation_planner import conversation_planner_node
+from aiconnex_agent.parser.response_writer import response_writer_node
+from aiconnex_agent.parser.clarification_node import real_clarification_node as clarification_node  # legacy
 from aiconnex_agent.parser.cuc_completion import is_manifest_minimally_complete
-from aiconnex_agent.planning.planning_engine import real_planning_engine_node as planning_engine_node
-from aiconnex_agent.scout.scout_node import real_scout_agent_node as scout_agent_node
+
+# Post-Upload chain — 8-node Scout split (Tasks 2-10) + HITL + Lock + Workflow (Tasks 11-13)
+from aiconnex_agent.scout.nodes import (
+    archive_discovery_node,
+    structure_analysis_node,
+    entity_analysis_node,
+    relationship_analysis_node,
+    temporal_analysis_node,
+    feature_analysis_node,
+    quality_analysis_node,
+    statistical_analysis_node,
+    exploration_synthesizer_node,
+)
+from aiconnex_agent.planning.hitl_node import hitl_node
+from aiconnex_agent.planning.pipeline_lock import pipeline_lock_node
+from aiconnex_agent.planning.workflow_planner import workflow_planner_node
+
+# Legacy post-upload nodes — no longer wired, kept importable for archaeology
+from aiconnex_agent.planning.planning_engine import real_planning_engine_node as planning_engine_node  # noqa: F401
+from aiconnex_agent.scout.scout_node import real_scout_agent_node as scout_agent_node  # noqa: F401
+from aiconnex_agent.nodes.plan_evaluator import real_plan_evaluator_node as plan_evaluator_node  # noqa: F401
+
+# Platform + Memory — unchanged, wired as the terminal stages of the new chain
 from aiconnex_agent.platform.platform_node import real_platform_agent_node as platform_agent_node
 from aiconnex_agent.memory.memory_agent import real_memory_agent_node as memory_agent_node
-from aiconnex_agent.nodes.plan_evaluator import real_plan_evaluator_node as plan_evaluator_node
 
 
 logger = logging.getLogger(__name__)
@@ -63,16 +91,54 @@ def advise_upload_node(state: MasterAgentState) -> dict:
     return {}
 
 
+def upload_gate_node(state: MasterAgentState) -> dict:
+    """Pre-Upload v1 Architecture (Task 7): upload_gate_node.
+
+    Same interrupt()/resume mechanism as advise_upload_node (proven correct
+    across this session — untouched here), reframed as the terminal node of
+    the new 6-node chain. Where advise_upload_node was reached unconditionally
+    from the legacy route_after_parser once is_manifest_minimally_complete()
+    held, upload_gate_node is reached ONLY when conversation_planner_node's
+    ConversationPlan.action == 'recommend_upload' — i.e. it CONSUMES the
+    UploadReadinessContract that conversation_planner_node already computed,
+    rather than recomputing readiness itself.
+
+    Owns: the upload-readiness HITL pause/resume transition.
+    Does NOT own: dataset reasoning (that starts downstream in Scout once
+    resumed) — matches the v1 responsibility table exactly.
+    """
+    from langgraph.types import interrupt
+    from aiconnex_agent.schemas import InterruptPayload
+
+    readiness = state.upload_readiness
+    missing = readiness.missing_fields if readiness else []
+    reason = (
+        "Manifest complete, awaiting dataset upload"
+        if not missing
+        else f"Reached upload_gate_node with unexpected missing fields: {missing}"
+    )
+
+    payload = InterruptPayload(
+        interrupt_type="advise_upload",
+        questions=["Your intent is clear. Please upload your dataset to continue."],
+        options=[],
+        reason=reason,
+    )
+    upload_path = interrupt(payload.model_dump())
+
+    if isinstance(upload_path, str) and upload_path.strip():
+        return {"upload_path": upload_path.strip(), "active_agent": "planner"}
+    return {}
+
+
 # ---------------------------------------------------------------------------
 # Routing functions
 # ---------------------------------------------------------------------------
 
 def route_after_parser(state: MasterAgentState) -> str:
-    """Conditional Edge: field-driven routing via CUC completion helper.
-
-    - Manifest incomplete  → clarification_node  (loop until filled)
-    - Manifest complete + no upload → advise_upload_node (park)
-    - Manifest complete + upload present → planning_engine_node → Scout
+    """LEGACY conditional edge — no longer wired into build_graph()'s topology.
+    Kept only because it's still imported/exercised by older tests referencing
+    the pre-v1 pipeline. Pre-Upload v1 uses route_after_planner below instead.
     """
     if not is_manifest_minimally_complete(state.cuc):
         return "clarification_node"
@@ -81,11 +147,33 @@ def route_after_parser(state: MasterAgentState) -> str:
     return "planning_engine_node"
 
 
+def route_after_planner(state: MasterAgentState) -> str:
+    """Pre-Upload v1 Architecture (Task 8): conditional edge reading
+    ConversationPlan.action (set by conversation_planner_node) instead of a
+    raw confidence float.
+
+    - action == 'recommend_upload' → upload_gate_node (park, awaiting file)
+    - any other action (ask/summarize/confirm)  → response_writer_node
+      (renders the text, then itself pauses via interrupt() for the next
+      user turn — see response_writer_node's docstring)
+    - action == 'wait' should not normally reach here (turn<=0 only happens
+      before any node runs), but falls through to response_writer_node
+      defensively rather than crashing.
+    """
+    plan = state.conversation_plan
+    action = plan.get("action") if isinstance(plan, dict) else getattr(plan, "action", None)
+    if action == "recommend_upload":
+        return "upload_gate_node"
+    return "response_writer_node"
+
+
 def route_agent(state: MasterAgentState) -> str:
-    """Conditional Edge: Route to target agent based on current plan step."""
+    """LEGACY conditional edge — no longer wired into build_graph()'s topology.
+    Kept only because it's still imported by older tests that reference the
+    pre-Task-14 pipeline (plan_steps-driven routing). The new post-upload
+    topology is a linear chain, no plan_steps needed."""
     if not state.plan_steps or state.current_step_index >= len(state.plan_steps):
         return END
-
     target = state.plan_steps[state.current_step_index].get("target_agent", "scout")
     if target == "scout":
         return "scout_agent_node"
@@ -97,14 +185,9 @@ def route_agent(state: MasterAgentState) -> str:
 
 
 def route_after_evaluator(state: MasterAgentState) -> str:
-    """Conditional Edge: Continue plan or terminate graph.
-
-    Flattened (not delegating to route_agent) so LangGraph Studio
-    can statically resolve all reachable paths from plan_evaluator_node.
-    """
+    """LEGACY conditional edge — no longer wired into build_graph()'s topology."""
     if not state.plan_steps or state.current_step_index >= len(state.plan_steps):
         return END
-
     target = state.plan_steps[state.current_step_index].get("target_agent", "scout")
     if target == "platform":
         return "platform_agent_node"
@@ -127,61 +210,85 @@ def build_graph(with_checkpointer: bool = True):
     """
     workflow = StateGraph(MasterAgentState)
 
-    # --- Nodes ---
-    workflow.add_node("conversation_parser_node", conversation_parser_node)
-    workflow.add_node("clarification_node", clarification_node)
-    workflow.add_node("advise_upload_node", advise_upload_node)
-    workflow.add_node("planning_engine_node", planning_engine_node)
-    workflow.add_node("scout_agent_node", scout_agent_node)
+    # ══════════════════════════════════════════════════════════════════════
+    # PRE-UPLOAD CHAIN (unchanged from Task 8)
+    # ══════════════════════════════════════════════════════════════════════
+    # NOTE: the node registered under the name "conversation_parser_node" is
+    # actually conversation_manager_node (the first node of the pre-upload
+    # 6-node chain). The name is preserved because /api/agent/seed's
+    # update_state(as_node="conversation_parser_node") depends on it.
+    workflow.add_node("conversation_parser_node", conversation_manager_node)
+    workflow.add_node("intent_extraction_node", intent_extraction_node)
+    workflow.add_node("contract_manager_node", contract_manager_node)
+    workflow.add_node("conversation_planner_node", conversation_planner_node)
+    workflow.add_node("response_writer_node", response_writer_node)
+    workflow.add_node("upload_gate_node", upload_gate_node)
+
+    # ══════════════════════════════════════════════════════════════════════
+    # POST-UPLOAD CHAIN (Task 14 wiring — Scout 8-node split + HITL + Lock + Workflow + Platform)
+    # ══════════════════════════════════════════════════════════════════════
+    # Scout 8+1 nodes (Tasks 2-10)
+    workflow.add_node("archive_discovery_node", archive_discovery_node)
+    workflow.add_node("structure_analysis_node", structure_analysis_node)
+    workflow.add_node("entity_analysis_node", entity_analysis_node)
+    workflow.add_node("relationship_analysis_node", relationship_analysis_node)
+    workflow.add_node("temporal_analysis_node", temporal_analysis_node)
+    workflow.add_node("feature_analysis_node", feature_analysis_node)
+    workflow.add_node("quality_analysis_node", quality_analysis_node)
+    workflow.add_node("statistical_analysis_node", statistical_analysis_node)
+    workflow.add_node("exploration_synthesizer_node", exploration_synthesizer_node)
+
+    # HITL + Pipeline Lock + Workflow Planner (Tasks 13, 11, 12)
+    workflow.add_node("hitl_node", hitl_node)
+    workflow.add_node("pipeline_lock_node", pipeline_lock_node)
+    workflow.add_node("workflow_planner_node", workflow_planner_node)
+
+    # Platform + Memory (unchanged, terminal stages of the new chain)
     workflow.add_node("platform_agent_node", platform_agent_node)
     workflow.add_node("memory_agent_node", memory_agent_node)
-    workflow.add_node("plan_evaluator_node", plan_evaluator_node)
 
-    # --- Entry ---
+    # ══════════════════════════════════════════════════════════════════════
+    # EDGES
+    # ══════════════════════════════════════════════════════════════════════
+
+    # --- Entry & Pre-Upload chain ---
     workflow.add_edge(START, "conversation_parser_node")
-
-    # Explicit path→node mapping is REQUIRED for LangGraph Studio static visualization.
-    workflow.add_conditional_edges(
-        "conversation_parser_node",
-        route_after_parser,
-        {
-            "clarification_node": "clarification_node",
-            "advise_upload_node": "advise_upload_node",
-            "planning_engine_node": "planning_engine_node",
-        },
-    )
-
-    # Clarification loops back to parser until manifest is complete
-    workflow.add_edge("clarification_node", "conversation_parser_node")
-
-    # advise_upload parks — graph resumes into planning once upload_path is set
-    workflow.add_edge("advise_upload_node", "planning_engine_node")
+    workflow.add_edge("conversation_parser_node", "intent_extraction_node")
+    workflow.add_edge("intent_extraction_node", "contract_manager_node")
+    workflow.add_edge("contract_manager_node", "conversation_planner_node")
 
     workflow.add_conditional_edges(
-        "planning_engine_node",
-        route_agent,
+        "conversation_planner_node",
+        route_after_planner,
         {
-            "scout_agent_node": "scout_agent_node",
-            "platform_agent_node": "platform_agent_node",
-            "memory_agent_node": "memory_agent_node",
-            END: END,
+            "response_writer_node": "response_writer_node",
+            "upload_gate_node": "upload_gate_node",
         },
     )
+    # response_writer_node interrupts for the user's next message, then loops
+    # back to re-run the full pre-upload chain with the new message.
+    workflow.add_edge("response_writer_node", "conversation_parser_node")
 
-    workflow.add_edge("scout_agent_node", "plan_evaluator_node")
-    workflow.add_edge("platform_agent_node", "plan_evaluator_node")
-    workflow.add_edge("memory_agent_node", "plan_evaluator_node")
+    # --- Bridge: upload_gate parks; on resume with an upload_path, dive into Scout ---
+    workflow.add_edge("upload_gate_node", "archive_discovery_node")
 
-    workflow.add_conditional_edges(
-        "plan_evaluator_node",
-        route_after_evaluator,
-        {
-            "scout_agent_node": "scout_agent_node",
-            "platform_agent_node": "platform_agent_node",
-            "memory_agent_node": "memory_agent_node",
-            END: END,
-        },
-    )
+    # --- Post-Upload: linear 8-node Scout analysis chain ---
+    workflow.add_edge("archive_discovery_node", "structure_analysis_node")
+    workflow.add_edge("structure_analysis_node", "entity_analysis_node")
+    workflow.add_edge("entity_analysis_node", "relationship_analysis_node")
+    workflow.add_edge("relationship_analysis_node", "temporal_analysis_node")
+    workflow.add_edge("temporal_analysis_node", "feature_analysis_node")
+    workflow.add_edge("feature_analysis_node", "quality_analysis_node")
+    workflow.add_edge("quality_analysis_node", "statistical_analysis_node")
+    workflow.add_edge("statistical_analysis_node", "exploration_synthesizer_node")
+
+    # --- Synthesizer → HITL → Lock → Workflow → Platform → Memory → END ---
+    workflow.add_edge("exploration_synthesizer_node", "hitl_node")
+    workflow.add_edge("hitl_node", "pipeline_lock_node")
+    workflow.add_edge("pipeline_lock_node", "workflow_planner_node")
+    workflow.add_edge("workflow_planner_node", "platform_agent_node")
+    workflow.add_edge("platform_agent_node", "memory_agent_node")
+    workflow.add_edge("memory_agent_node", END)
 
     if with_checkpointer:
         try:
@@ -194,6 +301,12 @@ def build_graph(with_checkpointer: bool = True):
             # instead open a persistent connection and construct SqliteSaver(conn)
             # directly. check_same_thread=False is required because Flask serves
             # requests on multiple worker threads that share this one graph.
+            #
+            # Import lazily so the graph still builds (falling back to
+            # MemorySaver below) when langgraph-checkpoint-sqlite isn't
+            # installed — the module-level import would otherwise break the
+            # entire aiconnex_agent package rather than degrade gracefully.
+            from langgraph.checkpoint.sqlite import SqliteSaver
             import sqlite3
 
             _db_dir = os.path.join(
