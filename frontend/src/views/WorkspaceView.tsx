@@ -39,13 +39,13 @@ export const WorkspaceView: React.FC = () => {
   };
 
   const getFileIcon = (name: string, isDir: boolean) => {
-    if (isDir) return { icon: 'folder', color: '#F59E0B' };
+    if (isDir) return { icon: 'folder', color: '#FF6B35' };
     const ext = name.split('.').pop()?.toLowerCase();
-    if (ext === 'csv') return { icon: 'table_view', color: '#10B981' };
-    if (ext === 'pkl') return { icon: 'model_training', color: '#3B82F6' };
-    if (ext === 'zip') return { icon: 'folder_zip', color: '#EF4444' };
-    if (ext === 'txt') return { icon: 'description', color: '#F97316' };
-    return { icon: 'draft', color: '#6B7280' };
+    if (ext === 'csv') return { icon: 'table_view', color: '#FF6B35' };
+    if (ext === 'pkl') return { icon: 'model_training', color: 'rgba(255,255,255,0.80)' };
+    if (ext === 'zip') return { icon: 'folder_zip', color: '#FF8F5A' };
+    if (ext === 'txt') return { icon: 'description', color: 'rgba(255,255,255,0.60)' };
+    return { icon: 'draft', color: 'rgba(255,255,255,0.40)' };
   };
 
   // Group items by directory or flat list

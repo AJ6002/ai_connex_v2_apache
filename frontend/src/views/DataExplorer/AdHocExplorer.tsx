@@ -182,8 +182,8 @@ export const AdHocExplorer: React.FC<AdHocExplorerProps> = ({
             <div className="text-slate-500 text-[10px]">Drag dimensions or measures from the sidebar onto chart axes.</div>
           </div>
         </div>
-        <div className="p-3 bg-white rounded-xl border border-emerald-200 shadow-sm flex items-start gap-2">
-          <TrendingUp size={14} className="text-emerald-600 mt-0.5 flex-shrink-0" />
+        <div className="p-3 bg-white/5 rounded-xl border border-[#FF6B35]/20 shadow-sm flex items-start gap-2">
+          <TrendingUp size={14} className="text-[#FF6B35] mt-0.5 flex-shrink-0" />
           <div>
             <div className="font-bold text-slate-700 text-[11px]">Switch Chart Types</div>
             <div className="text-slate-500 text-[10px]">Use the chart type selector to switch between bar, scatter, line, heatmap.</div>

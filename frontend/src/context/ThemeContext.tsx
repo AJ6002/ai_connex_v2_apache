@@ -20,7 +20,15 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   useEffect(() => {
     const html = document.documentElement;
-    html.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    if (isDark) {
+      html.setAttribute('data-theme', 'dark');
+      html.classList.add('dark');
+      html.classList.remove('light');
+    } else {
+      html.setAttribute('data-theme', 'light');
+      html.classList.add('light');
+      html.classList.remove('dark');
+    }
     localStorage.setItem('aic_theme', isDark ? 'dark' : 'light');
   }, [isDark]);
 

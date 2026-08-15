@@ -277,14 +277,29 @@ def _build_legacy_dic(
     )
 
     # Legacy DIC.feature_catalog is a loose Dict[column -> {type, role, description}].
-    # Project FeatureCatalogV2 into that shape.
+    # Project FeatureCatalogV2 into that shape and annotate with Terminology KB canonical concepts.
+    from aiconnex_agent.platform_kb.context_builder import ContextBuilder
+    ctx_builder = ContextBuilder()
+
     legacy_feature_catalog: Dict[str, Any] = {}
     for entry in features.features:
+        term_ctx = ctx_builder.get_terminology_context(entry.column)
+        canonical_info = {}
+        if term_ctx.get("match_type") != "none" and term_ctx.get("term"):
+            term_rec = term_ctx["term"]
+            canonical_info = {
+                "canonical_term_id": term_rec.get("term_id"),
+                "canonical_name": term_rec.get("canonical_name"),
+                "canonical_unit": term_ctx.get("suggested_unit"),
+                "match_type": term_ctx.get("match_type"),
+            }
+
         legacy_feature_catalog[entry.column] = {
             "type": entry.dtype,
             "role": entry.role,
             "description": entry.description,
             "category": entry.category,
+            "canonical_terminology": canonical_info if canonical_info else None,
         }
 
     branches = _branching_hints(recipes, temporal)

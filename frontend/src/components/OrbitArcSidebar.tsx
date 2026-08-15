@@ -112,6 +112,7 @@ export const OrbitArcSidebar: React.FC<OrbitArcSidebarProps> = ({ currentView, o
     { id: 'pipeline_studio', label: 'Page 9: Monitor Node', shortLabel: 'Monitor', icon: 'monitoring', badge: 'Page 9', cluster: 'mlops' },
     { id: 'master_data', label: 'Master Data & Recipes', shortLabel: 'Master', icon: 'database', badge: 'Recipes', cluster: 'system' },
     { id: 'administration', label: 'Administration & Envs', shortLabel: 'Admin', icon: 'admin_panel_settings', cluster: 'system' },
+    { id: 'agent_manager', label: 'Agent Manager & Fleet Control', shortLabel: 'Agents', icon: 'smart_toy', badge: 'Admin', cluster: 'system' },
     { id: 'templates', label: 'Templates Library', shortLabel: 'Templates', icon: 'description', cluster: 'system' },
     { id: 'settings', label: 'Platform Settings', shortLabel: 'Settings', icon: 'settings', cluster: 'settings' },
   ];
@@ -427,18 +428,18 @@ export const OrbitArcSidebar: React.FC<OrbitArcSidebarProps> = ({ currentView, o
                     isActive || isHovered ? 'z-30' : 'z-20'
                   }`}
                 >
-                  {/* Spotlight Glow (Blue for core operations) */}
+                  {/* Spotlight Glow (Solar Orange for core operations) */}
                   {(isHovered || isActive) && (
-                    <div className="absolute inset-0 rounded-full bg-blue-500/20 border border-blue-400/50 shadow-[0_0_20px_rgba(59,130,246,0.5)] backdrop-blur-md animate-scaleIn pointer-events-none"></div>
+                    <div className="absolute inset-0 rounded-full bg-[#E86326] border border-[#2B0063] shadow-[0_0_16px_rgba(232,99,38,0.6)] backdrop-blur-md animate-scaleIn pointer-events-none"></div>
                   )}
 
                   {/* Icon */}
                   <span
                     className={`material-symbols-outlined transition-all ${
                       isActive
-                        ? 'text-white scale-110 font-bold text-lg drop-shadow-[0_2px_8px_rgba(255,255,255,0.8)]'
+                        ? 'text-[#0D1533] scale-110 font-bold text-lg'
                         : isHovered
-                        ? 'text-white scale-110 text-lg'
+                        ? 'text-[#0D1533] scale-110 text-lg'
                         : 'text-slate-300/80 hover:text-white text-base'
                     }`}
                   >
@@ -447,10 +448,10 @@ export const OrbitArcSidebar: React.FC<OrbitArcSidebarProps> = ({ currentView, o
 
                   {/* Tooltip */}
                   {(isHovered || isActive) && (
-                    <div className="absolute -top-11 left-1/2 -translate-x-1/2 bg-slate-950/95 backdrop-blur-2xl text-white px-2.5 py-1 rounded-lg text-[9px] font-mono font-bold whitespace-nowrap shadow-2xl border border-white/30 flex items-center gap-1.5 pointer-events-none z-50">
+                    <div className="absolute -top-11 left-1/2 -translate-x-1/2 bg-[#2B0063] text-white px-3 py-1.5 rounded-xl text-xs font-mono font-bold whitespace-nowrap shadow-2xl border-2 border-[#FF6B35] flex items-center gap-1.5 pointer-events-none z-50 animate-fadeIn">
                       <span>{item.label}</span>
                       {item.badge && (
-                        <span className="px-1 py-0.2 bg-blue-600 text-[8px] rounded font-bold">
+                        <span className="px-1.5 py-0.5 bg-[#FF6B35] text-white text-[10px] rounded-md font-bold">
                           {item.badge}
                         </span>
                       )}
@@ -480,18 +481,18 @@ export const OrbitArcSidebar: React.FC<OrbitArcSidebarProps> = ({ currentView, o
                     isActive || isHovered ? 'z-30' : 'z-20'
                   }`}
                 >
-                  {/* Spotlight Glow (Red for microservice nodes) */}
+                  {/* Spotlight Glow (Solar Orange for microservice nodes) */}
                   {(isHovered || isActive) && (
-                    <div className="absolute inset-0 rounded-full bg-rose-500/20 border border-rose-400/50 shadow-[0_0_20px_rgba(244,63,94,0.5)] backdrop-blur-md animate-scaleIn pointer-events-none"></div>
+                    <div className="absolute inset-0 rounded-full bg-[#E86326] border border-[#2B0063] shadow-[0_0_16px_rgba(232,99,38,0.6)] backdrop-blur-md animate-scaleIn pointer-events-none"></div>
                   )}
 
                   {/* Icon */}
                   <span
                     className={`material-symbols-outlined transition-all ${
                       isActive
-                        ? 'text-white scale-110 font-bold text-base drop-shadow-[0_2px_8px_rgba(255,255,255,0.8)]'
+                        ? 'text-[#0D1533] scale-110 font-bold text-base'
                         : isHovered
-                        ? 'text-white scale-110 text-base'
+                        ? 'text-[#0D1533] scale-110 text-base'
                         : 'text-slate-400/80 hover:text-white text-[15px]'
                     }`}
                   >
@@ -500,8 +501,8 @@ export const OrbitArcSidebar: React.FC<OrbitArcSidebarProps> = ({ currentView, o
 
                   {/* Tooltip */}
                   {(isHovered || isActive) && (
-                    <div className="absolute -top-11 left-1/2 -translate-x-1/2 bg-slate-950/95 backdrop-blur-2xl text-white px-2.5 py-1 rounded-lg text-[9px] font-mono font-bold whitespace-nowrap shadow-2xl border border-white/30 flex items-center gap-1.5 pointer-events-none z-50">
-                      <span className="text-tas-red font-bold">Node {index + 1}:</span>
+                    <div className="absolute -top-11 left-1/2 -translate-x-1/2 bg-[#2B0063] text-white px-3 py-1.5 rounded-xl text-xs font-mono font-bold whitespace-nowrap shadow-2xl border-2 border-[#FF6B35] flex items-center gap-1.5 pointer-events-none z-50 animate-fadeIn">
+                      <span className="text-[#FF6B35] font-bold">Node {index + 1}:</span>
                       <span>{item.shortLabel}</span>
                     </div>
                   )}
@@ -520,8 +521,8 @@ export const OrbitArcSidebar: React.FC<OrbitArcSidebarProps> = ({ currentView, o
               }}
               className={`group relative flex items-center justify-center w-12 h-12 rounded-full border-2 transition-all duration-300 shadow-xl backdrop-blur-3xl hover:scale-110 active:scale-95 ${
                 isPinned
-                  ? 'bg-emerald-950/80 border-emerald-400 text-emerald-300 ring-2 ring-emerald-400/40'
-                  : 'bg-slate-900/90 border-white/50 text-white hover:border-white'
+                  ? 'bg-[#FF6B35]/20 border-[#FF6B35] text-[#FF6B35] ring-2 ring-[#FF6B35]/40'
+                  : 'bg-[#280B43]/90 border-white/50 text-white hover:border-white'
               }`}
               title={isPinned ? "Currently Pinned in Place. Click to Free" : "Currently Free. Click to Pin in Place"}
             >

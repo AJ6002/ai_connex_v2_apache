@@ -1,0 +1,74 @@
+{
+  "manifest_type": "Terminology_KB_Raw_Manifest",
+  "version": "1.0",
+  "total_files_harvested": 9,
+  "subdirectories": [
+    "01_industrial_glossaries",
+    "02_standards_and_canonical_definitions",
+    "03_measurement_units",
+    "04_phm_maintenance_terminology",
+    "05_process_industry_terminology",
+    "06_water_wastewater_terminology",
+    "07_scada_automation_terminology",
+    "08_dataset_column_vocabulary",
+    "09_business_ml_terminology",
+    "10_acronyms_abbreviations",
+    "11_archive_unverified"
+  ],
+  "files": [
+    {
+      "file_path": "01_industrial_glossaries/nist_csrc_glossary.json",
+      "size_bytes": 4331,
+      "sha256_hash": "4e0b9d363a2d2da890f8fd63d26a875d7aba103c710e3ae17d6fac680ec22302",
+      "harvested_at": "2026-08-14T09:47:43.418524+00:00"
+    },
+    {
+      "file_path": "02_standards_and_canonical_definitions/iso_extracted_terms.json",
+      "size_bytes": 804,
+      "sha256_hash": "1d9f6a3d287a04c1133b97e28a05683e50d933d8e1073826ef3984c5436ecd66",
+      "harvested_at": "2026-08-14T09:47:43.430837+00:00"
+    },
+    {
+      "file_path": "03_measurement_units/QUDT/qudt_units_seed.json",
+      "size_bytes": 605,
+      "sha256_hash": "d4bddd749097c54b3e8ff50a347dd398222b2fe3e5c84c40af599409fc5ef535",
+      "harvested_at": "2026-08-14T09:47:43.439277+00:00"
+    },
+    {
+      "file_path": "03_measurement_units/UCUM/ucum-essence.xml",
+      "size_bytes": 82776,
+      "sha256_hash": "dfccea1b5dc284245ebae97edd1dc03c45864da4e87df55bc9851797b4fd0b61",
+      "harvested_at": "2026-08-14T09:47:43.456323+00:00"
+    },
+    {
+      "file_path": "04_phm_maintenance_terminology/smrp_nasa_phm_glossary.json",
+      "size_bytes": 2301,
+      "sha256_hash": "e9b5470886256698d8fe62efbc7a2191ad46d1ed70487e6af54aecf8d383a4e4",
+      "harvested_at": "2026-08-14T09:47:43.468060+00:00"
+    },
+    {
+      "file_path": "06_water_wastewater_terminology/epa_usgs_water_glossary.json",
+      "size_bytes": 2688,
+      "sha256_hash": "ac02a3afc9860eb7ea6985172a94b7d113dde639dbef927556e7e9b3b18b7b4f",
+      "harvested_at": "2026-08-14T09:47:43.469567+00:00"
+    },
+    {
+      "file_path": "07_scada_automation_terminology/opc_ua_scada_glossary.json",
+      "size_bytes": 1662,
+      "sha256_hash": "c70b4752aec3589e37d68ac7dc04795f0f66ce645c7489b18a1e8f1cb0015a4e",
+      "harvested_at": "2026-08-14T09:47:43.479143+00:00"
+    },
+    {
+      "file_path": "08_dataset_column_vocabulary/column_patterns.json",
+      "size_bytes": 1983,
+      "sha256_hash": "5ae48a40fb881b5840caf571633f6b03c0ca2acf9b10df3302e377ef02fd92fc",
+      "harvested_at": "2026-08-14T09:47:43.479649+00:00"
+    },
+    {
+      "file_path": "10_acronyms_abbreviations/extracted_acronyms.json",
+      "size_bytes": 34236,
+      "sha256_hash": "dae1e8fde0492cbc7f7a4b7dec8295230dacc359777a78cb47bbd3e88977d20e",
+      "harvested_at": "2026-08-14T09:47:43.491276+00:00"
+    }
+  ]
+}

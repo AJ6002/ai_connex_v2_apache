@@ -1,0 +1,53 @@
+[
+  {
+    "term_id": "SCADA.TAG",
+    "canonical_name": "Process Variable Tag",
+    "abbreviation": "Tag",
+    "definition": "A named data address in a SCADA or DCS system representing a physical sensor measurement, actuator state, or calculated setpoint.",
+    "domain": "scada",
+    "source": "OPC UA Companion Specification / ISA Dictionary",
+    "aliases": [
+      "tag",
+      "scada_tag",
+      "process_tag"
+    ]
+  },
+  {
+    "term_id": "SCADA.PV",
+    "canonical_name": "Process Variable",
+    "abbreviation": "PV",
+    "definition": "The current measured value of a physical process parameter (e.g. pressure, temperature, flow rate) monitored by a control loop.",
+    "domain": "automation",
+    "source": "ISA Automation Dictionary",
+    "aliases": [
+      "PV",
+      "process_variable"
+    ]
+  },
+  {
+    "term_id": "SCADA.SP",
+    "canonical_name": "Setpoint",
+    "abbreviation": "SP",
+    "definition": "The target value that an automatic control system aims to maintain for a given process variable.",
+    "domain": "automation",
+    "source": "ISA Automation Dictionary",
+    "aliases": [
+      "SP",
+      "setpoint",
+      "target_value"
+    ]
+  },
+  {
+    "term_id": "SCADA.HISTORIAN",
+    "canonical_name": "Process Historian",
+    "abbreviation": "Historian",
+    "definition": "A specialized time-series database designed to ingest, compress, and store high-frequency operational tag data from SCADA and DCS systems.",
+    "domain": "automation",
+    "source": "Siemens SIMATIC / OPC UA",
+    "aliases": [
+      "historian",
+      "data_historian",
+      "process_historian"
+    ]
+  }
+]

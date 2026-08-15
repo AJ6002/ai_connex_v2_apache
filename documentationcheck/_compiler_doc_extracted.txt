@@ -1,0 +1,1900 @@
+
+    
+    
+AI-ConneX Data Studio Compiler
+    
+    
+Industrial Data Ingestion, Understanding, Unification and Compilation Engine
+    
+Project: AI-ConneXPlatform: Industrial AI Solutions PlatformModule: Data StudioComponent: CompilerDocument: Technical R&amp;D and Stage-1 Engineering DocumentationStage: Chatbot → Data Studio Compiler → Data ProfilerDocument Version: 1.0Date: 14 August 2026Status: Architecture / R&amp;D Baseline
+    
+    
+    
+    
+    
+1. Executive Summary
+    
+The AI-ConneX Data Studio Compiler is the first machine-processing layer after the AI-ConneX conversational interface.
+    
+Its purpose is to eliminate one of the largest barriers between industrial data and artificial intelligence:
+    
+Industrial users should not have to understand data engineering, file formats, schemas, joins, merges, encoding, or data normalization before using AI-ConneX.
+    
+Industrial data is rarely delivered in a clean, standardized form.
+    
+A plant may provide:
+    
+CSV files
+    
+Excel workbooks
+    
+JSON
+    
+XML
+    
+Parquet
+    
+TXT/log files
+    
+database exports
+    
+ZIP archives
+    
+multiple files from multiple machines
+    
+historical files
+    
+files with different column names
+    
+files with different timestamps
+    
+files containing different units
+    
+datasets containing overlapping records
+    
+datasets that need to be appended
+    
+datasets that need to be joined
+    
+datasets that need to be merged
+    
+datasets containing metadata and operational measurements together
+    
+The Compiler receives this heterogeneous input and converts it into a validated AI-ConneX Unified Industrial Dataset representation.
+    
+The Compiler does not simply convert:
+    
+Excel → CSV
+    
+or:
+    
+ZIP → extracted files
+    
+Instead, it performs:
+    
+INGEST   ↓IDENTIFY   ↓INSPECT   ↓PROFILE PRE-CHECK   ↓UNDERSTAND   ↓PLAN   ↓UNZIP / EXTRACT   ↓NORMALIZE   ↓JOIN / APPEND / MERGE   ↓SCHEMA HARMONIZATION   ↓TYPE / TIME / UNIT ALIGNMENT   ↓VALIDATION   ↓PROVENANCE   ↓UNIFIED DATASET   ↓DATA PROFILER
+    
+The Compiler is assisted by an Agent Helper.
+    
+The Agent Helper does not directly manipulate production data without controls.
+    
+Its primary responsibility is:
+    
+Understand ambiguous industrial datasets and recommend the correct transformation plan.
+    
+The Compiler then validates and executes the plan deterministically.
+    
+Therefore the architecture follows:
+    
+Agent reasons     ↓Compiler validates     ↓Compiler executes     ↓Validator verifies     ↓Profiler receives result
+    
+This separation is fundamental to the reliability of AI-ConneX.
+    
+    
+    
+    
+2. Position of the Compiler in AI-ConneX
+    
+The relevant section of the AI-ConneX architecture is:
+    
+                         JANE / CHATBOT                              │                              │                              ▼                    ┌───────────────────┐                    │   DATA STUDIO     │                    │                   │                    │     COMPILER      │                    └─────────┬─────────┘                              │                    Unified Industrial                         Dataset                              │                              ▼                    ┌───────────────────┐                    │   DATA PROFILER   │                    └─────────┬─────────┘                              │                              ▼                    Recipe Orchestrator                              │                              ▼                        DAG Assigner
+    
+The Compiler is therefore the boundary between human/industrial intent and structured machine-readable data.
+    
+    
+    
+    
+3. Why the Compiler Exists
+    
+    
+3.1 Traditional industrial workflow
+    
+Without AI-ConneX:
+    
+Industrialist      ↓Finds data      ↓Calls data engineer      ↓Converts Excel      ↓Unzips files      ↓Checks schemas      ↓Renames columns      ↓Writes Python/Pandas code      ↓Joins datasets      ↓Fixes timestamps      ↓Handles missing values      ↓Exports clean dataset      ↓ML engineer receives dataset
+    
+This creates several problems.
+    
+    
+Problem 1 — Skill barrier
+    
+Industrial personnel may understand:
+    
+machines
+    
+production
+    
+maintenance
+    
+process parameters
+    
+plant operations
+    
+but may not understand:
+    
+Python
+    
+Pandas
+    
+SQL
+    
+schemas
+    
+ETL
+    
+joins
+    
+data types
+    
+encodings
+    
+    
+    
+Problem 2 — Format barrier
+    
+Industrial data can arrive in arbitrary formats.
+    
+    
+    
+Problem 3 — Schema barrier
+    
+Two datasets may represent the same concept using different names.
+    
+Example:
+    
+Machine_IDmachine_idmachineasset_idequipment_no
+    
+    
+    
+Problem 4 — Relationship barrier
+    
+The system must determine whether datasets should be:
+    
+APPENDEDJOINEDMERGEDLEFT JOINEDAS-OF JOINEDUNIONED
+    
+    
+    
+Problem 5 — Time barrier
+    
+Industrial datasets frequently contain:
+    
+UTC
+    
+local time
+    
+date only
+    
+timestamp
+    
+epoch time
+    
+different timestamp resolutions
+    
+    
+    
+Problem 6 — Unit barrier
+    
+For example:
+    
+temperature = °Ctemperature = °Fpressure = barpressure = psi
+    
+A simple schema match is insufficient.
+    
+    
+    
+    
+    
+    
+4. Compiler Objective
+    
+The Compiler has six primary objectives.
+    
+    
+Objective 1 — Format independence
+    
+Accept heterogeneous industrial file formats.
+    
+    
+    
+Objective 2 — Dataset understanding
+    
+Determine what each file/dataset contains.
+    
+    
+    
+Objective 3 — Intelligent composition
+    
+Determine whether datasets should be:
+    
+appended
+    
+joined
+    
+merged
+    
+left/right/full joined
+    
+time-aligned
+    
+unioned
+    
+    
+    
+Objective 4 — Unified representation
+    
+Convert the resulting dataset into the AI-ConneX canonical representation.
+    
+    
+    
+Objective 5 — Validation
+    
+Prevent incorrect transformations from silently entering ML pipelines.
+    
+    
+    
+Objective 6 — Provenance
+    
+Maintain the lineage of every important transformation.
+    
+    
+    
+    
+    
+5. Compiler Definition
+    
+The AI-ConneX Compiler can be formally defined as:
+    
+A schema-aware, provenance-preserving industrial data compilation engine that transforms heterogeneous user-provided datasets into a validated canonical representation suitable for downstream data profiling, feature engineering and machine-learning workflows.
+    
+It is therefore an ETL/ELT + schema inference + data reasoning + validation engine.
+    
+    
+    
+    
+6. Compiler Architecture
+    
+                           CHATBOT                              │                              ▼                    Chatbot Output Contract                              │                              ▼                    ┌───────────────────┐                    │   INPUT MANAGER   │                    └─────────┬─────────┘                              │                              ▼                    ┌───────────────────┐                    │ FILE IDENTIFIER   │                    └─────────┬─────────┘                              │                    ┌─────────┴─────────┐                    ▼                   ▼              Archive?               Direct File?                    │                   │                    ▼                   ▼                  UNZIP              PARSER                    │                   │                    └─────────┬─────────┘                              ▼                    ┌───────────────────┐                    │ DATA DISCOVERY    │                    └─────────┬─────────┘                              │                              ▼                    ┌───────────────────┐                    │ AGENT HELPER      │                    └─────────┬─────────┘                              │                              ▼                    Transformation Plan                              │                              ▼                    ┌───────────────────┐                    │ PLAN VALIDATOR    │                    └─────────┬─────────┘                              │                              ▼                    ┌───────────────────┐                    │ RECIPE GENERATOR  │                    └─────────┬─────────┘                              │                              ▼                         DAG PLAN                              │              ┌───────────────┼───────────────┐              ▼               ▼               ▼            UNZIP           APPEND           JOIN              │               │               │              └───────────────┼───────────────┘                              ▼                    ┌───────────────────┐                    │ SCHEMA HARMONIZER │                    └─────────┬─────────┘                              ▼                    ┌───────────────────┐                    │ TYPE NORMALIZER   │                    └─────────┬─────────┘                              ▼                    ┌───────────────────┐                    │ TIME NORMALIZER   │                    └─────────┬─────────┘                              ▼                    ┌───────────────────┐                    │ UNIT NORMALIZER   │                    └─────────┬─────────┘                              ▼                    ┌───────────────────┐                    │ QUALITY VALIDATOR │                    └─────────┬─────────┘                              ▼                    ┌───────────────────┐                    │ PROVENANCE STORE  │                    └─────────┬─────────┘                              ▼                  UNIFIED INDUSTRIAL DATA                              │                              ▼                        DATA PROFILER
+    
+    
+    
+    
+7. Core Architectural Principle
+    
+The most important rule is:
+    
+LLM / Agent ≠ Data Executor
+    
+The Agent Helper should not be trusted to arbitrarily execute transformations.
+    
+Instead:
+    
+User Intent    ↓Agent Helper    ↓Transformation Proposal    ↓Compiler Validation    ↓Deterministic Executor    ↓Validation    ↓Output
+    
+This protects industrial data from uncontrolled agent behavior.
+    
+    
+    
+    
+8. R&amp;D Phase
+    
+The R&amp;D process should be divided into the following phases.
+    
+    
+R&amp;D-01 — Input Diversity Study
+    
+Determine the formats that industrial users are likely to provide.
+    
+    
+Initial target
+    
+CSVXLSXXLSMJSONXMLTXTLOGPARQUETZIP
+    
+    
+    
+Future
+    
+PDF tablesAvroORCSQLiteSQL dumpsAPI responsesS3 objectsindustrial databasesOPC-UA exportsMQTT data snapshotsSCADA exportsMES exportsERP exports
+    
+    
+    
+    
+    
+    
+9. R&amp;D-02 — Format Detection
+    
+The system should never trust the filename extension alone.
+    
+For example:
+    
+machine.csv
+    
+may actually contain:
+    
+semicolon-separated data
+    
+or:
+    
+UTF-16 encoded data
+    
+or even malformed binary content.
+    
+The Compiler therefore performs:
+    
+filename inspection+MIME detection+magic-byte detection+parser probing
+    
+The detected type is stored separately from the supplied filename.
+    
+    
+    
+    
+10. R&amp;D-03 — Archive Research
+    
+ZIP files are particularly important because industrialists frequently send:
+    
+plant_data.zip
+    
+rather than individual files.
+    
+The Compiler therefore needs:
+    
+ZIP detection     ↓safe extraction     ↓recursive file discovery     ↓file classification     ↓dataset grouping
+    
+    
+    
+    
+11. Important ZIP Security Failure
+    
+A naive implementation might execute:
+    
+zipfile.extractall(output_directory)
+    
+without checking archive paths.
+    
+This can create a Zip Slip/path traversal vulnerability.
+    
+A malicious archive could contain:
+    
+../../some_sensitive_file
+    
+The Compiler must therefore resolve every archive member and verify that the final extraction path remains inside the designated workspace.
+    
+    
+    
+    
+12. ZIP Bomb Failure
+    
+Another failure is a compressed archive that is tiny but expands to enormous size.
+    
+Example:
+    
+Input ZIP:50 MBExpanded:500 GB
+    
+Without controls, the server could run out of:
+    
+disk
+    
+RAM
+    
+CPU
+    
+worker capacity
+    
+The Compiler must implement:
+    
+maximum archive sizemaximum uncompressed sizemaximum file countmaximum nesting depthmaximum individual file size
+    
+    
+    
+    
+13. R&amp;D-04 — Dataset Discovery
+    
+After files are identified, the Compiler creates a discovery report.
+    
+Example:
+    
+{  &quot;dataset_id&quot;: &quot;DS-000184&quot;,  &quot;file&quot;: &quot;machine_data.csv&quot;,  &quot;format&quot;: &quot;csv&quot;,  &quot;encoding&quot;: &quot;utf-8&quot;,  &quot;delimiter&quot;: &quot;,&quot;,  &quot;rows_estimate&quot;: 1845023,  &quot;columns&quot;: 17,  &quot;has_header&quot;: true,  &quot;timestamp_candidates&quot;: [    &quot;timestamp&quot;,    &quot;event_time&quot;  ],  &quot;identifier_candidates&quot;: [    &quot;machine_id&quot;  ]}
+    
+This is not yet the final Data Profiler output.
+    
+It is a Compiler discovery artifact.
+    
+    
+    
+    
+14. R&amp;D-05 — Schema Understanding
+    
+Suppose the user gives:
+    
+    
+File A
+    
+machine_idtimestamptemperaturepressure
+    
+    
+    
+File B
+    
+MachineTimeTempPressure
+    
+A naive system sees different schemas.
+    
+AI-ConneX must infer:
+    
+machine_id ←→ Machinetimestamp  ←→ Timetemperature ←→ Temppressure ←→ Pressure
+    
+The Agent Helper assists in this process.
+    
+    
+    
+    
+    
+15. Schema Matching Strategy
+    
+Schema matching should use multiple signals.
+    
+                    Schema Match                         │        ┌────────────────┼─────────────────┐        ▼                ▼                 ▼     Name           Data Type          Values   Similarity        Similarity        Similarity        │                │                 │        └────────────────┼─────────────────┘                         ▼                  Semantic Score
+    
+Potential scoring:
+    
+column_name_similarity+datatype_similarity+sample_value_similarity+unit_similarity+semantic_embedding_similarity+timestamp compatibility+domain vocabulary
+    
+The final result should be a confidence score.
+    
+    
+    
+    
+16. Agent Helper
+    
+The Agent Helper is the intelligent reasoning component.
+    
+It receives:
+    
+dataset metadata+schemas+sample values+column statistics+user objective+known industrial vocabulary
+    
+It produces:
+    
+transformation proposal+confidence+reason+required keys+warnings
+    
+Example:
+    
+{  &quot;operation&quot;: &quot;JOIN&quot;,  &quot;left&quot;: &quot;machine_data&quot;,  &quot;right&quot;: &quot;production_data&quot;,  &quot;keys&quot;: [    &quot;machine_id&quot;,    &quot;timestamp&quot;  ],  &quot;join_type&quot;: &quot;LEFT&quot;,  &quot;confidence&quot;: 0.94,  &quot;reason&quot;: &quot;Both datasets share machine identifier and compatible timestamps.&quot;}
+    
+    
+    
+    
+17. Append Decision
+    
+The Compiler should prefer APPEND when:
+    
+schemas are substantially compatibleANDrecords represent different partitions/time periodsANDno complementary-key relationship is required
+    
+Example:
+    
+Jan.csvFeb.csvMar.csv
+    
+becomes:
+    
+Jan +Feb +Mar ↓APPEND
+    
+    
+    
+    
+18. Join Decision
+    
+JOIN is appropriate when datasets contain complementary attributes.
+    
+Example:
+    
+Machine:machine_id | timestamp | temperatureProduction:machine_id | timestamp | production_rate
+    
+Output:
+    
+machine_idtimestamptemperatureproduction_rate
+    
+    
+    
+    
+19. Merge Decision
+    
+MERGE should be used when overlapping datasets require reconciliation.
+    
+For example:
+    
+Machine A:machine_id | temperature | pressureMachine B:machine_id | temperature | vibration
+    
+The Compiler may produce:
+    
+machine_idtemperaturepressurevibration
+    
+But if both datasets contain different values for the same field, the conflict must be recorded rather than silently overwritten.
+    
+    
+    
+    
+20. Join Explosion Failure
+    
+A major R&amp;D failure mode is an incorrect join.
+    
+Example:
+    
+Dataset A:
+    
+machine_id = M01
+    
+appears 100,000 times.
+    
+Dataset B:
+    
+machine_id = M01
+    
+appears 50,000 times.
+    
+Joining only on:
+    
+machine_id
+    
+can potentially create billions of combinations.
+    
+This is a many-to-many join explosion.
+    
+The Compiler should therefore estimate join cardinality before execution.
+    
+Expected join size        ↓Risk estimation        ↓If excessive        ↓Reject / require confirmation
+    
+    
+    
+    
+21. Timestamp Alignment Failure
+    
+Industrial data may contain:
+    
+2026-08-14 10:00:00
+    
+while another dataset contains:
+    
+14/08/2026 10:00
+    
+and another:
+    
+1723636200
+    
+The Compiler should normalize these into a canonical timestamp representation.
+    
+Recommended internal representation:
+    
+UTC timestamp+original timezone+original timestamp
+    
+Do not discard the original value.
+    
+    
+    
+    
+22. Timestamp Granularity Failure
+    
+Consider:
+    
+Sensor:1-second intervals
+    
+and:
+    
+Production:1-hour intervals
+    
+A normal equality join will fail.
+    
+The Compiler should detect granularity differences and potentially recommend:
+    
+AS-OF JOINWINDOW JOINRESAMPLINGAGGREGATION
+    
+rather than forcing equality.
+    
+    
+    
+    
+23. Unit Mismatch Failure
+    
+Example:
+    
+Dataset A:temperature = °CDataset B:temperature = °F
+    
+The column names are identical.
+    
+A purely schema-based Compiler would incorrectly treat them as identical.
+    
+Therefore the Compiler must consider:
+    
+semantic meaning+unit+value distribution
+    
+before combining them.
+    
+    
+    
+    
+24. Encoding Failure
+    
+Industrial files may use:
+    
+UTF-8UTF-8 BOMUTF-16Latin-1Windows-1252
+    
+The Compiler should attempt safe encoding detection and record:
+    
+original_encodingdetected_encodingconversion_applied
+    
+    
+    
+    
+25. CSV Failure
+    
+CSV is deceptively difficult.
+    
+Potential problems:
+    
+,;|\t
+    
+Different delimiters may be used.
+    
+Fields may contain:
+    
+&quot;Machine, Line 1&quot;
+    
+without being correctly escaped.
+    
+The Compiler should detect:
+    
+delimiterquote characterescape characterheaderencodingline ending
+    
+before parsing.
+    
+    
+    
+    
+26. Excel Failure
+    
+Industrial Excel workbooks may contain:
+    
+multiple sheets
+    
+hidden sheets
+    
+merged cells
+    
+header rows beginning at row 5
+    
+notes above the table
+    
+multiple tables on one sheet
+    
+formulas
+    
+macros
+    
+blank rows
+    
+inconsistent columns
+    
+The Compiler therefore needs an Excel discovery stage:
+    
+Workbook   ↓Sheet discovery   ↓Table-region detection   ↓Header detection   ↓Schema extraction
+    
+    
+    
+    
+27. JSON Failure
+    
+JSON can represent:
+    
+array of objects
+    
+or:
+    
+nested objects
+    
+or:
+    
+deeply nested telemetry
+    
+Example:
+    
+{  &quot;machine&quot;: {    &quot;id&quot;: &quot;M01&quot;,    &quot;telemetry&quot;: {      &quot;temperature&quot;: 72.4    }  }}
+    
+The Compiler needs a controlled flattening strategy.
+    
+It must not arbitrarily flatten every nested structure because hierarchy can contain meaning.
+    
+    
+    
+    
+28. XML Failure
+    
+Industrial systems frequently exchange XML-like structured data.
+    
+Potential problems:
+    
+namespaces
+    
+deeply nested structures
+    
+malformed XML
+    
+external entity attacks
+    
+enormous XML expansion
+    
+The parser should therefore use secure XML parsing practices.
+    
+    
+    
+    
+29. Data Type Failure
+    
+A column may contain:
+    
+123N/A4
+    
+The parser may infer it as:
+    
+string
+    
+instead of:
+    
+integer
+    
+The Compiler should perform type inference with explicit handling of:
+    
+nullmissingNAN/Aunknown-error
+    
+    
+    
+    
+30. Duplicate Data Failure
+    
+Two files may contain overlapping records.
+    
+Example:
+    
+January.csvJanuary_backup.csv
+    
+Appending both creates duplicate records.
+    
+The Compiler should calculate duplicate signatures using candidate keys such as:
+    
+machine_id+timestamp+measurement
+    
+where appropriate.
+    
+It should distinguish:
+    
+exact duplicate
+    
+from:
+    
+legitimate repeated observation
+    
+    
+    
+    
+31. Schema Drift
+    
+Industrial systems evolve.
+    
+Version 1:
+    
+temperaturepressure
+    
+Version 2:
+    
+temperaturepressurevibration
+    
+Version 3:
+    
+temp_cpressure_barvibration_mm_s
+    
+The Compiler should not treat this as an error automatically.
+    
+It should detect:
+    
+schema version change
+    
+and create a harmonization plan.
+    
+    
+    
+    
+32. R&amp;D Failure Matrix
+    
+Failure Class
+Risk
+Compiler Solution
+Unknown file type
+High
+MIME + signature + parser probing
+ZIP traversal
+Critical
+Safe extraction validation
+ZIP bomb
+Critical
+Expansion limits
+Huge CSV
+High
+Streaming/chunked processing
+Wrong delimiter
+Medium
+Delimiter detection
+Encoding mismatch
+Medium
+Encoding detection
+Header not first row
+Medium
+Header inference
+Different column names
+High
+Semantic schema matching
+Wrong join type
+Critical
+Agent proposal + cardinality validation
+Join explosion
+Critical
+Cardinality estimation
+Duplicate records
+High
+Duplicate analysis
+Timestamp mismatch
+High
+Timestamp normalization
+Timezone mismatch
+High
+UTC canonicalization
+Unit mismatch
+Critical
+Unit detection/conversion
+Data type mismatch
+High
+Type inference + coercion policy
+Nested JSON
+Medium
+Controlled flattening
+XML attack
+Critical
+Secure parser
+Schema drift
+High
+Schema versioning
+Conflicting values
+High
+Conflict detection
+Missing keys
+High
+Join-key quality assessment
+Corrupt files
+Medium
+Quarantine + diagnostics
+Malicious content
+Critical
+Sandbox/isolation
+Agent hallucination
+Critical
+Structured plan + deterministic execution
+LLM unavailable
+Medium
+Rule-based fallback
+LLM wrong recommendation
+Critical
+Confidence threshold + validation
+    
+    
+    
+    
+33. How AI-ConneX Overcomes Agent Errors
+    
+The Agent Helper must never be the final authority.
+    
+Architecture:
+    
+                AGENT HELPER                     │                     ▼             Proposed Plan                     │                     ▼              PLAN VALIDATOR                     │        ┌────────────┼─────────────┐        ▼            ▼             ▼     Schema       Cardinality     Units     Check          Check         Check        │            │             │        └────────────┼─────────────┘                     ▼              EXECUTION ENGINE                     │                     ▼              RESULT VALIDATOR
+    
+This provides a safety boundary around the LLM.
+    
+    
+    
+    
+34. Confidence Policy
+    
+Recommended policy:
+    
+Confidence &gt;= 0.90    → automatic execution0.75–0.89    → execution with warning / optional confirmation0.50–0.74    → ask user or perform additional analysis&lt; 0.50    → do not execute
+    
+For high-risk transformations, confidence alone should not be enough.
+    
+Example:
+    
+Potential many-to-many JOIN
+    
+should require explicit validation even if the Agent reports high confidence.
+    
+    
+    
+    
+35. Compiler Execution Model
+    
+The Compiler should transform the Agent’s recommendation into a deterministic recipe.
+    
+Example:
+    
+{  &quot;recipe_version&quot;: &quot;1.0&quot;,  &quot;operations&quot;: [    {      &quot;id&quot;: &quot;op01&quot;,      &quot;type&quot;: &quot;UNZIP&quot;,      &quot;input&quot;: &quot;upload_001&quot;    },    {      &quot;id&quot;: &quot;op02&quot;,      &quot;type&quot;: &quot;APPEND&quot;,      &quot;inputs&quot;: [        &quot;machine_01.csv&quot;,        &quot;machine_02.csv&quot;      ]    },    {      &quot;id&quot;: &quot;op03&quot;,      &quot;type&quot;: &quot;JOIN&quot;,      &quot;left&quot;: &quot;op02&quot;,      &quot;right&quot;: &quot;production.xlsx&quot;,      &quot;keys&quot;: [        &quot;machine_id&quot;,        &quot;timestamp&quot;      ],      &quot;join_type&quot;: &quot;LEFT&quot;    }  ]}
+    
+The recipe becomes the executable specification.
+    
+    
+    
+    
+36. DAG Generation
+    
+The Recipe Orchestrator converts the recipe into a DAG.
+    
+             upload_001                  │                UNZIP                  │       ┌──────────┼──────────┐       ▼          ▼          ▼   machine01  machine02  production       │          │          │       └────┬─────┘          │            ▼                │          APPEND             │            │                │            └───────┬────────┘                    ▼                   JOIN                    │                    ▼              NORMALIZATION                    │                    ▼              VALIDATION
+    
+This makes the Compiler compatible with the existing Data Studio DAG architecture.
+    
+    
+    
+    
+37. Unified Industrial Data Model
+    
+The Compiler should produce a canonical representation rather than merely a CSV.
+    
+Recommended structure:
+    
+AI-ConneX Unified Industrial Dataset│├── Dataset Metadata│├── Entity Information│├── Timestamp│├── Measurements│├── Events│├── Operational Variables│├── Labels / Targets│├── Units│├── Data Quality│└── Provenance
+    
+    
+    
+    
+38. Canonical Metadata
+    
+Every compiled dataset should have metadata similar to:
+    
+{  &quot;dataset_id&quot;: &quot;ACX-DS-000001&quot;,  &quot;source_count&quot;: 7,  &quot;compiled_at&quot;: &quot;2026-08-14T10:30:00Z&quot;,  &quot;schema_version&quot;: &quot;1.0&quot;,  &quot;row_count&quot;: 1845023,  &quot;column_count&quot;: 27,  &quot;operations&quot;: [    &quot;UNZIP&quot;,    &quot;APPEND&quot;,    &quot;JOIN&quot;,    &quot;NORMALIZE&quot;  ],  &quot;quality_status&quot;: &quot;PASS&quot;}
+    
+    
+    
+    
+39. Provenance Model
+    
+Every transformation should create lineage.
+    
+Source File    ↓Source Dataset    ↓Operation    ↓Intermediate Dataset    ↓Operation    ↓Unified Dataset
+    
+Example:
+    
+{  &quot;operation_id&quot;: &quot;OP-00042&quot;,  &quot;operation&quot;: &quot;JOIN&quot;,  &quot;inputs&quot;: [    &quot;machine_data.csv&quot;,    &quot;production.xlsx&quot;  ],  &quot;keys&quot;: [    &quot;machine_id&quot;,    &quot;timestamp&quot;  ],  &quot;output&quot;: &quot;dataset_stage_03&quot;}
+    
+    
+    
+    
+40. Compiler Output States
+    
+The Compiler should not have only:
+    
+SUCCESSFAILURE
+    
+Recommended states:
+    
+RECEIVEDINSPECTINGWAITING_FOR_AGENTPLAN_READYVALIDATINGEXECUTINGVALIDATING_OUTPUTCOMPILEDWARNINGNEEDS_CONFIRMATIONQUARANTINEDFAILED
+    
+    
+    
+    
+41. Technical Stack
+    
+    
+Recommended backend
+    
+Language:Python 3.13.14API:FastAPI 0.141.1Validation:Pydantic 2.13.1Data processing:Polars 1.43.0SQL / analytical execution:DuckDB 1.5.5Columnar format:Apache Arrow / PyArrow 25.0.0Excel:openpyxl 3.1.5HTTP multipart:python-multipart 0.0.32Environment/package manager:uv 0.11.33Container:DockerTesting:pytestStatic analysis:RuffType checking:mypy or pyrightStructured logging:structlog / standard loggingAgent orchestration:LangGraph or an equivalent internal state-machine layerObject storage:S3-compatible storageMetadata database:PostgreSQLCache:RedisObservability:OpenTelemetry + Prometheus-compatible metrics
+    
+The versions should be locked in the project lockfile rather than allowing floating production dependencies.
+    
+    
+    
+    
+    
+42. Why Polars
+    
+Polars is recommended for the primary dataframe engine because the Compiler is expected to process potentially large industrial datasets.
+    
+Its columnar execution model is well suited to:
+    
+filtering
+    
+projection
+    
+joins
+    
+aggregations
+    
+transformations
+    
+lazy execution
+    
+For extremely large datasets, the Compiler should avoid loading the entire dataset into RAM unnecessarily.
+    
+    
+    
+    
+43. Why DuckDB
+    
+DuckDB becomes the SQL execution layer.
+    
+It is particularly useful for:
+    
+CSVParquetArrowlarge local datasetsjoinsaggregationsSQL transformations
+    
+It can complement Polars rather than replacing it.
+    
+Recommended division:
+    
+Polars→ dataframe transformationsDuckDB→ analytical SQL / large joins / file queryingPyArrow→ columnar interchange
+    
+    
+    
+    
+44. Why FastAPI
+    
+FastAPI exposes Compiler functionality to:
+    
+Chatbot
+    
+Data Studio UI
+    
+internal orchestration
+    
+future external integrations
+    
+It also provides OpenAPI-based API documentation.
+    
+    
+    
+    
+45. Why Pydantic
+    
+Pydantic should define the contracts between:
+    
+Chatbot → CompilerCompiler → Agent HelperAgent Helper → CompilerCompiler → Profiler
+    
+This prevents loosely structured JSON from moving between components.
+    
+    
+    
+    
+46. Why an Agent Graph
+    
+The Agent Helper should ideally operate as a bounded state machine:
+    
+DISCOVER   ↓UNDERSTAND   ↓PROPOSE   ↓VALIDATE   ↓REVISE   ↓FINALIZE
+    
+This is safer than an unconstrained autonomous agent.
+    
+    
+    
+    
+47. Hardware Requirements
+    
+    
+Development machine
+    
+Minimum:
+    
+CPU:4 coresRAM:16 GBStorage:100 GB free SSDOS:Ubuntu 24.04 / Windows 11 / equivalentPython:3.13.xNetwork:Internet for package/model/API access
+    
+Recommended:
+    
+CPU:8+ coresRAM:32 GBSSD:500 GB+Network:1 Gbps
+    
+    
+    
+    
+    
+48. Production Requirements
+    
+For a small industrial deployment:
+    
+8 vCPU32 GB RAM500 GB SSD
+    
+For larger workloads:
+    
+16–32 vCPU64–128 GB RAMNVMe SSDobject storagePostgreSQLRedis
+    
+The Compiler should be horizontally scalable because ingestion jobs can be asynchronous.
+    
+    
+    
+    
+49. GPU Requirement
+    
+The Compiler itself does not fundamentally require a GPU.
+    
+The Agent Helper may use:
+    
+cloud LLM
+    
+or:
+    
+local LLM
+    
+depending on deployment.
+    
+Therefore:
+    
+Compiler:CPU-firstAgent Helper:CPU / GPU / cloud dependent
+    
+This is important for industrial edge deployments.
+    
+    
+    
+    
+50. Environment Variables
+    
+Example:
+    
+APP_ENV=developmentCOMPILER_MAX_UPLOAD_GB=20COMPILER_MAX_ARCHIVE_GB=20COMPILER_MAX_UNCOMPRESSED_GB=100COMPILER_MAX_FILES=10000COMPILER_MAX_ARCHIVE_DEPTH=5WORKSPACE_ROOT=/data/aiconnex/workspacesOBJECT_STORE_ENDPOINT=http://localhost:9000OBJECT_STORE_BUCKET=aiconnex-dataPOSTGRES_URL=postgresql://user:password@localhost:5432/aiconnexREDIS_URL=redis://localhost:6379/0AGENT_HELPER_MODE=hybridAGENT_CONFIDENCE_AUTO=0.90AGENT_CONFIDENCE_CONFIRM=0.75DEFAULT_TIMEZONE=UTCMAX_JOIN_EXPANSION_FACTOR=10ENABLE_PROVENANCE=trueENABLE_AUDIT_LOG=true
+    
+Secrets should never be committed into Git.
+    
+    
+    
+    
+51. Recommended Directory Architecture
+    
+aiconnex/│├── apps/│   ││   └── compiler_api/│       ├── main.py│       ├── dependencies.py│       └── middleware.py│├── compiler/│   ││   ├── ingestion/│   │   ├── detector.py│   │   ├── registry.py│   │   └── limits.py│   ││   ├── extractors/│   │   ├── zip_extractor.py│   │   ├── csv_reader.py│   │   ├── excel_reader.py│   │   ├── json_reader.py│   │   ├── xml_reader.py│   │   └── parquet_reader.py│   ││   ├── discovery/│   │   ├── dataset_discovery.py│   │   ├── schema_discovery.py│   │   ├── column_detector.py│   │   ├── timestamp_detector.py│   │   └── unit_detector.py│   ││   ├── agent_helper/│   │   ├── planner.py│   │   ├── prompts.py│   │   ├── schemas.py│   │   ├── confidence.py│   │   └── guardrails.py│   ││   ├── planning/│   │   ├── recipe_builder.py│   │   ├── plan_validator.py│   │   └── dag_builder.py│   ││   ├── operations/│   │   ├── unzip.py│   │   ├── append.py│   │   ├── join.py│   │   ├── merge.py│   │   ├── union.py│   │   ├── normalize.py│   │   └── deduplicate.py│   ││   ├── harmonization/│   │   ├── schema_mapper.py│   │   ├── type_normalizer.py│   │   ├── timestamp_normalizer.py│   │   └── unit_normalizer.py│   ││   ├── validation/│   │   ├── input_validator.py│   │   ├── join_validator.py│   │   ├── output_validator.py│   │   └── quality_rules.py│   ││   ├── provenance/│   │   ├── lineage.py│   │   ├── manifest.py│   │   └── audit.py│   ││   ├── storage/│   │   ├── local.py│   │   ├── object_store.py│   │   └── metadata_store.py│   ││   └── schemas/│       ├── chatbot_input.py│       ├── compiler_plan.py│       ├── compiler_output.py│       └── profiler_input.py│├── tests/│   ├── unit/│   ├── integration/│   ├── security/│   ├── regression/│   └── fixtures/│├── configs/│   ├── compiler.yaml│   ├── formats.yaml│   ├── limits.yaml│   └── industrial_domains.yaml│├── data/│   ├── incoming/│   ├── quarantine/│   ├── extracted/│   ├── intermediate/│   ├── unified/│   └── reports/│├── scripts/│   ├── dev.sh│   ├── test.sh│   └── benchmark.sh│├── docs/│   ├── architecture/│   ├── api/│   ├── r_and_d/│   └── compliance/│├── pyproject.toml├── uv.lock├── Dockerfile├── docker-compose.yml├── .env.example└── README.md
+    
+    
+    
+    
+52. CLI Commands
+    
+Recommended development setup:
+    
+uv python install 3.13uv venvsource .venv/bin/activate
+    
+Windows:
+    
+uv python install 3.13uv venv.venv\Scripts\activate
+    
+Install dependencies:
+    
+uv add &quot;fastapi[standard]&quot;uv add pydanticuv add polarsuv add duckdbuv add pyarrowuv add openpyxluv add python-multipart
+    
+Development dependencies:
+    
+uv add --dev pytestuv add --dev ruffuv add --dev mypy
+    
+    
+    
+    
+53. Run Compiler API
+    
+uv run fastapi dev apps/compiler_api/main.py
+    
+Production-style:
+    
+uv run fastapi run apps/compiler_api/main.py
+    
+Expected local API:
+    
+http://127.0.0.1:8000
+    
+OpenAPI:
+    
+http://127.0.0.1:8000/docs
+    
+    
+    
+    
+54. Test Commands
+    
+uv run pytest
+    
+Unit tests:
+    
+uv run pytest tests/unit
+    
+Integration:
+    
+uv run pytest tests/integration
+    
+Security:
+    
+uv run pytest tests/security
+    
+Lint:
+    
+uv run ruff check .
+    
+Format:
+    
+uv run ruff format .
+    
+Type check:
+    
+uv run mypy compiler
+    
+    
+    
+    
+55. API Architecture
+    
+The Compiler API should expose a small set of stable contracts.
+    
+Recommended endpoints:
+    
+POST   /api/v1/compiler/jobsGET    /api/v1/compiler/jobs/{job_id}POST   /api/v1/compiler/jobs/{job_id}/planPOST   /api/v1/compiler/jobs/{job_id}/executeGET    /api/v1/compiler/jobs/{job_id}/reportGET    /api/v1/compiler/jobs/{job_id}/lineageGET    /api/v1/compiler/jobs/{job_id}/outputPOST   /api/v1/compiler/inspectPOST   /api/v1/compiler/validate
+    
+    
+    
+    
+56. Main Compiler Job API
+    
+POST /api/v1/compiler/jobsContent-Type: application/json
+    
+Example:
+    
+{  &quot;request_id&quot;: &quot;REQ-20260814-0001&quot;,  &quot;user_intent&quot;: &quot;Prepare the machine temperature and production data for predictive maintenance.&quot;,  &quot;input_assets&quot;: [    {      &quot;asset_id&quot;: &quot;ASSET-001&quot;,      &quot;name&quot;: &quot;machine_data.zip&quot;,      &quot;uri&quot;: &quot;object://incoming/machine_data.zip&quot;    },    {      &quot;asset_id&quot;: &quot;ASSET-002&quot;,      &quot;name&quot;: &quot;production.xlsx&quot;,      &quot;uri&quot;: &quot;object://incoming/production.xlsx&quot;    }  ],  &quot;domain&quot;: &quot;industrial_manufacturing&quot;,  &quot;requested_output&quot;: {    &quot;format&quot;: &quot;aiconnex_unified&quot;  }}
+    
+    
+    
+    
+57. Chatbot → Compiler Contract
+    
+This is one of the most important interfaces in AI-ConneX.
+    
+The Chatbot should not send an arbitrary natural-language string only.
+    
+It should send:
+    
+USER INTENT+INPUT ASSETS+CONTEXT+DOMAIN+OBJECTIVE+CONSTRAINTS
+    
+Example:
+    
+{  &quot;request_id&quot;: &quot;REQ-00001&quot;,  &quot;conversation&quot;: {    &quot;conversation_id&quot;: &quot;CONV-1001&quot;,    &quot;turn_id&quot;: 12  },  &quot;intent&quot;: {    &quot;text&quot;: &quot;Combine all the machine data and production records so they can be used for predictive maintenance.&quot;,    &quot;task&quot;: &quot;DATA_PREPARATION&quot;  },  &quot;domain&quot;: {    &quot;name&quot;: &quot;manufacturing&quot;  },  &quot;assets&quot;: [    {      &quot;asset_id&quot;: &quot;A001&quot;,      &quot;name&quot;: &quot;machine_data.zip&quot;,      &quot;location&quot;: &quot;object://uploads/A001&quot;    },    {      &quot;asset_id&quot;: &quot;A002&quot;,      &quot;name&quot;: &quot;production.xlsx&quot;,      &quot;location&quot;: &quot;object://uploads/A002&quot;    }  ],  &quot;constraints&quot;: {    &quot;preserve_original&quot;: true,    &quot;require_provenance&quot;: true  }}
+    
+This object becomes the input to the Compiler.
+    
+    
+    
+    
+58. What the Compiler Receives From Chatbot
+    
+The Compiler receives five conceptual inputs:
+    
+1. User Intent2. Data Assets3. Industrial Context4. Constraints5. Expected Objective
+    
+Example:
+    
+User:&quot;Use these files to prepare a dataset for predictive maintenance.&quot;Compiler receives:Intent:predictive maintenance preparationAssets:machine_data.zipmaintenance.xlsxsensor.csvDomain:manufacturingConstraints:preserve original datamaintain lineage
+    
+    
+    
+    
+59. Compiler → Agent Helper Contract
+    
+The Compiler gives the Agent Helper a controlled discovery package.
+    
+{  &quot;job_id&quot;: &quot;JOB-001&quot;,  &quot;assets&quot;: [    {      &quot;asset_id&quot;: &quot;A001&quot;,      &quot;format&quot;: &quot;csv&quot;,      &quot;rows&quot;: 120000,      &quot;columns&quot;: [        {          &quot;name&quot;: &quot;Machine_ID&quot;,          &quot;dtype&quot;: &quot;string&quot;        },        {          &quot;name&quot;: &quot;Time&quot;,          &quot;dtype&quot;: &quot;datetime&quot;        },        {          &quot;name&quot;: &quot;Temp&quot;,          &quot;dtype&quot;: &quot;float&quot;        }      ]    }  ]}
+    
+The Agent does not need the entire raw dataset.
+    
+It should generally receive:
+    
+metadata+schema+statistics+small representative samples
+    
+This reduces data leakage and LLM cost.
+    
+    
+    
+    
+60. Agent Helper → Compiler Contract
+    
+Example:
+    
+{  &quot;plan_version&quot;: &quot;1.0&quot;,  &quot;confidence&quot;: 0.94,  &quot;operations&quot;: [    {      &quot;id&quot;: &quot;OP01&quot;,      &quot;type&quot;: &quot;UNZIP&quot;,      &quot;input&quot;: &quot;A001&quot;    },    {      &quot;id&quot;: &quot;OP02&quot;,      &quot;type&quot;: &quot;APPEND&quot;,      &quot;inputs&quot;: [        &quot;A001_FILE01&quot;,        &quot;A001_FILE02&quot;,        &quot;A001_FILE03&quot;      ]    },    {      &quot;id&quot;: &quot;OP03&quot;,      &quot;type&quot;: &quot;JOIN&quot;,      &quot;left&quot;: &quot;OP02&quot;,      &quot;right&quot;: &quot;A002&quot;,      &quot;keys&quot;: [        &quot;machine_id&quot;,        &quot;timestamp&quot;      ],      &quot;join_type&quot;: &quot;LEFT&quot;    }  ],  &quot;warnings&quot;: [],  &quot;requires_confirmation&quot;: false}
+    
+The Compiler validates this before execution.
+    
+    
+    
+    
+61. Compiler → Data Profiler Contract
+    
+This is the second most important interface.
+    
+The Compiler does not simply send:
+    
+clean.csv
+    
+to the Data Profiler.
+    
+It should send:
+    
+UNIFIED DATASET+CANONICAL SCHEMA+DATASET METADATA+QUALITY REPORT+PROVENANCE+TRANSFORMATION RECIPE+STATISTICS
+    
+    
+    
+    
+62. Profiler Input Contract
+    
+Example:
+    
+{  &quot;dataset_id&quot;: &quot;ACX-DS-000001&quot;,  &quot;dataset_uri&quot;: &quot;object://unified/ACX-DS-000001.parquet&quot;,  &quot;format&quot;: &quot;parquet&quot;,  &quot;schema_version&quot;: &quot;1.0&quot;,  &quot;schema&quot;: [    {      &quot;name&quot;: &quot;machine_id&quot;,      &quot;dtype&quot;: &quot;string&quot;,      &quot;semantic_type&quot;: &quot;ENTITY_ID&quot;    },    {      &quot;name&quot;: &quot;timestamp&quot;,      &quot;dtype&quot;: &quot;timestamp[us, UTC]&quot;,      &quot;semantic_type&quot;: &quot;TIMESTAMP&quot;    },    {      &quot;name&quot;: &quot;temperature&quot;,      &quot;dtype&quot;: &quot;float64&quot;,      &quot;semantic_type&quot;: &quot;MEASUREMENT&quot;,      &quot;unit&quot;: &quot;degC&quot;    }  ],  &quot;row_count&quot;: 1845023,  &quot;quality&quot;: {    &quot;null_rate&quot;: 0.012,    &quot;duplicate_rate&quot;: 0.001,    &quot;schema_valid&quot;: true  },  &quot;provenance_uri&quot;: &quot;object://reports/ACX-DS-000001-lineage.json&quot;,  &quot;recipe_uri&quot;: &quot;object://reports/ACX-DS-000001-recipe.json&quot;}
+    
+This becomes the input to Data Profiler.
+    
+    
+    
+    
+63. What Data Profiler Should NOT Need to Do
+    
+The Data Profiler should not have to figure out:
+    
+Is this ZIP?Should these files be joined?Should these files be appended?What is the correct encoding?What was the original file?Which timestamp is equivalent?
+    
+That is the Compiler’s responsibility.
+    
+The Profiler should begin with:
+    
+What is the statistical and structural quality of this already-unified dataset?
+    
+This creates clean separation of responsibilities.
+    
+    
+    
+    
+64. Compiler vs Data Profiler
+    
+Function
+Compiler
+Data Profiler
+File detection
+✓
+ZIP extraction
+✓
+Excel parsing
+✓
+Schema discovery
+✓
+✓
+Dataset joining
+✓
+Dataset appending
+✓
+Dataset merging
+✓
+Type normalization
+✓
+Timestamp normalization
+✓
+Unit normalization
+✓
+Provenance
+✓
+Row statistics
+Basic
+✓
+Distribution analysis
+Basic
+✓
+Outlier analysis
+✓
+Missing-value analysis
+Basic
+✓
+Correlation analysis
+✓
+ML readiness
+✓
+Feature engineering
+Later stage
+    
+    
+    
+    
+65. Unified Output Format
+    
+For internal processing, the recommended primary output is:
+    
+Parquet
+    
+rather than CSV.
+    
+Why:
+    
+columnarcompressedtypedefficientlarge-data friendlyArrow compatibleDuckDB compatiblePolars compatible
+    
+CSV can still be offered as an export option.
+    
+    
+    
+    
+66. Output Artifact Set
+    
+The Compiler should produce:
+    
+dataset.parquetschema.jsonmetadata.jsonrecipe.jsonlineage.jsonquality_report.jsoncompiler_report.json
+    
+Optional:
+    
+preview.csvsample.parquethuman_readable_report.html
+    
+    
+    
+    
+67. Data Lifecycle
+    
+incoming/    ↓quarantine/    ↓extracted/    ↓discovered/    ↓intermediate/    ↓unified/    ↓profiler/
+    
+Original input must be preserved separately.
+    
+    
+    
+    
+68. Failure Isolation
+    
+If one file is corrupt:
+    
+machine_01.csv  ✓machine_02.csv  ✓machine_03.csv  ✗machine_04.csv  ✓
+    
+the entire job should not necessarily crash.
+    
+The Compiler can report:
+    
+3 files processed1 file quarantined
+    
+and either:
+    
+continue
+    
+or:
+    
+request confirmation
+    
+depending on the user’s objective.
+    
+    
+    
+    
+69. Quarantine System
+    
+Bad or suspicious inputs should move to:
+    
+data/quarantine/
+    
+with:
+    
+reasontimestamphashoriginal locationsecurity scan resultparser errorjob ID
+    
+Example:
+    
+{  &quot;asset_id&quot;: &quot;A004&quot;,  &quot;status&quot;: &quot;QUARANTINED&quot;,  &quot;reason&quot;: &quot;Malformed XLSX archive&quot;,  &quot;sha256&quot;: &quot;...&quot;,  &quot;job_id&quot;: &quot;JOB-001&quot;}
+    
+    
+    
+    
+70. Configuration File
+    
+Example:
+    
+compiler:  output_format: parquet  preserve_original: true  enable_provenance: truesecurity:  max_upload_gb: 20  max_archive_gb: 20  max_uncompressed_gb: 100  max_files: 10000  max_archive_depth: 5join:  max_expansion_factor: 10  require_key_validation: true  allow_many_to_many: falseagent:  auto_execute_threshold: 0.90  confirmation_threshold: 0.75  max_retries: 3time:  canonical_timezone: UTCstorage:  intermediate_format: parquet
+    
+    
+    
+    
+71. Performance Strategy
+    
+The Compiler should avoid:
+    
+df = read_everything_into_memory()
+    
+for large industrial datasets.
+    
+Instead use:
+    
+lazy executionstreamingchunked ingestioncolumn projectionpredicate pushdownParquetDuckDBPolars
+    
+Large files should be processed incrementally where possible.
+    
+    
+    
+    
+72. Caching
+    
+Dataset fingerprints should be calculated.
+    
+Example:
+    
+SHA-256(file)
+    
+If the same file is submitted again:
+    
+same hash+same compiler version+same configuration
+    
+the Compiler may reuse an existing compiled artifact.
+    
+This reduces unnecessary processing.
+    
+    
+    
+    
+73. Reproducibility
+    
+Every compilation should record:
+    
+compiler versionrecipe versionschema versionconfiguration versioninput hashesagent plan versionparser versionsexecution timestamp
+    
+Therefore:
+    
+Same input+same recipe+same Compiler version+same configuration
+    
+should produce reproducible results wherever deterministic execution is possible.
+    
+    
+    
+    
+74. Security Requirements
+    
+The Compiler is exposed to arbitrary industrial uploads, so it must be treated as an untrusted-input processing service.
+    
+Required controls:
+    
+authenticationauthorizationfile-size limitsarchive limitspath traversal protectionmalware scanningsandboxed parsingresource limitstimeout limitsnetwork isolationaudit loggingencryptionsecure temporary storagesecret management
+    
+    
+    
+    
+75. Industrial Compliance Baseline
+    
+AI-ConneX should design the Compiler around controls that can support:
+    
+ISO/IEC 27001IEC 62443ISO 9001ISO/IEC 27701India DPDP ActGDPR where applicable
+    
+However:
+    
+Designing for these controls is not the same as being certified or legally compliant.
+    
+Formal compliance requires organizational policies, audits, evidence, risk assessments and certification/legal review.
+    
+    
+    
+    
+76. IEC 62443 Relevance
+    
+For industrial environments, IEC 62443 should be treated as particularly important because AI-ConneX may eventually interact with:
+    
+OT networksSCADAPLC environmentsMESindustrial machinesedge devices
+    
+The Compiler itself should preferably remain separated from direct machine-control paths.
+    
+Recommended architecture:
+    
+OT Network     │     │ controlled gateway     ▼AI-ConneX ingestion boundary     │     ▼Compiler
+    
+The Compiler should not directly issue machine-control commands.
+    
+    
+    
+    
+77. Data Protection
+    
+Recommended:
+    
+TLS in transitAES-256 or equivalent encryption at restRBACtenant isolationaudit logsretention policiesdata deletiondata lineage
+    
+Sensitive data should not automatically be transmitted to external LLM APIs.
+    
+    
+    
+    
+78. Agent Data Minimization
+    
+The Agent Helper should generally receive:
+    
+schemastatisticsrepresentative samplesmetadata
+    
+instead of:
+    
+entire industrial dataset
+    
+unless explicitly required.
+    
+This is both:
+    
+security+cost+latency
+    
+optimization.
+    
+    
+    
+    
+79. Compliance Evidence Generated by Compiler
+    
+Every job should produce evidence such as:
+    
+input hashinput sourceuser/request IDcompiler versionagent versionrecipe versiontransformation historyvalidation resultswarningserrorsoutput hashtimestampoperator confirmation
+    
+This forms the foundation of an audit trail.
+    
+    
+    
+    
+80. REPORT_1 — Compiler Stage Compliance / Engineering Report
+    
+    
+Report ID
+    
+AI-CONNEX-DS-COMPILER-REPORT-001
+    
+    
+    
+Stage
+    
+Chatbot   ↓Data Studio Compiler   ↓Data Profiler
+    
+    
+    
+Report Purpose
+    
+This report certifies the processing state and evidence produced by the Compiler.
+    
+It is not a legal compliance certificate.
+    
+    
+    
+    
+    
+81. REPORT_1 Structure
+    
+REPORT_1│├── Executive Summary├── Request Information├── Input Asset Register├── File Detection Report├── Security Scan Report├── Dataset Discovery Report├── Schema Analysis├── Agent Decision Report├── Transformation Recipe├── DAG├── Execution Report├── Join/Append/Merge Report├── Data Harmonization Report├── Validation Report├── Quality Summary├── Data Lineage├── Output Artifact Register├── Compliance Control Mapping├── Exceptions└── Final Status
+    
+    
+    
+    
+82. REPORT_1 — Input Asset Register
+    
+Example:
+    
+Asset ID: A001Filename: machine_data.zipSHA256: &lt;hash&gt;Detected Type: ZIPDeclared Type: ZIPSize: 2.4 GBStatus: ACCEPTEDAsset ID: A002Filename: production.xlsxSHA256: &lt;hash&gt;Detected Type: XLSXDeclared Type: XLSXSize: 184 MBStatus: ACCEPTED
+    
+    
+    
+    
+83. REPORT_1 — Security Section
+    
+Example:
+    
+Archive traversal:PASSArchive expansion limit:PASSFile count limit:PASSMalware scan:PASSParser validation:PASSWorkspace isolation:PASSMaximum file size:PASS
+    
+If a check fails:
+    
+STATUS: QUARANTINED
+    
+    
+    
+    
+84. REPORT_1 — Agent Decision Section
+    
+Example:
+    
+Agent Helper DecisionOperation:APPENDInputs:machine_01.csvmachine_02.csvmachine_03.csvConfidence:0.97Reason:Schemas are 98.2% compatible and timestamps representnon-overlapping monthly partitions.Validation:PASSED
+    
+    
+    
+    
+85. REPORT_1 — JOIN Decision
+    
+Operation:LEFT JOINLeft:machine_dataRight:production_dataCandidate keys:machine_idtimestampEstimated cardinality:1.04xMany-to-many risk:LOWConfidence:0.94Status:APPROVED
+    
+    
+    
+    
+86. REPORT_1 — Transformation Record
+    
+Example:
+    
+OP01:UNZIP machine_data.zipOP02:APPEND machine_01.csv       machine_02.csv       machine_03.csvOP03:STANDARDIZE machine identifierOP04:NORMALIZE timestamp → UTCOP05:JOIN production.xlsxOP06:VALIDATE schemaOP07:WRITE unified Parquet
+    
+    
+    
+    
+87. REPORT_1 — Output
+    
+Example:
+    
+Dataset ID:ACX-DS-000001Output:ACX-DS-000001.parquetRows:1,845,023Columns:27Format:ParquetSchema:VALIDLineage:AVAILABLEQuality:PASS WITH WARNINGSProfiler:READY
+    
+    
+    
+    
+88. Final Compiler Status
+    
+Possible final statuses:
+    
+COMPILEDCOMPILED_WITH_WARNINGSWAITING_FOR_CONFIRMATIONPARTIALLY_COMPILEDQUARANTINEDFAILED
+    
+The most important state is:
+    
+READY_FOR_PROFILER
+    
+This means the Compiler has successfully completed its responsibilities.
+    
+    
+    
+    
+89. Compiler Completion Criteria
+    
+The Compiler should only output:
+    
+READY_FOR_PROFILER
+    
+when:
+    
+✓ input identified✓ files safely extracted✓ schemas discovered✓ transformation plan validated✓ joins validated✓ schema harmonized✓ timestamps normalized✓ units resolved where required✓ output written✓ output readable✓ provenance recorded✓ lineage recorded✓ report generated
+    
+    
+    
+    
+90. What the Compiler Guarantees to the Profiler
+    
+The Compiler’s contract with Data Profiler should effectively be:
+    
+“I have converted the user’s heterogeneous industrial inputs into a structurally valid, traceable, canonical dataset. You can now concentrate on profiling its statistical and ML-readiness characteristics.”
+    
+The Profiler can then start its work.
+    
+    
+    
+    
+91. End-to-End Stage Flow
+    
+The complete Stage-1 pipeline is:
+    
+                         INDUSTRIAL USER                               │                               ▼                           JANE                         CHATBOT                               │                               │                    Intent + Data Assets                               │                               ▼                    ┌───────────────────┐                    │ DATA COMPILER     │                    └─────────┬─────────┘                              │                     File Detection                              │                     ZIP Extraction                              │                    Dataset Discovery                              │                              ▼                    ┌───────────────────┐                    │ AGENT HELPER      │                    └─────────┬─────────┘                              │                     Transformation Plan                              │                              ▼                    Plan Validation                              │                              ▼                    Recipe Generation                              │                              ▼                       DAG Execution                              │             ┌────────────────┼────────────────┐             ▼                ▼                ▼           APPEND            JOIN             MERGE             │                │                │             └────────────────┼────────────────┘                              ▼                    Schema Harmonization                              │                    Type Normalization                              │                   Timestamp Normalization                              │                      Unit Normalization                              │                         Validation                              │                        Provenance                              │                              ▼                 AI-CONNEX UNIFIED DATA                              │                    + schema.json                    + metadata.json                    + lineage.json                    + recipe.json                    + quality_report.json                              │                              ▼                    ┌───────────────────┐                    │   DATA PROFILER   │                    └───────────────────┘
+    
+    
+    
+    
+92. The Core Innovation
+    
+The Compiler’s innovation is not:
+    
+“We support CSV, Excel and ZIP.”
+    
+That alone is not innovative.
+    
+The real AI-ConneX innovation is:
+    
+The system accepts industrial data in the form in which the industrial user already possesses it, understands relationships between heterogeneous datasets, determines the appropriate transformation strategy with an Agent Helper, validates that strategy deterministically, executes it as a DAG, preserves provenance, and delivers a canonical dataset to downstream AI systems.
+    
+That is substantially more powerful.
+    
+    
+    
+    
+93. Compiler as an Industrial Data Abstraction Layer
+    
+The Compiler effectively hides:
+    
+file formatsschemasencodingjoinsmergestimestampsunitsdata typesdata lineageETL complexity
+    
+from the industrial user.
+    
+Therefore:
+    
+                 INDUSTRIAL USER                        │                        │              &quot;Here is my data.&quot;                        │                        ▼              ┌──────────────────┐              │ AI-ConneX        │              │ DATA COMPILER    │              └────────┬─────────┘                       │                       ▼              &quot;AI-ready data&quot;
+    
+This is the fundamental product philosophy of the Data Studio.
+    
+    
+    
+    
+94. R&amp;D Roadmap
+    
+    
+Phase R1 — Basic ingestion
+    
+CSVXLSXJSONZIP
+    
+    
+    
+Phase R2 — Schema intelligence
+    
+schema matchingcolumn semanticstimestamp detectionunit detection
+    
+    
+    
+Phase R3 — Intelligent composition
+    
+appendjoinmergededuplicationtime alignment
+    
+    
+    
+Phase R4 — Agent Helper
+    
+intent-aware planningschema reasoningtransformation recommendationconfidence scoring
+    
+    
+    
+Phase R5 — Industrial hardening
+    
+securitysandboxingresource limitsauditprovenancetenant isolation
+    
+    
+    
+Phase R6 — Enterprise connectors
+    
+SQLS3MESERPSCADAOPC-UAMQTTindustrial historians
+    
+    
+    
+Phase R7 — Autonomous Data Engineering
+    
+detectunderstandplanvalidateexecutemonitorlearn
+    
+    
+    
+    
+    
+95. Final Architecture Principle
+    
+The Data Studio Compiler should ultimately implement this principle:
+    
+                    DON&#39;T ASK THE INDUSTRIALIST                         TO FIX THE DATA.                              ↓                   LET AI-ConneX UNDERSTAND IT.                              ↓                      AGENT HELPER                       REASONS ABOUT IT                              ↓                         COMPILER                     VALIDATES + EXECUTES                              ↓                       UNIFIED DATA                              ↓                       DATA PROFILER                              ↓                         ML STUDIO
+    
+The Compiler therefore acts as the industrial data translation and compilation boundary of AI-ConneX.
+    
+Its responsibility ends when the heterogeneous industrial input has become a validated, canonical, provenance-preserving dataset that Data Profiler can consume without needing to understand the original file-format chaos.
+    
+    
+    
+    
+96. Stage-1 Definition of Done
+    
+The AI-ConneX Data Studio Compiler Stage-1 is considered complete when the system can take:
+    
+one or more arbitrary supported industrial data assets
+    
+and automatically:
+    
+✓ identify formats✓ safely extract archives✓ inspect datasets✓ discover schemas✓ identify candidate keys✓ identify timestamps✓ identify units✓ detect schema relationships✓ determine append/join/merge requirements✓ use Agent Helper for ambiguous cases✓ validate the proposed plan✓ construct a DAG✓ execute transformations✓ prevent dangerous joins✓ normalize the canonical schema✓ normalize timestamps✓ resolve units where possible✓ detect duplicates✓ preserve source data✓ maintain provenance✓ generate REPORT_1✓ generate unified Parquet✓ generate schema metadata✓ generate lineage metadata✓ provide a clean input contract to Data Profiler
+    
+The final handoff is:
+    
+                    COMPILER OUTPUT                         │        ┌────────────────┼────────────────┐        ▼                ▼                ▼   Unified Data       Metadata         Lineage     Parquet             │                │        │                │                │        └────────────────┼────────────────┘                         ▼                 REPORT_1 / QUALITY                         │                         ▼                  DATA PROFILER
+    
+That is the formal boundary between Data Studio’s Compiler stage and the Data Profiler stage.
+    
+    
+      
+        
+                
+        
+        
+              
+      
+    
+  

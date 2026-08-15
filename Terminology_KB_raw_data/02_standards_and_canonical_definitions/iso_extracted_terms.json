@@ -1,0 +1,26 @@
+[
+  {
+    "canonical_name": "Ontology",
+    "definition": "\u201can explicit specification of a conceptualisation\u201d [27].",
+    "source_document": "DOC-IND-PAPER-003-V1",
+    "section": "Title & Abstract"
+  },
+  {
+    "canonical_name": "Functional Location Tag",
+    "definition": "a Pump System (a centrifugal pump and other equipment e.",
+    "source_document": "DOC-IND-PAPER-005-V1",
+    "section": "(C, P)"
+  },
+  {
+    "canonical_name": "Shipping is defined as any",
+    "definition": "of transportation (sea, rail, road).",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "(LPG)"
+  },
+  {
+    "canonical_name": "TTFi",
+    "definition": "the ith \u201ctime to fail\u201d (i.",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "NOTE\u00a01"
+  }
+]

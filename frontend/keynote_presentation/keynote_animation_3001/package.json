@@ -1,0 +1,13 @@
+{
+  "name": "product-demo-motion-animation",
+  "version": "1.0.0",
+  "description": "TAS AIConnex Enterprise Interactive Product Demo Motion Animation Showcase",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["industrial", "automl", "motion-animation", "product-demo", "canvas"],
+  "author": "TAS AIConnex Team",
+  "license": "ISC"
+}

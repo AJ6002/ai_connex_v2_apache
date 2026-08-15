@@ -21,7 +21,7 @@ from aiconnex_agent.schemas import CandidateRecipe
 
 logger = logging.getLogger(__name__)
 
-_DAG_MAPPING_PATH = Path("aic/1_dataset_profiler/dag_conditions_mapping.json")
+_DAG_MAPPING_PATH = Path("services/1_dataset_profiler/dag_conditions_mapping.json")
 
 # Maps user-facing problem_type strings to DAG family strings in the mapping file.
 _FAMILY_MAP: Dict[str, str] = {
@@ -46,7 +46,7 @@ def _load_dag_mapping() -> Dict[str, Any]:
         path = _DAG_MAPPING_PATH
         if not path.exists():
             logger.warning(f"[MultiDAGResolver] Mapping not found at {path}, trying fallback paths")
-            for candidate in [Path("aic/2_dag/dag_conditions_mapping.json")]:
+            for candidate in [Path("dag_conditions_mapping.json")]:
                 if candidate.exists():
                     path = candidate
                     break

@@ -193,7 +193,7 @@ function ChartRenderer({ type, id, flagged }: { type: string; id: string | numbe
                   {isConflict ? (
                     <text x="16" y="16" textAnchor="middle" fill="#C8102E" fontSize="12" fontWeight="bold">⚠️</text>
                   ) : (
-                    <circle cx="16" cy="11" r="3.5" fill="#10b981" />
+                    <circle cx="16" cy="11" r="3.5" fill="#FF6B35" />
                   )}
                 </g>
               );
@@ -219,9 +219,9 @@ function ChartRenderer({ type, id, flagged }: { type: string; id: string | numbe
       return (
         <svg viewBox="0 0 300 120" className="w-full h-full">
           <rect x="20" y="20" width="30" height="80" fill="#1E47C8" rx="2" />
-          <rect x="60" y="20" width="30" height="20" fill="#10b981" rx="2" />
+          <rect x="60" y="20" width="30" height="20" fill="#FF6B35" rx="2" />
           <line x1="50" y1="20" x2="60" y2="20" stroke="var(--text-muted)" strokeWidth="1" strokeDasharray="2" />
-          <rect x="100" y="40" width="30" height="30" fill="#10b981" rx="2" />
+          <rect x="100" y="40" width="30" height="30" fill="#FF6B35" rx="2" />
           <line x1="90" y1="40" x2="100" y2="40" stroke="var(--text-muted)" strokeWidth="1" strokeDasharray="2" />
           <rect x="140" y="70" width="30" height="25" fill="#C8102E" rx="2" />
           <line x1="130" y1="70" x2="140" y2="70" stroke="var(--text-muted)" strokeWidth="1" strokeDasharray="2" />
@@ -299,7 +299,7 @@ function ChartRenderer({ type, id, flagged }: { type: string; id: string | numbe
           <line x1="90" y1="70" x2="60" y2="95" stroke="var(--border-medium)" strokeWidth="1" />
           <line x1="90" y1="70" x2="120" y2="95" stroke="var(--border-medium)" strokeWidth="1" />
           <rect x="45" y="95" width="30" height="15" rx="3" fill={flagged ? '#C8102E' : secondaryColor} />
-          <rect x="105" y="95" width="30" height="15" rx="3" fill="#10b981" />
+          <rect x="105" y="95" width="30" height="15" rx="3" fill="#FF6B35" />
         </svg>
       );
 
@@ -309,9 +309,9 @@ function ChartRenderer({ type, id, flagged }: { type: string; id: string | numbe
           <line x1="60" y1="20" x2="60" y2="100" stroke="var(--border-light)" strokeWidth="0.5" />
           <line x1="130" y1="20" x2="130" y2="100" stroke="var(--border-light)" strokeWidth="0.5" />
           <line x1="200" y1="20" x2="200" y2="100" stroke="var(--border-light)" strokeWidth="0.5" />
-          <rect x="40" y="25" width="70" height="12" rx="3" fill="#10b981" />
-          <rect x="100" y="45" width="50" height="12" rx="3" fill="#10b981" />
-          <rect x="140" y="65" width="80" height="12" rx="3" fill={flagged ? '#f59e0b' : '#10b981'} />
+          <rect x="40" y="25" width="70" height="12" rx="3" fill="#FF6B35" />
+          <rect x="100" y="45" width="50" height="12" rx="3" fill="#FF6B35" />
+          <rect x="140" y="65" width="80" height="12" rx="3" fill={flagged ? '#f59e0b' : '#FF6B35'} />
           <rect x="210" y="85" width="60" height="12" rx="3" fill={primaryColor} />
         </svg>
       );
@@ -474,11 +474,11 @@ export const PrePrepare: React.FC<PrePrepareProps> = ({
           <div className={`p-4 rounded-xl border shadow-sm flex flex-col gap-2.5 ${
             (backendProfile?.max_skewness ?? 3.2) > 2.0
               ? 'border-rose-300 bg-rose-50/30'
-              : 'border-emerald-300 bg-emerald-50/20'
+              : 'border-[#FF6B35]/30 bg-[#FF6B35]/08/20'
           }`}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5 font-bold text-slate-800">
-                <TrendingUp size={14} className={(backendProfile?.max_skewness ?? 3.2) > 2.0 ? 'text-rose-600' : 'text-emerald-600'} />
+                <TrendingUp size={14} className={(backendProfile?.max_skewness ?? 3.2) > 2.0 ? 'text-rose-600' : 'text-[#FF6B35]'} />
                 Extreme Skewness Detected
               </div>
               {(backendProfile?.max_skewness ?? 3.2) > 2.0 ? (
@@ -486,7 +486,7 @@ export const PrePrepare: React.FC<PrePrepareProps> = ({
                   <AlertTriangle size={9} /> ALERT
                 </span>
               ) : (
-                <span className="flex items-center gap-0.5 bg-emerald-100 text-emerald-700 text-[9px] font-bold px-1.5 py-0.5 rounded border border-emerald-200">
+                <span className="flex items-center gap-0.5 bg-[#FF6B35]/12 text-[#FF6B35] text-[9px] font-bold px-1.5 py-0.5 rounded border border-[#FF6B35]/20">
                   <CheckCircle size={9} /> OK
                 </span>
               )}
@@ -509,11 +509,11 @@ export const PrePrepare: React.FC<PrePrepareProps> = ({
           <div className={`p-4 rounded-xl border shadow-sm flex flex-col gap-2.5 ${
             (backendProfile?.outlier_pct ?? 2.1) > 1.5
               ? 'border-rose-300 bg-rose-50/30'
-              : 'border-emerald-300 bg-emerald-50/20'
+              : 'border-[#FF6B35]/30 bg-[#FF6B35]/08/20'
           }`}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5 font-bold text-slate-800">
-                <Search size={14} className={(backendProfile?.outlier_pct ?? 2.1) > 1.5 ? 'text-rose-600' : 'text-emerald-600'} />
+                <Search size={14} className={(backendProfile?.outlier_pct ?? 2.1) > 1.5 ? 'text-rose-600' : 'text-[#FF6B35]'} />
                 High Outlier Density
               </div>
               {(backendProfile?.outlier_pct ?? 2.1) > 1.5 ? (
@@ -521,7 +521,7 @@ export const PrePrepare: React.FC<PrePrepareProps> = ({
                   <AlertTriangle size={9} /> ALERT
                 </span>
               ) : (
-                <span className="flex items-center gap-0.5 bg-emerald-100 text-emerald-700 text-[9px] font-bold px-1.5 py-0.5 rounded border border-emerald-200">
+                <span className="flex items-center gap-0.5 bg-[#FF6B35]/12 text-[#FF6B35] text-[9px] font-bold px-1.5 py-0.5 rounded border border-[#FF6B35]/20">
                   <CheckCircle size={9} /> OK
                 </span>
               )}
@@ -545,11 +545,11 @@ export const PrePrepare: React.FC<PrePrepareProps> = ({
           <div className={`p-4 rounded-xl border shadow-sm flex flex-col gap-2.5 ${
             (backendProfile?.max_missing_pct ?? 7.3) > 5.0
               ? 'border-rose-300 bg-rose-50/30'
-              : 'border-emerald-300 bg-emerald-50/20'
+              : 'border-[#FF6B35]/30 bg-[#FF6B35]/08/20'
           }`}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5 font-bold text-slate-800">
-                <AlertCircle size={14} className={(backendProfile?.max_missing_pct ?? 7.3) > 5.0 ? 'text-rose-600' : 'text-emerald-600'} />
+                <AlertCircle size={14} className={(backendProfile?.max_missing_pct ?? 7.3) > 5.0 ? 'text-rose-600' : 'text-[#FF6B35]'} />
                 High Missingness Detected
               </div>
               {(backendProfile?.max_missing_pct ?? 7.3) > 5.0 ? (
@@ -557,7 +557,7 @@ export const PrePrepare: React.FC<PrePrepareProps> = ({
                   <AlertTriangle size={9} /> ALERT
                 </span>
               ) : (
-                <span className="flex items-center gap-0.5 bg-emerald-100 text-emerald-700 text-[9px] font-bold px-1.5 py-0.5 rounded border border-emerald-200">
+                <span className="flex items-center gap-0.5 bg-[#FF6B35]/12 text-[#FF6B35] text-[9px] font-bold px-1.5 py-0.5 rounded border border-[#FF6B35]/20">
                   <CheckCircle size={9} /> OK
                 </span>
               )}
@@ -639,7 +639,7 @@ export const PrePrepare: React.FC<PrePrepareProps> = ({
               <h2 className="card-title">{step.title}</h2>
             </div>
             <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-              step.badgeClass === 'badge-green' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+              step.badgeClass === 'badge-green' ? 'bg-[#FF6B35]/12 text-[#FF6B35]' : 'bg-[#FF6B35]/08 text-[#FF8F5A]'
             }`}>
               {step.badge}
             </span>

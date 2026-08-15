@@ -1,0 +1,12 @@
+{
+  "name": "aiconnex-hero-keynote-suite",
+  "version": "1.0.0",
+  "description": "TAS AIConnex Enterprise Hero Dashboard (Port 3000) & Cinematic Keynote Motion Animation (Port 3001)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": ["aiconnex", "keynote", "animation", "industrial-ai", "hero-design"],
+  "author": "TAS AIConnex",
+  "license": "ISC"
+}

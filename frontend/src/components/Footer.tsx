@@ -18,12 +18,14 @@ export const Footer: React.FC<FooterProps> = ({ sidebarStyle }) => {
       }}
     >
       <div className="flex items-center gap-4">
-        <span className="font-semibold flex items-center gap-1.5" style={{color:'#4ade80'}}>
-          <span className="w-2 h-2 rounded-full animate-pulse" style={{background:'#22c55e', boxShadow:'0 0 6px rgba(34,197,94,0.60)'}}></span>
+        <span className="font-semibold flex items-center gap-1.5" style={{color:'#E86326'}}>
+          <span className="w-2 h-2 rounded-full animate-pulse" style={{background:'#E86326', boxShadow:'0 0 6px rgba(232,99,38,0.60)'}}></span>
           SYSTEM STATUS: OPERATIONAL
         </span>
-        <span style={{color:'rgba(13,21,51,0.20)'}}>|</span>
-        <span className="inline-flex items-center gap-0.5">© 2026 AI-<img src="/connexx-dark.png" alt="Connexx" className="h-3.5 w-auto object-contain inline-block align-middle" /> Suite. All Rights Reserved.</span>
+        <span style={{color:'rgba(43,0,99,0.20)'}}>|</span>
+        <span className="inline-flex items-center gap-0.5 font-bold">
+          © 2026 <span className="text-[#E86326] ml-1">AI-</span><span className="text-[#2B0063]">ConneX</span>. All Rights Reserved.
+        </span>
       </div>
 
       <div className="flex items-center gap-5 text-[11px]">

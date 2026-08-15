@@ -92,7 +92,7 @@ export const QuotasView: React.FC<QuotasViewProps> = ({
           </div>
           <div className="flex items-baseline gap-2">
             <span className="font-mono text-3xl font-bold text-slate-900">92%</span>
-            <span className="text-xs font-mono font-bold text-emerald-600 flex items-center">
+            <span className="text-xs font-mono font-bold text-[#FF6B35] flex items-center">
               <span className="material-symbols-outlined text-xs">trending_flat</span> +0.2%
             </span>
           </div>
@@ -209,7 +209,7 @@ export const QuotasView: React.FC<QuotasViewProps> = ({
             </div>
 
             <div className="pt-3 border-t border-slate-200 flex items-start gap-2 text-[11px] text-slate-600">
-              <span className="material-symbols-outlined text-emerald-600 text-sm mt-0.5">check_circle</span>
+              <span className="material-symbols-outlined text-[#FF6B35] text-sm mt-0.5">check_circle</span>
               <p className="leading-relaxed">
                 CPU resources are currently underutilized. Consider scheduling maintenance or asynchronous batch processing tasks to maximize fleet value.
               </p>

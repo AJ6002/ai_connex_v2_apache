@@ -3,9 +3,9 @@
 # ==========================================
 /data/
 workspace_data/
-
 testing_ds/
 *.zip
+*.rar
 *.csv
 *.mat
 *.parquet
@@ -25,13 +25,15 @@ testing_ds/
 # ==========================================
 scratch/
 *.log
+logs/
 .system_generated/
 .tempmediaStorage/
 .langgraph_api/
 mlruns/
+outputs/
 
 # ==========================================
-# 4. Python Environment & Caches
+# 4. Python & Node Environment & Caches
 # ==========================================
 __pycache__/
 *.py[cod]
@@ -41,10 +43,12 @@ __pycache__/
 venv/
 env/
 .pytest_cache/
+.ruff_cache/
 mlflow.db*
 *.db
 .env
-
+node_modules/
+dist/
 
 # ==========================================
 # 5. IDE & Tooling Local Metadata
@@ -54,21 +58,29 @@ mlflow.db*
 .DS_Store
 Thumbs.db
 guardrails-temp/
-aic-ui/
-
-Thumbs.db
-
-# mem0 embedded on-disk Qdrant vector store (local dev data, not source)
+.worktrees/
 .mem0_qdrant/
+.kiro/
 
 # ==========================================
-# 7. Reference Repositories & External Benchmarks
+# 6. Security-Sensitive Credentials
 # ==========================================
+credentials/
+*.pem
+*.key
+
+# ==========================================
+# 7. Obsolete Snapshots & Reference Repos
+# ==========================================
+14AUG/
+aic/
+aic-2/
+aic-ui/
+ai-connex/
+aiconnex_demo-spe/
+stitch_aiconnex_enterprise_hero_design-part2/
+validation_gateway/
 h2o-3/
 h2o_ref/
 platform_llmaindex/
 langui/
-
-
-
-.worktrees/

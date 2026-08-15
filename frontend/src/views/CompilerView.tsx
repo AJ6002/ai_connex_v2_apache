@@ -196,14 +196,14 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
   const previewColumns = [
     { name: 'unit_id', type: 'int64', badge: 'bg-blue-100 text-blue-800' },
     { name: 'time_cycle', type: 'int64', badge: 'bg-blue-100 text-blue-800' },
-    { name: 'setting_1', type: 'float64', badge: 'bg-emerald-100 text-emerald-800' },
-    { name: 'setting_2', type: 'float64', badge: 'bg-emerald-100 text-emerald-800' },
-    { name: 'setting_3', type: 'float64', badge: 'bg-emerald-100 text-emerald-800' },
-    { name: 'fan_inlet_temp', type: 'float64', badge: 'bg-emerald-100 text-emerald-800' },
-    { name: 'lpc_outlet_temp', type: 'float64', badge: 'bg-emerald-100 text-emerald-800' },
-    { name: 'hpc_outlet_temp', type: 'float64', badge: 'bg-emerald-100 text-emerald-800' },
-    { name: 'lpt_outlet_temp', type: 'float64', badge: 'bg-emerald-100 text-emerald-800' },
-    { name: 'fan_speed_rpm', type: 'float64', badge: 'bg-emerald-100 text-emerald-800' },
+    { name: 'setting_1', type: 'float64', badge: 'bg-[#FF6B35]/12 text-[#FF6B35]' },
+    { name: 'setting_2', type: 'float64', badge: 'bg-[#FF6B35]/12 text-[#FF6B35]' },
+    { name: 'setting_3', type: 'float64', badge: 'bg-[#FF6B35]/12 text-[#FF6B35]' },
+    { name: 'fan_inlet_temp', type: 'float64', badge: 'bg-[#FF6B35]/12 text-[#FF6B35]' },
+    { name: 'lpc_outlet_temp', type: 'float64', badge: 'bg-[#FF6B35]/12 text-[#FF6B35]' },
+    { name: 'hpc_outlet_temp', type: 'float64', badge: 'bg-[#FF6B35]/12 text-[#FF6B35]' },
+    { name: 'lpt_outlet_temp', type: 'float64', badge: 'bg-[#FF6B35]/12 text-[#FF6B35]' },
+    { name: 'fan_speed_rpm', type: 'float64', badge: 'bg-[#FF6B35]/12 text-[#FF6B35]' },
   ];
 
   // Sample data preview rows fallback
@@ -383,17 +383,15 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
       <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 glass-panel p-6 sm:p-8 rounded-3xl relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-tas-red/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 relative z-10">
-          <TasLogo className="h-12 shrink-0" showSubtitle={false} />
-          <div className="h-12 w-px hidden sm:block border-ui" style={{borderLeftWidth:'1px'}}></div>
           <div>
             <div className="flex items-center gap-2 text-muted text-xs font-mono uppercase tracking-widest mb-1">
-              <span className="text-tas-red font-extrabold">TOTAL AUTOMATION SOLUTIONS</span>
+              <span className="text-[#E86326] font-extrabold">TOTAL AUTOMATION SOLUTIONS</span>
               <span>•</span>
               <span className="text-cb font-bold">Relational Industrial Compiler</span>
             </div>
             <h1 className="font-headline text-2xl sm:text-3xl font-extrabold text-primary tracking-tight flex items-center gap-3">
-              <span className="inline-flex items-center gap-1">AI_<img src="/connexx-dark.png" alt="Connexx" className="h-7 w-auto object-contain inline-block align-middle" /> Pipeline Studio</span>
-              <span className="px-3 py-0.5 bg-tas-red/20 text-tas-red border border-tas-red/40 rounded-full text-xs font-mono font-bold">
+              <span>Relational Pipeline Studio</span>
+              <span className="px-3 py-0.5 bg-[#E86326]/20 text-[#E86326] border border-[#E86326]/40 rounded-full text-xs font-mono font-bold">
                 9-Node Cascade Engine
               </span>
             </h1>
@@ -404,7 +402,7 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
           {onProceed && (
             <button
               onClick={onProceed}
-              className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold rounded-2xl transition-all flex items-center gap-2 border-none shadow-sm active:scale-95 cursor-pointer"
+              className="px-5 py-2.5 bg-[#E86326] hover:bg-[#D5521B] text-white font-mono text-xs font-bold rounded-2xl transition-all flex items-center gap-2 border-none shadow-md active:scale-95 cursor-pointer"
             >
               <span>Proceed to Next Page</span>
               <span className="material-symbols-outlined text-sm">arrow_forward</span>
@@ -413,24 +411,22 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
 
           <button
             onClick={() => setIsInspectionDrawerOpen(!isInspectionDrawerOpen)}
-            className="px-4 py-2.5 text-primary font-mono text-xs font-bold rounded-2xl transition-all flex items-center gap-2 border border-ui backdrop-blur-md"
+            className="px-4 py-2.5 text-primary font-mono text-xs font-bold rounded-2xl transition-all flex items-center gap-2 border border-ui backdrop-blur-md hover:border-[#E86326]"
             style={{background:'var(--bg-input)'}}
           >
-            <span className="material-symbols-outlined text-base text-tas-red">folder_open</span>
+            <span className="material-symbols-outlined text-base text-[#E86326]">folder_open</span>
             <span>Inspect Archive ({filesList.length} files)</span>
           </button>
         </div>
       </div>
 
-      {/* Main Grid: Dropzone & Data Agent Bar */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left 2 Cols: Archive Dropzone & 4-Layer Tracker */}
-        <div className="lg:col-span-2 space-y-6">
+      {/* Main Container: Archive Dropzone & 4-Layer Tracker */}
+      <div className="space-y-6">
           {/* Section 1: Industrial Archive Dropzone */}
           <div className="glass-card p-6 relative overflow-hidden">
             <div className="flex justify-between items-center mb-4">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-tas-red text-xl">upload_file</span>
+                <span className="material-symbols-outlined text-[#E86326] text-xl">upload_file</span>
                 <h2 className="font-headline font-bold text-base text-primary">
                   1. Multi-Format Industrial Archive Dropzone
                 </h2>
@@ -443,7 +439,7 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
             {/* Drop Area */}
             <div 
               onClick={() => document.getElementById('zip-file-input')?.click()}
-              className="border-2 border-dashed border-tas-red/40 hover:border-tas-red transition-all rounded-2xl p-8 text-center cursor-pointer group"
+              className="border-2 border-dashed border-[#E86326]/40 hover:border-[#E86326] transition-all rounded-2xl p-8 text-center cursor-pointer group"
               style={{background:'var(--bg-input)'}}
             >
               <input
@@ -453,14 +449,14 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
                 onChange={handleFileChange}
                 style={{ display: 'none' }}
               />
-              <div className="w-14 h-14 bg-slate-900/80 rounded-2xl border border-white/20 flex items-center justify-center mx-auto mb-3 shadow-lg group-hover:scale-110 transition-transform">
-                <span className="material-symbols-outlined text-tas-red text-3xl">cloud_upload</span>
+              <div className="w-14 h-14 bg-[#2B0063] rounded-2xl border border-white/20 flex items-center justify-center mx-auto mb-3 shadow-lg group-hover:scale-110 transition-transform text-[#E86326]">
+                <span className="material-symbols-outlined text-3xl">cloud_upload</span>
               </div>
               <p className="font-headline font-bold text-sm text-primary">
                 Drag & Drop Industrial Telemetry Archives Here
               </p>
               <p className="text-secondary text-xs mt-1">
-                or <span className="text-tas-red font-bold underline">browse local storage</span> to select multi-table SCADA dataset
+                or <span className="text-[#E86326] font-bold underline">browse local storage</span> to select multi-table SCADA dataset
               </p>
               <div className="flex items-center justify-center gap-3 mt-4 text-[10px] font-mono text-secondary">
                 <span className="px-2 py-0.5 border border-ui rounded-lg" style={{background:'var(--bg-input)'}}>C-MAPSS Turbofan</span>
@@ -477,54 +473,19 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
               </div>
             )}
 
-            {/* Active Archive Card */}
-            <div className="mt-4 p-4 border border-ui rounded-2xl flex items-center justify-between" style={{background:'var(--bg-input)'}}>
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-emerald-500/20 text-emerald-300 rounded-xl">
-                  <span className="material-symbols-outlined text-lg">check_circle</span>
-                </div>
-                <div>
-                  <p className="font-mono text-xs font-bold text-primary">
-                    {selectedFile ? selectedFile.name : 'C-MAPSS_FD001_Industrial_Telemetry.zip'}
-                  </p>
-                  <p className="text-[11px] text-secondary font-mono">
-                    {selectedFile 
-                      ? `Size: ${(selectedFile.size / (1024 * 1024)).toFixed(1)} MB • ${compiledData?.merged_files?.length || 0} Merged Tables`
-                      : 'Size: 58.4 MB • 5 Extracted Tables • Encoding: UTF-8'}
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => selectedFile && triggerCompilation(selectedFile)}
-                disabled={isCompiling || !selectedFile}
-                className="px-4 py-2 bg-gradient-to-r from-tas-red to-tas-red-hover text-white font-mono text-xs font-bold rounded-xl transition-all flex items-center gap-2 shadow-lg hover:scale-105"
-              >
-                {isCompiling ? (
-                  <>
-                    <span className="material-symbols-outlined text-sm animate-spin">sync</span>
-                    <span>Compiling...</span>
-                  </>
-                ) : (
-                  <>
-                    <span className="material-symbols-outlined text-sm">play_arrow</span>
-                    <span>Re-Run 4-Layer Compile</span>
-                  </>
-                )}
-              </button>
-            </div>
           </div>
 
           {/* Section 3: Live 4-Layer Compilation Pipeline Tracker */}
           <div className="glass-card p-6">
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-tas-red text-xl">layers</span>
+                <span className="material-symbols-outlined text-[#E86326] text-xl">layers</span>
                 <h2 className="font-headline font-bold text-base text-primary">
                   3. Live 4-Layer Compilation Pipeline Tracker
                 </h2>
               </div>
-              <span className="px-3 py-1 bg-emerald-500/15 text-emerald-500 border border-emerald-500/30 rounded-full text-xs font-mono font-bold flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span className="px-3 py-1 bg-[#E86326]/15 text-[#E86326] border border-[#E86326]/30 rounded-full text-xs font-mono font-bold flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#E86326] animate-pulse"></span>
                 Status: Handoff Ready
               </span>
             </div>
@@ -534,14 +495,14 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
               <div
                 className={`p-4 rounded-xl border transition-all ${
                   compilationLayer >= 1
-                    ? 'border-emerald-500 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300'
+                    ? 'border-[#E86326] bg-[#E86326]/10 text-primary'
                     : 'opacity-55'
                 }`}
                 style={compilationLayer < 1 ? {background:'var(--bg-input)', borderColor:'var(--border-ui)'} : {}}
               >
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[10px] font-mono font-bold uppercase text-secondary">Layer 1</span>
-                  <span className="material-symbols-outlined text-base text-emerald-600">check_circle</span>
+                  <span className="material-symbols-outlined text-base text-[#E86326]">check_circle</span>
                 </div>
                 <h4 className="font-sans font-bold text-xs text-primary">Discovery</h4>
                 <p className="text-[11px] text-secondary mt-1 leading-tight">
@@ -553,14 +514,14 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
               <div
                 className={`p-4 rounded-xl border transition-all ${
                   compilationLayer >= 2
-                    ? 'border-emerald-500 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300'
+                    ? 'border-[#E86326] bg-[#E86326]/10 text-primary'
                     : 'opacity-55'
                 }`}
                 style={compilationLayer < 2 ? {background:'var(--bg-input)', borderColor:'var(--border-ui)'} : {}}
               >
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[10px] font-mono font-bold uppercase text-secondary">Layer 2</span>
-                  <span className="material-symbols-outlined text-base text-emerald-600">check_circle</span>
+                  <span className="material-symbols-outlined text-base text-[#E86326]">check_circle</span>
                 </div>
                 <h4 className="font-sans font-bold text-xs text-primary">Schema Mapper</h4>
                 <p className="text-[11px] text-secondary mt-1 leading-tight">
@@ -572,14 +533,14 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
               <div
                 className={`p-4 rounded-xl border transition-all ${
                   compilationLayer >= 3
-                    ? 'border-emerald-500 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300'
+                    ? 'border-[#E86326] bg-[#E86326]/10 text-primary'
                     : 'opacity-55'
                 }`}
                 style={compilationLayer < 3 ? {background:'var(--bg-input)', borderColor:'var(--border-ui)'} : {}}
               >
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[10px] font-mono font-bold uppercase text-secondary">Layer 3</span>
-                  <span className="material-symbols-outlined text-base text-emerald-600">check_circle</span>
+                  <span className="material-symbols-outlined text-base text-[#E86326]">check_circle</span>
                 </div>
                 <h4 className="font-sans font-bold text-xs text-primary">Relational Joiner</h4>
                 <p className="text-[11px] text-secondary mt-1 leading-tight">
@@ -591,16 +552,16 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
               <div
                 className={`p-4 rounded-xl border transition-all ${
                   compilationLayer >= 4
-                    ? 'border-tas-red bg-tas-red/20 ring-2 ring-tas-red/45 backdrop-blur-md'
+                    ? 'border-[#2B0063] bg-[#2B0063]/10 ring-2 ring-[#2B0063]/30 backdrop-blur-md'
                     : 'opacity-55'
                 }`}
                 style={compilationLayer < 4 ? {background:'var(--bg-input)', borderColor:'var(--border-ui)'} : {}}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-[10px] font-mono font-bold uppercase text-tas-red">Layer 4</span>
-                  <span className="material-symbols-outlined text-base text-tas-red">verified</span>
+                  <span className="text-[10px] font-mono font-bold uppercase text-[#2B0063] dark:text-[#E86326]">Layer 4</span>
+                  <span className="material-symbols-outlined text-base text-[#E86326]">verified</span>
                 </div>
-                <h4 className="font-sans font-bold text-xs text-tas-red">Handoff</h4>
+                <h4 className="font-sans font-bold text-xs text-[#E86326]">Handoff</h4>
                 <p className="text-[11px] text-secondary mt-1 leading-tight">
                   Fleet vertical concatenation into clean 27-col table.
                 </p>
@@ -685,7 +646,7 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
                           statusClass = 'border-tas-red bg-tas-red/10 text-tas-red shadow-[0_0_15px_rgba(235,53,64,0.3)] animate-pulse';
                           icon = 'sync';
                         } else if (status === 'completed') {
-                          statusClass = 'border-emerald-500 bg-emerald-500/10 text-emerald-400';
+                          statusClass = 'border-[#FF6B35] bg-[#FF6B35]/080/10 text-[#FF6B35]';
                           icon = 'check_circle';
                         } else if (status === 'failed') {
                           statusClass = 'border-rose-600 bg-rose-950/20 text-rose-400';
@@ -753,7 +714,7 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
                           Active Index: #{activeQueueIndex + 1}
                         </span>
                       ) : (
-                        <span className="text-[10px] font-mono bg-emerald-500/15 text-emerald-500 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-bold">
+                        <span className="text-[10px] font-mono bg-[#FF6B35]/080/15 text-[#FF6B35] border border-[#FF6B35]/30 px-2.5 py-0.5 rounded-full font-bold">
                           Finished
                         </span>
                       )}
@@ -778,7 +739,7 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
                               <td className="px-4 py-3 font-bold text-tas-red">#{idx + 1}</td>
                               <td className="px-4 py-3 text-primary font-bold">{item.groupId}</td>
                               <td className="px-4 py-3">{item.dagId || '-'}</td>
-                              <td className="px-4 py-3 font-bold text-emerald-400">
+                              <td className="px-4 py-3 font-bold text-[#FF6B35]">
                                 {item.status === 'completed' ? `${item.accuracy}%` : (item.status === 'failed' ? 'FAILED' : (item.status === 'running' ? 'TRAINING...' : 'Pending'))}
                               </td>
                               <td className="px-4 py-3">{item.status === 'completed' ? `${item.latencyMs}ms` : '-'}</td>
@@ -797,163 +758,6 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
             );
           })()}
         </div>
-        {/* Right Col: Intelligent AI Data Agent & Health Shield */}
-        <div className="space-y-6">
-          {/* Section 2: Intelligent Data Agent & Query Inspector */}
-          <div className="glass-card p-6 space-y-4">
-            <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-tas-red text-xl">psychology</span>
-              <h2 className="font-headline font-bold text-base text-primary">
-                2. AI Data Agent & Inspector
-              </h2>
-            </div>
-
-            <p className="text-xs text-secondary leading-relaxed">
-              Ask the Schema Agent to query sensor columns, check sampling rates, or verify entity join keys.
-            </p>
-
-            <form onSubmit={handleQuerySubmit} className="space-y-2">
-              <div className="relative">
-                <input
-                  type="text"
-                  value={queryInput}
-                  onChange={(e) => setQueryInput(e.target.value)}
-                  placeholder="e.g. Find temperature sensors across set 1 & set 2..."
-                  className="w-full border border-ui rounded-xl px-3.5 py-2.5 text-xs font-mono text-primary placeholder-muted focus:ring-2 focus:ring-tas-red outline-none"
-                  style={{background:'var(--bg-input)'}}
-                />
-                <button
-                  type="submit"
-                  className="absolute right-1.5 top-1.5 p-1.5 bg-gradient-to-r from-tas-red to-tas-red-hover text-white rounded-lg transition-all shadow-md"
-                >
-                  <span className="material-symbols-outlined text-sm">search</span>
-                </button>
-              </div>
-            </form>
-
-            {/* Prompt Chips */}
-            <div className="flex flex-wrap gap-1.5">
-              <button
-                type="button"
-                onClick={() =>
-                  setQueryInput('Find temperature sensors across set 1 and set 2 and check sampling rate')
-                }
-                className="px-2.5 py-1 text-secondary text-[10px] font-mono rounded-lg border border-ui text-left"
-                style={{background:'var(--bg-input)'}}
-              >
-                ⚡ "Check temperature sensor sampling rate"
-              </button>
-              <button
-                type="button"
-                onClick={() => setQueryInput('Identify primary timestamp column and entity join keys')}
-                className="px-2.5 py-1 text-secondary text-[10px] font-mono rounded-lg border border-ui text-left"
-                style={{background:'var(--bg-input)'}}
-              >
-                ⚡ "Identify primary entity join keys"
-              </button>
-            </div>
-
-            {/* AI Agent Response Box */}
-            {queryResponse && (
-              <div className="p-3.5 bg-tas-red/15 border border-tas-red/30 rounded-xl text-xs font-mono text-primary leading-relaxed animate-fadeIn backdrop-blur-md">
-                <div className="flex items-center gap-1.5 text-tas-red font-bold mb-1">
-                  <span className="material-symbols-outlined text-sm">smart_toy</span>
-                  <span>Schema Agent Diagnostic Result:</span>
-                </div>
-                {queryResponse}
-              </div>
-            )}
-
-            {/* Schema Autodetect Cards */}
-            <div className="pt-3 border-t border-ui space-y-2">
-              <span className="text-[10px] font-mono font-bold uppercase text-muted">
-                Autodetected Schema Badges
-              </span>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="p-2.5 border border-ui rounded-xl" style={{background:'var(--bg-input)'}}>
-                  <p className="text-[10px] font-mono text-muted uppercase">Time Axis</p>
-                  <p className="text-xs font-mono font-bold text-primary mt-0.5">
-                    {compiledData?.schema_map?.canonical_timestamp_col || 'time_cycle / timestamp'}
-                  </p>
-                </div>
-                <div className="p-2.5 border border-ui rounded-xl" style={{background:'var(--bg-input)'}}>
-                  <p className="text-[10px] font-mono text-muted uppercase">Entity Join Key</p>
-                  <p className="text-xs font-mono font-bold text-primary mt-0.5">
-                    {compiledData?.schema_map?.canonical_group_col || 'unit_id'}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Section 5: Dataset Health & Rejection Shield */}
-          <div className="glass-card p-6 space-y-3">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-tas-red text-xl">shield</span>
-                <h2 className="font-headline font-bold text-base text-primary">
-                  5. Rejection Shield
-                </h2>
-              </div>
-              <button
-                onClick={() => setShowRejectionShield(!showRejectionShield)}
-                className="text-xs font-mono font-bold text-tas-red hover:underline"
-              >
-                {showRejectionShield ? 'Hide Diagnostic' : 'Test Rejection Shield'}
-              </button>
-            </div>
-
-            {showRejectionShield ? (
-              <div className="p-4 bg-tas-red-light border border-tas-red/30 rounded-xl space-y-3 animate-fadeIn">
-                <div className="flex items-start gap-2 text-tas-red">
-                  <span className="material-symbols-outlined text-xl">gpp_maybe</span>
-                  <div>
-                    <h4 className="font-bold text-xs uppercase font-mono">
-                      RED REJECTION SHIELD TRIGGERED
-                    </h4>
-                    <p className="text-xs text-slate-800 mt-0.5">
-                      Row explosion delta check: Cartesian join mismatch detected.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="bg-white p-3 rounded-lg border border-tas-red/20 text-[11px] font-mono text-slate-700 space-y-1">
-                  {compiledData?.join_audits && compiledData.join_audits.length > 0 ? (
-                    compiledData.join_audits.map((a: any, idx: number) => (
-                      <p key={idx}>• {a.dim_filename}: fact={a.fact_rows} vs dim={a.dim_rows} | delta={a.row_count_delta_pct}%</p>
-                    ))
-                  ) : (
-                    <>
-                      <p>• Sensor_A (20,631 rows) vs Sensor_B (21,705 rows)</p>
-                      <p>• Missing timestamp indices in cycle range [140..152]</p>
-                    </>
-                  )}
-                </div>
-
-                <div className="text-[11px] text-slate-800">
-                  <p className="font-bold text-slate-900 mb-1">Actionable Resolution Suggestions:</p>
-                  <ul className="list-disc pl-4 space-y-0.5 font-mono text-[10px]">
-                    <li>Enable strict index alignment on group / unit keys</li>
-                    <li>Apply forward-fill (ffill) on missing time steps</li>
-                  </ul>
-                </div>
-              </div>
-            ) : (
-              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-3">
-                <span className="material-symbols-outlined text-emerald-600 text-xl">verified_user</span>
-                <div>
-                  <p className="font-mono text-xs font-bold text-emerald-900">
-                    Shield Status: {compiledData ? (compiledData.join_audits?.every((a: any) => a.cartesian_guard_passed) ? 'PASSING' : 'WARNING') : 'PASSING'}
-                  </p>
-                  <p className="text-[11px] text-emerald-700 font-mono">
-                    Zero Cartesian row explosion. Schema join safety verified.
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
 
       {/* Section 4: Data Summary & Transformation Audit Card + Preview Table */}
       <div className="glass-card p-6 space-y-6">
@@ -1025,7 +829,7 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
         {/* Action Bar */}
         <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2 text-xs text-secondary font-mono">
-            <span className="material-symbols-outlined text-emerald-500 text-base">check_circle</span>
+            <span className="material-symbols-outlined text-[#FF6B35] text-base">check_circle</span>
             <span>
               Target Column Synthesized:{' '}
               <strong className="text-primary font-mono">
@@ -1140,13 +944,13 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
                       isActive
                         ? 'border-tas-red/40 bg-tas-red/5 text-tas-red font-semibold'
                         : isCompleted
-                        ? 'border-emerald-500/30 bg-emerald-500/5 text-emerald-600 dark:text-emerald-400'
+                        ? 'border-[#FF6B35]/30 bg-[#FF6B35]/080/5 text-[#FF6B35] dark:text-[#FF6B35]'
                         : 'border-slate-100 dark:border-slate-800/60 text-slate-400 opacity-60'
                     }`}
                   >
                     <div className="flex items-center gap-3 font-mono">
                       {isCompleted ? (
-                        <span className="material-symbols-outlined text-emerald-500 text-lg">check_circle</span>
+                        <span className="material-symbols-outlined text-[#FF6B35] text-lg">check_circle</span>
                       ) : isActive ? (
                         <div className="w-4 h-4 border-2 border-tas-red border-t-transparent rounded-full animate-spin"></div>
                       ) : (
@@ -1155,7 +959,7 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
                       <span className="text-xs font-mono">{text}</span>
                     </div>
                     {isCompleted && (
-                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-500">Done</span>
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#FF6B35]">Done</span>
                     )}
                     {isActive && (
                       <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-tas-red animate-pulse">Running</span>
@@ -1207,7 +1011,7 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
                   matchScore: '98.4% Match',
                   desc: 'Optimized for high-frequency sensor streams, temperature & pressure decay curves. Uses RobustScaler + Exponential Smoothing.',
                   icon: 'speed',
-                  badgeColor: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40',
+                  badgeColor: 'bg-[#FF6B35]/080/20 text-[#FF8F5A] border-[#FF6B35]/40',
                 },
                 {
                   id: 'DAG_283',
@@ -1267,7 +1071,7 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
                       <div className="flex items-center gap-3 text-[10px] text-slate-400 pt-1">
                         <span>Task: <strong className="text-white">{dag.task}</strong></span>
                         <span>•</span>
-                        <span>Auto-Recipe: <strong className="text-emerald-400">Ready</strong></span>
+                        <span>Auto-Recipe: <strong className="text-[#FF6B35]">Ready</strong></span>
                       </div>
                     </div>
                   </div>
@@ -1330,7 +1134,7 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
                     <span>1. What value do you want the AI to predict?</span>
                   </label>
                   {nlpExtractedFields.target && (
-                    <span className="text-[9px] font-mono text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full font-bold">
+                    <span className="text-[9px] font-mono text-[#FF6B35] bg-[#FF6B35]/08 border border-[#FF6B35]/20 px-2 py-0.5 rounded-full font-bold">
                       ✨ Extracted by NLP
                     </span>
                   )}
@@ -1354,7 +1158,7 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
                     <span>2. What type of prediction model is this?</span>
                   </label>
                   {nlpExtractedFields.problemType && (
-                    <span className="text-[9px] font-mono text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full font-bold">
+                    <span className="text-[9px] font-mono text-[#FF6B35] bg-[#FF6B35]/08 border border-[#FF6B35]/20 px-2 py-0.5 rounded-full font-bold">
                       ✨ Extracted by NLP
                     </span>
                   )}
@@ -1379,7 +1183,7 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
                       <span>3. Date/Time Column</span>
                     </label>
                     {nlpExtractedFields.timeCol && (
-                      <span className="text-[9px] font-mono text-emerald-600 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-full font-bold">
+                      <span className="text-[9px] font-mono text-[#FF6B35] bg-[#FF6B35]/08 border border-[#FF6B35]/20 px-1.5 py-0.5 rounded-full font-bold">
                         ✨ NLP
                       </span>
                     )}
@@ -1400,7 +1204,7 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
                       <span>4. Machine/Asset ID Column</span>
                     </label>
                     {nlpExtractedFields.entityCol && (
-                      <span className="text-[9px] font-mono text-emerald-600 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-full font-bold">
+                      <span className="text-[9px] font-mono text-[#FF6B35] bg-[#FF6B35]/08 border border-[#FF6B35]/20 px-1.5 py-0.5 rounded-full font-bold">
                         ✨ NLP
                       </span>
                     )}

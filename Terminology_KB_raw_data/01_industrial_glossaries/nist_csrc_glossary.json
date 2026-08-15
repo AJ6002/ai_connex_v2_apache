@@ -1,0 +1,90 @@
+[
+  {
+    "term": "Supervisory Control and Data Acquisition",
+    "abbreviation": "SCADA",
+    "definition": "A computer-based system for gathering and analyzing real-time data to monitor and control industrial operations and equipment.",
+    "category": "SCADA",
+    "source": "NIST SP 800-82 Rev. 3",
+    "url": "https://csrc.nist.gov/glossary/term/scada"
+  },
+  {
+    "term": "Programmable Logic Controller",
+    "abbreviation": "PLC",
+    "definition": "A solid-state control system that has a user-programmable memory for storing instructions to implement specific functions such as I/O control, logic, timing, counting, three-mode (PID) control, communication, arithmetic, and data handling.",
+    "category": "SCADA",
+    "source": "NIST SP 800-82 Rev. 3",
+    "url": "https://csrc.nist.gov/glossary/term/programmable_logic_controller"
+  },
+  {
+    "term": "Distributed Control System",
+    "abbreviation": "DCS",
+    "definition": "A control system in which control elements are distributed throughout the system with a subsystem sub-controller under the control of a central supervisory control system.",
+    "category": "SCADA",
+    "source": "NIST SP 800-82 Rev. 3",
+    "url": "https://csrc.nist.gov/glossary/term/distributed_control_system"
+  },
+  {
+    "term": "Human-Machine Interface",
+    "abbreviation": "HMI",
+    "definition": "Hardware or software through which an operator interacts with a controller or system, displaying process variables, alarms, and controls.",
+    "category": "SCADA",
+    "source": "NIST SP 800-82 Rev. 3",
+    "url": "https://csrc.nist.gov/glossary/term/human_machine_interface"
+  },
+  {
+    "term": "Remote Terminal Unit",
+    "abbreviation": "RTU",
+    "definition": "A special-purpose computer equipped with input/output channels to monitor physical sensors and actuate field equipment over communication networks.",
+    "category": "SCADA",
+    "source": "NIST SP 800-82 Rev. 3",
+    "url": "https://csrc.nist.gov/glossary/term/remote_terminal_unit"
+  },
+  {
+    "term": "Artificial Intelligence",
+    "abbreviation": "AI",
+    "definition": "A machine-based system that can, for a given set of human-defined objectives, make predictions, recommendations, or decisions influencing real or virtual environments.",
+    "category": "AI/ML",
+    "source": "NIST AI 100-1",
+    "url": "https://csrc.nist.gov/glossary/term/artificial_intelligence"
+  },
+  {
+    "term": "Machine Learning",
+    "abbreviation": "ML",
+    "definition": "A branch of artificial intelligence and computer science which focuses on the use of data and algorithms to imitate the way humans learn, gradually improving its accuracy.",
+    "category": "AI/ML",
+    "source": "NIST AI 100-1",
+    "url": "https://csrc.nist.gov/glossary/term/machine_learning"
+  },
+  {
+    "term": "Supervised Learning",
+    "abbreviation": "SL",
+    "definition": "A machine learning technique where an algorithm is trained on labeled data to map inputs to target outputs.",
+    "category": "AI/ML",
+    "source": "NIST AI 100-1",
+    "url": "https://csrc.nist.gov/glossary/term/supervised_learning"
+  },
+  {
+    "term": "Unsupervised Learning",
+    "abbreviation": "UL",
+    "definition": "A machine learning technique used to draw inferences from datasets consisting of input data without labeled responses.",
+    "category": "AI/ML",
+    "source": "NIST AI 100-1",
+    "url": "https://csrc.nist.gov/glossary/term/unsupervised_learning"
+  },
+  {
+    "term": "Prognostics and Health Management",
+    "abbreviation": "PHM",
+    "definition": "An engineering discipline that evaluates the real-time condition of an asset under actual operating conditions and predicts remaining useful life.",
+    "category": "PHM",
+    "source": "NIST AMS 300-2",
+    "url": "https://www.nist.gov/publications/standards-related-prognostics-and-health-management-phm-manufacturing"
+  },
+  {
+    "term": "Manufacturing Operations",
+    "abbreviation": "MO",
+    "definition": "The collection of management activities, scheduling, logistics, execution, and control that converts raw inputs into finished products.",
+    "category": "Manufacturing",
+    "source": "NIST CSRC Glossary",
+    "url": "https://csrc.nist.gov/glossary/term/manufacturing_operations"
+  }
+]

@@ -1,0 +1,533 @@
+
+AI-ConneX
+Data Studio — Data Profiler
+Proof of Concept • R&D • Technical Architecture • Manifest Generation
+Industrial Data Intelligence LayerCompiler → Data Profiler → Manifest-UID.jsonStage Report / Compilation Report #1
+
+1. Executive Summary
+The AI-ConneX Data Studio Data Profiler is the intelligence layer immediately after the Data Studio Compiler. The Compiler converts heterogeneous industrial source material into a validated, unified dataset. The Profiler then determines what the compiled dataset actually contains: its structure, semantics, statistical characteristics, quality indicators, relationships, temporal behavior, units, cardinality, distributions and suitability for downstream industrial AI workflows.
+The Profiler also reconnects the technical facts discovered from the dataset with the intent established by the AI-ConneX Chatbot and the operational decisions made by the Compiler. These combined facts become a single machine-readable identity document called manifest-UID.json.
+The key architectural idea is that a dataset is not considered fully understood merely because it has been normalized. The Compiler answers 'Can we make this data structurally usable?'; the Profiler answers 'What is this data, how does it behave, how reliable is it, and how does it relate to the user's industrial objective?'
+2. Position of the Data Profiler in AI-ConneX
+USER  |  vAI-ConneX CHATBOT  |  | User intent / objective / constraints  vDATA STUDIO COMPILER  |  | Unified + validated dataset  | schema.json  | lineage.json  | compilation_report.json  vDATA STUDIO DATA PROFILER  |  +--> Structural profiling  +--> Statistical profiling  +--> Semantic profiling  +--> Data-quality profiling  +--> Relationship profiling  +--> Temporal profiling  +--> Unit / measurement profiling  +--> Intent-aware profiling  +--> Profile scoring  +--> Manifest generation  |  +--------------------------------------+  | Merge previous intent + current      |  | profiling findings + compiler facts  |  +--------------------------------------+                    |                    v             manifest-UID.json                    |                    v       NEXT AI-ConneX DATA/AI STAGES
+3. What the Data Profiler Receives
+3.1 Primary Input from Compiler
+{  "dataset_id": "ACX-CMP-00042",  "artifact": "dataset.parquet",  "schema": "schema.json",  "metadata": "metadata.json",  "lineage": "lineage.json",  "compilation_report": "compilation_report.json",  "status": "SUCCESS"}
+The Profiler should trust the Compiler's artifact contract but independently verify critical properties. The Compiler's report is evidence about transformation; it is not a substitute for profiling.
+3.2 User Intent from Previous Chatbot Stage
+{  "intent_id": "ACX-INT-00042",  "industrial_domain": "manufacturing",  "objective": "predict machine failure",  "target_entity": "CNC machine",  "important_signals": ["temperature", "vibration", "motor_speed"],  "time_horizon": "next 24 hours",  "constraints": {    "preserve_source_context": true,    "explainability": "required"  }}
+This intent is carried forward rather than discarded. It allows the Profiler to distinguish between generic data statistics and statistics that matter to the industrial objective.
+4. Current-Stage Profiler Intent
+The Profiler can also receive current-stage instructions. For example, an operator may ask it to identify candidate target variables, assess missingness in sensor streams, detect timestamp gaps, or determine whether a dataset is suitable for time-series forecasting.
+{  "profiling_request": {    "mode": "industrial_full",    "check_time_series": true,    "check_sensor_quality": true,    "infer_relationships": true,    "generate_manifest": true  }}
+5. Intent + Dataset Knowledge Merge
+The Profiler creates a unified context from three evidence streams:
+Evidence
+Source
+Role
+User Intent
+Chatbot
+Why the user needs the data.
+Transformation Context
+Compiler
+What happened to the data before profiling.
+Observed Dataset Facts
+Profiler
+What the data actually contains and how it behaves.
+The resulting manifest is therefore an operational data contract, not merely a profiling report.
+6. R&D Problem Definition
+Traditional profiling tools generally answer generic questions: number of rows, columns, data types, null counts, unique values, descriptive statistics and distributions. Industrial AI-ConneX requires a broader concept of profiling because industrial datasets are usually temporal, sensor-driven, multi-asset, unit-dependent and purpose-specific.
+6.1 R&D Questions
+How can the Profiler automatically characterize heterogeneous industrial variables after normalization?
+How can generic statistics be transformed into industrially meaningful metadata?
+How can the Profiler distinguish a useful sensor signal from an identifier, categorical label or administrative field?
+How can time-series properties such as sampling frequency, gaps, irregular intervals and drift be detected automatically?
+How can data quality be quantified without pretending that statistical quality equals engineering correctness?
+How can the user's original objective influence which profiling checks receive priority?
+How can the resulting metadata become a stable manifest that downstream AI-ConneX modules can consume?
+7. Research Foundation
+Data profiling has a strong foundation in data quality, schema discovery, metadata management and data integration research. AI-ConneX extends this foundation by making profiling intent-aware and industrial-domain-aware.
+Great Expectations provides a useful reference for the separation between expectations, validation and validation results; its current documentation describes validation definitions that associate data batches with expectation suites and return validation results. citeturn0search0turn0search2
+Apache DataFusion is relevant to the proposed implementation because it uses Apache Arrow as an in-memory format and provides SQL/DataFrame APIs with support for CSV, Parquet, JSON and Avro, making it a viable high-performance analytical engine for profiling workloads. citeturn0search11turn0search14
+8. Data Profiler Pipeline
+Stage
+Function
+Output
+1. Intake
+Load Compiler artifacts and intent
+Profiler job context
+2. Integrity Check
+Verify artifact/schema/report consistency
+Input integrity status
+3. Structural Profile
+Rows, columns, types, schema
+Structural metadata
+4. Statistical Profile
+Min/max/mean/quantiles/cardinality/distributions
+Statistical metadata
+5. Quality Profile
+Nulls, duplicates, anomalies, validity
+Quality metadata
+6. Semantic Profile
+Infer business/engineering meaning
+Semantic metadata
+7. Temporal Profile
+Sampling, gaps, frequency, ordering, drift
+Temporal metadata
+8. Relationship Profile
+Keys, correlations, dependencies, joins
+Relationship metadata
+9. Intent-Aware Analysis
+Prioritize features relevant to objective
+Intent relevance
+10. Profile Score
+Summarize quality/readiness
+Profile score
+11. Manifest Builder
+Merge intent + compiler + profile facts
+manifest-UID.json
+12. Compliance Report
+Generate stage evidence
+Report #1
+9. Structural Profiling
+Dataset row and column counts.
+Column names and canonical names.
+Physical and logical data types.
+Nullable/non-nullable fields.
+Candidate identifiers and keys.
+Cardinality and uniqueness.
+Nested structures where applicable.
+Schema hash and profile version.
+10. Statistical Profiling
+Variable Type
+Core Metrics
+Numeric
+min, max, mean, median, standard deviation, quantiles, zero rate, negative rate
+Categorical
+unique count, frequency distribution, rare categories, entropy
+Boolean
+true/false distribution, null rate
+Datetime
+min/max timestamp, span, interval distribution
+Text
+length distribution, token characteristics, null/empty rate
+Identifier
+uniqueness, repetition pattern, format pattern
+11. Industrial / Sensor Profiling
+For industrial sensor data, generic statistics are insufficient. The Profiler should additionally inspect:
+Sampling interval and approximate sampling frequency.
+Irregular timestamps.
+Missing time windows.
+Flat-line sensors.
+Constant-value sensors.
+Sudden spikes and discontinuities.
+Out-of-range observations where engineering limits are known.
+Sensor drift and distribution shift.
+Noise indicators.
+Unit consistency.
+Machine/asset/channel cardinality.
+Cross-sensor correlation and lag relationships.
+12. Semantic Profiling
+Semantic profiling attempts to determine what a field represents, independently of its raw column name. The Profiler can combine canonical names from the Compiler, datatype, units, value ranges, naming patterns, metadata, and domain vocabulary.
+Example:Column: temperatureType: floatUnit: °CRange: 21.2–94.7Context: CNC machineCorrelation: bearing_vibrationSemantic classification:asset_signal.temperaturemeasurement_type = temperatureengineering_domain = machine_health
+13. Intent-Aware Profiling
+A central AI-ConneX feature is that the Profiler does not treat all columns equally. If the user's objective is predictive maintenance, vibration, temperature, current, pressure and RPM may receive deeper analysis than an administrative operator ID.
+User Goal
+High-Priority Profiling
+Predictive maintenance
+Sensor health, temporal continuity, anomalies, lag/correlation, target availability
+Quality prediction
+Process variables, batch identifiers, defect labels, leakage risks
+Energy optimization
+Power, current, load, runtime, energy-per-unit patterns
+Production forecasting
+Time index, production counts, seasonality, downtime, shift structure
+Fault detection
+Rare-event labels, anomaly patterns, sensor synchronization
+14. Key R&D Failures Identified
+Failure
+Why It Happens
+AI-ConneX Solution
+Profiling only file structure
+Generic tools stop at columns/types.
+Industrial semantic + temporal profiling.
+Wrong datatype inference
+Mixed numeric/text values confuse inference.
+Multi-pass type inference + confidence + sampling.
+Missing values misunderstood
+Null rate alone hides time gaps.
+Separate cell-level missingness from temporal missingness.
+Flat-line sensors missed
+A column can be non-null but useless.
+Variance, run-length and change-rate analysis.
+Outliers treated as errors
+Extreme values may be real machine events.
+Context-aware anomaly classification; preserve evidence.
+Correlations misunderstood
+Correlation does not imply causation.
+Label as association; never infer causality automatically.
+Identifier mistaken for feature
+High-cardinality columns can look informative.
+ID detection and semantic classification.
+Target leakage
+Future/derived information may appear in features.
+Intent-aware temporal and lineage checks.
+Sampling mismatch
+Sensors operate at different rates.
+Per-signal frequency and synchronization profiling.
+Unit inconsistency
+Same semantic variable may contain different units.
+Unit metadata + compiler lineage + conversion verification.
+Profile becomes stale
+Industrial datasets change over time.
+Profile versioning and profile timestamps.
+Too much metadata
+Raw profiling can overwhelm downstream agents.
+Tiered manifest: summary + detailed references.
+LLM hallucination
+Agent may invent semantics.
+Evidence-backed semantic inference with confidence and provenance.
+15. How AI-ConneX Overcomes the Failures
+Use deterministic computation for all numeric statistics.
+Separate observed facts from inferred semantics.
+Attach confidence and provenance to inferred metadata.
+Preserve source and Compiler lineage.
+Use domain-specific profiling policies.
+Perform temporal checks for datasets containing timestamps.
+Detect candidate identifiers before feature-quality scoring.
+Never delete anomalies simply because they are statistically unusual.
+Distinguish data-quality warnings from hard failures.
+Version every manifest and profile execution.
+Make the manifest reproducible from dataset hash + profile configuration + profiler version.
+Use an agent only for interpretation and prioritization, not for arithmetic.
+16. Profile Assignment
+Every successful profiling run receives a Profile UID. The UID identifies the profile execution and allows downstream systems to distinguish different versions of the same underlying dataset.
+Profile UID example:ACX-PROF-20260814-7F31A2C9Recommended identity inputs:dataset_hashcompiler_job_idprofile_config_hashprofiler_versionexecution_timestamp
+The Profile UID should not replace the Dataset UID. Dataset identity, compilation identity and profiling identity should remain separately traceable.
+17. manifest-UID.json — Final Data Contract
+After profiling, AI-ConneX merges the previous Chatbot intent, Compiler metadata and current Profiler findings. The resulting document is named using the manifest UID.
+manifest-UID.json{  "manifest_uid": "ACX-MAN-00042",  "dataset": {    "dataset_uid": "ACX-IND-00042",    "artifact": "dataset.parquet",    "sha256": "..."  },  "intent": {    "intent_uid": "ACX-INT-00042",    "domain": "manufacturing",    "objective": "predict_machine_failure",    "target_entity": "CNC_machine"  },  "compiler": {    "compiler_job_id": "ACX-CMP-00042",    "status": "SUCCESS",    "schema_version": "1.0",    "lineage": "lineage.json"  },  "profile": {    "profile_uid": "ACX-PROF-20260814-7F31A2C9",    "profile_version": "1.0",    "rows": 999842,    "columns": 18,    "quality_score": 0.91,    "readiness": "CONDITIONALLY_READY"  },  "features": {    "high_relevance": [      "temperature",      "vibration",      "motor_speed"    ],    "candidate_target": "failure_event",    "candidate_time_index": "timestamp"  },  "quality": {    "null_rate": 0.012,    "duplicate_rate": 0.001,    "temporal_gaps": 4,    "anomaly_columns": 3  },  "next_stage": {    "recommended": "AI_DATA_PREPARATION",    "input_contract": "manifest-UID.json"  }}
+18. Manifest Layers
+Layer
+Meaning
+Identity
+What dataset/profile/manifest is this?
+Intent
+Why was the dataset requested?
+Compilation
+How was the dataset prepared?
+Profile
+What does the dataset contain?
+Quality
+How reliable/complete is it?
+Semantic
+What do variables represent?
+Relationships
+How do variables/entities relate?
+Readiness
+Can downstream AI workflows use it?
+Lineage
+Where did every important fact come from?
+Next-stage contract
+What should consume the manifest next?
+19. Profile Score and Readiness
+The Profile Score is not a universal 'truth score'. It is a configurable operational score summarizing the observed fitness of the dataset for the stated intent.
+Example weighted score:Quality              25%Completeness         20%Structural validity  15%Temporal integrity   15%Semantic confidence  10%Consistency          10%Intent suitability    5%Final = weighted score
+Score
+Status
+Meaning
+0.90–1.00
+READY
+Strong candidate for downstream processing
+0.75–0.89
+CONDITIONALLY_READY
+Usable with documented warnings
+0.50–0.74
+REVIEW_REQUIRED
+Human/engineering review recommended
+< 0.50
+NOT_READY
+Major issues require remediation
+20. Proof of Concept
+The POC should demonstrate that the Profiler converts a compiled industrial dataset into a useful machine-readable description rather than merely producing a generic statistics table.
+POC INPUTdataset.parquetschema.jsonmetadata.jsonlineage.jsoncompilation_report.jsonintent.json                |                v        DATA PROFILER ENGINE                |        +-------+-------+        |       |       |     Quality  Semantic Temporal        |       |       |        +-------+-------+                |                v       Profile UID + Scores                |                v       Manifest Builder                |                v        manifest-UID.json
+20.1 POC Acceptance Criteria
+Correctly reports row/column counts.
+Correctly identifies logical datatypes for benchmark columns.
+Reports missingness and cardinality.
+Detects timestamp range and sampling behavior.
+Detects intentionally inserted flat-line sensor segments.
+Detects known duplicate records.
+Identifies candidate identifier columns.
+Produces semantic classifications with evidence/confidence.
+Combines Chatbot intent with Compiler metadata.
+Produces a valid manifest-UID.json conforming to its schema.
+Produces a human-readable Compliance Report #1.
+Repeated execution on the same immutable input produces reproducible deterministic metrics.
+21. Example POC Dataset
+industrial_compiled/|+-- dataset.parquet+-- schema.json+-- metadata.json+-- lineage.json+-- compilation_report.json+-- intent.jsonExample fields:timestampmachine_idtemperaturevibrationmotor_speedpressurepowermaintenance_event
+22. Recommended Technology Stack
+Layer
+Technology / Version
+Purpose
+Runtime
+Python 3.12.x
+Profiler orchestration
+DataFrame
+Polars 1.x
+Fast columnar profiling
+Query Engine
+Apache DataFusion 46.x+ (pin tested release)
+Large analytical scans
+Memory Format
+Apache Arrow 18.x+ (pin tested release)
+Columnar interoperability
+Storage
+Apache Parquet
+Compiled dataset input
+Statistics
+NumPy 2.x / SciPy 1.x
+Numerical metrics
+API
+FastAPI 0.1xx+
+Profiler service
+Validation
+Great Expectations 1.19.x
+Optional expectation-based quality validation
+Schema
+Pydantic 2.x
+Manifest/API contract validation
+Database
+PostgreSQL 16.x+
+Job/profile metadata
+Object Storage
+S3-compatible / MinIO
+Dataset and manifest artifacts
+Testing
+pytest 8.x
+Automated testing
+Packaging
+Docker 27.x+
+Reproducible deployment
+Config
+YAML
+Profile policies
+Observability
+OpenTelemetry
+Tracing and metrics
+Versions above should be treated as a proposed baseline and pinned after the POC dependency lockfile is tested. The documented current Great Expectations release page used for this design identifies GX 1.19.1; its current validation workflow supports Validation Definitions and result objects. citeturn0search0turn0search2
+DataFusion's documentation describes its Arrow-based in-memory architecture and built-in CSV, Parquet, JSON and Avro support. This makes it particularly relevant where the Profiler must scan large compiled datasets without loading every row into Python memory. citeturn0search11turn0search14
+23. System Requirements
+23.1 Development / POC
+64-bit Windows/Linux/macOS.
+Python 3.12.x.
+8 GB RAM minimum; 16 GB+ recommended.
+SSD with at least 2× active dataset size available for temporary operations.
+4+ CPU cores recommended for profiling workloads.
+Docker Desktop/Engine for containerized deployment.
+23.2 Production
+16–32+ GB RAM depending on dataset size and concurrency.
+Object storage for immutable artifacts.
+PostgreSQL for metadata and execution state.
+Worker queue for long-running jobs.
+Resource quotas per profiling job.
+TLS, authentication and role-based access control.
+Audit logging and immutable manifest storage.
+24. Configuration
+# config/profiler.yamlprofiler:  version: "1.0"  mode: "industrial_full"  sample_rows: 100000  exact_row_count: true  infer_semantics: true  infer_units: true  temporal_analysis: true  relationship_analysis: true  generate_manifest: truequality:  null_threshold_warning: 0.05  null_threshold_failure: 0.30  duplicate_threshold_warning: 0.01  detect_flatline: true  detect_outliers: true  detect_temporal_gaps: truesemantic:  minimum_confidence: 0.80  human_review_below: 0.70scoring:  quality: 0.25  completeness: 0.20  structural_validity: 0.15  temporal_integrity: 0.15  semantic_confidence: 0.10  consistency: 0.10  intent_suitability: 0.05storage:  input_dir: "./data/input"  profile_dir: "./profiles"  manifest_dir: "./manifests"  report_dir: "./reports"
+25. Commands
+# Create environmentpython -m venv .venv# Windows.venv\Scripts\activate# Linux/macOSsource .venv/bin/activate# Installpip install -r requirements.txt# Run APIuvicorn app.main:app --reload --host 0.0.0.0 --port 8100# Profile a compiled datasetpython -m profiler.cli profile \  --dataset ./data/input/dataset.parquet \  --schema ./data/input/schema.json \  --intent ./data/input/intent.json \  --config ./config/profiler.yaml# Generate manifestpython -m profiler.cli manifest \  --profile ./profiles/ACX-PROF-XXXX.json \  --compiler ./data/input/compilation_report.json \  --intent ./data/input/intent.json \  --output ./manifests/manifest-UID.json# Validate manifestpython -m profiler.cli validate-manifest \  --manifest ./manifests/manifest-UID.json# Testspytest -q
+26. Directory Architecture
+ai-connex-data-studio-profiler/|+-- app/|   +-- main.py|   +-- api/|   |   +-- routes_profile.py|   |   +-- routes_manifest.py|   |   +-- routes_report.py|   |   +-- routes_status.py|   +-- core/|       +-- config.py|       +-- logging.py|+-- profiler/|   +-- intake.py|   +-- integrity.py|   +-- structural.py|   +-- statistical.py|   +-- quality.py|   +-- semantic.py|   +-- temporal.py|   +-- relationships.py|   +-- intent.py|   +-- scoring.py|   +-- manifest.py|   +-- reporter.py|   +-- uid.py|+-- agent/|   +-- semantic_helper.py|   +-- prompts.py|   +-- schemas.py|   +-- evidence.py|+-- schemas/|   +-- profile.schema.json|   +-- manifest.schema.json|   +-- intent.schema.json|+-- config/|   +-- profiler.yaml|   +-- domains/|       +-- manufacturing.yaml|       +-- energy.yaml|+-- data/|   +-- input/|   +-- staging/|+-- profiles/+-- manifests/+-- reports/+-- tests/|   +-- unit/|   +-- integration/|   +-- fixtures/|+-- requirements.txt+-- pyproject.toml+-- Dockerfile+-- docker-compose.yml+-- README.md
+27. API Specification
+Method
+Endpoint
+Purpose
+POST
+/v1/profile
+Start profiling job
+GET
+/v1/profile/{profile_uid}
+Get profile status/summary
+GET
+/v1/profile/{profile_uid}/metrics
+Get detailed profile metrics
+GET
+/v1/profile/{profile_uid}/report
+Get Compliance Report #1
+POST
+/v1/manifest
+Build manifest from intent + compiler + profile
+GET
+/v1/manifest/{manifest_uid}
+Retrieve manifest
+GET
+/health
+Health check
+27.1 Profile Request
+POST /v1/profileContent-Type: application/json{  "dataset_uri": "s3://industrial/compiled/ACX-CMP-00042/dataset.parquet",  "schema_uri": "s3://industrial/compiled/ACX-CMP-00042/schema.json",  "compiler_report_uri": "s3://industrial/compiled/ACX-CMP-00042/compilation_report.json",  "intent_uri": "s3://industrial/intents/ACX-INT-00042.json",  "profile_mode": "industrial_full"}
+27.2 Profile Response
+{  "profile_uid": "ACX-PROF-20260814-7F31A2C9",  "status": "COMPLETED",  "profile_uri": ".../profile.json",  "report_uri": ".../report_1.json",  "manifest_uri": ".../manifest-UID.json"}
+28. Compliance Report #1 — Data Profiler Stage
+Compliance Report #1 is the formal evidence that the Data Profiler executed its defined checks and generated a traceable profile. It should not be interpreted as a legal certification by itself.
+{  "report_id": "ACX-REP-PROF-00042",  "stage": "DATA_STUDIO_DATA_PROFILER",  "status": "SUCCESS",  "profile_uid": "ACX-PROF-20260814-7F31A2C9",  "input": {    "compiler_job_id": "ACX-CMP-00042",    "dataset_hash": "...",    "rows": 999842,    "columns": 18  },  "checks": {    "structural": "PASS",    "statistical": "PASS",    "quality": "PASS_WITH_WARNINGS",    "semantic": "PASS",    "temporal": "PASS_WITH_WARNINGS",    "relationships": "PASS"  },  "findings": {    "null_rate": 0.012,    "duplicate_rate": 0.001,    "temporal_gaps": 4,    "flatline_signals": 1,    "candidate_ids": ["machine_id"],    "candidate_target": "maintenance_event"  },  "score": {    "overall": 0.91,    "readiness": "CONDITIONALLY_READY"  },  "manifest": {    "manifest_uid": "ACX-MAN-00042",    "artifact": "manifest-UID.json"  }}
+28.1 Compliance Report Sections
+Input identity and hashes.
+Compiler provenance.
+Profiler version/configuration.
+Checks executed.
+Metrics observed.
+Warnings and failures.
+Semantic inference confidence.
+Intent relevance.
+Profile score.
+Readiness classification.
+Manifest UID.
+Execution timestamp and environment.
+Trace/log references.
+29. What the Profiler Outputs for the Next AI-ConneX Stage
+The immediate canonical output is manifest-UID.json. Downstream stages should consume this manifest rather than having to reconstruct context from raw reports.
+Artifact
+Purpose
+Consumer
+manifest-UID.json
+Unified context/data contract
+Next AI-ConneX stage
+profile.json
+Detailed profiling evidence
+Profiler/analytics/debugging
+report_1.json
+Compliance/operational report
+Audit/operations
+profile_summary.json
+Compact metrics
+UI/dashboard
+schema snapshot
+Schema at profile time
+Schema-aware downstream tools
+30. Data Flow: Chatbot → Compiler → Profiler → Manifest
+CHATBOT  |  | intent_uid  | industrial domain  | objective  | constraints  vCOMPILER  |  | dataset_uid  | canonical schema  | transformations  | lineage  | validation  vPROFILER  |  | observed structure  | statistics  | quality  | semantics  | temporal behavior  | relationships  | intent relevance  vMANIFEST BUILDER  |  +-- chatbot intent  +-- compiler provenance  +-- profiler observations  +-- readiness score  +-- next-stage contract  vmanifest-UID.json
+31. Important Architectural Distinction
+The Profiler does not overwrite the user's intent with what it discovers. It stores intent and observed reality as separate evidence layers. If the user asks for machine-failure prediction but the dataset contains no credible failure label, the manifest should say exactly that. The system should not invent a target variable.
+intent.objective = "predict_machine_failure"profile.finding:  candidate_target = null  reason = "No validated failure-event label detected"manifest.readiness:  status = "REVIEW_REQUIRED"
+32. Security, Governance and Compliance Design
+Do not expose raw industrial data to an external LLM unless explicitly authorized.
+Prefer sending schema summaries, samples or metadata to the agent rather than complete datasets.
+Record which metadata was supplied to the agent.
+Hash datasets and manifests for integrity.
+Keep source artifacts immutable.
+Use role-based access control.
+Encrypt data in transit and at rest.
+Separate tenant/customer namespaces.
+Record profiler execution identity and configuration.
+Maintain retention policies appropriate to industrial data.
+33. Testing Strategy
+Test Type
+Examples
+Unit
+Metric calculations, UID generation, schema inference
+Integration
+Parquet + Compiler report + intent → profile
+Regression
+Known industrial datasets produce expected profile
+Property
+Null/cardinality metrics remain mathematically consistent
+Performance
+Large Parquet scans and concurrent profiling
+Security
+Path traversal, malicious metadata, unauthorized artifact access
+Reproducibility
+Same dataset/config produces same deterministic statistics
+34. Research Evaluation / Benchmark
+A research-grade evaluation should compare the AI-ConneX Profiler against generic profiling and validation baselines.
+System
+Role
+Manual engineer analysis
+Human baseline
+Generic dataframe profiling
+Basic statistical baseline
+Data validation framework
+Quality-validation baseline
+LLM-only metadata interpretation
+Agent-only baseline
+AI-ConneX Data Profiler
+Proposed intent-aware industrial profiler
+Metric
+Definition
+Metric correctness
+Profiler metric versus ground truth
+Semantic accuracy
+Correct semantic classification / total evaluated columns
+Temporal detection accuracy
+Correctly detected gaps/interval anomalies
+Target detection precision
+Correct candidate target suggestions / suggestions
+False positive rate
+Incorrect warnings / total warnings
+Manifest completeness
+Required manifest fields present and valid
+Reproducibility
+Same deterministic input/config → same results
+Runtime
+End-to-end profiling time
+Memory
+Peak memory consumption
+35. Research-Paper and Technical References
+Rahm, E., & Bernstein, P. A. (2001). A survey of approaches to automatic schema matching. The VLDB Journal, 10, 334–350.
+Wang, R. Y., & Strong, D. M. (1996). Beyond Accuracy: What Data Quality Means to Data Consumers. Journal of Management Information Systems, 12(4), 5–33.
+Doan, A., Halevy, A. Y., & Ives, Z. G. Principles of Data Integration. Morgan Kaufmann.
+Great Expectations documentation — data validation, Expectations, Validation Definitions and validation results. Current documentation identifies the 1.19.1 documentation set. https://docs.greatexpectations.io/docs/core/run_validations/
+Apache DataFusion documentation — Arrow-based in-memory analytical engine, SQL/DataFrame APIs and data-source support. https://datafusion.apache.org/
+Apache Arrow documentation — columnar memory format and interoperability. https://arrow.apache.org/docs/
+Apache Parquet documentation/specification — columnar storage and metadata concepts. https://parquet.apache.org/docs/
+De Mauro, A., Greco, M., & Grimaldi, M. (2016). A formal definition of Big Data based on its essential features. Library Review / related Big Data characterization literature.
+Kelleher, J. D., Mac Namee, B., & D'Arcy, A. Fundamentals of Machine Learning for Predictive Data Analytics. MIT Press.
+Recent industrial/smart-manufacturing data-quality research should be included in the final paper after the exact AI-ConneX benchmark and industrial datasets are fixed.
+36. Suggested Research Paper Contribution Statement
+AI-ConneX Data Profiler proposes an intent-aware industrial data profiling layerthat combines deterministic structural/statistical profiling, temporal and sensorquality analysis, semantic inference, provenance from an upstream data compiler,and user-intent context into a unified machine-readable manifest.The approach separates observed dataset facts from inferred semantics and preserveslineage, confidence and reproducibility for downstream industrial AI workflows.
+37. R&D Roadmap
+Phase
+Deliverable
+P0
+Define profile schema and manifest contract
+P1
+Structural + statistical profiler
+P2
+Industrial sensor/temporal profiler
+P3
+Semantic inference + confidence
+P4
+Intent-aware scoring
+P5
+Manifest builder + Compliance Report #1
+P6
+Compiler integration
+P7
+Downstream AI/ML stage integration
+P8
+Benchmark + ablation study + research paper
+38. Final Design Principle
+The AI-ConneX Data Profiler converts a compiled dataset from a structurally usable artifact into an understood, contextualized and traceable data asset. Its most important output is therefore not the statistics themselves; it is the machine-readable manifest that preserves why the data exists, how it was compiled, what was discovered about it, how confident those discoveries are, and whether the dataset is suitable for the next AI-ConneX stage.
+Appendix A — Recommended Manifest UID Naming
+manifest-<MANIFEST_UID>.jsonExample:manifest-ACX-MAN-00042.jsonRelated:dataset-ACX-IND-00042.parquetprofile-ACX-PROF-20260814-7F31A2C9.jsonreport-1-ACX-REP-PROF-00042.jsonlineage-ACX-CMP-00042.json
+Appendix B — Terminology
+Term
+Definition
+Dataset UID
+Stable identity of the compiled dataset artifact.
+Profile UID
+Identity of one profiling execution/version.
+Manifest UID
+Identity of the merged intent + compiler + profile contract.
+Intent
+User/business/industrial objective supplied by the Chatbot.
+Observed fact
+A property directly measured from the dataset.
+Inference
+A semantic or contextual conclusion derived from evidence.
+Confidence
+Degree of support for an inferred property.
+Lineage
+Record of source and transformation provenance.
+Readiness
+Assessment of suitability for a specified downstream objective.

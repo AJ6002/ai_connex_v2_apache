@@ -36,16 +36,20 @@ import { AdministrationView } from './views/AdministrationView';
 import { DeveloperStudioView } from './views/DeveloperStudioView';
 import { SettingsView } from './views/SettingsView';
 import { SupportView } from './views/SupportView';
+import { AgentManagerView } from './views/AgentManagerView';
 import { PipelineNodeView } from './views/PipelineNodeView';
 import { OrchestratorBoardView } from './views/OrchestratorBoardView';
 import { DataExplorerView } from './views/DataExplorerView';
+import { HeroLandingView } from './views/HeroLandingView';
+import { ChatBotModal } from './components/ChatBotModal';
 import { OrbitArcSidebar } from './components/OrbitArcSidebar';
 import { PageTransition } from './components/PageTransition';
 
 export default function App() {
-  const [currentView, setCurrentView] = useState<ViewMode>('compiler');
+  const [currentView, setCurrentView] = useState<ViewMode>('hero');
   const [pendingView, setPendingView] = useState<ViewMode | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isChatModalOpen, setIsChatModalOpen] = useState(false);
 
   const navigateTo = (view: ViewMode) => {
     if (view === currentView) return;
@@ -756,13 +760,15 @@ export default function App() {
         selectedWorkspace={selectedWorkspace}
         onSelectWorkspace={setSelectedWorkspace}
         sidebarStyle={sidebarStyle}
+        onOpenChatBot={() => setIsChatModalOpen(true)}
+        onSelectView={(v) => navigateTo(v)}
       />
 
       {/* Toast Notification Banner */}
       {toastMessage && (
         <div className="fixed top-20 right-6 z-50 glass-panel backdrop-blur-xl text-white px-4 py-2.5 rounded-2xl shadow-2xl font-mono text-xs flex items-center gap-2 animate-bounce"
           style={{border:'1px solid rgba(255,255,255,0.18)'}}>
-          <span className="material-symbols-outlined text-base" style={{color:'#4ade80'}}>check_circle</span>
+          <span className="material-symbols-outlined text-base" style={{color:'#FF6B35'}}>check_circle</span>
           <span>{toastMessage}</span>
         </div>
       )}
@@ -861,12 +867,23 @@ export default function App() {
             />
           )}
 
+          {currentView === 'agent_manager' && (
+            <AgentManagerView onSelectView={navigateTo} />
+          )}
+
           {currentView === 'developer_studio' && <DeveloperStudioView />}
 
           {currentView === 'settings' && (
             <SettingsView
               sidebarStyle={sidebarStyle}
               onSidebarStyleChange={handleSidebarStyleChange}
+            />
+          )}
+
+          {currentView === 'hero' && (
+            <HeroLandingView 
+              onSelectView={(v) => navigateTo(v)} 
+              onOpenChatBot={() => setIsChatModalOpen(true)}
             />
           )}
 
@@ -916,6 +933,33 @@ export default function App() {
           )}
         </div>
       </main>
+
+      {/* Floating AI Assistant Trigger Button (Solar Orange Fill + Sparkles + Top-Right Dot + 'Talk to Jane' Hover) */}
+      <div className="fixed bottom-10 right-6 z-50 group flex items-center gap-3">
+        {/* Hover Tooltip Badge "Talk to Jane" */}
+        <div className="px-3.5 py-2 bg-[#2B0063] text-white text-xs font-mono font-bold rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 transition-all pointer-events-none whitespace-nowrap border border-[#E86326]/40 flex items-center gap-2 transform translate-x-2 group-hover:translate-x-0">
+          <span className="w-2 h-2 rounded-full bg-[#E86326] animate-pulse"></span>
+          <span>Talk to Jane</span>
+        </div>
+
+        {/* Solar Orange Sparkles Button matching Master Theme */}
+        <button
+          onClick={() => setIsChatModalOpen(true)}
+          className="relative bg-[#E86326] hover:bg-[#D5521B] text-white w-12 h-12 rounded-2xl shadow-2xl hover:scale-110 active:scale-95 transition-all duration-200 flex items-center justify-center border border-white/20 cursor-pointer"
+          title="Talk to Jane"
+        >
+          <span className="material-symbols-outlined text-2xl text-white group-hover:rotate-12 transition-transform" style={{fontVariationSettings: "'FILL' 1"}}>auto_awesome</span>
+          {/* Top-Right Deep Indigo Dot */}
+          <span className="w-2.5 h-2.5 rounded-full bg-[#2B0063] absolute top-2 right-2 ring-2 ring-white animate-pulse"></span>
+        </button>
+      </div>
+
+      {/* Global Jane Chatbot Modal Window */}
+      <ChatBotModal
+        isOpen={isChatModalOpen}
+        onClose={() => setIsChatModalOpen(false)}
+        onNavigateView={(v) => navigateTo(v as ViewMode)}
+      />
 
       {/* Persistent Footer Status Bar */}
       <Footer sidebarStyle={sidebarStyle} />

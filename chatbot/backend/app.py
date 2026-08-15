@@ -87,6 +87,33 @@ def health():
 
 
 # ---------------------------------------------------------------------------
+# Jane AI Operations Assistant Endpoint
+# ---------------------------------------------------------------------------
+@app.route("/api/jane/chat", methods=["POST", "OPTIONS"])
+@app.route("/api/v1/jane/chat", methods=["POST", "OPTIONS"])
+def jane_chat():
+    if request.method == "OPTIONS":
+        return jsonify({"status": "ok"}), 200
+
+    data = request.get_json(force=True, silent=True) or {}
+    session_id = data.get("session_id") or data.get("sessionId") or "default_session"
+    user_input = data.get("message") or data.get("query") or ""
+    retrieved_rag_docs = data.get("rag_docs") or data.get("context")
+
+    if not user_input.strip():
+        return jsonify({"error": "Field 'message' is required."}), 400
+
+    from jane_assistant import run_jane_assistant
+
+    result = run_jane_assistant(
+        session_id=session_id,
+        user_input=user_input,
+        retrieved_rag_docs=retrieved_rag_docs
+    )
+    return jsonify(result)
+
+
+# ---------------------------------------------------------------------------
 # LangGraph Agent — SSE Streaming Endpoints (chatbot_5jul)
 # Replaces the pre_upload_flow.py chat loop with the real LangGraph brain.
 import sys

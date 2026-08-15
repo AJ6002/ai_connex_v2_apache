@@ -1,0 +1,29 @@
+{
+  "qudt_units": [
+    {
+      "symbol": "mg/L",
+      "label": "Milligram Per Liter",
+      "quantityKind": "MassConcentration"
+    },
+    {
+      "symbol": "CEL",
+      "label": "Degree Celsius",
+      "quantityKind": "Temperature"
+    },
+    {
+      "symbol": "MM-PER-SEC",
+      "label": "Millimeter Per Second",
+      "quantityKind": "Velocity"
+    },
+    {
+      "symbol": "REV-PER-MIN",
+      "label": "Revolution Per Minute",
+      "quantityKind": "RotationalSpeed"
+    },
+    {
+      "symbol": "BAR",
+      "label": "Bar",
+      "quantityKind": "Pressure"
+    }
+  ]
+}

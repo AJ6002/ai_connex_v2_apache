@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Genesis — Industrial AI Cinematic Keynote | TAS AI-ConneX</title>
+  <meta name="description" content="Project Genesis: Experience the future of Industrial AI — from raw sensor data to autonomous edge intelligence.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="genesis.css">
+</head>
+<body>
+
+  <!-- Top App Header with TAS AI-ConneX Logo -->
+  <header class="app-header">
+    <div class="brand-badge">
+      <div class="tas-logo-box">
+        <span class="tas-emblem">TAS</span>
+      </div>
+
+      <div class="logo-divider"></div>
+
+      <div class="brand-wordmark">
+        <span class="wordmark-orange">AI-</span><span class="wordmark-white">Conne</span><span class="wordmark-orange">X</span>
+      </div>
+
+      <span class="brand-sub-badge">Project Genesis Port :3001</span>
+    </div>
+
+    <!-- Keynote Scene Navigation Filter Tabs -->
+    <nav class="category-nav">
+      <button class="cat-btn scene-pill active" data-scene="0" id="pill-0">01 Jane AI</button>
+      <button class="cat-btn scene-pill" data-scene="1" id="pill-1">02 Data Studio</button>
+      <button class="cat-btn scene-pill" data-scene="2" id="pill-2">03 ML Studio</button>
+      <button class="cat-btn scene-pill" data-scene="3" id="pill-3">04 Digital Twin</button>
+      <button class="cat-btn scene-pill" data-scene="4" id="pill-4">05 Edge Deploy</button>
+    </nav>
+
+    <div class="header-right">
+      <div class="services-badge">
+        <span class="pulse-dot"></span>
+        9 Services Online
+      </div>
+
+      <button class="btn-actions">
+        ▷ Actions ▾
+      </button>
+      <button class="btn-jane-trigger" id="janeToggleBtn">
+        🤖 Talk to Jane
+      </button>
+    </div>
+  </header>
+
+  <!-- Global Timeline Progress Strip -->
+  <div class="global-timeline" id="globalTimeline">
+    <div class="timeline-fill" id="timelineFill"></div>
+  </div>
+
+  <!-- Main Presentation Layout (White Page Background) -->
+  <div class="presentation-layout">
+
+    <!-- Floating Slim Sidebar (Exact Screenshot White Dock Style) -->
+    <aside class="slim-floating-sidebar">
+      <div class="slim-dock-container">
+        
+        <div class="slim-emblem" title="Project Genesis Keynote">
+          ✦
+        </div>
+
+        <div class="dock-divider"></div>
+
+        <button class="dock-btn active scene-pill" data-scene="0" id="sb-0" title="Scene 01: Jane AI Interface">
+          <span class="dock-icon">🧠</span>
+          <span class="tooltip">01 Jane AI</span>
+        </button>
+
+        <button class="dock-btn scene-pill" data-scene="1" id="sb-1" title="Scene 02: Data Studio & FFT">
+          <span class="dock-icon">📊</span>
+          <span class="tooltip">02 Data Studio</span>
+        </button>
+
+        <button class="dock-btn scene-pill" data-scene="2" id="sb-2" title="Scene 03: ML Model Studio">
+          <span class="dock-icon">⚙️</span>
+          <span class="tooltip">03 ML Studio</span>
+        </button>
+
+        <div class="dock-divider"></div>
+
+        <button class="dock-btn scene-pill" data-scene="3" id="sb-3" title="Scene 04: CRAH Digital Twin">
+          <span class="dock-icon">🏭</span>
+          <span class="tooltip">04 Digital Twin</span>
+        </button>
+
+        <button class="dock-btn scene-pill" data-scene="4" id="sb-4" title="Scene 05: Agentic Edge Deploy">
+          <span class="dock-icon">🚀</span>
+          <span class="tooltip">05 Edge Deploy</span>
+        </button>
+
+        <div class="dock-divider"></div>
+
+        <button class="dock-btn" onclick="window.open('http://localhost:3000/', '_blank')" title="Open Main Application (:3000)">
+          <span class="dock-icon">🖥️</span>
+          <span class="tooltip">Main App (:3000)</span>
+        </button>
+
+      </div>
+    </aside>
+
+    <!-- Main Presentation Stage Canvas -->
+    <main class="display-stage">
+
+      <!-- ═══════════════════════════════════════
+           SCENE 1 — THE JANE AI INTERFACE
+      ════════════════════════════════════════ -->
+      <section class="scene" id="scene-0">
+        <canvas class="scene-canvas" id="canvas-0"></canvas>
+
+        <div class="scene-content">
+          <div class="scene-left-panel">
+            <div class="scene-act-label">SCENE 01 // INTUITIVE GATEWAY</div>
+            <h1 class="scene-headline">
+              The Intuitive<br>
+              <span class="headline-gradient">Jane AI Interface</span>
+            </h1>
+            <p class="scene-voiceover">
+              "Industrial intelligence shouldn't require a master's degree in data science. You talk to <strong>Jane</strong> like an expert colleague — in plain language. Jane extracts the intent, parses the noise, and sets the entire enterprise architecture into motion."
+            </p>
+            <div class="vo-speaker">
+              <div class="vo-speaker-dot"></div>
+              <span>Keynote Narration Active</span>
+            </div>
+          </div>
+
+          <div class="scene-right-panel">
+            <div class="intent-extraction-card">
+              <div class="panel-title-bar">
+                <span class="panel-dot gold"></span>
+                Jane Neural Intent Engine — Real-Time Parsing
+                <span class="panel-badge gold-badge">ZERO LATENCY</span>
+              </div>
+
+              <div class="unstructured-input-box">
+                <div class="input-tag-title">UNSTRUCTURED NATURAL LANGUAGE QUERY</div>
+                <div class="operator-query-text">
+                  "We're seeing micro-vibrations in our Line 4 chillers. We don't know if it's bearing friction or thermal load. Fix it."
+                </div>
+              </div>
+
+              <div class="intent-parsed-grid">
+                <div class="parsed-item">
+                  <span class="parsed-lbl">Detected Signal</span>
+                  <span class="parsed-val text-orange">micro-vibrations [120Hz]</span>
+                </div>
+                <div class="parsed-item">
+                  <span class="parsed-lbl">Target Equipment</span>
+                  <span class="parsed-val text-white">Line 4 CRAH Chiller B-02</span>
+                </div>
+                <div class="parsed-item">
+                  <span class="parsed-lbl">Classified Anomaly</span>
+                  <span class="parsed-val text-orange">Bearing Friction vs Thermal</span>
+                </div>
+                <div class="parsed-item">
+                  <span class="parsed-lbl">Auto Pipeline Trigger</span>
+                  <span class="parsed-val text-green">FFT Data Studio Cascade ✓</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="scene-cta-bar">
+          <div class="cta-label">Scene 1 of 5 — The Jane AI Interface</div>
+          <button class="scene-next-btn" data-next="1">Next: Data Studio <span>→</span></button>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════
+           SCENE 2 — DATA STUDIO & MATH VALIDATION
+      ════════════════════════════════════════ -->
+      <section class="scene hidden-scene" id="scene-1">
+        <canvas class="scene-canvas" id="canvas-1"></canvas>
+        <div class="scene-content">
+          <div class="scene-left-panel">
+            <div class="scene-act-label">SCENE 02 // DATA &amp; MATHEMATICS</div>
+            <h2 class="scene-headline">
+              Data Studio &amp;<br>
+              <span class="headline-gradient">Mathematical Validation</span>
+            </h2>
+            <p class="scene-voiceover">
+              "In seconds, raw industrial noise becomes actionable physics. Watch as our <strong>Data Agents</strong> auto-compute live Fast Fourier Transforms on streaming telemetry — without a single line of written code."
+            </p>
+            <div class="vo-speaker">
+              <div class="vo-speaker-dot"></div>
+              <span>Keynote Narration Active</span>
+            </div>
+
+            <div class="math-formula-block">
+              <div class="math-label">LIVE FORMULA OVERLAY</div>
+              <div class="math-eq">
+                FFT: <em>X<sub>k</sub></em> = Σ <em>x<sub>n</sub></em> · e<sup>−i2πkn/N</sup>
+              </div>
+            </div>
+          </div>
+
+          <div class="scene-right-panel" style="max-width: 680px;">
+            <div class="data-studio-panel">
+              <div class="panel-title-bar">
+                <span class="panel-dot green"></span>
+                Data Studio — Agent Data Profiler &amp; Live Visual Cards
+                <span class="panel-badge">22 AGENT VISUALS PREPARED LIVE</span>
+              </div>
+
+              <!-- Live Stream Status Bars -->
+              <div style="display: flex; gap: 1rem; margin-bottom: 0.75rem;">
+                <div class="telemetry-stream-row" style="flex: 1;">
+                  <span class="ts-label">MQTT Stream</span>
+                  <div class="ts-bar-track"><div class="ts-bar" id="tsBar1" style="width: 78%;"></div></div>
+                  <span class="ts-val" id="tsVal1">120 Hz</span>
+                </div>
+                <div class="telemetry-stream-row" style="flex: 1;">
+                  <span class="ts-label">OPC UA Feed</span>
+                  <div class="ts-bar-track"><div class="ts-bar ts-bar-gold" id="tsBar2" style="width: 64%;"></div></div>
+                  <span class="ts-val" id="tsVal2">85 Hz</span>
+                </div>
+              </div>
+
+              <!-- 2x3 Agent Visual Cards Grid -->
+              <div class="agent-cards-grid">
+
+                <!-- Card 1: FFT Spectrum -->
+                <div class="agent-viz-card">
+                  <div class="viz-card-header">
+                    <span class="viz-card-title">FFT Spectrum Analysis</span>
+                    <span class="viz-card-badge tag-orange">120Hz Anomaly</span>
+                  </div>
+                  <div class="viz-card-body">
+                    <canvas id="fftCanvas" width="220" height="90"></canvas>
+                  </div>
+                  <div class="viz-card-footer">Fourier Transform computed live</div>
+                </div>
+
+                <!-- Card 2: Feature Drift Distribution -->
+                <div class="agent-viz-card">
+                  <div class="viz-card-header">
+                    <span class="viz-card-title">Feature Drift Distribution</span>
+                    <span class="viz-card-badge tag-purple">Shift Δ 0.04</span>
+                  </div>
+                  <div class="viz-card-body">
+                    <svg viewBox="0 0 220 90" width="100%" height="90">
+                      <path d="M 10 70 Q 60 10 110 70 T 210 70" fill="rgba(255,107,53,0.15)" stroke="#FF6B35" stroke-width="2"/>
+                      <path d="M 30 70 Q 90 25 150 70 T 210 70" fill="rgba(43,0,99,0.25)" stroke="#9333ea" stroke-width="2" stroke-dasharray="3 3"/>
+                    </svg>
+                  </div>
+                  <div class="viz-card-footer">Baseline vs Current Distribution</div>
+                </div>
+
+                <!-- Card 3: Correlation Matrix Heatmap -->
+                <div class="agent-viz-card">
+                  <div class="viz-card-header">
+                    <span class="viz-card-title">Correlation Matrix</span>
+                    <span class="viz-card-badge tag-green">r = 0.94</span>
+                  </div>
+                  <div class="viz-card-body">
+                    <div class="matrix-grid">
+                      <div class="matrix-cell c-high">1.0</div>
+                      <div class="matrix-cell c-med">0.82</div>
+                      <div class="matrix-cell c-low">0.14</div>
+                      <div class="matrix-cell c-high">0.94</div>
+
+                      <div class="matrix-cell c-med">0.82</div>
+                      <div class="matrix-cell c-high">1.0</div>
+                      <div class="matrix-cell c-low">0.21</div>
+                      <div class="matrix-cell c-med">0.76</div>
+
+                      <div class="matrix-cell c-low">0.14</div>
+                      <div class="matrix-cell c-low">0.21</div>
+                      <div class="matrix-cell c-high">1.0</div>
+                      <div class="matrix-cell c-low">0.08</div>
+
+                      <div class="matrix-cell c-high">0.94</div>
+                      <div class="matrix-cell c-med">0.76</div>
+                      <div class="matrix-cell c-low">0.08</div>
+                      <div class="matrix-cell c-high">1.0</div>
+                    </div>
+                  </div>
+                  <div class="viz-card-footer">Feature covariance verified</div>
+                </div>
+
+                <!-- Card 4: Missing Value Matrix -->
+                <div class="agent-viz-card">
+                  <div class="viz-card-header">
+                    <span class="viz-card-title">Missing Value Matrix</span>
+                    <span class="viz-card-badge tag-orange">99.8% Clean</span>
+                  </div>
+                  <div class="viz-card-body">
+                    <div class="missing-val-bars">
+                      <div class="mv-bar-row"><span>Temp_C</span><div class="mv-track"><div class="mv-fill" style="width: 100%;"></div></div></div>
+                      <div class="mv-bar-row"><span>Vib_Hz</span><div class="mv-track"><div class="mv-fill" style="width: 98%;"></div></div></div>
+                      <div class="mv-bar-row"><span>Flow_L</span><div class="mv-track"><div class="mv-fill" style="width: 100%;"></div></div></div>
+                      <div class="mv-bar-row"><span>Pres_KPa</span><div class="mv-track"><div class="mv-fill" style="width: 99%;"></div></div></div>
+                    </div>
+                  </div>
+                  <div class="viz-card-footer">MICE Imputation Complete</div>
+                </div>
+
+                <!-- Card 5: Outlier Severity Boxplot -->
+                <div class="agent-viz-card">
+                  <div class="viz-card-header">
+                    <span class="viz-card-title">Outlier Severity Boxplot</span>
+                    <span class="viz-card-badge tag-red">12 Flagged</span>
+                  </div>
+                  <div class="viz-card-body">
+                    <svg viewBox="0 0 220 90" width="100%" height="90">
+                      <line x1="20" y1="45" x2="200" y2="45" stroke="#475569" stroke-width="1.5"/>
+                      <rect x="60" y="25" width="80" height="40" rx="4" fill="rgba(239,68,68,0.15)" stroke="#ef4444" stroke-width="1.5"/>
+                      <line x1="100" y1="25" x2="100" y2="65" stroke="#ef4444" stroke-width="2"/>
+                      <circle cx="170" cy="45" r="4" fill="#ef4444"/>
+                      <circle cx="185" cy="45" r="4" fill="#ef4444"/>
+                    </svg>
+                  </div>
+                  <div class="viz-card-footer">IQR Threshold filtering active</div>
+                </div>
+
+                <!-- Card 6: Memory Footprint Treemap -->
+                <div class="agent-viz-card">
+                  <div class="viz-card-header">
+                    <span class="viz-card-title">Memory Treemap</span>
+                    <span class="viz-card-badge tag-green">4.2 MB RAM</span>
+                  </div>
+                  <div class="viz-card-body">
+                    <div class="treemap-grid">
+                      <div class="tm-block tm-1">Telemetry 65%</div>
+                      <div class="tm-block tm-2">FFT 25%</div>
+                      <div class="tm-block tm-3">Meta 10%</div>
+                    </div>
+                  </div>
+                  <div class="viz-card-footer">In-memory buffer optimized</div>
+                </div>
+
+              </div>
+
+              <!-- Cryptographic Validation Gateway Card -->
+              <div class="data-integrity-card" id="integrityCard" style="opacity: 1; margin-top: 0.75rem;">
+                <div class="integrity-icon">✓</div>
+                <div>
+                  <div class="integrity-title">Data Integrity Verified | Zero Data Leakage</div>
+                  <div class="integrity-sub">Cryptographic Validation Gateway · Audit Report Generated · SHA-256 Hash Sealed</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="scene-cta-bar">
+          <div class="cta-label">Scene 2 of 5 — Data Studio &amp; Mathematical Validation</div>
+          <button class="scene-next-btn" data-next="2">Next: ML Studio <span>→</span></button>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════
+           SCENE 3 — ML MODEL STUDIO
+      ════════════════════════════════════════ -->
+      <section class="scene hidden-scene" id="scene-2">
+        <canvas class="scene-canvas" id="canvas-2"></canvas>
+        <div class="scene-content">
+          <div class="scene-left-panel">
+            <div class="scene-act-label">SCENE 03 // ML ENGINE</div>
+            <h2 class="scene-headline">
+              ML Model Studio<br>
+              <span class="headline-gradient">Automated Benchmarking</span>
+            </h2>
+            <p class="scene-voiceover">
+              "Automated hyperparameter tuning sweeps across diverse model families simultaneously. Pick your target constraints, run custom <strong>edge-case stress tests</strong> in real-time, and benchmark performance across every architecture instantly."
+            </p>
+            <div class="vo-speaker">
+              <div class="vo-speaker-dot"></div>
+              <span>Keynote Narration Active</span>
+            </div>
+          </div>
+
+          <div class="scene-right-panel">
+            <div class="ml-studio-panel">
+              <div class="panel-title-bar">
+                <span class="panel-dot cyan"></span>
+                ML Model Studio — Parallel Training &amp; Benchmarking
+                <span class="panel-badge cyan-badge">HYPEROPT RUNNING</span>
+              </div>
+
+              <div class="leaderboard-header">
+                <span>Architecture</span>
+                <span>Accuracy</span>
+                <span>Latency</span>
+                <span>Memory</span>
+                <span>Score</span>
+              </div>
+
+              <div class="model-row winner" id="mr-1" style="opacity: 1;">
+                <div class="model-name"><div class="model-dot gold"></div> XGBoost Ensemble</div>
+                <div class="model-metric" id="acc1">98.4%</div>
+                <div class="model-metric" id="lat1">4ms</div>
+                <div class="model-metric" id="mem1">4.2MB</div>
+                <div class="model-score"><div class="score-bar"><div class="score-fill" id="sf1" style="width:96%"></div></div></div>
+              </div>
+
+              <div class="model-row" id="mr-2" style="opacity: 1;">
+                <div class="model-name"><div class="model-dot cyan"></div> CNN-LSTM Hybrid</div>
+                <div class="model-metric" id="acc2">96.1%</div>
+                <div class="model-metric" id="lat2">8ms</div>
+                <div class="model-metric" id="mem2">12.8MB</div>
+                <div class="model-score"><div class="score-bar"><div class="score-fill" id="sf2" style="width:84%"></div></div></div>
+              </div>
+
+              <div class="model-row" id="mr-3" style="opacity: 1;">
+                <div class="model-name"><div class="model-dot purple"></div> Transformer Encoder</div>
+                <div class="model-metric" id="acc3">94.8%</div>
+                <div class="model-metric" id="lat3">18ms</div>
+                <div class="model-metric" id="mem3">48.0MB</div>
+                <div class="model-score"><div class="score-bar"><div class="score-fill" id="sf3" style="width:72%"></div></div></div>
+              </div>
+
+              <div style="margin-top: 1.25rem;">
+                <div class="panel-sub-title" style="font-size: 0.75rem; color: var(--text-dim); margin-bottom: 4px;">Live Training Loss Curves &amp; Custom Edge-Case Stress Testing</div>
+                <canvas id="lossCanvas" width="480" height="100"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="scene-cta-bar">
+          <div class="cta-label">Scene 3 of 5 — ML Model Studio</div>
+          <button class="scene-next-btn" data-next="3">Next: Digital Twin <span>→</span></button>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════
+           SCENE 4 — DIGITAL TWIN SIMULATION
+      ════════════════════════════════════════ -->
+      <section class="scene hidden-scene" id="scene-3">
+        <canvas class="scene-canvas" id="canvas-3"></canvas>
+        <div class="scene-content">
+          <div class="scene-left-panel">
+            <div class="scene-act-label">SCENE 04 // INDUSTRIAL PHYSICS</div>
+            <h2 class="scene-headline">
+              CRAH Chiller<br>
+              <span class="headline-gradient" style="color:var(--primary-gold)">3D Digital Twin</span>
+            </h2>
+            <p class="scene-voiceover">
+              "How do you gain absolute trust in an AI model before it touches physical machinery? You simulate it. The platform automatically instantiates a <strong>high-fidelity 3D Digital Twin</strong> of your exact equipment — watching the model predict friction-induced failure modes live."
+            </p>
+            <div class="vo-speaker">
+              <div class="vo-speaker-dot" style="background: var(--status-danger)"></div>
+              <span>Digital Twin Simulation Active</span>
+            </div>
+
+            <div class="twin-readout-panel">
+              <div class="twin-readout-row"><span>Bearing Temp</span><span class="readout-val danger" id="bearingTemp">84.2°C</span></div>
+              <div class="twin-readout-row"><span>Vibration RMS</span><span class="readout-val warn" id="vibRMS">6.4 mm/s</span></div>
+              <div class="twin-readout-row"><span>Coolant Flow</span><span class="readout-val ok" id="coolFlow">412 L/min</span></div>
+              <div class="twin-readout-row"><span>AI Control Status</span><span class="readout-val ok" id="aiCtrl">OPTIMAL</span></div>
+            </div>
+          </div>
+
+          <div class="scene-right-panel">
+            <div class="digital-twin-viewport">
+              <div class="panel-title-bar">
+                <span class="panel-dot red"></span>
+                CRAH Digital Twin — Chiller Assembly B-02
+                <span class="panel-badge danger-badge" id="twinStatusBadge">HIGH ALERT</span>
+              </div>
+
+              <div class="chiller-svg-wrapper">
+                <svg id="chillerSVG" viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="30" y="40" width="460" height="220" rx="8" fill="#0d1533" stroke="#1e3a5f" stroke-width="2"/>
+                  <rect x="30" y="40" width="460" height="30" rx="4" fill="#0f2048"/>
+                  <rect x="60" y="90" width="120" height="140" rx="6" fill="#0a1829" stroke="#1e3a5f" stroke-width="1.5"/>
+                  <rect x="200" y="90" width="120" height="140" rx="6" fill="#0a1829" stroke="#1e3a5f" stroke-width="1.5"/>
+                  <rect x="340" y="90" width="120" height="140" rx="6" fill="#0a1829" stroke="#1e3a5f" stroke-width="1.5"/>
+
+                  <g id="impellerA" transform="translate(120, 160)">
+                    <circle r="40" fill="none" stroke="#1e3a5f" stroke-width="1"/>
+                    <line x1="0" y1="-40" x2="0" y2="40" stroke="#FF6B35" stroke-width="2.5" opacity="0.8"/>
+                    <line x1="-40" y1="0" x2="40" y2="0" stroke="#FF6B35" stroke-width="2.5" opacity="0.8"/>
+                    <circle r="8" fill="#FF6B35" opacity="0.9"/>
+                  </g>
+
+                  <g id="impellerB" transform="translate(260, 160)">
+                    <circle r="40" fill="none" stroke="#ef4444" stroke-width="1.5"/>
+                    <line x1="0" y1="-40" x2="0" y2="40" stroke="#ef4444" stroke-width="2.5"/>
+                    <line x1="-40" y1="0" x2="40" y2="0" stroke="#ef4444" stroke-width="2.5"/>
+                    <circle r="8" fill="#ef4444"/>
+                  </g>
+
+                  <g id="impellerC" transform="translate(400, 160)">
+                    <circle r="40" fill="none" stroke="#1e3a5f" stroke-width="1"/>
+                    <line x1="0" y1="-40" x2="0" y2="40" stroke="#FF6B35" stroke-width="2.5" opacity="0.8"/>
+                    <line x1="-40" y1="0" x2="40" y2="0" stroke="#FF6B35" stroke-width="2.5" opacity="0.8"/>
+                    <circle r="8" fill="#FF6B35" opacity="0.9"/>
+                  </g>
+
+                  <radialGradient id="heatGrad" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="#ef4444" stop-opacity="0.7"/>
+                    <stop offset="100%" stop-color="#ef4444" stop-opacity="0"/>
+                  </radialGradient>
+                  <ellipse id="heatmapEllipse" cx="260" cy="160" rx="70" ry="60" fill="url(#heatGrad)"/>
+
+                  <text x="120" y="76" text-anchor="middle" fill="#FF6B35" font-size="10" font-family="Inter">UNIT A</text>
+                  <text x="260" y="76" text-anchor="middle" fill="#ef4444" font-size="10" font-family="Inter" font-weight="700">UNIT B ⚠</text>
+                  <text x="400" y="76" text-anchor="middle" fill="#FF6B35" font-size="10" font-family="Inter">UNIT C</text>
+                </svg>
+
+                <div class="ai-twin-overlay" id="aiTwinOverlay">
+                  <div class="overlay-pill danger-pill">⚠ Bearing Friction Detected — Unit B</div>
+                  <div class="overlay-pill info-pill" id="mlActionPill">ML Model: Auto-regulating coolant flow...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="scene-cta-bar">
+          <div class="cta-label">Scene 4 of 5 — Digital Twin Simulation</div>
+          <button class="scene-next-btn" data-next="4">Next: Edge Deploy <span>→</span></button>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════
+           SCENE 5 — AGENTIC STUDIO & EDGE DEPLOY
+      ════════════════════════════════════════ -->
+      <section class="scene hidden-scene" id="scene-4">
+        <canvas class="scene-canvas" id="canvas-4"></canvas>
+        <div class="scene-content">
+          <div class="scene-left-panel">
+            <div class="scene-act-label">SCENE 05 // EDGE DEPLOYMENT</div>
+            <h2 class="scene-headline">
+              Agentic Studio &amp;<br>
+              <span class="headline-gradient">Edge Deployment</span>
+            </h2>
+            <p class="scene-voiceover">
+              "Transition from insight to <strong>autonomous action</strong> in the Agentic Studio. Your custom model is wrapped with domain-specific toolkits, forming a self-contained AI Agent ready to monitor, diagnose, and optimize your plant 24/7. No code, no extra data science staff — just pure operational intelligence at the edge."
+            </p>
+            <div class="vo-speaker">
+              <div class="vo-speaker-dot" style="background: var(--primary-gold)"></div>
+              <span>Deployment Sequence Active</span>
+            </div>
+
+            <div class="roi-summary-block">
+              <div class="roi-item">
+                <div class="roi-num">$4.2M</div>
+                <div class="roi-lbl">Annual Savings</div>
+              </div>
+              <div class="roi-item">
+                <div class="roi-num">88%</div>
+                <div class="roi-lbl">Downtime Reduction</div>
+              </div>
+              <div class="roi-item">
+                <div class="roi-num">4ms</div>
+                <div class="roi-lbl">Edge Latency</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="scene-right-panel">
+            <div class="agentic-studio-panel">
+              <div class="panel-title-bar">
+                <span class="panel-dot gold"></span>
+                Agentic Studio — Industry-Agent-v4
+                <span class="panel-badge gold-badge">PACKAGING</span>
+              </div>
+
+              <div class="agent-blueprint">
+                <div class="blueprint-core">
+                  <div class="blueprint-ring br-1"></div>
+                  <div class="blueprint-ring br-2"></div>
+                  <div class="blueprint-center">
+                    <span>⚡</span>
+                    AGENT
+                  </div>
+                </div>
+
+                <div class="toolkit-modules">
+                  <div class="toolkit-module loaded" id="mod-1">
+                    <div class="module-icon">🔧</div>
+                    <div class="module-name">Predictive Maintenance</div>
+                    <div class="module-status">LOADED ✓</div>
+                  </div>
+                  <div class="toolkit-module loaded" id="mod-2">
+                    <div class="module-icon">⚙️</div>
+                    <div class="module-name">Auto Valve Regulation</div>
+                    <div class="module-status">LOADED ✓</div>
+                  </div>
+                  <div class="toolkit-module loaded" id="mod-3">
+                    <div class="module-icon">🚨</div>
+                    <div class="module-name">SCADA Alarm Routing</div>
+                    <div class="module-status">LOADED ✓</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="deploy-terminal" id="deployTerminal">
+                <div class="term-line" style="color: var(--text-muted);">$ aiconnex agent package Industry-Agent-v4 --target edge-line4</div>
+                <div class="term-line" style="color: var(--status-success);">[SUCCESS] Deployed Industry-Agent-v4 to Edge Controller (4ms latency)</div>
+              </div>
+
+              <div class="deploy-status-card" id="deployStatusCard">
+                <div class="deploy-status-row"><span>Status</span><span class="status-val ok-val">Deployed ✓</span></div>
+                <div class="deploy-status-row"><span>Latency</span><span class="status-val cyan-val">4ms</span></div>
+                <div class="deploy-status-row"><span>Target</span><span class="status-val">Edge Controller — Line 4 Plant</span></div>
+                <div class="deploy-status-row"><span>Autonomous Control</span><span class="status-val gold-val">ACTIVE</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="scene-cta-bar final-cta">
+          <div class="final-cta-content">
+            <div class="final-cta-headline">Project Genesis Complete.</div>
+            <div class="final-cta-sub">Zero code. Zero data science staff. Full industrial autonomy.</div>
+          </div>
+          <div class="final-cta-actions">
+            <button class="btn-restart" id="restartBtn">↺ Restart Keynote</button>
+            <a href="http://localhost:3000/" class="btn-launch" target="_blank">Open Main Application (:3000) →</a>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- Jane AI Assistant Chatbot Drawer (Exact Placement: Bottom Right, 400px Width x 520px Height) -->
+  <div class="jane-drawer-window" id="janeDrawer">
+    <div class="jane-drawer-header" id="janeHeader">
+      <div class="jane-header-left">
+        <div class="jane-avatar-ring">🤖</div>
+        <div>
+          <div class="jane-header-title">Jane — AI Assistant &amp; Copilot</div>
+          <div class="jane-header-sub">Logging: user-intent-1223.json</div>
+        </div>
+      </div>
+      <div class="jane-header-actions">
+        <button class="jane-action-btn" title="Maximize">⤢</button>
+        <button class="jane-action-btn" id="janeCloseBtn" title="Close">✕</button>
+      </div>
+    </div>
+
+    <div class="jane-chat-body">
+      <div>
+        <div class="msg-author-tag">
+          <span class="msg-author-dot"></span>
+          JANE — LEAD ML ARCHITECT
+        </div>
+        <div class="msg-bubble-jane">
+          Hi there! I'm Jane, Lead Machine Learning Solutions Architect at AIConnex. I'd love to help you build and launch your custom AutoML project! What prediction goal or dataset are you working with today?
+          <div class="msg-timestamp">12:28 pm</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="jane-quick-prompts">
+      <button class="prompt-pill">Predict RUL</button>
+      <button class="prompt-pill">Train AutoML</button>
+      <button class="prompt-pill">Telemetry Status</button>
+    </div>
+
+    <div class="jane-input-bar-container">
+      <input type="text" class="jane-input-field" placeholder="Ask AI Copilot or type a command...">
+      <button class="jane-send-btn">➢</button>
+    </div>
+  </div>
+
+  <script src="canvas-motion.js"></script>
+  <script src="audio-synth.js"></script>
+  <script src="genesis.js"></script>
+  <script>
+    const janeDrawer = document.getElementById('janeDrawer');
+    const janeCloseBtn = document.getElementById('janeCloseBtn');
+    const janeToggleBtn = document.getElementById('janeToggleBtn');
+    const janeHeader = document.getElementById('janeHeader');
+
+    if (janeCloseBtn) {
+      janeCloseBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        janeDrawer.classList.add('minimized');
+      });
+    }
+    if (janeToggleBtn) {
+      janeToggleBtn.addEventListener('click', () => {
+        janeDrawer.classList.toggle('minimized');
+      });
+    }
+    if (janeHeader) {
+      janeHeader.addEventListener('click', () => {
+        janeDrawer.classList.toggle('minimized');
+      });
+    }
+  </script>
+
+</body>
+</html>

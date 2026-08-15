@@ -24,11 +24,11 @@ interface OrchestratorBoardViewProps {
 }
 
 const CATEGORY_COLORS = {
-  Ingestion: { bg: 'rgba(200, 16, 46, 0.1)', border: 'rgba(200, 16, 46, 0.40)', text: '#C8102E' },
-  Orchestration: { bg: 'rgba(30, 71, 200, 0.1)', border: 'rgba(30, 71, 200, 0.40)', text: '#1E47C8' },
-  Engineering: { bg: 'rgba(126, 34, 206, 0.1)', border: 'rgba(126, 34, 206, 0.40)', text: '#7e22ce' },
-  Execution: { bg: 'rgba(234, 179, 8, 0.1)', border: 'rgba(234, 179, 8, 0.40)', text: '#eab308' },
-  Deployment: { bg: 'rgba(16, 185, 129, 0.1)', border: 'rgba(16, 185, 129, 0.40)', text: '#10b981' }
+  Ingestion:     { bg: 'rgba(255,107,53,0.10)', border: 'rgba(255,107,53,0.40)', text: '#FF6B35' },
+  Orchestration: { bg: 'rgba(255,255,255,0.06)', border: 'rgba(255,255,255,0.30)', text: '#FFFFFF' },
+  Engineering:   { bg: 'rgba(255,255,255,0.06)', border: 'rgba(255,255,255,0.20)', text: 'rgba(255,255,255,0.80)' },
+  Execution:     { bg: 'rgba(255,107,53,0.08)', border: 'rgba(255,107,53,0.25)', text: '#FF8F5A' },
+  Deployment:    { bg: 'rgba(255,107,53,0.12)', border: 'rgba(255,107,53,0.45)', text: '#FF6B35' }
 };
 
 const PALETTE_COMPONENTS: Omit<BoardNode, 'x' | 'y'>[] = [
@@ -467,27 +467,27 @@ export const OrchestratorBoardView: React.FC<OrchestratorBoardViewProps> = ({ on
           {/* Connection Validation Panel */}
           <div className="glass-panel p-5 rounded-2xl shadow-xl flex items-start gap-4"
             style={{
-              background: 'rgba(255,255,255,0.92)',
-              border: validationReport.passed ? '1.5px solid rgba(16,185,129,0.30)' : '1.5px solid rgba(200,16,46,0.30)'
+              background: 'rgba(58,18,89,0.95)',
+              border: validationReport.passed ? '1.5px solid rgba(255,107,53,0.50)' : '1.5px solid rgba(255,255,255,0.20)'
             }}
           >
             <span className="material-symbols-outlined text-2xl mt-0.5"
-              style={{ color: validationReport.passed ? '#10b981' : '#C8102E' }}
+              style={{ color: validationReport.passed ? '#FF6B35' : 'rgba(255,255,255,0.55)' }}
             >
               {validationReport.passed ? 'check_circle' : 'warning'}
             </span>
             <div className="flex-1 space-y-1">
-              <span className="text-sm font-mono font-bold" style={{ color: '#0d1533' }}>
+              <span className="text-sm font-mono font-bold" style={{ color: '#FFFFFF' }}>
                 {validationReport.message}
               </span>
-              <ul className="text-xs font-mono text-slate-500 list-disc list-inside space-y-1 pl-1">
+              <ul className="text-xs font-mono text-white/50 list-disc list-inside space-y-1 pl-1">
                 {validationReport.details.map((detail, idx) => (
                   <li key={idx}>{detail}</li>
                 ))}
               </ul>
             </div>
             {validationReport.passed && (
-              <button className="px-4 py-2 bg-[#10b981] hover:bg-[#059669] text-white text-xs font-mono font-bold rounded-xl transition-all shadow-lg shadow-emerald-500/25">
+              <button className="px-4 py-2 bg-[#FF6B35] hover:bg-[#E85520] text-white text-xs font-mono font-bold rounded-xl transition-all shadow-lg shadow-[#FF6B35]/25">
                 Deploy Flow
               </button>
             )}

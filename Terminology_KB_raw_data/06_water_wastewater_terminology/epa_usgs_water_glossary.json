@@ -1,0 +1,84 @@
+[
+  {
+    "term_id": "WQ.TDS",
+    "canonical_name": "Total Dissolved Solids",
+    "abbreviation": "TDS",
+    "definition": "The total concentration of dissolved substances (minerals, salts, metals, cations, or anions) in water.",
+    "unit": "mg/L",
+    "domain": "water_quality",
+    "source": "EPA Drinking Water Glossary / USGS Water Science",
+    "aliases": [
+      "TDS",
+      "total_dissolved_solids",
+      "tds_mg_l"
+    ]
+  },
+  {
+    "term_id": "WQ.COD",
+    "canonical_name": "Chemical Oxygen Demand",
+    "abbreviation": "COD",
+    "definition": "A measure of the capacity of water to consume oxygen during the decomposition of organic matter and oxidation of inorganic chemicals.",
+    "unit": "mg/L",
+    "domain": "wastewater",
+    "source": "EPA Terminology Services",
+    "aliases": [
+      "COD",
+      "chemical_oxygen_demand",
+      "cod_ppm"
+    ]
+  },
+  {
+    "term_id": "WQ.BOD",
+    "canonical_name": "Biochemical Oxygen Demand",
+    "abbreviation": "BOD",
+    "definition": "The amount of dissolved oxygen needed by aerobic biological organisms to break down organic material present in a given water sample at given temperature over a specific time period.",
+    "unit": "mg/L",
+    "domain": "wastewater",
+    "source": "EPA Terminology Services",
+    "aliases": [
+      "BOD",
+      "biochemical_oxygen_demand",
+      "bod5"
+    ]
+  },
+  {
+    "term_id": "WQ.DO",
+    "canonical_name": "Dissolved Oxygen",
+    "abbreviation": "DO",
+    "definition": "The level of free, non-compound oxygen present in water or other liquids, critical for aquatic life and wastewater aeration processes.",
+    "unit": "mg/L",
+    "domain": "water_quality",
+    "source": "USGS Water Science Glossary",
+    "aliases": [
+      "DO",
+      "dissolved_oxygen",
+      "do_mg_l"
+    ]
+  },
+  {
+    "term_id": "WQ.TSS",
+    "canonical_name": "Total Suspended Solids",
+    "abbreviation": "TSS",
+    "definition": "Dry-weight of suspended particles, that are not dissolved, in a sample of water that can be trapped by a filter.",
+    "unit": "mg/L",
+    "domain": "wastewater",
+    "source": "EPA Drinking Water Glossary",
+    "aliases": [
+      "TSS",
+      "total_suspended_solids"
+    ]
+  },
+  {
+    "term_id": "WQ.ETP",
+    "canonical_name": "Effluent Treatment Plant",
+    "abbreviation": "ETP",
+    "definition": "An industrial wastewater treatment facility designed to purify industrial waste water for reuse or safe discharge.",
+    "unit": "facility",
+    "domain": "industrial_water",
+    "source": "EPA Terminology Services",
+    "aliases": [
+      "ETP",
+      "effluent_plant"
+    ]
+  }
+]

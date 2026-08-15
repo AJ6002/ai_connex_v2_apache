@@ -43,8 +43,8 @@ const CATEGORIES: CategoryMeta[] = [
     id: 'splitting',
     label: 'Data Splitting',
     icon: 'call_split',
-    color: 'rgba(16,185,129,0.12)',
-    accent: '#10B981',
+    color: 'rgba(255,107,53,0.10)',
+    accent: '#FF6B35',
     description: 'Test size, group / time column and stratification recipes · services/6_split/recipe/',
     serviceFolder: '6_split',
     port: 8005,
@@ -330,7 +330,7 @@ const EditorPanel: React.FC<{
             className="px-3 py-1.5 text-xs font-mono rounded-xl animate-bounce"
             style={{
               background: message.type === 'success' ? 'rgba(74,222,128,0.15)' : 'rgba(239,68,68,0.15)',
-              color: message.type === 'success' ? '#4ade80' : '#f87171',
+              color: message.type === 'success' ? '#FF6B35' : '#f87171',
               border: `1px solid ${message.type === 'success' ? 'rgba(74,222,128,0.30)' : 'rgba(239,68,68,0.30)'}`,
             }}
           >

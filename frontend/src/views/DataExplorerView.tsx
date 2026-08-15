@@ -163,7 +163,7 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({
     <div className="flex flex-col min-h-screen bg-canvas font-sans">
       
       {/* Sub-Header / Control Hub */}
-      <section className="sub-header-container" style={{ backgroundColor: '#060914' }}>
+      <section className="sub-header-container">
         <div className="sub-header-top">
           <div className="window-dots-title">
             <div className="window-dots">

@@ -106,27 +106,27 @@ export const DeveloperStudioView: React.FC = () => {
       </div>
 
       {/* Terminal Display */}
-      <div className="bg-slate-900 text-emerald-400 font-mono text-xs rounded-xl border border-slate-800 shadow-xl p-5 h-96 overflow-y-auto space-y-1.5 leading-relaxed">
+      <div className="bg-[#1A0530] text-[#FF6B35] font-mono text-xs rounded-xl border border-white/10 shadow-xl p-5 h-96 overflow-y-auto space-y-1.5 leading-relaxed">
         {filteredLogs.length === 0 ? (
-          <div className="text-slate-500 italic">No logs match the selected filter.</div>
+          <div className="text-white/35 italic">No logs match the selected filter.</div>
         ) : (
           filteredLogs.map((log, idx) => (
             <div key={idx} className="flex items-start gap-3">
-              <span className="text-slate-500 flex-shrink-0">[{log.timestamp}]</span>
+              <span className="text-white/35 flex-shrink-0">[{log.timestamp}]</span>
               <span
                 className={`font-bold px-1.5 py-0.2 rounded text-[10px] uppercase flex-shrink-0 ${
                   log.level === 'INFO'
-                    ? 'bg-blue-900/60 text-blue-300'
+                    ? 'bg-[#FF6B35]/20 text-[#FF6B35]'
                     : log.level === 'WARN'
-                    ? 'bg-amber-900/60 text-amber-300'
+                    ? 'bg-white/10 text-white/70'
                     : log.level === 'ERROR'
-                    ? 'bg-rose-900/60 text-rose-300'
-                    : 'bg-slate-800 text-slate-300'
+                    ? 'bg-white/8 text-white/50'
+                    : 'bg-white/5 text-white/40'
                 }`}
               >
                 {log.level}
               </span>
-              <span className="text-slate-200 break-all">{log.message}</span>
+              <span className="text-white/85 break-all">{log.message}</span>
             </div>
           ))
         )}

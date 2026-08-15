@@ -101,30 +101,30 @@ export const PageTransition: React.FC<PageTransitionProps> = ({ to, onComplete }
       {/* Animated background blobs */}
       <div
         className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-20 pointer-events-none"
-        style={{ background: 'radial-gradient(circle, #C8102E 0%, transparent 70%)' }}
+        style={{ background: 'radial-gradient(circle, #E86326 0%, transparent 70%)' }}
       />
       <div
         className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full blur-3xl opacity-15 pointer-events-none"
-        style={{ background: 'radial-gradient(circle, #1E47C8 0%, transparent 70%)' }}
+        style={{ background: 'radial-gradient(circle, #2B0063 0%, transparent 70%)' }}
       />
 
       <div className="relative z-10 flex flex-col items-center gap-8 w-full max-w-md px-8">
         {/* Spinning ring logo */}
         <div className="relative w-20 h-20">
           <svg className="absolute inset-0 animate-spin" viewBox="0 0 80 80" fill="none">
-            <circle cx="40" cy="40" r="36" stroke="rgba(200,16,46,0.15)" strokeWidth="4" />
+            <circle cx="40" cy="40" r="36" stroke="rgba(43,0,99,0.15)" strokeWidth="4" />
             <path
               d="M40 4 A36 36 0 0 1 76 40"
-              stroke="#C8102E"
+              stroke="#E86326"
               strokeWidth="4"
               strokeLinecap="round"
             />
           </svg>
           <div
             className="absolute inset-3 rounded-full flex items-center justify-center"
-            style={{ background: 'linear-gradient(135deg,rgba(200,16,46,0.18) 0%,rgba(30,71,200,0.18) 100%)' }}
+            style={{ background: 'linear-gradient(135deg,rgba(43,0,99,0.18) 0%,rgba(232,99,38,0.18) 100%)' }}
           >
-            <span className="material-symbols-outlined text-2xl" style={{ color: '#C8102E' }}>
+            <span className="material-symbols-outlined text-2xl" style={{ color: '#2B0063' }}>
               hub
             </span>
           </div>
@@ -132,7 +132,7 @@ export const PageTransition: React.FC<PageTransitionProps> = ({ to, onComplete }
 
         {/* Destination label */}
         <div className="text-center">
-          <p className="text-xs font-mono uppercase tracking-widest mb-1" style={{ color: 'rgba(200,16,46,0.7)' }}>
+          <p className="text-xs font-mono uppercase tracking-widest mb-1" style={{ color: '#0D1533' }}>
             Navigating to
           </p>
           <h2 className="text-xl font-bold font-headline" style={{ color: 'var(--text-primary)' }}>
@@ -151,29 +151,29 @@ export const PageTransition: React.FC<PageTransitionProps> = ({ to, onComplete }
                 className="flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-300"
                 style={{
                   background: active
-                    ? 'rgba(200,16,46,0.10)'
+                    ? 'rgba(13,21,51,0.10)'
                     : done
                     ? 'rgba(74,222,128,0.06)'
                     : 'rgba(255,255,255,0.03)',
                   border: active
-                    ? '1px solid rgba(200,16,46,0.30)'
+                    ? '1px solid #0D1533'
                     : done
-                    ? '1px solid rgba(74,222,128,0.20)'
-                    : '1px solid rgba(255,255,255,0.06)',
+                    ? '1px solid rgba(255,107,53,0.30)'
+                    : '1px solid rgba(0,0,0,0.06)',
                   opacity: i > stepIndex ? 0.35 : 1,
                 }}
               >
                 <span
                   className="material-symbols-outlined text-base flex-shrink-0"
                   style={{
-                    color: done ? '#4ade80' : active ? '#C8102E' : 'rgba(255,255,255,0.25)',
+                    color: done ? '#FF6B35' : active ? '#0D1533' : 'rgba(13,21,51,0.35)',
                   }}
                 >
                   {done ? 'check_circle' : active ? 'radio_button_checked' : 'radio_button_unchecked'}
                 </span>
                 <span
                   className="text-sm font-mono"
-                  style={{ color: active ? 'var(--text-primary)' : done ? '#4ade80' : 'var(--text-muted)' }}
+                  style={{ color: active ? 'var(--text-primary)' : done ? '#FF6B35' : 'var(--text-muted)' }}
                 >
                   {step}
                 </span>
@@ -184,7 +184,7 @@ export const PageTransition: React.FC<PageTransitionProps> = ({ to, onComplete }
                         key={d}
                         className="w-1 h-1 rounded-full animate-bounce"
                         style={{
-                          background: '#C8102E',
+                          background: '#0D1533',
                           animationDelay: `${d * 150}ms`,
                         }}
                       />
@@ -202,7 +202,7 @@ export const PageTransition: React.FC<PageTransitionProps> = ({ to, onComplete }
             className="h-full rounded-full transition-all duration-500 ease-out"
             style={{
               width: `${progress}%`,
-              background: 'linear-gradient(90deg,#C8102E 0%,#E8405A 100%)',
+              background: '#0D1533',
             }}
           />
         </div>

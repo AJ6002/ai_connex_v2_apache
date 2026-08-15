@@ -72,15 +72,15 @@ export const AsyncLoadingModal: React.FC<AsyncLoadingModalProps> = ({
                       isCurrent
                         ? 'border-[rgba(200,16,46,0.50)]'
                         : isDone
-                        ? 'border-[rgba(34,197,94,0.25)]'
+                        ? 'border-[rgba(255,107,53,0.40)]'
                         : 'border-[rgba(255,255,255,0.08)] opacity-60'
                     }`}
-                    style={isCurrent ? {background:'rgba(200,16,46,0.10)', boxShadow:'0 0 0 1px rgba(200,16,46,0.30)'} : isDone ? {background:'rgba(34,197,94,0.08)'} : {background:'rgba(6,9,20,0.30)'}}
+                    style={isCurrent ? {background:'rgba(255,107,53,0.10)', boxShadow:'0 0 0 1px rgba(255,107,53,0.30)'} : isDone ? {background:'rgba(255,107,53,0.07)'} : {background:'rgba(40,11,67,0.50)'}}
                   >
                     <div className="flex items-start gap-3">
                       <div className="mt-0.5 flex-shrink-0">
                         {isDone ? (
-                          <span className="material-symbols-outlined text-emerald-400 text-lg">
+                          <span className="material-symbols-outlined text-[#FF6B35] text-lg">
                             check_circle
                           </span>
                         ) : isCurrent ? (
@@ -101,8 +101,8 @@ export const AsyncLoadingModal: React.FC<AsyncLoadingModalProps> = ({
                               isCurrent
                                 ? 'text-white'
                                 : isDone
-                                ? 'text-emerald-300'
-                                : 'text-slate-400'
+                                ? 'text-[#FF6B35]'
+                                : 'text-white/40'
                             }`}
                           >
                             {step.title}
@@ -110,10 +110,10 @@ export const AsyncLoadingModal: React.FC<AsyncLoadingModalProps> = ({
                           <span
                             className={`text-[9px] font-mono font-bold uppercase px-2 py-0.5 rounded-lg ${
                               isDone
-                                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                                ? 'bg-[#FF6B35]/20 text-[#FF6B35] border border-[#FF6B35]/40'
                                 : isCurrent
-                                ? 'bg-tas-red text-white animate-pulse'
-                                : 'bg-white/10 text-slate-400'
+                                ? 'bg-[#FF6B35] text-white animate-pulse'
+                                : 'bg-white/10 text-white/40'
                             }`}
                           >
                             {step.status}
@@ -143,14 +143,14 @@ export const AsyncLoadingModal: React.FC<AsyncLoadingModalProps> = ({
           <div>
             <div className="flex justify-between items-center mb-1.5">
               <h4 className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                <span className="w-2 h-2 rounded-full bg-[#FF6B35] animate-ping"></span>
                 Live Microservices Telemetry Log
               </h4>
               <span className="text-[10px] font-mono text-slate-400">Streaming...</span>
             </div>
 
             <div className="font-mono text-[11px] p-3 rounded-2xl h-28 overflow-y-auto space-y-1 border"
-              style={{background:'rgba(6,9,20,0.80)', color:'rgba(74,222,128,0.90)', borderColor:'rgba(255,255,255,0.10)'}}>
+              style={{background:'rgba(26,5,48,0.90)', color:'rgba(255,107,53,0.90)', borderColor:'rgba(255,255,255,0.10)'}}>
               {job.logs.length === 0 ? (
                 <div className="text-slate-500 italic">Initializing stream logger...</div>
               ) : (

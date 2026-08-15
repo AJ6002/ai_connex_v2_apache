@@ -1,0 +1,69 @@
+[
+  {
+    "term_id": "PHM.RUL",
+    "canonical_name": "Remaining Useful Life",
+    "abbreviation": "RUL",
+    "definition": "An estimate of the remaining time, cycles, or distance an asset or component can continue to operate within functional limits before requiring maintenance or suffering functional failure.",
+    "domain": "phm",
+    "source": "NIST AMS 300-2 / NASA PHM Review",
+    "aliases": [
+      "RUL",
+      "remaining_useful_life",
+      "rul_hours",
+      "rul_cycles"
+    ]
+  },
+  {
+    "term_id": "PHM.PDM",
+    "canonical_name": "Predictive Maintenance",
+    "abbreviation": "PdM",
+    "definition": "A condition-driven maintenance strategy that uses sensor monitoring and analytics to evaluate asset condition and schedule maintenance prior to expected failure.",
+    "domain": "maintenance",
+    "source": "SMRP Best Practices / ISO 13381-1",
+    "aliases": [
+      "PdM",
+      "predictive_maintenance",
+      "condition_based_maintenance",
+      "CBM"
+    ]
+  },
+  {
+    "term_id": "PHM.MTBF",
+    "canonical_name": "Mean Time Between Failures",
+    "abbreviation": "MTBF",
+    "definition": "The predicted elapsed time between inherent failures of a repairable system during normal system operation.",
+    "unit": "hours",
+    "domain": "reliability",
+    "source": "SMRP Best Practices / ISO 14224",
+    "aliases": [
+      "MTBF",
+      "mean_time_between_failures"
+    ]
+  },
+  {
+    "term_id": "PHM.MTTR",
+    "canonical_name": "Mean Time To Repair",
+    "abbreviation": "MTTR",
+    "definition": "The average time required to repair a failed component or system and restore it to operational status.",
+    "unit": "hours",
+    "domain": "maintenance",
+    "source": "SMRP Best Practices / ISO 14224",
+    "aliases": [
+      "MTTR",
+      "mean_time_to_repair"
+    ]
+  },
+  {
+    "term_id": "PHM.FMEA",
+    "canonical_name": "Failure Mode and Effects Analysis",
+    "abbreviation": "FMEA",
+    "definition": "A systematic technique used to identify potential failure modes, evaluate their causes and effects, and prioritize risk mitigation.",
+    "domain": "reliability",
+    "source": "IEC 60812 / ISO 14224",
+    "aliases": [
+      "FMEA",
+      "FMECA",
+      "failure_mode_effects_analysis"
+    ]
+  }
+]

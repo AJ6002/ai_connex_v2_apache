@@ -70,7 +70,7 @@ const TEMPLATES_LIST: TemplateMeta[] = [
     body { font-family: sans-serif; padding: 20px; background: #fafafa; }
     .card { background: white; padding: 20px; border-radius: 12px; border: 1px solid #eee; }
     h1 { color: #C8102E; }
-    .pass { color: #10B981; font-weight: bold; }
+    .pass { color: #E86326; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -410,9 +410,10 @@ export const TemplatesView: React.FC = () => {
           {message && (
             <div className={`p-3 rounded-xl text-xs font-mono flex items-start gap-2 ${
               message.type === 'success'
-                ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
-                : 'bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400'
-            }`}>
+                ? 'border'
+                : 'border'
+            }`}
+            style={message.type === 'success' ? {background:'rgba(232,99,38,0.10)', borderColor:'rgba(232,99,38,0.30)', color:'#E86326'} : {background:'rgba(43,0,99,0.10)', borderColor:'rgba(43,0,99,0.30)', color:'#2B0063'}}>
               <span className="material-symbols-outlined text-base mt-0.5">
                 {message.type === 'success' ? 'check_circle' : 'error'}
               </span>

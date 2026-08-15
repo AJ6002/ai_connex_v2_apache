@@ -35,7 +35,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       </div>
 
       {saved && (
-        <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg text-xs font-mono font-bold flex items-center gap-2 animate-fadeIn">
+        <div className="p-4 bg-[#FF6B35]/10 border border-[#FF6B35]/30 text-[#FF6B35] rounded-lg text-xs font-mono font-bold flex items-center gap-2 animate-fadeIn">
           <span className="material-symbols-outlined text-base">check_circle</span>
           <span>Settings saved successfully. Navigation layout and platform preferences synchronized.</span>
         </div>
@@ -53,25 +53,25 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
             {/* Slim Sleek Floating Icons Option */}
             <div
               onClick={() => setSelectedSidebarStyle('slim')}
               className={`cursor-pointer rounded-2xl border-2 p-4 transition-all duration-200 relative flex flex-col justify-between ${
                 selectedSidebarStyle === 'slim'
-                  ? 'border-tas-blue bg-blue-50/40 shadow-md ring-2 ring-tas-blue/20'
-                  : 'border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50/50'
+                  ? 'border-[#FF6B35] bg-[#FF6B35]/10 shadow-md ring-2 ring-[#FF6B35]/20'
+                  : 'border-white/10 hover:border-white/20 bg-white/4'
               }`}
             >
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <div className="w-9 h-9 rounded-xl bg-slate-900 text-cyan-400 flex items-center justify-center shadow-xs">
+                    <div className="w-9 h-9 rounded-xl bg-[#280B43] border border-white/15 text-[#FF6B35] flex items-center justify-center">
                       <span className="material-symbols-outlined text-lg">view_sidebar</span>
                     </div>
                     <div>
-                      <h4 className="font-bold text-xs text-slate-900">Slim Sleek Left Dock</h4>
-                      <span className="text-[10px] font-mono text-cyan-600 font-semibold">Floating Left Icons</span>
+                      <h4 className="font-bold text-xs text-white">Slim Sleek Left Dock</h4>
+                      <span className="text-[10px] font-mono text-[#FF6B35] font-semibold">Floating Left Icons</span>
                     </div>
                   </div>
                   <input
@@ -79,20 +79,20 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                     name="sidebarStyle"
                     checked={selectedSidebarStyle === 'slim'}
                     onChange={() => setSelectedSidebarStyle('slim')}
-                    className="w-4 h-4 text-tas-blue focus:ring-tas-blue"
+                    className="w-4 h-4 accent-[#FF6B35]"
                   />
                 </div>
-                <p className="text-slate-600 text-xs leading-relaxed">
+                <p className="text-white/60 text-xs leading-relaxed">
                   Unique, lightweight floating icon sidebar anchored on the left side of the screen. Hover cursor over icons for instant name tooltips.
                 </p>
               </div>
 
               {/* Feature Pills */}
-              <div className="mt-4 pt-3 border-t border-slate-200/60 flex items-center gap-2">
-                <span className="px-2 py-0.5 bg-cyan-100 text-cyan-800 text-[10px] font-mono font-bold rounded-md">
+              <div className="mt-4 pt-3 border-t border-white/10 flex items-center gap-2">
+                <span className="px-2 py-0.5 bg-[#FF6B35]/15 text-[#FF6B35] text-[10px] font-mono font-bold rounded-md">
                   Hover Name Tooltips
                 </span>
-                <span className="px-2 py-0.5 bg-slate-100 text-slate-700 text-[10px] font-mono font-bold rounded-md">
+                <span className="px-2 py-0.5 bg-white/10 text-white/70 text-[10px] font-mono font-bold rounded-md">
                   Left Floating
                 </span>
               </div>
@@ -103,19 +103,19 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               onClick={() => setSelectedSidebarStyle('orbital')}
               className={`cursor-pointer rounded-2xl border-2 p-4 transition-all duration-200 relative flex flex-col justify-between ${
                 selectedSidebarStyle === 'orbital'
-                  ? 'border-tas-blue bg-blue-50/40 shadow-md ring-2 ring-tas-blue/20'
-                  : 'border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50/50'
+                  ? 'border-[#FF6B35] bg-[#FF6B35]/10 shadow-md ring-2 ring-[#FF6B35]/20'
+                  : 'border-white/10 hover:border-white/20 bg-white/4'
               }`}
             >
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <div className="w-9 h-9 rounded-xl bg-slate-900 text-purple-400 flex items-center justify-center shadow-xs">
+                    <div className="w-9 h-9 rounded-xl bg-[#280B43] border border-white/15 text-[#FF6B35] flex items-center justify-center">
                       <span className="material-symbols-outlined text-lg">motion_photos_paused</span>
                     </div>
                     <div>
-                      <h4 className="font-bold text-xs text-slate-900">OrbitalARC Sidebar</h4>
-                      <span className="text-[10px] font-mono text-purple-600 font-semibold">Assistive Arc</span>
+                      <h4 className="font-bold text-xs text-white">OrbitalARC Sidebar</h4>
+                      <span className="text-[10px] font-mono text-[#FF6B35] font-semibold">Assistive Arc</span>
                     </div>
                   </div>
                   <input
@@ -123,20 +123,20 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                     name="sidebarStyle"
                     checked={selectedSidebarStyle === 'orbital'}
                     onChange={() => setSelectedSidebarStyle('orbital')}
-                    className="w-4 h-4 text-tas-blue focus:ring-tas-blue"
+                    className="w-4 h-4 accent-[#FF6B35]"
                   />
                 </div>
-                <p className="text-slate-600 text-xs leading-relaxed">
+                <p className="text-white/60 text-xs leading-relaxed">
                   Interactive floating arc menu with smooth cursor magnetics, radial physics, and dual concentric inner/outer wheels.
                 </p>
               </div>
 
               {/* Feature Pills */}
-              <div className="mt-4 pt-3 border-t border-slate-200/60 flex items-center gap-2">
-                <span className="px-2 py-0.5 bg-purple-100 text-purple-800 text-[10px] font-mono font-bold rounded-md">
+              <div className="mt-4 pt-3 border-t border-white/10 flex items-center gap-2">
+                <span className="px-2 py-0.5 bg-[#FF6B35]/15 text-[#FF6B35] text-[10px] font-mono font-bold rounded-md">
                   Physics Cursor Arc
                 </span>
-                <span className="px-2 py-0.5 bg-slate-100 text-slate-700 text-[10px] font-mono font-bold rounded-md">
+                <span className="px-2 py-0.5 bg-white/10 text-white/70 text-[10px] font-mono font-bold rounded-md">
                   Dual concentric
                 </span>
               </div>

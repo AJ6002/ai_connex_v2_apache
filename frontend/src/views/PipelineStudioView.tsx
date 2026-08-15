@@ -75,7 +75,7 @@ export const PipelineStudioView: React.FC<PipelineStudioViewProps> = ({
           </span>
           <div className="flex items-baseline gap-3 mt-2">
             <span className="font-mono text-3xl font-bold text-slate-900">98% Active</span>
-            <span className="text-emerald-600 font-mono text-xs font-bold flex items-center gap-1">
+            <span className="text-[#FF6B35] font-mono text-xs font-bold flex items-center gap-1">
               <span className="material-symbols-outlined text-sm">check_circle</span> STABLE
             </span>
           </div>
@@ -94,7 +94,7 @@ export const PipelineStudioView: React.FC<PipelineStudioViewProps> = ({
           </span>
           <div className="flex items-baseline gap-3 mt-2">
             <span className="font-mono text-3xl font-bold text-slate-900">42ms</span>
-            <span className="text-emerald-600 font-mono text-xs font-bold flex items-center gap-1">
+            <span className="text-[#FF6B35] font-mono text-xs font-bold flex items-center gap-1">
               <span className="material-symbols-outlined text-sm">arrow_downward</span> -4ms
             </span>
           </div>
@@ -168,12 +168,12 @@ export const PipelineStudioView: React.FC<PipelineStudioViewProps> = ({
                       <span
                         className={`px-2 py-0.5 text-[10px] font-mono font-bold uppercase rounded border ${
                           model.status === 'Deployed'
-                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                            ? 'bg-[#FF6B35]/15 text-[#FF6B35] border-[#FF6B35]/30'
                             : model.status === 'Training'
-                            ? 'bg-tas-blue-light text-tas-blue border-tas-blue/30'
+                            ? 'bg-white/10 text-white border-white/20'
                             : model.status === 'Validation'
-                            ? 'bg-tas-red-light text-tas-red border-tas-red/30'
-                            : 'bg-slate-100 text-slate-600 border-slate-200'
+                            ? 'bg-white/6 text-white/60 border-white/15'
+                            : 'bg-white/5 text-white/40 border-white/10'
                         }`}
                       >
                         {model.status}
@@ -210,7 +210,7 @@ export const PipelineStudioView: React.FC<PipelineStudioViewProps> = ({
                 onChange={(e) => setJsonInput(e.target.value)}
                 spellCheck={false}
                 rows={8}
-                className="w-full p-3 bg-slate-900 text-emerald-400 font-mono text-xs rounded-lg border border-slate-800 focus:ring-2 focus:ring-tas-blue outline-none resize-none leading-relaxed shadow-inner"
+                className="w-full p-3 bg-[#1A0530] text-[#FF6B35] font-mono text-xs rounded-lg border border-white/10 focus:ring-2 focus:ring-[#FF6B35]/50 outline-none resize-none leading-relaxed shadow-inner"
               />
             </div>
 
@@ -234,18 +234,18 @@ export const PipelineStudioView: React.FC<PipelineStudioViewProps> = ({
 
             {/* Prediction Result Display Box */}
             {predictionResult && (
-              <div className="p-4 bg-slate-50 border-l-4 border-tas-blue rounded-r-lg border border-slate-200 animate-fadeIn">
+              <div className="p-4 bg-[#1A0530] border-l-4 border-[#FF6B35] rounded-r-lg border border-white/10 animate-fadeIn">
                 <div className="flex justify-between items-center mb-2 font-mono text-xs">
-                  <span className="font-bold text-tas-blue">PREDICTION RESULT</span>
-                  <span className="text-emerald-600 font-bold">
+                  <span className="font-bold text-[#FF6B35]">PREDICTION RESULT</span>
+                  <span className="text-[#FF6B35] font-bold">
                     CONFIDENCE: {predictionResult.confidence}%
                   </span>
                 </div>
 
-                <div className="bg-slate-900 text-emerald-400 p-3 rounded-lg font-mono text-xs space-y-1">
+                <div className="bg-[#280B43] text-[#FF6B35] p-3 rounded-lg font-mono text-xs space-y-1">
                   <div>STATUS: "{predictionResult.status}"</div>
                   <div>RECOMMENDED ACTION: "{predictionResult.action}"</div>
-                  <div className="text-slate-400 text-[10px] pt-1 border-t border-slate-800 mt-2">
+                  <div className="text-white/35 text-[10px] pt-1 border-t border-white/10 mt-2">
                     LATENCY: {predictionResult.latencyMs}ms | COMPUTE: A100-80GB
                   </div>
                 </div>

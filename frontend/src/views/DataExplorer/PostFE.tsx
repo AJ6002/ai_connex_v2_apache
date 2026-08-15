@@ -40,7 +40,7 @@ function PostFEChartRenderer({ type, id, flagged }: { type: string; id: string |
           <line x1="181" y1="57" x2="210" y2="57" stroke="var(--border-medium)" strokeWidth="1.5" />
           <polygon points="210,54 216,57 210,60" fill="var(--text-muted)" />
           
-          <rect x="216" y="35" width="68" height="45" rx="4" fill="#dcfce7" stroke="#4ade80" strokeWidth="1.5" />
+          <rect x="216" y="35" width="68" height="45" rx="4" fill="rgba(255,107,53,0.06)" stroke="#FF6B35" strokeWidth="1.5" />
           <text x="250" y="55" fill="#166534" fontSize="8" fontWeight="bold" textAnchor="middle">TEMPORAL</text>
           <text x="250" y="67" fill="#166534" fontSize="7" textAnchor="middle">Branch Active</text>
         </svg>

@@ -1,0 +1,13 @@
+{
+  "name": "stitch-aiconnex-enterprise",
+  "version": "1.0.0",
+  "description": "TAS AIConnex Industrial AutoML Hero Landing Page & AI ChatBot Server",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["industrial", "automl", "chatbot", "rag", "intent-logger"],
+  "author": "TAS AIConnex Team",
+  "license": "ISC"
+}

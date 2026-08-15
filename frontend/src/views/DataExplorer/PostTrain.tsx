@@ -19,7 +19,7 @@ function PostTrainChartRenderer({ type, id, flagged }: { type: string; id: strin
   const primaryColor = '#ec4899'; // Pink for Train accent
   const beforeColor = '#94a3b8'; // Grey
   const blueColor = '#1e47c8'; // Blue
-  const greenColor = '#10b981'; // Green
+  const greenColor = '#FF6B35'; // Green
   const purpleColor = '#8b5cf6'; // Purple
   
   switch (type) {
@@ -114,7 +114,7 @@ function PostTrainChartRenderer({ type, id, flagged }: { type: string; id: strin
             <text x="40" y="60" textAnchor="middle" fill="var(--text-muted)" fontSize="8">Devices 71-85</text>
           </g>
           <g transform="translate(205, 25)">
-            <rect x="0" y="0" width="80" height="70" rx="4" fill="#ecfdf5" stroke="#10b981" strokeWidth="1" />
+            <rect x="0" y="0" width="80" height="70" rx="4" fill="rgba(255,107,53,0.06)" stroke="#FF6B35" strokeWidth="1" />
             <text x="40" y="24" textAnchor="middle" fill="#047857" fontSize="10" fontWeight="bold">TEST</text>
             <text x="40" y="45" textAnchor="middle" fill="var(--text-main)" fontSize="11" fontWeight="bold">3,000 rows</text>
             <text x="40" y="60" textAnchor="middle" fill="var(--text-muted)" fontSize="8">Devices 86-100</text>
@@ -137,8 +137,8 @@ function PostTrainChartRenderer({ type, id, flagged }: { type: string; id: strin
           <circle cx="150" cy="42" r="3" fill="#94a3b8" />
           <circle cx="190" cy="35" r="3" fill="#94a3b8" />
           <circle cx="230" cy="24" r="3" fill="#94a3b8" />
-          <circle cx="270" cy="20" r="4.5" fill="#10b981" />
-          <text x="270" y="12" fill="#10b981" fontSize="7" fontWeight="bold" textAnchor="middle">Best #120</text>
+          <circle cx="270" cy="20" r="4.5" fill="#FF6B35" />
+          <text x="270" y="12" fill="#FF6B35" fontSize="7" fontWeight="bold" textAnchor="middle">Best #120</text>
         </svg>
       );
 
@@ -159,7 +159,7 @@ function PostTrainChartRenderer({ type, id, flagged }: { type: string; id: strin
           <text x="230" y="112" fill="var(--text-muted)" fontSize="8" textAnchor="middle">RMSE</text>
           
           {/* Best parameter route (green) */}
-          <path d="M 50 30 L 110 80 L 170 30 L 230 30" fill="none" stroke="#10b981" strokeWidth="2.5" />
+          <path d="M 50 30 L 110 80 L 170 30 L 230 30" fill="none" stroke="#FF6B35" strokeWidth="2.5" />
           
           {/* Alternative routes (purple/grey) */}
           <path d="M 50 50 L 110 50 L 170 60 L 230 65" fill="none" stroke="#8b5cf6" strokeWidth="1" opacity="0.6" />
@@ -178,8 +178,8 @@ function PostTrainChartRenderer({ type, id, flagged }: { type: string; id: strin
           <text x="150" y="72" fill="#ec4899" fontSize="8" fontWeight="bold">Val Loss</text>
           
           {/* Best epoch check */}
-          <circle cx="210" cy="33" r="4.5" fill="#10b981" />
-          <text x="210" y="24" fill="#10b981" fontSize="8" fontWeight="bold" textAnchor="middle">Best Epoch 32</text>
+          <circle cx="210" cy="33" r="4.5" fill="#FF6B35" />
+          <text x="210" y="24" fill="#FF6B35" fontSize="8" fontWeight="bold" textAnchor="middle">Best Epoch 32</text>
         </svg>
       );
 
@@ -228,19 +228,19 @@ function PostTrainChartRenderer({ type, id, flagged }: { type: string; id: strin
             <rect x="0" y="0" width="80" height="70" rx="4" fill="#eff6ff" stroke="#3b82f6" strokeWidth="1" />
             <text x="40" y="24" textAnchor="middle" fill="#1d4ed8" fontSize="10" fontWeight="bold">R² SCORE</text>
             <text x="40" y="45" textAnchor="middle" fill="var(--text-main)" fontSize="13" fontWeight="bold">0.884</text>
-            <text x="40" y="60" textAnchor="middle" fill="#10b981" fontSize="8" fontWeight="bold">✓ PASS (gate &gt; 0.7)</text>
+            <text x="40" y="60" textAnchor="middle" fill="#FF6B35" fontSize="8" fontWeight="bold">✓ PASS (gate &gt; 0.7)</text>
           </g>
           <g transform="translate(110, 25)">
             <rect x="0" y="0" width="80" height="70" rx="4" fill="#fdf2f8" stroke="#f472b6" strokeWidth="1" />
             <text x="40" y="24" textAnchor="middle" fill="#be185d" fontSize="10" fontWeight="bold">MAE</text>
             <text x="40" y="45" textAnchor="middle" fill="var(--text-main)" fontSize="13" fontWeight="bold">12.14</text>
-            <text x="40" y="60" textAnchor="middle" fill="#10b981" fontSize="8" fontWeight="bold">✓ PASS (gate &lt; 20)</text>
+            <text x="40" y="60" textAnchor="middle" fill="#FF6B35" fontSize="8" fontWeight="bold">✓ PASS (gate &lt; 20)</text>
           </g>
           <g transform="translate(205, 25)">
-            <rect x="0" y="0" width="80" height="70" rx="4" fill="#ecfdf5" stroke="#10b981" strokeWidth="1" />
+            <rect x="0" y="0" width="80" height="70" rx="4" fill="rgba(255,107,53,0.06)" stroke="#FF6B35" strokeWidth="1" />
             <text x="40" y="24" textAnchor="middle" fill="#047857" fontSize="10" fontWeight="bold">RMSE</text>
             <text x="40" y="45" textAnchor="middle" fill="var(--text-main)" fontSize="13" fontWeight="bold">15.39</text>
-            <text x="40" y="60" textAnchor="middle" fill="#10b981" fontSize="8" fontWeight="bold">✓ PASS (gate &lt; 25)</text>
+            <text x="40" y="60" textAnchor="middle" fill="#FF6B35" fontSize="8" fontWeight="bold">✓ PASS (gate &lt; 25)</text>
           </g>
         </svg>
       );
@@ -297,8 +297,8 @@ function PostTrainChartRenderer({ type, id, flagged }: { type: string; id: strin
           <rect x="100" y="35" width="18" height="75" fill="#3b82f6" rx="2" />
           <text x="109" y="118" fill="var(--text-muted)" fontSize="7" textAnchor="middle">DEV_88</text>
           
-          <rect x="135" y="65" width="18" height="45" fill="#10b981" rx="2" />
-          <text x="144" y="118" fill="#10b981" fontSize="7" fontWeight="bold" textAnchor="middle">DEV_89</text>
+          <rect x="135" y="65" width="18" height="45" fill="#FF6B35" rx="2" />
+          <text x="144" y="118" fill="#FF6B35" fontSize="7" fontWeight="bold" textAnchor="middle">DEV_89</text>
           
           <rect x="170" y="50" width="18" height="60" fill="#3b82f6" rx="2" />
           <text x="179" y="118" fill="var(--text-muted)" fontSize="7" textAnchor="middle">DEV_90</text>
@@ -314,7 +314,7 @@ function PostTrainChartRenderer({ type, id, flagged }: { type: string; id: strin
           {/* Confusion matrix grid */}
           <g transform="translate(70, 20)">
             {/* Box 1 (OK -> OK) */}
-            <rect x="0" y="0" width="45" height="35" fill="#dcfce7" stroke="#86efac" />
+            <rect x="0" y="0" width="45" height="35" fill="rgba(255,107,53,0.06)" stroke="#FF8F5A" />
             <text x="22" y="22" fill="#166534" fontSize="9" fontWeight="bold" textAnchor="middle">1,200</text>
             
             {/* Box 2 (OK -> WARN) */}
@@ -329,7 +329,7 @@ function PostTrainChartRenderer({ type, id, flagged }: { type: string; id: strin
             <rect x="0" y="35" width="45" height="35" fill="#eff6ff" stroke="#bfdbfe" />
             <text x="22" y="57" fill="#1d4ed8" fontSize="9" textAnchor="middle">150</text>
             
-            <rect x="45" y="35" width="45" height="35" fill="#dcfce7" stroke="#86efac" />
+            <rect x="45" y="35" width="45" height="35" fill="rgba(255,107,53,0.06)" stroke="#FF8F5A" />
             <text x="67" y="57" fill="#166534" fontSize="9" fontWeight="bold" textAnchor="middle">600</text>
             
             <rect x="90" y="35" width="45" height="35" fill="#fffbeb" stroke="#fde68a" />
@@ -342,7 +342,7 @@ function PostTrainChartRenderer({ type, id, flagged }: { type: string; id: strin
             <rect x="45" y="70" width="45" height="35" fill="#eff6ff" stroke="#bfdbfe" />
             <text x="67" y="92" fill="#1d4ed8" fontSize="9" textAnchor="middle">30</text>
             
-            <rect x="90" y="70" width="45" height="35" fill="#dcfce7" stroke="#86efac" />
+            <rect x="90" y="70" width="45" height="35" fill="rgba(255,107,53,0.06)" stroke="#FF8F5A" />
             <text x="112" y="92" fill="#166534" fontSize="9" fontWeight="bold" textAnchor="middle">150</text>
             
             {/* Axes Labels */}
@@ -361,15 +361,15 @@ function PostTrainChartRenderer({ type, id, flagged }: { type: string; id: strin
       return (
         <svg viewBox="0 0 300 120" className="w-full h-full">
           {/* Gate validations flow */}
-          <rect x="20" y="20" width="260" height="25" rx="3" fill="#dcfce7" stroke="#22c55e" strokeWidth="1" />
+          <rect x="20" y="20" width="260" height="25" rx="3" fill="rgba(255,107,53,0.06)" stroke="#FF6B35" strokeWidth="1" />
           <text x="32" y="36" fill="#166534" fontSize="9" fontWeight="bold">✓ R²: 0.884</text>
           <text x="120" y="35" fill="var(--text-muted)" fontSize="8">Threshold ≥ 0.70 (Exceeded)</text>
           
-          <rect x="20" y="50" width="260" height="25" rx="3" fill="#dcfce7" stroke="#22c55e" strokeWidth="1" />
+          <rect x="20" y="50" width="260" height="25" rx="3" fill="rgba(255,107,53,0.06)" stroke="#FF6B35" strokeWidth="1" />
           <text x="32" y="66" fill="#166534" fontSize="9" fontWeight="bold">✓ MAE: 12.14</text>
           <text x="120" y="65" fill="var(--text-muted)" fontSize="8">Threshold ≤ 20.0 (Within limit)</text>
           
-          <rect x="20" y="80" width="260" height="25" rx="3" fill="#dcfce7" stroke="#22c55e" strokeWidth="1" />
+          <rect x="20" y="80" width="260" height="25" rx="3" fill="rgba(255,107,53,0.06)" stroke="#FF6B35" strokeWidth="1" />
           <text x="32" y="96" fill="#166534" fontSize="9" fontWeight="bold">✓ RMSE: 15.39</text>
           <text x="120" y="95" fill="var(--text-muted)" fontSize="8">Threshold ≤ 25.0 (Within limit)</text>
         </svg>
@@ -391,7 +391,7 @@ function PostTrainChartRenderer({ type, id, flagged }: { type: string; id: strin
           <line x1="181" y1="60" x2="216" y2="60" stroke="var(--border-medium)" strokeWidth="1.5" />
           <polygon points="216,57 222,60 216,63" fill="var(--text-muted)" />
           
-          <rect x="222" y="45" width="60" height="30" rx="4" fill="#dcfce7" stroke="#10b981" strokeWidth="1.5" />
+          <rect x="222" y="45" width="60" height="30" rx="4" fill="rgba(255,107,53,0.06)" stroke="#FF6B35" strokeWidth="1.5" />
           <text x="252" y="64" fill="#166534" fontSize="8" fontWeight="bold" textAnchor="middle">3. EVAL</text>
         </svg>
       );
@@ -655,7 +655,7 @@ export const PostTrain: React.FC<PostTrainProps> = ({
                   {card.flagged ? (
                     <AlertTriangle size={15} className="text-red-600 animate-bounce" />
                   ) : (
-                    <CheckCircle size={15} className="text-emerald-500" />
+                    <CheckCircle size={15} className="text-[#FF6B35]" />
                   )}
                   <span className="font-bold text-slate-800">{card.title}</span>
                 </div>

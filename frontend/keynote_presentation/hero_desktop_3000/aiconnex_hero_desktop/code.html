@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TAS AIConnex - Industrial AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-secondary-container": "#785c35",
+                      "primary-container": "#121a38",
+                      "surface": "#f7f9fb",
+                      "on-secondary": "#ffffff",
+                      "on-tertiary-fixed-variant": "#38485d",
+                      "on-surface-variant": "#46464e",
+                      "on-primary-fixed": "#121a38",
+                      "on-secondary-fixed-variant": "#5b421e",
+                      "tertiary-fixed": "#d3e4fe",
+                      "surface-dim": "#d8dadc",
+                      "secondary-fixed": "#ffddb4",
+                      "on-tertiary-container": "#75859d",
+                      "tertiary": "#000000",
+                      "error": "#ba1a1a",
+                      "surface-container-high": "#e6e8ea",
+                      "inverse-primary": "#bec5ec",
+                      "on-primary": "#ffffff",
+                      "surface-tint": "#555d7f",
+                      "on-primary-fixed-variant": "#3e4566",
+                      "on-surface": "#191c1e",
+                      "on-tertiary": "#ffffff",
+                      "secondary": "#765933",
+                      "outline-variant": "#c6c5ce",
+                      "background": "#f7f9fb",
+                      "primary-fixed-dim": "#bec5ec",
+                      "on-tertiary-fixed": "#0b1c30",
+                      "surface-variant": "#e0e3e5",
+                      "outline": "#76767e",
+                      "inverse-on-surface": "#eff1f3",
+                      "surface-container-highest": "#e0e3e5",
+                      "tertiary-fixed-dim": "#b7c8e1",
+                      "surface-container": "#eceef0",
+                      "surface-bright": "#f7f9fb",
+                      "surface-container-lowest": "#ffffff",
+                      "on-background": "#191c1e",
+                      "on-primary-container": "#7b82a6",
+                      "primary-fixed": "#dde1ff",
+                      "on-error-container": "#93000a",
+                      "secondary-fixed-dim": "#d5521b",
+                      "on-secondary-fixed": "#291800",
+                      "error-container": "#ffdad6",
+                      "surface-container-low": "#f2f4f6",
+                      "tertiary-container": "#0b1c30",
+                      "inverse-surface": "#2d3133",
+                      "primary": "#2b0063", 
+                      "secondary-container": "#e86326",
+                      "on-error": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "2xl": "1rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "gutter": "24px",
+                      "container-padding": "32px",
+                      "stack-md": "24px",
+                      "base": "8px",
+                      "stack-lg": "48px",
+                      "stack-sm": "12px"
+              },
+              "fontFamily": {
+                      "headline-lg": ["Inter"],
+                      "body-md": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "headline-lg-mobile": ["Inter"],
+                      "display": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "label-md": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "display": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .industrial-glow {
+            background: radial-gradient(circle at 50% 50%, rgba(255, 216, 168, 0.4) 0%, rgba(247, 249, 251, 0) 70%);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md antialiased min-h-screen flex flex-col selection:bg-secondary-container selection:text-primary">
+<!-- Top Navigation Bar (Generated from JSON) -->
+<nav class="docked full-width top-0 sticky z-50 bg-surface/80 backdrop-blur-md dark:bg-surface-container-highest/80 border-b border-outline-variant/30 shadow-sm transition-all duration-200">
+<div class="flex justify-between items-center w-full px-gutter max-w-[1440px] mx-auto h-20">
+<!-- Brand Logo -->
+<a class="font-headline-md text-headline-md font-bold tracking-tight text-primary dark:text-inverse-primary hover:opacity-80 transition-opacity flex items-center gap-2" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">analytics</span>
+                TAS AIConnex
+            </a>
+<!-- Navigation Links (Desktop) -->
+<div class="hidden md:flex items-center gap-6">
+<!-- Getting Started is Active based on context -->
+<a class="font-label-md text-label-md text-primary font-bold border-b-2 border-primary pb-1 hover:bg-surface-container-high/50 transition-all duration-200" href="#">Getting Started</a>
+<a class="font-label-md text-label-md text-on-surface-variant font-medium hover:text-primary transition-colors hover:bg-surface-container-high/50 transition-all duration-200 px-2 py-1 rounded" href="#">How It Works</a>
+<a class="font-label-md text-label-md text-on-surface-variant font-medium hover:text-primary transition-colors hover:bg-surface-container-high/50 transition-all duration-200 px-2 py-1 rounded" href="#">Documentation</a>
+<a class="font-label-md text-label-md text-on-surface-variant font-medium hover:text-primary transition-colors hover:bg-surface-container-high/50 transition-all duration-200 px-2 py-1 rounded" href="#">Case Studies</a>
+</div>
+<!-- Actions -->
+<div class="hidden md:flex items-center gap-4">
+<a class="font-label-md text-label-md text-on-surface hover:text-primary transition-colors" href="#">Sign in</a>
+<a href="http://localhost:5173/" class="font-label-md text-label-md bg-[#E86326] hover:bg-[#D5521B] text-white font-bold px-5 py-2.5 rounded-full transition-all shadow-md flex items-center gap-2 group">
+<span>Open AIConnex Studio</span>
+<span class="material-symbols-outlined text-base text-white font-bold group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+</div>
+<!-- Mobile Menu Toggle -->
+<button class="md:hidden text-primary p-2">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-grow flex flex-col relative w-full max-w-[1440px] mx-auto overflow-hidden pt-[64px]">
+<!-- Hero Section -->
+<section class="px-container-padding flex flex-col items-center text-center relative z-10 w-full mb-16">
+<!-- Announcement Badge -->
+<div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container-high border border-outline-variant/50 text-on-surface-variant font-label-sm text-label-sm mb-8 hover:bg-surface-container-highest transition-colors cursor-pointer group">
+<span class="bg-[#E86326] text-white px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider">New</span>
+<span>AIConnex 4-Layer Compiler is live — Explore the workflow</span>
+<span class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</div>
+<!-- Hero Typography -->
+<h1 class="font-display text-display text-primary max-w-4xl mb-6 tracking-tight">
+                Industrial AI, from raw sensor data to edge-ready models in minutes.
+            </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-3xl mb-10">
+                Turn multi-table industrial sensor archives into predictive-maintenance models through an agent-guided AutoML workflow built for plant engineers, data teams, and operations leaders.
+            </p>
+<!-- Call to Actions -->
+<div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 w-full sm:w-auto">
+<a href="http://localhost:5173/" class="w-full sm:w-auto bg-[#E86326] hover:bg-[#D5521B] text-white font-label-md text-label-md font-bold px-8 py-3.5 rounded-full flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl active:scale-95 duration-200 group">
+                    <span>Try the AI Agent</span>
+                    <span class="material-symbols-outlined text-[18px] text-white font-bold group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+<button onclick="openChatModal()" class="w-full sm:w-auto bg-surface-container-lowest border border-[#0D1533] text-[#0D1533] font-label-md text-label-md font-semibold px-6 py-3.5 rounded-full flex items-center justify-center gap-2 hover:bg-surface-container-low transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined text-[18px]">smart_toy</span>
+                    <span>Ask AI Copilot</span>
+</button>
+</div>
+<!-- Trust Strip -->
+<div class="flex flex-col items-center mb-16 w-full max-w-5xl">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-4 uppercase tracking-widest text-center">Built for industrial telemetry, predictive maintenance, and edge deployment</p>
+<div class="flex flex-wrap justify-center items-center gap-6 md:gap-12 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+<div class="flex items-center gap-2 font-headline-lg-mobile text-headline-lg-mobile text-primary font-black"><span class="material-symbols-outlined">settings_input_component</span> OPC UA</div>
+<div class="flex items-center gap-2 font-headline-lg-mobile text-headline-lg-mobile text-primary font-black"><span class="material-symbols-outlined">router</span> MQTT</div>
+<div class="flex items-center gap-2 font-headline-lg-mobile text-headline-lg-mobile text-primary font-black"><span class="material-symbols-outlined">lan</span> Modbus TCP</div>
+<div class="flex items-center gap-2 font-headline-lg-mobile text-headline-lg-mobile text-primary font-black"><span class="material-symbols-outlined">model_training</span> ONNX</div>
+</div>
+</div>
+<!-- Visual Product Preview with Ambient Glow -->
+<div class="relative w-full max-w-[1200px] mx-auto mt-8 mb-24 rounded-2xl p-1">
+<!-- Ambient Radial Glow -->
+<div class="absolute inset-0 -z-10 industrial-glow translate-y-[-10%] scale-110 opacity-70"></div>
+<!-- Browser/Product Card Shell -->
+<div class="bg-surface rounded-2xl border border-outline-variant/30 shadow-[0_12px_32px_rgba(13,21,51,0.08)] overflow-hidden w-full relative group">
+<!-- Browser Header -->
+<div class="h-10 bg-surface-container flex items-center px-4 border-b border-outline-variant/20 gap-2">
+<div class="w-3 h-3 rounded-full bg-outline-variant/50"></div>
+<div class="w-3 h-3 rounded-full bg-outline-variant/50"></div>
+<div class="w-3 h-3 rounded-full bg-outline-variant/50"></div>
+<div class="mx-auto bg-surface border border-outline-variant/30 rounded-md h-6 w-1/3 flex items-center justify-center text-[10px] text-on-surface-variant font-mono">
+<span class="material-symbols-outlined text-[12px] mr-1">lock</span> aiconnex.industrial.ai/workspace
+                        </div>
+</div>
+<!-- Main App Interface Placeholder (Mockup) -->
+<div class="relative aspect-video w-full bg-surface">
+<img class="w-full h-full object-cover rounded-b-2xl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVngjGJLk7DUghZS3Wo0g0fjhTPF3tCGtcGMUW2THzpDWdJv49xlkzNk-ToCG37cMLkw8PrTE65nI0fLwHWYkJcDD_GUvD_eczeZp17O76WMoD2MUrXiZC_BRm9-GqQ88n7yqa18pgBi_Hw0GZ5aXLkRjvFDd8SuYgqlUd88goMixtjBMsqFDroVR_bVS8pB-sqfWXpyaI_WaJ7GXedjuWbEvZ7iWOE5Q3DI2KeTasbtQlefYv4yNNsdrgDxLooiJ8Ap0"/>
+<!-- Overlay to indicate interactive zones or data flow -->
+<div class="absolute top-4 left-4 flex gap-2">
+<span class="bg-surface/80 backdrop-blur-sm border border-outline-variant/30 text-primary font-label-sm px-2 py-1 rounded shadow-sm flex items-center gap-1">
+<div class="w-2 h-2 rounded-full bg-secondary-container animate-pulse"></div>
+                                 Pipeline Active
+                             </span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer (Generated from JSON) -->
+<footer class="full-width py-stack-lg bg-surface dark:bg-surface-dim border-t border-outline-variant/20 mt-auto">
+<div class="max-w-[1440px] mx-auto px-gutter grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-stack-md">
+<!-- Brand Column -->
+<div class="col-span-2 md:col-span-4 lg:col-span-2 flex flex-col gap-4">
+<a class="font-headline-md text-headline-md font-black text-primary flex items-center gap-2" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">analytics</span>
+                    TAS AIConnex
+                </a>
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-xs mt-2">
+                    Enterprise-grade industrial AutoML platform for technical engineering and operations.
+                </p>
+<div class="mt-4 font-body-sm text-body-sm text-on-surface-variant">
+                    © 2024 AIConnex Industrial Systems. All rights reserved.
+                </div>
+</div>
+<!-- Links Columns -->
+<div class="flex flex-col gap-3">
+<h4 class="font-label-md text-label-md text-primary font-semibold mb-2">Product</h4>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors underline decoration-transparent hover:decoration-secondary-container" href="#">Changelog</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors underline decoration-transparent hover:decoration-secondary-container" href="#">Documentation</a>
+</div>
+<div class="flex flex-col gap-3">
+<h4 class="font-label-md text-label-md text-primary font-semibold mb-2">Company</h4>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors underline decoration-transparent hover:decoration-secondary-container" href="#">About</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors underline decoration-transparent hover:decoration-secondary-container" href="#">Careers</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors underline decoration-transparent hover:decoration-secondary-container" href="#">Blog</a>
+</div>
+<div class="flex flex-col gap-3">
+<h4 class="font-label-md text-label-md text-primary font-semibold mb-2">Social</h4>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors underline decoration-transparent hover:decoration-secondary-container" href="#">GitHub</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors underline decoration-transparent hover:decoration-secondary-container" href="#">Discord</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors underline decoration-transparent hover:decoration-secondary-container" href="#">Twitter</a>
+</div>
+</div>
+</footer>
+
+<!-- Floating AI Assistant Trigger Button (Gold Fill + Sparkles + Top-Right Dot + 'Talk to Jane' Hover) -->
+<div class="fixed bottom-6 right-6 z-50 group flex items-center gap-3">
+    <!-- Hover Tooltip Badge "Talk to Jane" -->
+    <div class="px-3.5 py-2 bg-[#2B0063] text-white text-xs font-mono font-bold rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 transition-all pointer-events-none whitespace-nowrap border border-[#E86326]/40 flex items-center gap-2 transform translate-x-2 group-hover:translate-x-0">
+        <span class="w-2 h-2 rounded-full bg-[#E86326] animate-pulse"></span>
+        <span>Talk to Jane</span>
+    </div>
+
+    <!-- Solar Orange Sparkles Button matching User Reference Image -->
+    <button onclick="openChatModal()" class="relative bg-[#E86326] hover:bg-[#D5521B] text-white w-12 h-12 rounded-2xl shadow-2xl hover:scale-110 active:scale-95 transition-all duration-200 flex items-center justify-center border border-white/20 cursor-pointer" title="Talk to Jane">
+        <span class="material-symbols-outlined text-2xl text-white group-hover:rotate-12 transition-transform" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+        <!-- Top-Right Obsidian Dot -->
+        <span class="w-2.5 h-2.5 rounded-full bg-[#2B0063] absolute top-2 right-2 ring-2 ring-white animate-pulse"></span>
+    </button>
+</div>
+
+<!-- Floating Chatbot Modal Overlay (Frosted/Wet Glass Backdrop) -->
+<div id="chat-modal-container" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 sm:p-6 transition-all duration-300">
+    <!-- Frosted/Wet Glass Backdrop -->
+    <div id="modal-backdrop" class="absolute inset-0 bg-slate-900/15 backdrop-blur-[3px] transition-all duration-300" onclick="closeChatModal()"></div>
+
+    <!-- Floating Window -->
+    <div id="modal-window" class="relative bg-surface/95 backdrop-blur-sm border border-outline-variant/60 rounded-3xl shadow-[0_24px_60px_rgba(13,21,51,0.25)] w-full max-w-lg h-[580px] flex flex-col overflow-hidden z-10 transition-all duration-300">
+        <!-- Window Header -->
+        <div class="bg-primary-container px-4 py-3 flex justify-between items-center text-on-primary shadow-sm">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-secondary-container/20 flex items-center justify-center text-secondary-container border border-secondary-container/40">
+                    <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+                </div>
+                <div>
+                    <h3 class="font-label-md text-label-md font-bold leading-none">Jane — AI Assistant & Copilot</h3>
+                    <span class="text-[10px] text-on-primary-container block font-mono mt-0.5" id="modal-intent-badge">Logging to: user-intent-1223.json</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-1.5">
+                <input id="modal-user-id" type="text" value="1223" title="User ID" class="w-12 bg-surface-container/20 text-on-primary border border-on-primary/30 rounded px-1 py-0.5 text-[11px] font-mono text-center focus:outline-none focus:border-secondary-container" placeholder="User ID" />
+                
+                <!-- Minimize Button -->
+                <button onclick="toggleMinimizeModal()" title="Minimize / Dock to right side" class="w-7 h-7 rounded-full hover:bg-on-primary/10 flex items-center justify-center text-on-primary/70 hover:text-on-primary transition-colors">
+                    <span class="material-symbols-outlined text-base" id="minimize-icon">remove</span>
+                </button>
+
+                <!-- Close Button -->
+                <button onclick="closeChatModal()" title="Close chat" class="w-7 h-7 rounded-full hover:bg-on-primary/10 flex items-center justify-center text-on-primary/70 hover:text-on-primary transition-colors">
+                    <span class="material-symbols-outlined text-lg">close</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Chat Message Area -->
+        <div id="modal-messages" class="flex-grow p-4 overflow-y-auto flex flex-col gap-3 bg-surface-bright/90 text-sm">
+            <!-- Welcome Message -->
+            <div class="flex justify-start">
+                <div class="bg-tertiary-fixed text-on-tertiary-fixed px-3.5 py-2.5 rounded-2xl rounded-tl-sm max-w-[85%] border border-outline-variant/30 relative">
+                    <div class="absolute -left-1 top-3.5 w-2 h-2 rounded-full bg-secondary-container shadow-[0_0_8px_rgba(253,214,167,0.8)]"></div>
+                    <p class="font-body-sm text-body-sm leading-relaxed">Hello! I am your AIConnex Industrial Copilot. How can I assist your team today?</p>
+                    <div class="mt-2 text-[10px] text-on-tertiary-container font-mono bg-surface-container/40 px-2 py-0.5 rounded w-fit">RAG & Intent Logger Active</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Chips -->
+        <div id="modal-chips" class="px-3 py-2 bg-surface-container-low/90 border-t border-outline-variant/20 flex flex-wrap gap-1.5 text-[11px]">
+            <button class="bg-surface-container-high hover:bg-primary-container hover:text-on-primary text-primary px-3 py-1 rounded-full border border-outline-variant/30 transition-all font-medium" onclick="sendModalMessage('Predict the RUL for my compressor.')">Predict RUL</button>
+            <button class="bg-surface-container-high hover:bg-primary-container hover:text-on-primary text-primary px-3 py-1 rounded-full border border-outline-variant/30 transition-all font-medium" onclick="sendModalMessage('Train AutoML pipeline on telemetry data')">Train AutoML</button>
+            <button class="bg-surface-container-high hover:bg-primary-container hover:text-on-primary text-primary px-3 py-1 rounded-full border border-outline-variant/30 transition-all font-medium" onclick="sendModalMessage('Check OPC UA stream status')">Telemetry Status</button>
+        </div>
+
+        <!-- Chat Input Form -->
+        <div class="p-3 bg-surface border-t border-outline-variant/30">
+            <form onsubmit="handleModalSubmit(event)" class="relative flex items-center">
+                <input id="modal-input" class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-full py-2.5 pl-4 pr-10 text-body-sm focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-secondary-container/30 transition-all" placeholder="Ask AI Copilot or type a command..." type="text" autocomplete="off" />
+                <button type="submit" class="absolute right-2 text-primary-container hover:text-primary transition-colors p-1.5 rounded-full hover:bg-surface-container">
+                    <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">send</span>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const modalContainer = document.getElementById('chat-modal-container');
+    const modalWindow = document.getElementById('modal-window');
+    const modalBackdrop = document.getElementById('modal-backdrop');
+    const modalUserId = document.getElementById('modal-user-id');
+    const modalBadge = document.getElementById('modal-intent-badge');
+    const modalMessages = document.getElementById('modal-messages');
+    const modalInput = document.getElementById('modal-input');
+    const modalChips = document.getElementById('modal-chips');
+    const minimizeIcon = document.getElementById('minimize-icon');
+
+    let isMinimized = false;
+
+    modalUserId.addEventListener('input', () => {
+        const uid = modalUserId.value.trim() || '1223';
+        modalBadge.innerText = `Logging to: user-intent-${uid}.json`;
+    });
+
+    function openChatModal() {
+        modalContainer.classList.remove('hidden');
+        if (!isMinimized) {
+            document.body.style.overflow = 'hidden';
+        }
+        modalInput.focus();
+    }
+
+    function closeChatModal() {
+        modalContainer.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+
+    function toggleMinimizeModal() {
+        isMinimized = !isMinimized;
+
+        if (isMinimized) {
+            // Minimize to right dock
+            modalContainer.className = "fixed bottom-6 right-6 z-[100] pointer-events-none";
+            modalWindow.className = "relative bg-surface/95 backdrop-blur-md border border-outline-variant/60 rounded-3xl shadow-[0_20px_50px_rgba(13,21,51,0.25)] w-80 sm:w-96 h-[500px] flex flex-col overflow-hidden z-10 pointer-events-auto transition-all duration-300";
+            modalBackdrop.classList.add('hidden');
+            document.body.style.overflow = '';
+            minimizeIcon.innerText = "open_in_full";
+        } else {
+            // Expand back to centered modal with frosted glass backdrop
+            modalContainer.className = "fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 transition-all duration-300";
+            modalWindow.className = "relative bg-surface/95 backdrop-blur-sm border border-outline-variant/60 rounded-3xl shadow-[0_24px_60px_rgba(13,21,51,0.25)] w-full max-w-lg h-[580px] flex flex-col overflow-hidden z-10 transition-all duration-300";
+            modalBackdrop.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            minimizeIcon.innerText = "remove";
+        }
+    }
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !modalContainer.classList.contains('hidden')) {
+            closeChatModal();
+        }
+    });
+
+    function sendModalMessage(text) {
+        modalInput.value = text;
+        handleModalSubmit(new Event('submit'));
+    }
+
+    async function handleModalSubmit(e) {
+        e.preventDefault();
+        const msg = modalInput.value.trim();
+        if (!msg) return;
+
+        const uid = modalUserId.value.trim() || '1223';
+        modalInput.value = '';
+
+        // Append User Message
+        appendMsgUser(msg);
+
+        // Show Typing Indicator
+        const typingId = appendTypingInd();
+        modalMessages.scrollTop = modalMessages.scrollHeight;
+
+        try {
+            const res = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: uid,
+                    message: msg,
+                    pageContext: isMinimized ? 'aiconnex_hero_desktop_right_dock' : 'aiconnex_hero_desktop_modal'
+                })
+            });
+
+            const data = await res.json();
+            removeTypingInd(typingId);
+
+            if (data.success) {
+                appendMsgBot(data.botResponse, data.intent, data.backendIntentFile);
+
+                if (data.suggestedActions && data.suggestedActions.length > 0) {
+                    renderModalChips(data.suggestedActions);
+                }
+
+                if (data.navigateTo) {
+                    setTimeout(() => {
+                        window.location.href = data.navigateTo;
+                    }, 1200);
+                }
+            } else {
+                appendMsgBot("⚠️ Error: " + (data.error || "Failed to process request"));
+            }
+        } catch (err) {
+            removeTypingInd(typingId);
+            appendMsgBot("🤖 Query logged offline to `user-intent-" + uid + ".json`.");
+        }
+
+        modalMessages.scrollTop = modalMessages.scrollHeight;
+    }
+
+    function appendMsgUser(text) {
+        const div = document.createElement('div');
+        div.className = 'flex justify-end';
+        div.innerHTML = `
+            <div class="bg-surface-container-high text-primary px-3.5 py-2 rounded-2xl rounded-tr-sm max-w-[85%] border border-outline-variant/30 shadow-sm">
+                <p class="font-body-sm text-body-sm leading-relaxed">${escapeTxt(text)}</p>
+            </div>
+        `;
+        modalMessages.appendChild(div);
+    }
+
+    function appendMsgBot(text, intent, intentFile) {
+        const div = document.createElement('div');
+        div.className = 'flex justify-start';
+        const intentTag = intent ? `<span class="inline-block text-[10px] font-mono font-bold bg-primary-container text-on-primary px-1.5 py-0.5 rounded mt-1 mr-1">Intent: ${intent}</span>` : '';
+        const fileTag = intentFile ? `<span class="inline-block text-[10px] font-mono text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded mt-1">Saved to: ${intentFile}</span>` : '';
+
+        div.innerHTML = `
+            <div class="bg-tertiary-fixed text-on-tertiary-fixed px-3.5 py-2.5 rounded-2xl rounded-tl-sm max-w-[85%] border border-outline-variant/30 relative shadow-sm">
+                <div class="absolute -left-1 top-3.5 w-2 h-2 rounded-full bg-secondary-container shadow-[0_0_8px_rgba(253,214,167,0.8)]"></div>
+                <p class="font-body-sm text-body-sm leading-relaxed">${formatMd(text)}</p>
+                <div class="flex flex-wrap items-center gap-1 mt-1">${intentTag} ${fileTag}</div>
+            </div>
+        `;
+        modalMessages.appendChild(div);
+    }
+
+    function appendTypingInd() {
+        const id = 'typing-modal-' + Date.now();
+        const div = document.createElement('div');
+        div.id = id;
+        div.className = 'flex justify-start items-center gap-1 my-1 ml-3';
+        div.innerHTML = `
+            <span class="w-1.5 h-1.5 bg-outline rounded-full animate-bounce" style="animation-delay: 0ms;"></span>
+            <span class="w-1.5 h-1.5 bg-outline rounded-full animate-bounce" style="animation-delay: 150ms;"></span>
+            <span class="w-1.5 h-1.5 bg-outline rounded-full animate-bounce" style="animation-delay: 300ms;"></span>
+        `;
+        modalMessages.appendChild(div);
+        return id;
+    }
+
+    function removeTypingInd(id) {
+        const el = document.getElementById(id);
+        if (el) el.remove();
+    }
+
+    function renderModalChips(actions) {
+        modalChips.innerHTML = '';
+        actions.forEach(act => {
+            const btn = document.createElement('button');
+            btn.className = 'bg-surface-container-high hover:bg-primary-container hover:text-on-primary text-primary px-3 py-1 rounded-full border border-outline-variant/30 transition-all font-medium';
+            btn.innerText = act;
+            btn.onclick = () => sendModalMessage(act);
+            modalChips.appendChild(btn);
+        });
+    }
+
+    function escapeTxt(str) {
+        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function formatMd(str) {
+        return escapeTxt(str)
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/`([^`]+)`/g, '<code class="bg-surface-container px-1 py-0.5 rounded font-mono text-[11px]">$1</code>')
+            .replace(/\n/g, '<br/>');
+    }
+</script>
+
+</body></html>

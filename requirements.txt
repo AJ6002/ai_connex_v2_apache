@@ -44,3 +44,11 @@ pydantic>=2.0.0
 # get_openai_llm() guards this import and raises a clear RuntimeError if
 # langchain-openai isn't installed or OPENAI_API_KEY isn't set.
 # langchain-openai>=0.2.0
+
+# ─── Platform Knowledge Base (PostgreSQL, Qdrant, MinIO) ──────────────────────
+psycopg2-binary>=2.9.9
+pgvector>=0.2.0
+qdrant-client>=1.7.0
+minio>=7.2.0
+sentence-transformers>=2.2.0
+

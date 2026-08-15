@@ -340,7 +340,7 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
           {onProceed && (
             <button
               onClick={onProceed}
-              className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold rounded-2xl transition-all flex items-center gap-2 border-none shadow-sm active:scale-95 cursor-pointer"
+              className="px-5 py-2.5 bg-[#E86326] hover:bg-[#D5521B] text-white font-mono text-xs font-bold rounded-2xl transition-all flex items-center gap-2 border-none shadow-md active:scale-95 cursor-pointer"
             >
               <span>Proceed to Next Page</span>
               <span className="material-symbols-outlined text-sm">arrow_forward</span>
@@ -356,8 +356,8 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
                 CHECKING
               </span>
             ) : status.online ? (
-              <span className="text-emerald-600 font-bold flex items-center gap-1">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+              <span className="text-[#E86326] font-bold flex items-center gap-1">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#E86326] animate-ping"></span>
                 ONLINE
               </span>
             ) : (
@@ -775,7 +775,7 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
                     </p>
                   </div>
                 </div>
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#FF6B35] bg-[#FF6B35]/10 border border-[#FF6B35]/20 px-2 py-0.5 rounded-md">
                   Quality Audit Active
                 </span>
               </div>
@@ -800,16 +800,16 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
                     {comparisonData ? comparisonData.summary.total_nulls_before : '48'}
                   </span>
                 </div>
-                <div className="p-3 bg-slate-900/50 rounded-2xl border border-slate-900/80 text-center">
-                  <span className="text-[10px] text-emerald-400 block uppercase">Nulls (After)</span>
-                  <span className="text-sm font-bold text-emerald-400">
+                <div className="p-3 glass-card rounded-2xl border border-ui text-center">
+                  <span className="text-[10px] text-[#FF6B35] block uppercase">Nulls (After)</span>
+                  <span className="text-sm font-bold text-[#FF6B35]">
                     {comparisonData ? comparisonData.summary.total_nulls_after : '0'}
                   </span>
                 </div>
               </div>
 
               {/* Data Visualization Plot & Recipe Impact Visualizer */}
-              <div className="p-4 bg-slate-950/40 rounded-2xl border border-white/5 space-y-4">
+              <div className="p-4 glass-card rounded-2xl border border-ui space-y-4">
                 <div className="flex items-center justify-between">
                   <h4 className="font-headline font-bold text-xs text-primary flex items-center gap-1.5">
                     <span className="material-symbols-outlined text-xs text-tas-blue">monitoring</span>
@@ -820,10 +820,10 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {/* Visual Chart 1: Null Imputation */}
-                  <div className="bg-slate-900/60 p-3 rounded-xl border border-white/5 flex flex-col justify-between">
+                  <div className="glass-card p-3 rounded-xl border border-ui flex flex-col justify-between">
                     <div>
-                      <span className="text-[10px] text-slate-400 block font-mono uppercase tracking-wider mb-1">Null Value Cleansing</span>
-                      <span className="text-[9px] text-slate-500 block leading-tight mb-3">Imputes missing indices dynamically with resolved mode/mean.</span>
+                      <span className="text-[10px] text-secondary block font-mono uppercase tracking-wider mb-1">Null Value Cleansing</span>
+                      <span className="text-[9px] text-muted block leading-tight mb-3">Imputes missing indices dynamically with resolved mode/mean.</span>
                     </div>
                     <div className="space-y-2">
                       {/* Before Null Bar */}
@@ -832,7 +832,7 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
                           <span>Raw Missing Data</span>
                           <span>{comparisonData ? comparisonData.summary.total_nulls_before : '48'} nulls</span>
                         </div>
-                        <div className="w-full h-3 bg-slate-950 rounded overflow-hidden">
+                        <div className="w-full h-3 bg-card border border-ui rounded overflow-hidden">
                           <div 
                             className="h-full bg-gradient-to-r from-rose-500 to-red-600 transition-all duration-1000"
                             style={{ width: comparisonData && comparisonData.summary.total_nulls_before > 0 ? '100%' : '10%' }}
@@ -841,13 +841,13 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
                       </div>
                       {/* After Null Bar */}
                       <div>
-                        <div className="flex justify-between text-[9px] font-mono text-emerald-400 mb-1">
+                        <div className="flex justify-between text-[9px] font-mono text-[#FF6B35] mb-1">
                           <span>Cleaned Dataset</span>
                           <span>{comparisonData ? comparisonData.summary.total_nulls_after : '0'} nulls</span>
                         </div>
-                        <div className="w-full h-3 bg-slate-950 rounded overflow-hidden">
+                        <div className="w-full h-3 bg-card border border-ui rounded overflow-hidden">
                           <div 
-                            className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-1000"
+                            className="h-full bg-gradient-to-r from-[#FF6B35] to-[#FF8F5A] transition-all duration-1000"
                             style={{ width: comparisonData && comparisonData.summary.total_nulls_after > 0 ? '5%' : '0%' }}
                           ></div>
                         </div>
@@ -856,10 +856,10 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
                   </div>
 
                   {/* Visual Chart 2: Feature Scale Alignment */}
-                  <div className="bg-slate-900/60 p-3 rounded-xl border border-white/5 flex flex-col justify-between">
+                  <div className="glass-card p-3 rounded-xl border border-ui flex flex-col justify-between">
                     <div>
-                      <span className="text-[10px] text-slate-400 block font-mono uppercase tracking-wider mb-1">Feature Scale Alignment</span>
-                      <span className="text-[9px] text-slate-500 block leading-tight mb-3">Aligns numerical distributions to standard normalized limits.</span>
+                      <span className="text-[10px] text-secondary block font-mono uppercase tracking-wider mb-1">Feature Scale Alignment</span>
+                      <span className="text-[9px] text-muted block leading-tight mb-3">Aligns numerical distributions to standard normalized limits.</span>
                     </div>
                     <div className="space-y-3 py-1">
                       {/* Raw Scales (Misaligned) */}
@@ -874,29 +874,29 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
                       </div>
                       {/* Scaled Scales (Aligned) */}
                       <div>
-                        <span className="text-[9px] font-mono text-emerald-400 block mb-1">Scaled Features Range (Normalized)</span>
+                        <span className="text-[9px] font-mono text-[#FF6B35] block mb-1">Scaled Features Range (Normalized)</span>
                         <div className="flex gap-1 items-center h-4">
-                          <div className="h-2 bg-emerald-500 rounded-full transition-all duration-1000" style={{ width: '50%' }}></div>
-                          <div className="h-2 bg-emerald-500 rounded-full transition-all duration-1000" style={{ width: '50%' }}></div>
-                          <div className="h-2 bg-emerald-500 rounded-full transition-all duration-1000" style={{ width: '50%' }}></div>
-                          <div className="h-2 bg-emerald-500 rounded-full transition-all duration-1000" style={{ width: '50%' }}></div>
+                          <div className="h-2 bg-[#FF6B35] rounded-full transition-all duration-1000" style={{ width: '50%' }}></div>
+                          <div className="h-2 bg-[#FF6B35] rounded-full transition-all duration-1000" style={{ width: '50%' }}></div>
+                          <div className="h-2 bg-[#FF6B35] rounded-full transition-all duration-1000" style={{ width: '50%' }}></div>
+                          <div className="h-2 bg-[#FF6B35] rounded-full transition-all duration-1000" style={{ width: '50%' }}></div>
                         </div>
                       </div>
                     </div>
                   </div>
 
                   {/* Visual Chart 3: Outlier Clipping Indicator */}
-                  <div className="bg-slate-900/60 p-3 rounded-xl border border-white/5 flex flex-col justify-between">
+                  <div className="glass-card p-3 rounded-xl border border-ui flex flex-col justify-between">
                     <div>
-                      <span className="text-[10px] text-slate-400 block font-mono uppercase tracking-wider mb-1">Outliers Clipping Impact</span>
-                      <span className="text-[9px] text-slate-500 block leading-tight mb-3">Clips extreme values outside statistical boundaries.</span>
+                      <span className="text-[10px] text-secondary block font-mono uppercase tracking-wider mb-1">Outliers Clipping Impact</span>
+                      <span className="text-[9px] text-muted block leading-tight mb-3">Clips extreme values outside statistical boundaries.</span>
                     </div>
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-[9px] font-mono">
-                        <span className="text-slate-400">Outlier Status:</span>
-                        <span className="text-amber-400 font-bold uppercase">Active</span>
+                        <span className="text-secondary">Outlier Status:</span>
+                        <span className="text-[#FF6B35] font-bold uppercase">Active</span>
                       </div>
-                      <div className="h-8 bg-slate-950 rounded-xl relative overflow-hidden flex items-center justify-center border border-white/5">
+                      <div className="h-8 bg-card rounded-xl relative overflow-hidden flex items-center justify-center border border-ui">
                         {/* Outlier Waveform simulation */}
                         <div className="absolute inset-0 flex items-center justify-around px-2 opacity-30">
                           <span className="w-1 h-4 bg-rose-500 rounded"></span>
@@ -907,28 +907,28 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
                         </div>
                         {/* Clipped wave */}
                         <div className="absolute inset-0 flex items-center justify-around px-2">
-                          <span className="w-1 h-3 bg-emerald-400 rounded transition-all duration-1000"></span>
-                          <span className="w-1 h-3 bg-emerald-400 rounded transition-all duration-1000"></span>
-                          <span className="w-1 h-3 bg-emerald-400 rounded transition-all duration-1000"></span>
-                          <span className="w-1 h-3 bg-emerald-400 rounded transition-all duration-1000"></span>
+                          <span className="w-1 h-3 bg-[#FF6B35] rounded transition-all duration-1000"></span>
+                          <span className="w-1 h-3 bg-[#FF6B35] rounded transition-all duration-1000"></span>
+                          <span className="w-1 h-3 bg-[#FF6B35] rounded transition-all duration-1000"></span>
+                          <span className="w-1 h-3 bg-[#FF6B35] rounded transition-all duration-1000"></span>
                         </div>
-                        <span className="text-[9px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 z-10 font-bold">Stable Range</span>
+                        <span className="text-[9px] font-mono text-[#FF6B35] bg-[#FF6B35]/10 px-2 py-0.5 rounded border border-[#FF6B35]/20 z-10 font-bold">Stable Range</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Visual Histograms Detail Section */}
-                <div className="bg-slate-900/60 p-4 rounded-xl border border-white/5 space-y-3 mt-4">
+                <div className="glass-card p-4 rounded-xl border border-ui space-y-3 mt-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-slate-300 font-mono uppercase tracking-wider">Telemetry Feature Distribution (Histogram & Density Curve)</span>
+                    <span className="text-[10px] text-secondary font-mono uppercase tracking-wider">Telemetry Feature Distribution (Histogram & Density Curve)</span>
                     <div className="flex gap-2 text-[9px] font-mono">
                       <span className="flex items-center gap-1"><span className="w-2 h-2 rounded bg-rose-500"></span>Raw Skewed</span>
-                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded bg-emerald-500"></span>Cleaned Normal</span>
+                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded bg-[#FF6B35]"></span>Cleaned Normal</span>
                     </div>
                   </div>
 
-                  <div className="relative w-full h-32 bg-slate-950 rounded-xl overflow-hidden border border-white/5 p-2 flex flex-col justify-between">
+                  <div className="relative w-full h-32 bg-card rounded-xl overflow-hidden border border-ui p-2 flex flex-col justify-between">
                     {/* SVG Density Curve Plot */}
                     <svg className="absolute inset-0 w-full h-full" viewBox="0 0 500 120" preserveAspectRatio="none">
                       <defs>
@@ -937,8 +937,8 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
                           <stop offset="100%" stopColor="#f43f5e" stopOpacity="0.0" />
                         </linearGradient>
                         <linearGradient id="cleanGrad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#10b981" stopOpacity="0.4" />
-                          <stop offset="100%" stopColor="#10b981" stopOpacity="0.0" />
+                          <stop offset="0%" stopColor="#FF6B35" stopOpacity="0.4" />
+                          <stop offset="100%" stopColor="#FF6B35" stopOpacity="0.0" />
                         </linearGradient>
                       </defs>
 
@@ -961,7 +961,7 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
                       <path 
                         d="M 10 100 Q 150 100, 250 20 T 350 100 T 490 100 L 490 120 L 10 120 Z" 
                         fill="url(#cleanGrad)" 
-                        stroke="#10b981" 
+                        stroke="#FF6B35" 
                         strokeWidth="2" 
                         strokeDasharray="1"
                         className="transition-all duration-1000"
@@ -971,7 +971,7 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
                     {/* Chart Legend Labels */}
                     <div className="z-10 flex justify-between w-full text-[9px] font-mono text-slate-500 mt-auto">
                       <span>Low Bounds (-Inf)</span>
-                      <span className="text-emerald-400 font-bold bg-emerald-500/10 px-1.5 py-0.2 rounded border border-emerald-500/20">Optimal Center Mean</span>
+                      <span className="text-[#FF6B35] font-bold bg-[#FF6B35]/10 px-1.5 py-0.2 rounded border border-[#FF6B35]/20">Optimal Center Mean</span>
                       <span>High Bounds (+Inf)</span>
                     </div>
                   </div>
@@ -983,21 +983,21 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
                 </div>
 
                 {/* Target Column Variance & Cardinality Visualizer */}
-                <div className="bg-slate-900/60 p-4 rounded-xl border border-white/5 space-y-3 mt-4">
+                <div className="glass-card p-4 rounded-xl border border-ui space-y-3 mt-4">
                   <div className="flex items-center justify-between">
                     <h5 className="font-headline font-bold text-xs text-primary flex items-center gap-1.5">
                       <span className="material-symbols-outlined text-xs text-tas-red font-bold animate-pulse">analytics</span>
                       <span>Target Column Variance & Info Density Dashboard</span>
                     </h5>
-                    <span className="text-[9px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">Active Target: {comparisonData?.summary?.target_column || targetCol}</span>
+                    <span className="text-[9px] font-mono text-[#FF6B35] bg-[#FF6B35]/10 px-2 py-0.5 rounded border border-[#FF6B35]/20">Active Target: {comparisonData?.summary?.target_column || targetCol}</span>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* Left Panel: Variance Scale Gauge */}
-                    <div className="bg-slate-950 p-3 rounded-lg border border-white/5 flex flex-col justify-between">
+                    <div className="bg-card p-3 rounded-lg border border-ui flex flex-col justify-between">
                       <div>
-                        <span className="text-[10px] text-slate-400 block font-mono uppercase tracking-wider mb-1">Variance Audit Score</span>
-                        <span className="text-[9px] text-slate-500 block leading-tight mb-3">Checks for zero variance (fails VG-1) and scales targets for training.</span>
+                        <span className="text-[10px] text-secondary block font-mono uppercase tracking-wider mb-1">Variance Audit Score</span>
+                        <span className="text-[9px] text-muted block leading-tight mb-3">Checks for zero variance (fails VG-1) and scales targets for training.</span>
                       </div>
                       
                       <div className="space-y-3">
@@ -1018,28 +1018,28 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
                         <div>
                           <div className="flex justify-between text-[9px] font-mono text-slate-400 mb-1">
                             <span>Prepared Variance (Scaled):</span>
-                            <span className="text-emerald-400 font-bold">
+                            <span className="text-[#FF6B35] font-bold">
                               {comparisonData?.summary?.target_var_after ? comparisonData.summary.target_var_after.toFixed(4) : '1.0000'}
                             </span>
                           </div>
                           <div className="w-full h-2 bg-slate-900 rounded overflow-hidden">
-                            <div className="h-full bg-emerald-500 rounded transition-all duration-1000" style={{ width: '100%' }}></div>
+                            <div className="h-full bg-[#FF6B35] rounded transition-all duration-1000" style={{ width: '100%' }}></div>
                           </div>
                         </div>
                       </div>
                     </div>
 
                     {/* Right Panel: Target Cardinality and Balance */}
-                    <div className="bg-slate-950 p-3 rounded-lg border border-white/5 flex flex-col justify-between">
+                    <div className="bg-card p-3 rounded-lg border border-ui flex flex-col justify-between">
                       <div>
-                        <span className="text-[10px] text-slate-400 block font-mono uppercase tracking-wider mb-1">Target Cardinality & Task Recommendation</span>
-                        <span className="text-[9px] text-slate-500 block leading-tight mb-3">Uses nunique to classify Task Family and DAG ID routing.</span>
+                        <span className="text-[10px] text-secondary block font-mono uppercase tracking-wider mb-1">Target Cardinality & Task Recommendation</span>
+                        <span className="text-[9px] text-muted block leading-tight mb-3">Uses nunique to classify Task Family and DAG ID routing.</span>
                       </div>
 
                       <div className="space-y-2">
                         <div className="flex justify-between text-[9px] font-mono">
                           <span className="text-slate-400">Unique Target Values:</span>
-                          <span className="text-emerald-400 font-bold">{comparisonData?.summary?.target_nunique || 'Continuous (>20)'}</span>
+                          <span className="text-[#FF6B35] font-bold">{comparisonData?.summary?.target_nunique || 'Continuous (>20)'}</span>
                         </div>
                         <div className="flex justify-between text-[9px] font-mono">
                           <span className="text-slate-400">Task Recommendation:</span>
@@ -1047,7 +1047,7 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
                         </div>
                         <div className="flex justify-between text-[9px] font-mono">
                           <span className="text-slate-400">Variance Status:</span>
-                          <span className="text-emerald-400 bg-emerald-500/10 px-1 py-0.2 rounded font-bold uppercase">Optimal Variance</span>
+                          <span className="text-[#FF6B35] bg-[#FF6B35]/10 px-1 py-0.2 rounded font-bold uppercase">Optimal Variance</span>
                         </div>
                       </div>
                     </div>
@@ -1065,11 +1065,11 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
                 <div className="max-h-60 overflow-y-auto space-y-2 pr-1 scrollbar-thin">
                   {comparisonData && comparisonData.columns && comparisonData.columns.filter((c: any) => c.changed).length > 0 ? (
                     comparisonData.columns.filter((c: any) => c.changed).map((col: any) => (
-                      <div key={col.column} className="p-3 bg-slate-950/80 rounded-xl border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono">
+                      <div key={col.column} className="p-3 glass-card rounded-xl border border-ui flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono">
                         <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
-                          <span className="font-bold text-white">{col.column}</span>
-                          <span className="text-[9px] px-1.5 py-0.2 rounded bg-white/10 text-slate-400 uppercase">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#FF6B35]"></span>
+                          <span className="font-bold text-primary">{col.column}</span>
+                          <span className="text-[9px] px-1.5 py-0.2 rounded bg-white/10 text-secondary uppercase">
                             {col.type}
                           </span>
                         </div>
@@ -1077,12 +1077,12 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
                         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px]">
                           {col.raw_nulls > 0 && (
                             <span className="text-rose-400">
-                              Imputed: <strong>{col.raw_nulls} NaNs</strong> ➔ <strong className="text-emerald-400">0</strong>
+                              Imputed: <strong>{col.raw_nulls} NaNs</strong> ➔ <strong className="text-[#FF6B35]">0</strong>
                             </span>
                           )}
                           {col.type === 'numeric' && (col.raw_min !== col.prep_min || col.raw_max !== col.prep_max) && (
-                            <span className="text-amber-400">
-                              Clipped bounds: <strong>[{col.raw_min.toFixed(2)}, {col.raw_max.toFixed(2)}]</strong> ➔ <strong className="text-emerald-400">[{col.prep_min.toFixed(2)}, {col.prep_max.toFixed(2)}]</strong>
+                            <span className="text-[#FF6B35]">
+                              Clipped bounds: <strong>[{col.raw_min.toFixed(2)}, {col.raw_max.toFixed(2)}]</strong> ➔ <strong className="text-[#FF6B35]">[{col.prep_min.toFixed(2)}, {col.prep_max.toFixed(2)}]</strong>
                             </span>
                           )}
                         </div>
@@ -1099,20 +1099,20 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
               {/* Detailed Explanation / "How & Why" Audit Trail */}
               <div className="space-y-3 pt-2 border-t border-slate-800">
                 <h4 className="font-headline font-bold text-xs text-primary flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-xs text-emerald-400">psychology</span>
+                  <span className="material-symbols-outlined text-xs text-[#FF6B35]">psychology</span>
                   <span>Data Cleaning Logic (How and Why)</span>
                 </h4>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Operations Log */}
-                  <div className="space-y-3 bg-slate-900/60 p-4 rounded-2xl border border-slate-900/80">
-                    <span className="text-[10px] font-mono font-bold uppercase text-tas-red block">Operations Executed</span>
+                  <div className="space-y-3 glass-card p-4 rounded-2xl border border-ui">
+                    <span className="text-[10px] font-mono font-bold uppercase text-[#FF6B35] block">Operations Executed</span>
                     <div className="space-y-3 max-h-56 overflow-y-auto text-xs scrollbar-thin">
                       {comparisonData && comparisonData.actions && comparisonData.actions.length > 0 ? (
                         comparisonData.actions.map((act: any, idx: number) => (
                           <div key={idx} className="space-y-1 font-mono">
-                            <span className="text-white font-bold block">{act.column}: {act.action}</span>
-                            <span className="text-[11px] text-slate-400 block"><strong className="text-emerald-400">How:</strong> {act.how}</span>
+                            <span className="text-primary font-bold block">{act.column}: {act.action}</span>
+                            <span className="text-[11px] text-secondary block"><strong className="text-[#FF6B35]">How:</strong> {act.how}</span>
                           </div>
                         ))
                       ) : (
@@ -1128,14 +1128,14 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
                   </div>
 
                   {/* Why Explanations */}
-                  <div className="space-y-3 bg-slate-900/60 p-4 rounded-2xl border border-slate-900/80">
-                    <span className="text-[10px] font-mono font-bold uppercase text-tas-blue block">Architectural Rationale</span>
+                  <div className="space-y-3 glass-card p-4 rounded-2xl border border-ui">
+                    <span className="text-[10px] font-mono font-bold uppercase text-[#FF6B35] block">Architectural Rationale</span>
                     <div className="space-y-3 max-h-56 overflow-y-auto text-xs scrollbar-thin">
                       {comparisonData && comparisonData.actions && comparisonData.actions.length > 0 ? (
                         comparisonData.actions.map((act: any, idx: number) => (
                           <div key={idx} className="space-y-1 font-sans">
-                            <span className="text-white font-bold block font-mono">{act.column} ({act.strategy})</span>
-                            <span className="text-[11px] text-slate-300 block"><strong className="text-tas-blue font-mono">Why:</strong> {act.why}</span>
+                            <span className="text-primary font-bold block font-mono">{act.column} ({act.strategy})</span>
+                            <span className="text-[11px] text-secondary block"><strong className="text-[#FF6B35] font-mono">Why:</strong> {act.why}</span>
                           </div>
                         ))
                       ) : (
@@ -1170,22 +1170,22 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
                 </span>
               </div>
 
-              <div className="p-4 bg-slate-900/90 border border-slate-800 rounded-2xl space-y-3 font-mono text-xs text-white">
-                <p className="text-slate-300 font-sans">
+              <div className="p-4 glass-card border border-ui rounded-2xl space-y-3 font-mono text-xs text-primary">
+                <p className="text-secondary font-sans">
                   <strong>What features mean:</strong> Engineered features transform raw sensor readings (temperatures, pressures, speeds) into mathematical derivatives (rolling averages, rate-of-change lags, polynomial interactions) that reveal physical degradation patterns.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-                  <div className="p-2.5 bg-slate-950 rounded-xl border border-white/10">
-                    <span className="text-emerald-400 font-bold block text-[10px]">LAG DERIVATIVES</span>
-                    <span className="text-white font-bold">t-1, t-5, t-10</span>
+                  <div className="p-2.5 bg-card rounded-xl border border-ui">
+                    <span className="text-[#FF6B35] font-bold block text-[10px]">LAG DERIVATIVES</span>
+                    <span className="text-primary font-bold">t-1, t-5, t-10</span>
                   </div>
-                  <div className="p-2.5 bg-slate-950 rounded-xl border border-white/10">
-                    <span className="text-tas-blue font-bold block text-[10px]">ROLLING METRICS</span>
-                    <span className="text-white font-bold">std_dev, mean (w=5)</span>
+                  <div className="p-2.5 bg-card rounded-xl border border-ui">
+                    <span className="text-[#FF6B35] font-bold block text-[10px]">ROLLING METRICS</span>
+                    <span className="text-primary font-bold">std_dev, mean (w=5)</span>
                   </div>
-                  <div className="p-2.5 bg-slate-950 rounded-xl border border-white/10">
-                    <span className="text-amber-400 font-bold block text-[10px]">INTERACTION TERMS</span>
-                    <span className="text-white font-bold">temp * pressure</span>
+                  <div className="p-2.5 bg-card rounded-xl border border-ui">
+                    <span className="text-[#FF6B35] font-bold block text-[10px]">INTERACTION TERMS</span>
+                    <span className="text-primary font-bold">temp * pressure</span>
                   </div>
                 </div>
               </div>
@@ -1197,12 +1197,12 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
             <div className="glass-panel p-6 rounded-3xl border border-ui space-y-5 animate-fadeIn" style={{background:'var(--bg-card)'}}>
               <div className="flex items-center justify-between border-b border-ui pb-3">
                 <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-emerald-500">verified</span>
+                  <span className="material-symbols-outlined text-[#FF6B35]">verified</span>
                   <h3 className="font-headline font-bold text-sm text-primary">
                     Validation_Gate_1 Report (Data Preparation Audit)
                   </h3>
                 </div>
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-md">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#FF6B35] bg-[#FF6B35]/10 px-2 py-0.5 rounded-md">
                   PASSED
                 </span>
               </div>
@@ -1218,7 +1218,7 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
                     <span className="text-primary font-bold">{item.check}</span>
                     <div className="flex items-center gap-3">
                       <span className="text-secondary text-[11px]">{item.score}</span>
-                      <span className="px-2 py-0.5 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-extrabold rounded">
+                      <span className="px-2 py-0.5 bg-[#FF6B35]/15 text-[#FF6B35] dark:text-[#FF6B35] font-extrabold rounded">
                         {item.status}
                       </span>
                     </div>
@@ -1244,21 +1244,21 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono">
-                <div className="p-3 bg-slate-900 text-white rounded-2xl border border-slate-800 text-center">
-                  <span className="text-[10px] text-slate-400 block uppercase font-bold">R² Score</span>
-                  <span className="text-lg font-bold text-emerald-400">0.942</span>
+                <div className="p-3 bg-card rounded-2xl border border-ui text-center">
+                  <span className="text-[10px] text-secondary block uppercase font-bold">R² Score</span>
+                  <span className="text-lg font-bold text-[#FF6B35]">0.942</span>
                 </div>
-                <div className="p-3 bg-slate-900 text-white rounded-2xl border border-slate-800 text-center">
-                  <span className="text-[10px] text-slate-400 block uppercase font-bold">RMSE</span>
-                  <span className="text-lg font-bold text-tas-blue">14.82</span>
+                <div className="p-3 bg-card rounded-2xl border border-ui text-center">
+                  <span className="text-[10px] text-secondary block uppercase font-bold">RMSE</span>
+                  <span className="text-lg font-bold text-[#FF6B35]">14.82</span>
                 </div>
-                <div className="p-3 bg-slate-900 text-white rounded-2xl border border-slate-800 text-center">
-                  <span className="text-[10px] text-slate-400 block uppercase font-bold">MAE</span>
-                  <span className="text-lg font-bold text-amber-400">9.14</span>
+                <div className="p-3 bg-card rounded-2xl border border-ui text-center">
+                  <span className="text-[10px] text-secondary block uppercase font-bold">MAE</span>
+                  <span className="text-lg font-bold text-[#FF6B35]">9.14</span>
                 </div>
-                <div className="p-3 bg-slate-900 text-white rounded-2xl border border-slate-800 text-center">
-                  <span className="text-[10px] text-slate-400 block uppercase font-bold">Latency</span>
-                  <span className="text-lg font-bold text-purple-400">4.2ms</span>
+                <div className="p-3 bg-card rounded-2xl border border-ui text-center">
+                  <span className="text-[10px] text-secondary block uppercase font-bold">Latency</span>
+                  <span className="text-lg font-bold text-[#FF6B35]">4.2ms</span>
                 </div>
               </div>
             </div>
@@ -1279,18 +1279,18 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
                 </span>
               </div>
 
-              <div className="p-4 bg-slate-950 text-white rounded-2xl border border-slate-800 space-y-2 font-mono text-xs">
-                <div className="flex justify-between items-center pb-2 border-b border-white/10">
-                  <span className="text-slate-300">Noise Injection Stability Test (+20% variance)</span>
-                  <span className="text-emerald-400 font-bold">98.8% Stable</span>
+              <div className="p-4 bg-card rounded-2xl border border-ui space-y-2 font-mono text-xs">
+                <div className="flex justify-between items-center pb-2 border-b border-ui">
+                  <span className="text-secondary">Noise Injection Stability Test (+20% variance)</span>
+                  <span className="text-[#FF6B35] font-bold">98.8% Stable</span>
                 </div>
-                <div className="flex justify-between items-center pb-2 border-b border-white/10">
-                  <span className="text-slate-300">Population Stability Index (PSI) Drift Score</span>
-                  <span className="text-emerald-400 font-bold">0.024 (Low Risk)</span>
+                <div className="flex justify-between items-center pb-2 border-b border-ui">
+                  <span className="text-secondary">Population Stability Index (PSI) Drift Score</span>
+                  <span className="text-[#FF6B35] font-bold">0.024 (Low Risk)</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-300">Adversarial Permutation Immunity</span>
-                  <span className="text-emerald-400 font-bold">PASSED</span>
+                  <span className="text-secondary">Adversarial Permutation Immunity</span>
+                  <span className="text-[#FF6B35] font-bold">PASSED</span>
                 </div>
               </div>
             </div>
@@ -1335,7 +1335,7 @@ export const PipelineNodeView: React.FC<PipelineNodeViewProps> = ({
                       <p className="font-bold text-xs text-primary">{target.name}</p>
                       <span className="text-[10px] text-secondary">{target.type}</span>
                     </div>
-                    <span className={`text-[9px] font-bold px-2 py-0.5 rounded ${target.highlight ? 'bg-tas-red text-white' : 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'}`}>
+                    <span className={`text-[9px] font-bold px-2 py-0.5 rounded ${target.highlight ? 'bg-tas-red text-white' : 'bg-[#FF6B35]/15 text-[#FF6B35] dark:text-[#FF6B35]'}`}>
                       {target.status}
                     </span>
                   </div>

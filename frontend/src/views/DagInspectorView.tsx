@@ -188,7 +188,7 @@ export const DagInspectorView: React.FC<DagInspectorViewProps> = ({ onSelectDagF
                     </span>
                   </div>
 
-                  <span className="font-mono text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full">
+                  <span className="font-mono text-xs font-bold text-[#FF6B35] bg-[#FF6B35]/08 border border-[#FF6B35]/20 px-2.5 py-1 rounded-full">
                     Match: {dag.matchConfidence}%
                   </span>
                 </div>
@@ -215,7 +215,7 @@ export const DagInspectorView: React.FC<DagInspectorViewProps> = ({ onSelectDagF
               <span className="text-[10px] font-mono font-bold uppercase text-tas-blue">Condition Evaluator Rule Inspector</span>
               <h3 className="font-headline font-bold text-xl text-slate-900 mt-0.5">{activeDagDetail.id}</h3>
             </div>
-            <span className="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-mono font-bold rounded-full">
+            <span className="px-3 py-1 bg-[#FF6B35]/12 text-[#FF6B35] text-xs font-mono font-bold rounded-full">
               Matched DAG_906
             </span>
           </div>
@@ -230,12 +230,12 @@ export const DagInspectorView: React.FC<DagInspectorViewProps> = ({ onSelectDagF
             <span className="text-[11px] font-mono font-bold uppercase text-slate-400 block mb-2">
               1.1 MB Rule Evaluation Logic
             </span>
-            <div className="p-3 bg-slate-900 text-emerald-400 rounded-xl font-mono text-xs space-y-1.5 shadow-inner">
+            <div className="p-3 bg-slate-900 text-[#FF6B35] rounded-xl font-mono text-xs space-y-1.5 shadow-inner">
               {activeDagDetail.rules.map((rule, idx) => (
                 <div key={idx} className="flex items-center gap-2">
                   <span className="text-slate-500">IF</span>
                   <span className="text-white font-bold">{rule}</span>
-                  <span className="material-symbols-outlined text-xs text-emerald-400 ml-auto">check</span>
+                  <span className="material-symbols-outlined text-xs text-[#FF6B35] ml-auto">check</span>
                 </div>
               ))}
             </div>

@@ -1,0 +1,1202 @@
+[
+  {
+    "acronym": "CMC",
+    "canonical_name": "Bendix ATM Control Moment Gyro",
+    "source_document": "DOC-IND-NASA-001-V1",
+    "section": "SYNOPSIS"
+  },
+  {
+    "acronym": "CMC",
+    "canonical_name": "Bendix ATM\nControl Moment Gyro",
+    "source_document": "DOC-IND-NASA-001-V1",
+    "section": "I. INTRODUCTION"
+  },
+  {
+    "acronym": "IGRA",
+    "canonical_name": "Inner Gimbal Rotor Assemblies",
+    "source_document": "DOC-IND-NASA-001-V1",
+    "section": "IV. FIELD TESTS OF CMC, IGRA, AND LTF UNITS"
+  },
+  {
+    "acronym": "LFT",
+    "canonical_name": "Life Test Fixtures",
+    "source_document": "DOC-IND-NASA-001-V1",
+    "section": "IV. FIELD TESTS OF CMC, IGRA, AND LTF UNITS"
+  },
+  {
+    "acronym": "STI",
+    "canonical_name": "Technical Information",
+    "source_document": "DOC-IND-NASA-003-V1",
+    "section": "NASA/TM\u20142010-216358"
+  },
+  {
+    "acronym": "JANNAF",
+    "canonical_name": "Air Force",
+    "source_document": "DOC-IND-NASA-003-V1",
+    "section": "NASA/TM\u20142010-216358"
+  },
+  {
+    "acronym": "EHM",
+    "canonical_name": "Engine Health Management",
+    "source_document": "DOC-IND-NASA-003-V1",
+    "section": "NASA/TM\u20142010-216358"
+  },
+  {
+    "acronym": "PBM",
+    "canonical_name": "Estimates\nPerformance\nBaseline Model",
+    "source_document": "DOC-IND-NASA-003-V1",
+    "section": "FADEC"
+  },
+  {
+    "acronym": "RTAPM",
+    "canonical_name": "Time Adaptive Performance Model",
+    "source_document": "DOC-IND-NASA-003-V1",
+    "section": "NASA/TM\u20142010-216358"
+  },
+  {
+    "acronym": "PBM",
+    "canonical_name": "Performance Baseline Model",
+    "source_document": "DOC-IND-NASA-003-V1",
+    "section": "NASA/TM\u20142010-216358"
+  },
+  {
+    "acronym": "EHM",
+    "canonical_name": "Aircraft Engine Health Management",
+    "source_document": "DOC-IND-NASA-003-V1",
+    "section": "NASA/TM\u20142010-216358"
+  },
+  {
+    "acronym": "ISHEM",
+    "canonical_name": "System Health Engineering and Management",
+    "source_document": "DOC-IND-NASA-003-V1",
+    "section": "NASA/TM\u20142010-216358"
+  },
+  {
+    "acronym": "RCM",
+    "canonical_name": "Maintenance",
+    "source_document": "DOC-IND-NASA-004-V1",
+    "section": "ABSTRACT"
+  },
+  {
+    "acronym": "MWO",
+    "canonical_name": "CMMS as a maintenance work order record",
+    "source_document": "DOC-IND-NASA-004-V1",
+    "section": "ABSTRACT"
+  },
+  {
+    "acronym": "BFO",
+    "canonical_name": "Basic Formal Ontology",
+    "source_document": "DOC-IND-NASA-004-V1",
+    "section": "ABSTRACT"
+  },
+  {
+    "acronym": "OWL",
+    "canonical_name": "Web Ontology Language",
+    "source_document": "DOC-IND-NASA-004-V1",
+    "section": "ABSTRACT"
+  },
+  {
+    "acronym": "RDF",
+    "canonical_name": "Resource Description Framework",
+    "source_document": "DOC-IND-NASA-004-V1",
+    "section": "ABSTRACT"
+  },
+  {
+    "acronym": "RDFS",
+    "canonical_name": "RDF Schema",
+    "source_document": "DOC-IND-NASA-004-V1",
+    "section": "ABSTRACT"
+  },
+  {
+    "acronym": "IDO",
+    "canonical_name": "Industrial Data Ontology",
+    "source_document": "DOC-IND-NASA-004-V1",
+    "section": "ABSTRACT"
+  },
+  {
+    "acronym": "LLM",
+    "canonical_name": "Large Language Models",
+    "source_document": "DOC-IND-NASA-004-V1",
+    "section": "ABSTRACT"
+  },
+  {
+    "acronym": "BFO",
+    "canonical_name": "Basic Formal\nOntology",
+    "source_document": "DOC-IND-NASA-004-V1",
+    "section": "ABSTRACT"
+  },
+  {
+    "acronym": "ISWC",
+    "canonical_name": "In International Semantic Web Conference",
+    "source_document": "DOC-IND-NASA-004-V1",
+    "section": "(ISWC), 2023."
+  },
+  {
+    "acronym": "PHM",
+    "canonical_name": "Prognostics and\nHealth Management",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "Title & Abstract"
+  },
+  {
+    "acronym": "PHM",
+    "canonical_name": "Prognostics and health management",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "Title & Abstract"
+  },
+  {
+    "acronym": "ATA",
+    "canonical_name": "Air Transport\nAssociation",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "Title & Abstract"
+  },
+  {
+    "acronym": "IEC",
+    "canonical_name": "International Electrotechnical Commission",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "Title & Abstract"
+  },
+  {
+    "acronym": "ISO",
+    "canonical_name": "Organization\nfor Standardization",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "Title & Abstract"
+  },
+  {
+    "acronym": "SAE",
+    "canonical_name": "Society of Automotive Engineers",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "Title & Abstract"
+  },
+  {
+    "acronym": "PHM",
+    "canonical_name": "Basics\nPrognostics and health management",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "Title & Abstract"
+  },
+  {
+    "acronym": "FTA",
+    "canonical_name": "Fault tree analysis",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "IEC 61025"
+  },
+  {
+    "acronym": "FMEA",
+    "canonical_name": "Failure Modes and Effects Analysis",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "ARP5580"
+  },
+  {
+    "acronym": "ANSI",
+    "canonical_name": "American National Standards Institute",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "ISO 18436\u20108"
+  },
+  {
+    "acronym": "MSG",
+    "canonical_name": "The Maintenance Steering Group",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "ISO 18436\u20108"
+  },
+  {
+    "acronym": "ATA",
+    "canonical_name": "Air Transport Association",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "ISO 18436\u20108"
+  },
+  {
+    "acronym": "ADS",
+    "canonical_name": "Aeronautical Design Standard",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "ISO 18436\u20108"
+  },
+  {
+    "acronym": "HDBK",
+    "canonical_name": "Handbook",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "ISO 18436\u20108"
+  },
+  {
+    "acronym": "MIMOSA",
+    "canonical_name": "Management Open Standards Alliance",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "ISO 18436\u20108"
+  },
+  {
+    "acronym": "FMEA",
+    "canonical_name": "FMECA\nFailure modes and effects analysis",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "ISO 18436\u20108"
+  },
+  {
+    "acronym": "CA",
+    "canonical_name": "FMEA and criticality\nanalysis",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "ISO 18436\u20108"
+  },
+  {
+    "acronym": "PFMEA",
+    "canonical_name": "FMEA",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "ISO 18436\u20108"
+  },
+  {
+    "acronym": "DSIC",
+    "canonical_name": "The Defense Standards Improvement\nCouncil",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "ISO 18436\u20108"
+  },
+  {
+    "acronym": "FMEA",
+    "canonical_name": "Failure Mode and Effects Analysis",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "ISO 18436\u20108"
+  },
+  {
+    "acronym": "DFMEA",
+    "canonical_name": "FMEA",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "ISO 18436\u20108"
+  },
+  {
+    "acronym": "JTC",
+    "canonical_name": "Joint Technical Committee",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "ISO 18436\u20108"
+  },
+  {
+    "acronym": "PNML",
+    "canonical_name": "Petri Net\nMarkup Language",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "ISO/IEC 15909\u20101."
+  },
+  {
+    "acronym": "XML",
+    "canonical_name": "Extensible Markup Language",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "ISO/IEC 15909\u20101."
+  },
+  {
+    "acronym": "MIMOSA",
+    "canonical_name": "Management Open Systems Alliance",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "ISO/IEC 15909\u20101."
+  },
+  {
+    "acronym": "CRIS",
+    "canonical_name": "Common Relational Information Schema",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "ISO/IEC 15909\u20101."
+  },
+  {
+    "acronym": "DA",
+    "canonical_name": "Data Acquisition",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "ISO/IEC 15909\u20101."
+  },
+  {
+    "acronym": "ADID",
+    "canonical_name": "Application Domain Integration\nDiagram",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "ISO/IEC 15909\u20101."
+  },
+  {
+    "acronym": "SAE",
+    "canonical_name": "The Society of Automotive Engineers",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "ISO/IEC 15909\u20101."
+  },
+  {
+    "acronym": "IAEA",
+    "canonical_name": "International Atomic Energy Agency",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "ISO/IEC 15909\u20101."
+  },
+  {
+    "acronym": "CBM",
+    "canonical_name": "Condition Based Maintenance",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "ISO 18435\u20103"
+  },
+  {
+    "acronym": "IEEE",
+    "canonical_name": "Electrical and Electronics Engineers",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "ISO 18435\u20103"
+  },
+  {
+    "acronym": "WD",
+    "canonical_name": "The working draft",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "ISO 18435\u20103"
+  },
+  {
+    "acronym": "PT",
+    "canonical_name": "Examples include actual production time",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "ISO 18435\u20103"
+  },
+  {
+    "acronym": "GE",
+    "canonical_name": "General\nElectric",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "ISO 18435\u20103"
+  },
+  {
+    "acronym": "ISO",
+    "canonical_name": "Organization for Standardization",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "ISO 18435\u20103"
+  },
+  {
+    "acronym": "IEC",
+    "canonical_name": "International Electrotechnical\nCommission",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "ISO 18435\u20103"
+  },
+  {
+    "acronym": "CALCE",
+    "canonical_name": "Advanced Life Cycle Engineering",
+    "source_document": "DOC-IND-NIST-001-V1",
+    "section": "(AS)."
+  },
+  {
+    "acronym": "DPC",
+    "canonical_name": "Dollar Photo Club",
+    "source_document": "DOC-IND-NIST-002-V1",
+    "section": "Title & Abstract"
+  },
+  {
+    "acronym": "PHM",
+    "canonical_name": "PHM\nPrognostics and Health Management",
+    "source_document": "DOC-IND-NIST-002-V1",
+    "section": "DISCLAIMER"
+  },
+  {
+    "acronym": "SMS",
+    "canonical_name": "These Smart\nManufacturing Systems",
+    "source_document": "DOC-IND-NIST-002-V1",
+    "section": "DISCLAIMER"
+  },
+  {
+    "acronym": "DMDII",
+    "canonical_name": "Design Innovation Institute",
+    "source_document": "DOC-IND-NIST-002-V1",
+    "section": "DISCLAIMER"
+  },
+  {
+    "acronym": "TPM",
+    "canonical_name": "Total Predictive Maintenance",
+    "source_document": "DOC-IND-NIST-002-V1",
+    "section": "DISCLAIMER"
+  },
+  {
+    "acronym": "EPA",
+    "canonical_name": "Environmental Protection\nAgency",
+    "source_document": "DOC-IND-NIST-002-V1",
+    "section": "DISCLAIMER"
+  },
+  {
+    "acronym": "SMOPAC",
+    "canonical_name": "Operations\nPlanning and Control Program",
+    "source_document": "DOC-IND-NIST-002-V1",
+    "section": "DISCLAIMER"
+  },
+  {
+    "acronym": "EL",
+    "canonical_name": "Engineering Laboratory",
+    "source_document": "DOC-IND-NIST-002-V1",
+    "section": "DISCLAIMER"
+  },
+  {
+    "acronym": "NSF",
+    "canonical_name": "Director of National Science\nFoundation",
+    "source_document": "DOC-IND-NIST-002-V1",
+    "section": "DISCLAIMER"
+  },
+  {
+    "acronym": "TPM",
+    "canonical_name": "Total\nProductive Maintenance",
+    "source_document": "DOC-IND-NIST-002-V1",
+    "section": "DISCLAIMER"
+  },
+  {
+    "acronym": "NSF",
+    "canonical_name": "Prepared for National Science Foundation",
+    "source_document": "DOC-IND-NIST-002-V1",
+    "section": "DISCLAIMER"
+  },
+  {
+    "acronym": "DAQ",
+    "canonical_name": "Sensor and data acquisition",
+    "source_document": "DOC-IND-NIST-002-V1",
+    "section": "\uf0b7 100% OEE"
+  },
+  {
+    "acronym": "ISO",
+    "canonical_name": "International Standards Organization",
+    "source_document": "DOC-IND-NIST-002-V1",
+    "section": "\uf0b7 100% OEE"
+  },
+  {
+    "acronym": "HMI",
+    "canonical_name": "Demonstration of human machine interface",
+    "source_document": "DOC-IND-NIST-002-V1",
+    "section": "FIGURE 2-3. ENTERPRISE-WIDE PHM FOR MAINTENANCE PLANNING"
+  },
+  {
+    "acronym": "ROI",
+    "canonical_name": "HM cost to determine\nreturn on investment",
+    "source_document": "DOC-IND-NIST-002-V1",
+    "section": "FIGURE 3-2. COST MODEL FOR PHM PERFORMANCE"
+  },
+  {
+    "acronym": "CNC",
+    "canonical_name": "Computer Numerical Control",
+    "source_document": "DOC-IND-NIST-002-V1",
+    "section": "LONG-TERM"
+  },
+  {
+    "acronym": "MIMOSA",
+    "canonical_name": "Management\nOpen Systems Alliance",
+    "source_document": "DOC-IND-NIST-002-V1",
+    "section": "LONG-TERM"
+  },
+  {
+    "acronym": "MTTF",
+    "canonical_name": "RUL or\nmean time to failure",
+    "source_document": "DOC-IND-NIST-002-V1",
+    "section": "TIMELY INFORMATION"
+  },
+  {
+    "acronym": "MSV",
+    "canonical_name": "Visualization",
+    "source_document": "DOC-IND-NIST-002-V1",
+    "section": "TIMELY INFORMATION"
+  },
+  {
+    "acronym": "TUR",
+    "canonical_name": "The test uncertainty ratio",
+    "source_document": "DOC-IND-NIST-002-V1",
+    "section": "PRIORITY ROADMAPS"
+  },
+  {
+    "acronym": "PARC",
+    "canonical_name": "Linxia Liao\nPalo Alto Research Center",
+    "source_document": "DOC-IND-NIST-002-V1",
+    "section": "PRIORITY ROADMAPS"
+  },
+  {
+    "acronym": "JSF",
+    "canonical_name": "Joint Strike Fighter",
+    "source_document": "DOC-IND-NIST-003-V1",
+    "section": "Title & Abstract"
+  },
+  {
+    "acronym": "ARL",
+    "canonical_name": "Applied Research Laboratory",
+    "source_document": "DOC-IND-NIST-003-V1",
+    "section": "Title & Abstract"
+  },
+  {
+    "acronym": "ATSV",
+    "canonical_name": "ARL Trade Space Visualizer",
+    "source_document": "DOC-IND-NIST-003-V1",
+    "section": "Title & Abstract"
+  },
+  {
+    "acronym": "BBN",
+    "canonical_name": "Bayesian Belief Network",
+    "source_document": "DOC-IND-NIST-003-V1",
+    "section": "Title & Abstract"
+  },
+  {
+    "acronym": "IMS",
+    "canonical_name": "Center for Intelligent Maintenance System",
+    "source_document": "DOC-IND-NIST-003-V1",
+    "section": "Title & Abstract"
+  },
+  {
+    "acronym": "CLOE",
+    "canonical_name": "Common Logistics Operating\nEnvironment",
+    "source_document": "DOC-IND-NIST-003-V1",
+    "section": "Title & Abstract"
+  },
+  {
+    "acronym": "ALIS",
+    "canonical_name": "Autonomic Logistics Information\nSystem",
+    "source_document": "DOC-IND-NIST-003-V1",
+    "section": "Title & Abstract"
+  },
+  {
+    "acronym": "GEAE",
+    "canonical_name": "GE Aircraft Engines",
+    "source_document": "DOC-IND-NIST-003-V1",
+    "section": "Title & Abstract"
+  },
+  {
+    "acronym": "GM",
+    "canonical_name": "General Motors",
+    "source_document": "DOC-IND-NIST-003-V1",
+    "section": "Title & Abstract"
+  },
+  {
+    "acronym": "EIS",
+    "canonical_name": "An\nengineering immune system",
+    "source_document": "DOC-IND-NIST-003-V1",
+    "section": "Title & Abstract"
+  },
+  {
+    "acronym": "RLV",
+    "canonical_name": "Reusable Launch Vehicle",
+    "source_document": "DOC-IND-NIST-003-V1",
+    "section": "Title & Abstract"
+  },
+  {
+    "acronym": "FMECA",
+    "canonical_name": "Criticality Analysis",
+    "source_document": "DOC-IND-NIST-003-V1",
+    "section": "Title & Abstract"
+  },
+  {
+    "acronym": "ASMC",
+    "canonical_name": "Semiconductor\nManufacturing Conference",
+    "source_document": "DOC-IND-NIST-003-V1",
+    "section": "MSEC2016; 2016."
+  },
+  {
+    "acronym": "PHMC",
+    "canonical_name": "Control",
+    "source_document": "DOC-IND-NIST-003-V1",
+    "section": "MSEC2016; 2016."
+  },
+  {
+    "acronym": "IEC",
+    "canonical_name": "International\nElectrotechnical Commission",
+    "source_document": "DOC-IND-PAPER-001-V1",
+    "section": "(ATA),"
+  },
+  {
+    "acronym": "MIMOSA",
+    "canonical_name": "Management Open Standards\nAlliance",
+    "source_document": "DOC-IND-PAPER-001-V1",
+    "section": "ANNUAL CONFERENCE OF THE PROGNOSTICS AND HEALTH MANAGEMENT SOCIETY 2014"
+  },
+  {
+    "acronym": "ARP",
+    "canonical_name": "Aerospace Recommended Practice",
+    "source_document": "DOC-IND-PAPER-001-V1",
+    "section": "ADS-79D-HDBK"
+  },
+  {
+    "acronym": "RPN",
+    "canonical_name": "Even\nthough the risk priority number",
+    "source_document": "DOC-IND-PAPER-001-V1",
+    "section": "ANNUAL CONFERENCE OF THE PROGNOSTICS AND HEALTH MANAGEMENT SOCIETY 2014"
+  },
+  {
+    "acronym": "FTA",
+    "canonical_name": "Down Methods\nFault Tree Analysis",
+    "source_document": "DOC-IND-PAPER-001-V1",
+    "section": "ANNUAL CONFERENCE OF THE PROGNOSTICS AND HEALTH MANAGEMENT SOCIETY 2014"
+  },
+  {
+    "acronym": "PNML",
+    "canonical_name": "Petri Net Markup Language",
+    "source_document": "DOC-IND-PAPER-001-V1",
+    "section": "(JTC)"
+  },
+  {
+    "acronym": "MIMOSA",
+    "canonical_name": "Management\nOpen\nSystems\nAlliance",
+    "source_document": "DOC-IND-PAPER-001-V1",
+    "section": "ANNUAL CONFERENCE OF THE PROGNOSTICS AND HEALTH MANAGEMENT SOCIETY 2014"
+  },
+  {
+    "acronym": "ADID",
+    "canonical_name": "Application Domain\nIntegration Diagram",
+    "source_document": "DOC-IND-PAPER-001-V1",
+    "section": "ANNUAL CONFERENCE OF THE PROGNOSTICS AND HEALTH MANAGEMENT SOCIETY 2014"
+  },
+  {
+    "acronym": "IVHM",
+    "canonical_name": "Integrated Vehicle Health Management",
+    "source_document": "DOC-IND-PAPER-001-V1",
+    "section": "ARP6290"
+  },
+  {
+    "acronym": "ROSE",
+    "canonical_name": "Robotic and Sensors\nEnvironments",
+    "source_document": "DOC-IND-PAPER-001-V1",
+    "section": "ISO/WD"
+  },
+  {
+    "acronym": "PHM",
+    "canonical_name": "Prognostics\nand\nHealth\nManagement",
+    "source_document": "DOC-IND-PAPER-001-V1",
+    "section": "ADS-79D-HDBK"
+  },
+  {
+    "acronym": "PHM",
+    "canonical_name": "Prognostics\nand Health Management",
+    "source_document": "DOC-IND-PAPER-002-V1",
+    "section": "Title & Abstract"
+  },
+  {
+    "acronym": "DM",
+    "canonical_name": "Data Manipulation",
+    "source_document": "DOC-IND-PAPER-002-V1",
+    "section": "(PHM)."
+  },
+  {
+    "acronym": "SD",
+    "canonical_name": "State Detection",
+    "source_document": "DOC-IND-PAPER-002-V1",
+    "section": "(PHM)."
+  },
+  {
+    "acronym": "HA",
+    "canonical_name": "Health Assessment",
+    "source_document": "DOC-IND-PAPER-002-V1",
+    "section": "(PHM)."
+  },
+  {
+    "acronym": "PA",
+    "canonical_name": "Prognostic Assessment",
+    "source_document": "DOC-IND-PAPER-002-V1",
+    "section": "(PHM)."
+  },
+  {
+    "acronym": "PHM",
+    "canonical_name": "ASA for Prognostics and Health Management",
+    "source_document": "DOC-IND-PAPER-002-V1",
+    "section": "(PHM)."
+  },
+  {
+    "acronym": "STFT",
+    "canonical_name": "Time Fourier Transform",
+    "source_document": "DOC-IND-PAPER-002-V1",
+    "section": "LSTM [9]."
+  },
+  {
+    "acronym": "ICPHM",
+    "canonical_name": "Prognostics and Health Management",
+    "source_document": "DOC-IND-PAPER-002-V1",
+    "section": "LSTM [9]."
+  },
+  {
+    "acronym": "SIITME",
+    "canonical_name": "Technology in\nElectronic Packaging",
+    "source_document": "DOC-IND-PAPER-002-V1",
+    "section": "LSTM [9]."
+  },
+  {
+    "acronym": "AM",
+    "canonical_name": "Industrial Asset Management",
+    "source_document": "DOC-IND-PAPER-003-V1",
+    "section": "Title & Abstract"
+  },
+  {
+    "acronym": "DOLCE",
+    "canonical_name": "Linguistic and Cognitive Engineering",
+    "source_document": "DOC-IND-PAPER-003-V1",
+    "section": "Title & Abstract"
+  },
+  {
+    "acronym": "FOL",
+    "canonical_name": "First Order Logic",
+    "source_document": "DOC-IND-PAPER-003-V1",
+    "section": "Title & Abstract"
+  },
+  {
+    "acronym": "ORMA",
+    "canonical_name": "The developed ontology",
+    "source_document": "DOC-IND-PAPER-003-V1",
+    "section": "ISO 13306"
+  },
+  {
+    "acronym": "IJISMD",
+    "canonical_name": "Information System Modeling and Design",
+    "source_document": "DOC-IND-PAPER-003-V1",
+    "section": "ISO 13306"
+  },
+  {
+    "acronym": "BIM",
+    "canonical_name": "Building Information Modeling",
+    "source_document": "DOC-IND-PAPER-003-V1",
+    "section": "ISO 13306"
+  },
+  {
+    "acronym": "WI",
+    "canonical_name": "Joint Conferences on Web Intelligence",
+    "source_document": "DOC-IND-PAPER-003-V1",
+    "section": "ISO 13306"
+  },
+  {
+    "acronym": "IAT",
+    "canonical_name": "Intelligent Agent\nTechnologies",
+    "source_document": "DOC-IND-PAPER-003-V1",
+    "section": "ISO 13306"
+  },
+  {
+    "acronym": "GO",
+    "canonical_name": "Gene Ontology",
+    "source_document": "DOC-IND-PAPER-003-V1",
+    "section": "ISO 13306"
+  },
+  {
+    "acronym": "NLP",
+    "canonical_name": "MWOs using natural language processing",
+    "source_document": "DOC-IND-PAPER-005-V1",
+    "section": "DOI 10.3233/SW-233299"
+  },
+  {
+    "acronym": "BFO",
+    "canonical_name": "Ontology",
+    "source_document": "DOC-IND-PAPER-005-V1",
+    "section": "DOI 10.3233/SW-233299"
+  },
+  {
+    "acronym": "IOF",
+    "canonical_name": "Industrial Ontology\nFoundry",
+    "source_document": "DOC-IND-PAPER-005-V1",
+    "section": "DOI 10.3233/SW-233299"
+  },
+  {
+    "acronym": "MWO",
+    "canonical_name": "Code\nStart and end dates",
+    "source_document": "DOC-IND-PAPER-005-V1",
+    "section": "DOI 10.3233/SW-233299"
+  },
+  {
+    "acronym": "PU",
+    "canonical_name": "W mech service pump\npump",
+    "source_document": "DOC-IND-PAPER-005-V1",
+    "section": "2.5.1. ISO 14224"
+  },
+  {
+    "acronym": "SME",
+    "canonical_name": "Subject Matter Expert",
+    "source_document": "DOC-IND-PAPER-005-V1",
+    "section": "(C, P)"
+  },
+  {
+    "acronym": "IOF",
+    "canonical_name": "Industrial ontology foundry",
+    "source_document": "DOC-IND-PAPER-005-V1",
+    "section": "S0890060409000079."
+  },
+  {
+    "acronym": "IJSWIS",
+    "canonical_name": "Semantic Web and Information Systems",
+    "source_document": "DOC-IND-PAPER-005-V1",
+    "section": "S0890060409000079."
+  },
+  {
+    "acronym": "FOMI",
+    "canonical_name": "Formal Ontologies Meet Industry",
+    "source_document": "DOC-IND-PAPER-005-V1",
+    "section": "S0890060409000079."
+  },
+  {
+    "acronym": "ICBK",
+    "canonical_name": "International\nConference on Big Knowledge",
+    "source_document": "DOC-IND-PAPER-005-V1",
+    "section": "S0890060409000079."
+  },
+  {
+    "acronym": "IEV",
+    "canonical_name": "International Electrotechnical\nVocabulary",
+    "source_document": "DOC-IND-STD-001-V1",
+    "section": "THIS PUBLICATION IS COPYRIGHT PROTECTED"
+  },
+  {
+    "acronym": "IEC",
+    "canonical_name": "Electrotechnique Internationale",
+    "source_document": "DOC-IND-STD-001-V1",
+    "section": "CISPR."
+  },
+  {
+    "acronym": "IEV",
+    "canonical_name": "Electrotechnique International",
+    "source_document": "DOC-IND-STD-001-V1",
+    "section": "CISPR."
+  },
+  {
+    "acronym": "PAS",
+    "canonical_name": "Publicly Available Specifications",
+    "source_document": "DOC-IND-STD-001-V1",
+    "section": "FOREWORD"
+  },
+  {
+    "acronym": "AI",
+    "canonical_name": "Artifical intelligence",
+    "source_document": "DOC-IND-STD-003-V1",
+    "section": "ISO/FDIS 13381-1"
+  },
+  {
+    "acronym": "WTO",
+    "canonical_name": "World Trade\nOrganization",
+    "source_document": "DOC-IND-STD-003-V1",
+    "section": "ISO/FDIS 13381-1"
+  },
+  {
+    "acronym": "TBT",
+    "canonical_name": "Technical Barriers to Trade",
+    "source_document": "DOC-IND-STD-003-V1",
+    "section": "ISO/FDIS 13381-1"
+  },
+  {
+    "acronym": "TBT",
+    "canonical_name": "Technical\nBarriers to Trade",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO 14224:2016(E)"
+  },
+  {
+    "acronym": "MI",
+    "canonical_name": "Maintainable\nitem",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO 14224:2016(E)"
+  },
+  {
+    "acronym": "PM",
+    "canonical_name": "Records describing preventive maintenance",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO 14224:2016(E)"
+  },
+  {
+    "acronym": "PBS",
+    "canonical_name": "Physical\nBreakdown Structure",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO 14224:2016(E)"
+  },
+  {
+    "acronym": "COR",
+    "canonical_name": "Code of Resources",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO 14224:2016(E)"
+  },
+  {
+    "acronym": "FLNG",
+    "canonical_name": "Terminal\nPipeline\nFloating LNG",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "(E\u00a0&\u00a0P)"
+  },
+  {
+    "acronym": "GTL",
+    "canonical_name": "Gas conversion includes Gas to Liquids",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "(LPG)"
+  },
+  {
+    "acronym": "CHP",
+    "canonical_name": "Combined heat and power",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "(LPG)"
+  },
+  {
+    "acronym": "MODU",
+    "canonical_name": "Drilling\nMobile offshore drilling\nunit",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "(E\u00a0&\u00a0P)"
+  },
+  {
+    "acronym": "FSU",
+    "canonical_name": "Floating storage unit",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "(E\u00a0&\u00a0P)"
+  },
+  {
+    "acronym": "TLP",
+    "canonical_name": "Compliant tower\nTension leg platform",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "(E\u00a0&\u00a0P)"
+  },
+  {
+    "acronym": "SISV",
+    "canonical_name": "Subsea intervention and\nsupport vessel",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "(E\u00a0&\u00a0P)"
+  },
+  {
+    "acronym": "GTL",
+    "canonical_name": "Process\nGas To Liquid",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "(E\u00a0&\u00a0P)"
+  },
+  {
+    "acronym": "EDP",
+    "canonical_name": "Emergency depressurization",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "(E\u00a0&\u00a0P)"
+  },
+  {
+    "acronym": "ESD",
+    "canonical_name": "Emergency shutdown",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "(E\u00a0&\u00a0P)"
+  },
+  {
+    "acronym": "PSD",
+    "canonical_name": "Process shutdown",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "(E\u00a0&\u00a0P)"
+  },
+  {
+    "acronym": "BOP",
+    "canonical_name": "MC\nNo\nSubsea blowout preventers",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO\u00a011961"
+  },
+  {
+    "acronym": "BOP",
+    "canonical_name": "Surface blowout preventers",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "A.2.8.2"
+  },
+  {
+    "acronym": "HSP",
+    "canonical_name": "Hydraulic submersible pumps",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO\u00a015138"
+  },
+  {
+    "acronym": "PCP",
+    "canonical_name": "Progressive cavity pumps",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO\u00a015138"
+  },
+  {
+    "acronym": "GLV",
+    "canonical_name": "Gas lift valves",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO\u00a015138"
+  },
+  {
+    "acronym": "ROT",
+    "canonical_name": "This includes remote operated tools",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO\u00a015138"
+  },
+  {
+    "acronym": "AVR",
+    "canonical_name": "The automatic voltage regulator",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO 14224:2016(E)"
+  },
+  {
+    "acronym": "VSDS",
+    "canonical_name": "Variable\nSpeed Drive System",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO 14224:2016(E)"
+  },
+  {
+    "acronym": "SWL",
+    "canonical_name": "Metric tonnes\nLow\nSafe working load",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "PC/PLS"
+  },
+  {
+    "acronym": "AOPS",
+    "canonical_name": "Automatic overload protection\nsystem",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO 14224:2016(E)"
+  },
+  {
+    "acronym": "UPS",
+    "canonical_name": "Uninterruptible power supply",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO 14224:2016(E)"
+  },
+  {
+    "acronym": "MCB",
+    "canonical_name": "Miniature circuit breakers",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO 14224:2016(E)"
+  },
+  {
+    "acronym": "VSDS",
+    "canonical_name": "A Variable Speed Drive Systems",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO 14224:2016(E)"
+  },
+  {
+    "acronym": "VFDS",
+    "canonical_name": "Variable Frequency Drive System",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO 14224:2016(E)"
+  },
+  {
+    "acronym": "MW",
+    "canonical_name": "Megawatts",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "AC, DC"
+  },
+  {
+    "acronym": "MVA",
+    "canonical_name": "MegaVoltAmpere",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "AC, DC"
+  },
+  {
+    "acronym": "FGA",
+    "canonical_name": "Fire and gas detectors\nFG\nFire detection",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "IEC\u00a060529"
+  },
+  {
+    "acronym": "FGB",
+    "canonical_name": "BM\nOthers\nBA\nGas detection",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "IEC\u00a060529"
+  },
+  {
+    "acronym": "PT",
+    "canonical_name": "Resistance temperature detector",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO 14224:2016(E)"
+  },
+  {
+    "acronym": "PAC",
+    "canonical_name": "SL\nProgrammable automation\ncontroller",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO 14224:2016(E)"
+  },
+  {
+    "acronym": "CPU",
+    "canonical_name": "Relay\nCentral\nprocessor\nunit",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO 14224:2016(E)"
+  },
+  {
+    "acronym": "CS",
+    "canonical_name": "Low\nValve material Type\nCarbon steel",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO 14224:2016(E)"
+  },
+  {
+    "acronym": "SCM",
+    "canonical_name": "Subsea control module",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "(DCV)"
+  },
+  {
+    "acronym": "SEM",
+    "canonical_name": "The Subsea Electrical module",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "(DCV)"
+  },
+  {
+    "acronym": "IWIS",
+    "canonical_name": "Intelligent Well Interface Standard",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "(DCV)"
+  },
+  {
+    "acronym": "VCM",
+    "canonical_name": "Vertical\nconnection\nmodule",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO 14224:2016(E)"
+  },
+  {
+    "acronym": "PGB",
+    "canonical_name": "Maintainable items Permanent guide\nbase",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO 14224:2016(E)"
+  },
+  {
+    "acronym": "TGB",
+    "canonical_name": "Temporary guide\nbase",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO 14224:2016(E)"
+  },
+  {
+    "acronym": "AMV",
+    "canonical_name": "Annulus master",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO 14224:2016(E)"
+  },
+  {
+    "acronym": "ASV",
+    "canonical_name": "Annulus swab",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO 14224:2016(E)"
+  },
+  {
+    "acronym": "AWV",
+    "canonical_name": "Annulus wing",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO 14224:2016(E)"
+  },
+  {
+    "acronym": "IWV",
+    "canonical_name": "Injection wing",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO 14224:2016(E)"
+  },
+  {
+    "acronym": "IMV",
+    "canonical_name": "Injection master",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO 14224:2016(E)"
+  },
+  {
+    "acronym": "ISV",
+    "canonical_name": "Injection\nswab",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO 14224:2016(E)"
+  },
+  {
+    "acronym": "PMV",
+    "canonical_name": "Production master",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO 14224:2016(E)"
+  },
+  {
+    "acronym": "PWV",
+    "canonical_name": "Production wing",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO 14224:2016(E)"
+  },
+  {
+    "acronym": "XOV",
+    "canonical_name": "Crossover",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO 14224:2016(E)"
+  },
+  {
+    "acronym": "EHV",
+    "canonical_name": "Extra High Voltage",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "0 - 99"
+  },
+  {
+    "acronym": "HV",
+    "canonical_name": "High Voltage",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "0 - 99"
+  },
+  {
+    "acronym": "MV",
+    "canonical_name": "Medium Voltage",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "0 - 99"
+  },
+  {
+    "acronym": "LV",
+    "canonical_name": "Low Voltage",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "0 - 99"
+  },
+  {
+    "acronym": "LV",
+    "canonical_name": "For other than low voltage",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "0 - 99"
+  },
+  {
+    "acronym": "OD",
+    "canonical_name": "Pipeline diameter\nNominal outer diameter",
+    "source_document": "DOC-IND-STD-004-V1",
+    "section": "ISO 14224:2016(E)"
+  }
+]

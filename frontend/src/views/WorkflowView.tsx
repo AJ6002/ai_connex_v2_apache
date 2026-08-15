@@ -26,7 +26,7 @@ export const WorkflowView: React.FC<WorkflowViewProps> = ({
           <nav className="flex items-center gap-2 text-slate-400 text-xs font-mono uppercase tracking-widest mb-1">
             <span>Workflow</span>
             <span className="material-symbols-outlined text-xs">chevron_right</span>
-            <span className="text-tas-blue font-bold">DAG Recipe Orchestrator</span>
+            <span className="text-[#0D1533] font-bold">DAG Recipe Orchestrator</span>
           </nav>
           <h1 className="font-headline text-2xl font-bold text-slate-900 tracking-tight">
             Total Automation Solution DAG Pipeline
@@ -40,7 +40,7 @@ export const WorkflowView: React.FC<WorkflowViewProps> = ({
           <button
             onClick={() => setActiveTab('diagram')}
             className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold font-mono transition-colors ${
-              activeTab === 'diagram' ? 'bg-tas-blue text-white shadow-xs' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+              activeTab === 'diagram' ? 'bg-[#E86326] text-white font-bold shadow-xs' : 'bg-gray-100 text-slate-700 hover:bg-gray-200'
             }`}
           >
             Diagram Map
@@ -48,7 +48,7 @@ export const WorkflowView: React.FC<WorkflowViewProps> = ({
           <button
             onClick={() => setActiveTab('recipe_specs')}
             className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold font-mono transition-colors ${
-              activeTab === 'recipe_specs' ? 'bg-tas-blue text-white shadow-xs' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+              activeTab === 'recipe_specs' ? 'bg-[#E86326] text-white font-bold shadow-xs' : 'bg-gray-100 text-slate-700 hover:bg-gray-200'
             }`}
           >
             Recipe Specs
@@ -56,7 +56,7 @@ export const WorkflowView: React.FC<WorkflowViewProps> = ({
           <button
             onClick={() => onRunDagPipeline(selectedFamily)}
             disabled={isJobRunning}
-            className="px-5 py-2 bg-tas-blue hover:bg-tas-blue-hover text-white font-bold text-xs rounded-lg shadow-sm transition-all flex items-center gap-2 active:scale-95 disabled:opacity-50"
+            className="px-5 py-2 bg-[#E86326] hover:bg-[#D5521B] text-white font-bold text-xs rounded-lg shadow-sm transition-all flex items-center gap-2 active:scale-95 disabled:opacity-50"
           >
             <span className="material-symbols-outlined text-base">play_circle</span>
             <span>{isJobRunning ? 'Orchestrating...' : 'Execute Recipe DAG'}</span>
@@ -66,20 +66,20 @@ export const WorkflowView: React.FC<WorkflowViewProps> = ({
 
       {/* Main Workflow Workspace */}
       {activeTab === 'diagram' && (
-        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm overflow-x-auto min-w-[1200px] relative">
+        <div className="bg-[#1a0b2e] border border-slate-200 rounded-xl p-6 shadow-sm overflow-x-auto min-w-[1200px] relative">
           {/* Top Status Bar */}
-          <div className="flex justify-between items-center mb-6 bg-slate-50 p-3.5 rounded-lg border border-slate-200 text-xs font-mono">
+          <div className="flex justify-between items-center mb-6 bg-white/5 p-3.5 rounded-lg border border-white/10 text-xs font-mono">
             <div className="flex items-center gap-3">
-              <span className="text-slate-500 font-bold">ACTIVE FAMILY:</span>
-              <span className="px-2.5 py-1 bg-tas-blue text-white font-bold rounded-md shadow-2xs">
+              <span className="text-white/50 font-bold">ACTIVE FAMILY:</span>
+              <span className="px-2.5 py-1 bg-[#FF6B35] text-white font-bold rounded-md">
                 {selectedFamily}
               </span>
             </div>
-            <div className="flex items-center gap-5 text-slate-600">
+            <div className="flex items-center gap-5 text-white/60">
               <span>CLUSTER: US-EAST-1 GPU</span>
               <span>GATEWAYS: VG_1 (ACC &gt;= 90%) | VG_2 (LAT &lt;= 50ms)</span>
-              <span className="flex items-center gap-1.5 text-emerald-600 font-bold">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+              <span className="flex items-center gap-1.5 text-[#FF6B35] font-bold">
+                <span className="w-2 h-2 rounded-full bg-[#FF6B35] animate-ping"></span>
                 READY
               </span>
             </div>
@@ -201,9 +201,9 @@ export const WorkflowView: React.FC<WorkflowViewProps> = ({
                 <span className="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">TUNING</span>
               </div>
 
-              <div onClick={() => onSelectView('node9')} className="p-2 bg-white border border-slate-200 hover:border-tas-blue rounded-md flex justify-between items-center text-xs font-mono cursor-pointer transition-colors">
-                <span className="font-bold text-tas-blue">5. DEPLOY</span>
-                <span className="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold">ROLLOUT</span>
+              <div onClick={() => onSelectView('node9')} className="p-2 bg-white/5 border border-white/10 hover:border-[#FF6B35]/50 rounded-md flex justify-between items-center text-xs font-mono cursor-pointer transition-colors">
+                <span className="font-bold text-[#FF6B35]">5. DEPLOY</span>
+                <span className="text-[10px] bg-[#FF6B35]/15 text-[#FF6B35] px-1.5 py-0.5 rounded font-bold">ROLLOUT</span>
               </div>
 
               <div onClick={() => onSelectView('node9')} className="p-2 bg-tas-blue hover:bg-tas-blue-hover text-white rounded-md flex justify-between items-center text-xs font-mono shadow-2xs cursor-pointer transition-colors">

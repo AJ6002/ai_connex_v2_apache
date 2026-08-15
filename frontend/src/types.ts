@@ -1,4 +1,5 @@
 export type ViewMode = 
+  | 'hero'
   | 'compiler'
   | 'dag_inspector'
   | 'workflow'
@@ -7,6 +8,7 @@ export type ViewMode =
   | 'templates'
   | 'workspace'
   | 'administration'
+  | 'agent_manager'
   | 'quotas'
   | 'developer_studio'
   | 'settings'
