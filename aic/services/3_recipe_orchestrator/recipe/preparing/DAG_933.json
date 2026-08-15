@@ -1,5 +1,0 @@
-{
-  "impute_strategy": "median",
-  "scale_method": "minmax",
-  "categorical_encoding": "onehot"
-}

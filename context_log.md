@@ -3392,3 +3392,19 @@ Background pytest task-1074 completed with 15/15 passing tests (0 failures).
 **Architectural decisions:** Safeguarded git push by ensuring all credential files and binary archives are strictly excluded from git tracking.
 **Current system state:** Working tree clean and ready for push to origin/be.
 ---
+
+## Query 335 — 2026-08-15 21:30
+**Input:** User pushed all recent changes to remote repository on branch be.
+**Response summary:** Verified successful remote git push (10,795 objects, 169.93 MiB) to origin/be (https://github.com/AJ6002/aiconnex_demo.git). All frontend UI parity updates, 6-KB knowledge base platform, Jane assistant backend, and onboarding templates are now published.
+**Files changed:** context_log.md
+**Architectural decisions:** Maintained complete git commit history without altering existing structure; pushed all tracked files to the legacy be branch.
+**Current system state:** GitHub remote origin/be is 100% synchronized with local repository state.
+---
+
+## Query 336 — 2026-08-15 21:38
+**Input:** User approved deletion of obsolete files and execution of full repo reorganization plan.
+**Response summary:** Successfully purged 15.3 GB of bloat (reducing disk size from 16.7 GB to 1.37 GB). Deleted plaintext credentials on disk, removed 15 obsolete directories, consolidated all documentation under docs/, and organized loose scripts into scripts/ and tests/. Verified 100% functionality with 40/40 pytest passing and clean frontend build.
+**Files changed:** .gitignore, context_log.md, docs/*, scripts/*, tests/*
+**Architectural decisions:** Retained all live production folders (aiconnex_agent, aiconnex_knowledge, aiconnex_ml, services, frontend, chatbot, *_KB_raw_data). Preserved deterministic mappings.
+**Current system state:** Clean, production-grade repository layout. Tests passing 40/40, frontend building cleanly.
+---

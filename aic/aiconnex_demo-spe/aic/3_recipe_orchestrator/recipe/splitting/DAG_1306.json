@@ -1,5 +1,0 @@
-{
-    "test_size": 0.2,
-    "validation_strategy": "time_series_split",
-    "random_state": 42
-}
