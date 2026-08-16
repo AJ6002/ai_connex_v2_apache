@@ -10,9 +10,113 @@ interface ChatBotModalProps {
 interface Message {
   sender: 'user' | 'bot';
   text: string;
+  html?: string;
   intent?: string;
   time: string;
   quickAction?: { label: string; viewId: string };
+}
+
+function renderMarkdownToHtml(md: string): string {
+  if (!md) return '';
+
+  let html = md;
+
+  // 1. Code blocks (```lang ... ```)
+  const codeBlocks: string[] = [];
+  html = html.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g, (_match, lang, code) => {
+    const placeholder = `__CODE_BLOCK_${codeBlocks.length}__`;
+    const escapedCode = code
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+    codeBlocks.push(
+      `<div class="my-2.5 rounded-lg overflow-hidden border border-slate-700 bg-slate-900 shadow-md">` +
+      `<div class="flex items-center justify-between px-3 py-1 bg-slate-800 border-b border-slate-700 text-[10px] font-mono text-slate-400">` +
+      `<span>${lang || 'code'}</span>` +
+      `</div>` +
+      `<pre class="p-3 text-[11px] font-mono text-emerald-400 overflow-x-auto leading-relaxed whitespace-pre"><code>${escapedCode.trim()}</code></pre>` +
+      `</div>`
+    );
+    return placeholder;
+  });
+
+  // 2. Tables (| col | col |\n|---|---|\n| val | val |)
+  const tables: string[] = [];
+  const tableRegex = /((?:\|[^\n]+\|\r?\n)+)/g;
+  html = html.replace(tableRegex, (tableBlock) => {
+    const lines = tableBlock.trim().split('\n').map(l => l.trim()).filter(Boolean);
+    if (lines.length < 2) return tableBlock;
+
+    const isSeparator = (line: string) => /^\|(?:\s*:?-+:?\s*\|)+$/.test(line);
+
+    let headerHtml = '';
+    let bodyHtml = '';
+
+    const formatInline = (text: string) => {
+      return text
+        .replace(/\*\*([^*]+)\*\*/g, '<strong class="font-semibold text-slate-900">$1</strong>')
+        .replace(/\*([^*]+)\*/g, '<em class="italic text-slate-800">$1</em>')
+        .replace(/`([^`]+)`/g, '<code class="bg-slate-100 text-[#E86326] px-1 py-0.5 rounded font-mono text-[10px] border border-slate-200">$1</code>');
+    };
+
+    const parseRow = (line: string, isTh = false) => {
+      const cells = line.split('|').slice(1, -1);
+      const tag = isTh ? 'th' : 'td';
+      const cellClass = isTh 
+        ? 'px-3 py-1.5 font-bold text-slate-800 bg-slate-100 border border-slate-300 text-left text-[11px]' 
+        : 'px-3 py-1.5 text-slate-700 border border-slate-200 text-left text-[11px]';
+      return `<tr>${cells.map(c => `<${tag} class="${cellClass}">${formatInline(c.trim())}</${tag}>`).join('')}</tr>`;
+    };
+
+    if (lines.length >= 2 && isSeparator(lines[1])) {
+      headerHtml = `<thead>${parseRow(lines[0], true)}</thead>`;
+      bodyHtml = `<tbody>${lines.slice(2).map(l => parseRow(l, false)).join('')}</tbody>`;
+    } else {
+      bodyHtml = `<tbody>${lines.map(l => parseRow(l, false)).join('')}</tbody>`;
+    }
+
+    const placeholder = `__TABLE_BLOCK_${tables.length}__`;
+    tables.push(
+      `<div class="my-2.5 overflow-x-auto rounded-lg border border-slate-200 shadow-xs bg-white">` +
+      `<table class="w-full text-left border-collapse">${headerHtml}${bodyHtml}</table>` +
+      `</div>`
+    );
+    return placeholder;
+  });
+
+  // 3. Headings
+  html = html.replace(/^### (.*$)/gim, '<h3 class="font-bold text-[13px] text-slate-900 mt-2.5 mb-1">$1</h3>');
+  html = html.replace(/^## (.*$)/gim, '<h2 class="font-bold text-[14px] text-slate-900 mt-3 mb-1.5">$1</h2>');
+  html = html.replace(/^# (.*$)/gim, '<h1 class="font-bold text-[15px] text-slate-900 mt-3.5 mb-2">$1</h1>');
+
+  // 4. Bold & Italic
+  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong class="font-semibold text-slate-900">$1</strong>');
+  html = html.replace(/\*([^*]+)\*/g, '<em class="italic text-slate-800">$1</em>');
+
+  // 5. Inline Code
+  html = html.replace(/`([^`]+)`/g, '<code class="bg-slate-100 text-[#E86326] px-1 py-0.5 rounded font-mono text-[11px] border border-slate-200">$1</code>');
+
+  // 6. Bullet Lists & Numbered Lists
+  html = html.replace(/^[-*] (.*$)/gim, '<li class="ml-4 list-disc text-slate-700 my-0.5">$1</li>');
+  html = html.replace(/^(\d+)\. (.*$)/gim, '<li class="ml-4 list-decimal text-slate-700 my-0.5">$2</li>');
+
+  // Wrap consecutive <li> into <ul> or <ol>
+  html = html.replace(/((?:<li class="[^"]*list-disc[^"]*">.*?<\/li>\s*)+)/g, '<ul class="my-1.5 space-y-0.5 pl-2">$1</ul>');
+  html = html.replace(/((?:<li class="[^"]*list-decimal[^"]*">.*?<\/li>\s*)+)/g, '<ol class="my-1.5 space-y-0.5 pl-2">$1</ol>');
+
+  // 7. Paragraphs & Line Breaks
+  html = html.replace(/\n\n+/g, '</p><p class="my-1 leading-relaxed">');
+  html = html.replace(/\n/g, '<br/>');
+
+  // 8. Restore Tables & Code Blocks
+  tables.forEach((t, i) => {
+    html = html.replace(`__TABLE_BLOCK_${i}__`, t);
+  });
+  codeBlocks.forEach((c, i) => {
+    html = html.replace(`__CODE_BLOCK_${i}__`, c);
+  });
+
+  return html;
 }
 
 export const ChatBotModal: React.FC<ChatBotModalProps> = ({
@@ -28,6 +132,7 @@ export const ChatBotModal: React.FC<ChatBotModalProps> = ({
     {
       sender: 'bot',
       text: "Hi there! I'm Jane, Lead Machine Learning Solutions Architect at AIConnex. I'd love to help you build and launch your custom AutoML project! What prediction goal or dataset are you working with today?",
+      html: renderMarkdownToHtml("Hi there! I'm **Jane**, Lead Machine Learning Solutions Architect at AIConnex. I'd love to help you build and launch your custom AutoML project! What prediction goal or dataset are you working with today?"),
       intent: 'Jane — Lead ML Architect',
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     },
@@ -81,9 +186,11 @@ export const ChatBotModal: React.FC<ChatBotModalProps> = ({
 
       if (response && response.ok) {
         const data = await response.json();
+        const rawText = data.reply || data.response || data.botResponse || data.answer || "No response received from Jane.";
         const botMsg: Message = {
           sender: 'bot',
-          text: data.response || data.botResponse || data.answer || "I have received your message and logged it to the intent pipeline.",
+          text: rawText,
+          html: data.reply_html || data.html || renderMarkdownToHtml(rawText),
           intent: data.intent ? `Intent: ${data.intent}` : 'Jane • AI Assistant',
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         };
@@ -92,38 +199,20 @@ export const ChatBotModal: React.FC<ChatBotModalProps> = ({
         throw new Error('API offline');
       }
     } catch {
-      // Fallback assistant response
+      // Backend is offline — show a clean, helpful notice instead of fake data
       setTimeout(() => {
-        let reply = 'I have processed your industrial telemetry query and logged it to the intent pipeline.';
-        let intentLabel = 'INTENT_CLASSIFIED';
-        let suggested: { label: string; viewId: string } | undefined;
-
-        const lower = query.toLowerCase();
-        if (lower.includes('rul') || lower.includes('predict') || lower.includes('remaining')) {
-          reply = 'Predictive Maintenance RUL Engine calculated Remaining Useful Life: 1,420 operating hours across Turbine Asset #4.';
-          intentLabel = 'PREDICT_RUL';
-          suggested = { label: 'View RUL Analytics in Data Explorer', viewId: 'data_explorer' };
-        } else if (lower.includes('train') || lower.includes('automl') || lower.includes('model')) {
-          reply = 'AutoML Training job triggered. Hyperparameter tuning active across XGBoost and LightGBM models on GPU Cluster 1.';
-          intentLabel = 'TRAIN_AUTOML_MODEL';
-          suggested = { label: 'Open Train Node (Page 6)', viewId: 'node7' };
-        } else if (lower.includes('telemetry') || lower.includes('opc') || lower.includes('mqtt')) {
-          reply = 'OPC UA & MQTT Telemetry stream normal. Ingestion rate: 45,000 events/sec with zero dropped packets.';
-          intentLabel = 'CHECK_TELEMETRY';
-          suggested = { label: 'Open Master Data & Telemetry', viewId: 'master_data' };
-        }
-
+        const offlineText = '⚠️ **Jane API Server is Offline.**\n\nUnable to reach the Jane Assistant backend on `http://localhost:5000`.\n\nTo start the backend server, run in your terminal:\n```bash\npython chatbot/backend/app.py\n```\nThen retry your question!';
         setMessages((prev) => [
           ...prev,
           {
             sender: 'bot',
-            text: reply,
-            intent: intentLabel,
+            text: offlineText,
+            html: renderMarkdownToHtml(offlineText),
+            intent: 'BACKEND_OFFLINE',
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            quickAction: suggested,
           },
         ]);
-      }, 600);
+      }, 300);
     } finally {
       setIsLoading(false);
     }
@@ -231,7 +320,14 @@ export const ChatBotModal: React.FC<ChatBotModalProps> = ({
                       </span>
                     </div>
                   )}
-                  <p className="leading-relaxed">{msg.text}</p>
+                  {msg.html ? (
+                    <div
+                      className="jane-markdown-prose leading-relaxed text-xs space-y-1.5"
+                      dangerouslySetInnerHTML={{ __html: msg.html }}
+                    />
+                  ) : (
+                    <p className="leading-relaxed whitespace-pre-wrap">{msg.text}</p>
+                  )}
 
                   {msg.quickAction && (
                     <button

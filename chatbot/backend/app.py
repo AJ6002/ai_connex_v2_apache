@@ -16,11 +16,16 @@ natural language responses. Hardcoded templates act ONLY as emergency fallbacks.
 """
 
 import os
+from pathlib import Path
 import logging
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 
-load_dotenv()
+# Load root .env first, then local chatbot .env (with override)
+_root_env = Path(__file__).resolve().parent.parent.parent / ".env"
+if _root_env.exists():
+    load_dotenv(_root_env)
+load_dotenv(override=True)
 
 logger = logging.getLogger(__name__)
 
