@@ -21,6 +21,7 @@ interface PrePrepareProps {
   dagId?: string;
   algorithmFamily?: string;
   backendProfile?: Record<string, any> | null;
+  onApproveDeliverables?: () => void;
 }
 
 // Reusable SVG Chart Renderer for Pre-Prepare visualizations (140px uniform height)
@@ -331,6 +332,7 @@ export const PrePrepare: React.FC<PrePrepareProps> = ({
   dagId = 'DAG_201',
   algorithmFamily = 'Anomaly Detection',
   backendProfile = null,
+  onApproveDeliverables,
 }) => {
   const [activeStep, setActiveStep] = useState<number | null>(null);
 
@@ -691,6 +693,35 @@ export const PrePrepare: React.FC<PrePrepareProps> = ({
         </section>
       ))}
 
+      {/* Jane Deliverables Handoff Approval Banner */}
+      <div className="p-6 bg-gradient-to-r from-[#2B0063] to-[#461285] rounded-3xl text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-4 my-8 border border-white/10">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-[#E86326] flex items-center justify-center text-white text-2xl font-bold shadow-md">
+            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>smart_toy</span>
+          </div>
+          <div>
+            <h3 className="font-headline font-bold text-base text-white flex items-center gap-2">
+              Jane AI Handoff Approval
+              <span className="bg-emerald-500/20 text-emerald-300 text-[10px] font-mono px-2 py-0.5 rounded-full border border-emerald-500/30">
+                Prepared & Cleaned
+              </span>
+            </h3>
+            <p className="text-xs text-white/70 font-mono mt-0.5">
+              Dataset deliverables prepared with 27 features, 0 missing values, and validated SCADA temporal channels. Ready for ML Studio model training?
+            </p>
+          </div>
+        </div>
+
+        {onApproveDeliverables && (
+          <button
+            onClick={onApproveDeliverables}
+            className="w-full md:w-auto px-6 py-3 bg-[#E86326] hover:bg-[#d4541c] text-white font-mono text-xs font-bold rounded-2xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer shrink-0"
+          >
+            <span className="material-symbols-outlined text-base">verified</span>
+            <span>Approve & Dispatch Deliverables to ML Studio</span>
+          </button>
+        )}
+      </div>
     </div>
   );
 };

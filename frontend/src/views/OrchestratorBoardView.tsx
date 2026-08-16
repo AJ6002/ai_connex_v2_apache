@@ -32,23 +32,23 @@ const CATEGORY_COLORS = {
 };
 
 const PALETTE_COMPONENTS: Omit<BoardNode, 'x' | 'y'>[] = [
-  { id: 'prof', name: 'Node 1: Dataset Profiler', viewId: 'node1', category: 'Ingestion', icon: 'analytics', port: ':8000', status: 'Online' },
-  { id: 'prepare', name: 'Node 4: Data Prepare', viewId: 'node4', category: 'Ingestion', icon: 'cleaning_services', port: ':8003', status: 'Online' },
-  { id: 'matcher', name: 'Node 2: DAG Matcher', viewId: 'node2', category: 'Orchestration', icon: 'route', port: ':8001', status: 'Online' },
-  { id: 'recipe', name: 'Node 3: Recipe Orchestrator', viewId: 'node3', category: 'Orchestration', icon: 'hub', port: ':8002', status: 'Online' },
-  { id: 'feature', name: 'Node 5: Feature Engineering', viewId: 'node5', category: 'Engineering', icon: 'science', port: ':8004', status: 'Online' },
-  { id: 'split', name: 'Node 6: Split API', viewId: 'node6', category: 'Engineering', icon: 'splitscreen', port: ':8005', status: 'Online' },
+  { id: 'prof', name: 'Dataset Upload Controller', viewId: 'compiler', category: 'Ingestion', icon: 'cloud_upload', port: ':8000', status: 'Online' },
+  { id: 'prepare', name: 'Data Explorer & Telemetry', viewId: 'data_explorer', category: 'Ingestion', icon: 'analytics', port: ':8003', status: 'Online' },
+  { id: 'matcher', name: 'Agent Fleet Orchestrator', viewId: 'agent_manager', category: 'Orchestration', icon: 'smart_toy', port: ':8001', status: 'Online' },
+  { id: 'recipe', name: 'Master Data & Recipes', viewId: 'master_data', category: 'Orchestration', icon: 'database', port: ':8002', status: 'Online' },
+  { id: 'feature', name: 'ML Pipeline Studio', viewId: 'pipeline_studio', category: 'Engineering', icon: 'monitoring', port: ':8004', status: 'Online' },
+  { id: 'split', name: 'Validation Gate 1', viewId: 'vg1', category: 'Engineering', icon: 'verified', port: 'GATE', status: 'Online' },
   { id: 'vg1', name: 'Validation Gate 1', viewId: 'vg1', category: 'Engineering', icon: 'verified', port: 'GATE', status: 'Online' },
-  { id: 'train', name: 'Node 7: Train API', viewId: 'node7', category: 'Execution', icon: 'model_training', port: ':8006', status: 'Online' },
+  { id: 'train', name: 'ML Pipeline Studio', viewId: 'pipeline_studio', category: 'Execution', icon: 'model_training', port: ':8006', status: 'Online' },
   { id: 'vg2', name: 'Validation Gate 2', viewId: 'vg2', category: 'Execution', icon: 'fact_check', port: 'GATE', status: 'Online' },
-  { id: 'deploy', name: 'Node 9: Deploy API', viewId: 'node9', category: 'Deployment', icon: 'rocket_launch', port: ':8008', status: 'Online' },
+  { id: 'deploy', name: 'Pipeline Monitor', viewId: 'pipeline_studio', category: 'Deployment', icon: 'rocket_launch', port: ':8008', status: 'Online' },
   { id: 'monitor', name: 'Pipeline Monitor', viewId: 'pipeline_studio', category: 'Deployment', icon: 'monitoring', port: ':8001', status: 'Online' }
 ];
 
 export const OrchestratorBoardView: React.FC<OrchestratorBoardViewProps> = ({ onSelectNode }) => {
   const [nodes, setNodes] = useState<BoardNode[]>([
-    { id: 'prof', name: 'Node 1: Dataset Profiler', viewId: 'node1', category: 'Ingestion', icon: 'analytics', port: ':8000', status: 'Online', x: 50, y: 150 },
-    { id: 'matcher', name: 'Node 2: DAG Matcher', viewId: 'node2', category: 'Orchestration', icon: 'route', port: ':8001', status: 'Online', x: 280, y: 150 }
+    { id: 'prof', name: 'Dataset Upload Controller', viewId: 'compiler', category: 'Ingestion', icon: 'cloud_upload', port: ':8000', status: 'Online', x: 50, y: 150 },
+    { id: 'matcher', name: 'Data Explorer & Telemetry', viewId: 'data_explorer', category: 'Ingestion', icon: 'analytics', port: ':8001', status: 'Online', x: 280, y: 150 }
   ]);
   const [connections, setConnections] = useState<Connection[]>([
     { id: 'conn-1', fromId: 'prof', toId: 'matcher' }

@@ -15,17 +15,10 @@ export type ViewMode =
   | 'support'
   | 'vg1'
   | 'vg2'
-  | 'node1'
-  | 'node2'
-  | 'node3'
-  | 'node4'
-  | 'node5'
-  | 'node6'
-  | 'node7'
-  | 'node8'
-  | 'node9'
   | 'orchestrator_board'
-  | 'data_explorer';
+  | 'data_explorer'
+  | 'model_explorer'
+  | 'deployment';
 
 export type SidebarStyle = 'orbital' | 'slim';
 

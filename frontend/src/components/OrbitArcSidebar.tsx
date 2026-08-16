@@ -99,35 +99,27 @@ export const OrbitArcSidebar: React.FC<OrbitArcSidebarProps> = ({ currentView, o
     return () => window.removeEventListener('mousedown', handleClickOutside);
   }, [showPageMenu]);
 
-  // Outer Arc Items (Ordered Pipeline Pages 1 through 8 + Admin)
+  // Outer Arc Items (Core Platform Views)
   const outerNavItems: NavItem[] = [
-    { id: 'compiler', label: 'Page 1: Upload Page', shortLabel: 'Upload', icon: 'upload_file', badge: 'Page 1', cluster: 'ingestion' },
-    { id: 'data_explorer', label: 'Page 2: Data Explorer', shortLabel: 'Explore', icon: 'bar_chart', badge: 'Page 2', cluster: 'ingestion' },
-    { id: 'node4', label: 'Page 3: Prepare Node', shortLabel: 'Prepare', icon: 'cleaning_services', badge: 'Page 3', cluster: 'ingestion' },
-    { id: 'vg1', label: 'Page 4: Validation Gate 1', shortLabel: 'VG 1', icon: 'verified', badge: 'Page 4', cluster: 'ingestion' },
-    { id: 'node5', label: 'Page 5: Feature Engineer Node', shortLabel: 'Features', icon: 'science', badge: 'Page 5', cluster: 'mlops' },
-    { id: 'node7', label: 'Page 6: Train Node', shortLabel: 'Train', icon: 'model_training', badge: 'Page 6', cluster: 'mlops' },
-    { id: 'vg2', label: 'Page 7: Validation Gate 2', shortLabel: 'VG 2', icon: 'fact_check', badge: 'Page 7', cluster: 'mlops' },
-    { id: 'node9', label: 'Page 8: Deploy Node', shortLabel: 'Deploy', icon: 'rocket_launch', badge: 'Page 8', cluster: 'mlops' },
-    { id: 'pipeline_studio', label: 'Page 9: Monitor Node', shortLabel: 'Monitor', icon: 'monitoring', badge: 'Page 9', cluster: 'mlops' },
+    { id: 'hero', label: 'Hero Page & Jane AI', shortLabel: 'Hero', icon: 'auto_awesome', badge: 'Hero', cluster: 'ingestion' },
+    { id: 'compiler', label: 'Upload Controller & Ingestion', shortLabel: 'Upload', icon: 'cloud_upload', badge: 'Studio', cluster: 'ingestion' },
+    { id: 'data_explorer', label: 'Data Explorer & Telemetry', shortLabel: 'Explore', icon: 'analytics', badge: 'Cleaned', cluster: 'ingestion' },
+    { id: 'model_explorer', label: 'Model Explorer & Ledger', shortLabel: 'Models', icon: 'auto_graph', badge: 'Ledger', cluster: 'mlops' },
+    { id: 'deployment', label: 'Deployment & Physics Layer', shortLabel: 'Deploy', icon: 'rocket_launch', badge: 'Edge', cluster: 'mlops' },
+    { id: 'agent_manager', label: 'Agent Fleet & Orchestrator', shortLabel: 'Agents', icon: 'smart_toy', badge: 'Fleet', cluster: 'mlops' },
+    { id: 'pipeline_studio', label: 'ML Studio & Telemetry Monitor', shortLabel: 'ML Studio', icon: 'monitoring', badge: 'Pipeline', cluster: 'mlops' },
     { id: 'master_data', label: 'Master Data & Recipes', shortLabel: 'Master', icon: 'database', badge: 'Recipes', cluster: 'system' },
     { id: 'administration', label: 'Administration & Envs', shortLabel: 'Admin', icon: 'admin_panel_settings', cluster: 'system' },
-    { id: 'agent_manager', label: 'Agent Manager & Fleet Control', shortLabel: 'Agents', icon: 'smart_toy', badge: 'Admin', cluster: 'system' },
     { id: 'templates', label: 'Templates Library', shortLabel: 'Templates', icon: 'description', cluster: 'system' },
     { id: 'settings', label: 'Platform Settings', shortLabel: 'Settings', icon: 'settings', cluster: 'settings' },
   ];
 
-  // Inner Arc Items (The 9 microservice nodes)
+  // Inner Arc Items (Primary Quick Actions)
   const innerNavItems: NavItem[] = [
-    { id: 'node1', label: 'Node 1: Dataset Profiler', shortLabel: 'Profiler', icon: 'analytics', cluster: 'mlops' },
-    { id: 'node2', label: 'Node 2: DAG Matcher', shortLabel: 'DAG Matcher', icon: 'route', cluster: 'mlops' },
-    { id: 'node3', label: 'Node 3: Recipe Orchestrator', shortLabel: 'Recipe', icon: 'hub', cluster: 'mlops' },
-    { id: 'node4', label: 'Node 4: Data Prepare', shortLabel: 'Prepare', icon: 'cleaning_services', cluster: 'mlops' },
-    { id: 'node5', label: 'Node 5: Feature Engineering', shortLabel: 'Feature Eng', icon: 'science', cluster: 'mlops' },
-    { id: 'node6', label: 'Node 6: Validation Gate 1', shortLabel: 'VG 1', icon: 'verified', cluster: 'mlops' },
-    { id: 'node7', label: 'Node 7: Train API', shortLabel: 'Train', icon: 'model_training', cluster: 'mlops' },
-    { id: 'node8', label: 'Node 8: Validation Gate 2', shortLabel: 'VG 2', icon: 'fact_check', cluster: 'mlops' },
-    { id: 'node9', label: 'Node 9: Deploy API', shortLabel: 'Deploy', icon: 'rocket_launch', cluster: 'mlops' },
+    { id: 'compiler', label: 'Upload Local Files / S3', shortLabel: 'Upload', icon: 'cloud_upload', cluster: 'ingestion' },
+    { id: 'data_explorer', label: 'Explore Cleaned Dataset', shortLabel: 'Explore', icon: 'analytics', cluster: 'ingestion' },
+    { id: 'agent_manager', label: '22-Node Agent Fleet', shortLabel: 'Agents', icon: 'smart_toy', cluster: 'mlops' },
+    { id: 'pipeline_studio', label: '9-Node ML Pipeline', shortLabel: 'ML Studio', icon: 'monitoring', cluster: 'mlops' },
   ];
 
   const allNavItems = [...outerNavItems, ...innerNavItems];

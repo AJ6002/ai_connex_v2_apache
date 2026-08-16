@@ -99,14 +99,18 @@ export const ChatBotModal: React.FC<ChatBotModalProps> = ({
         let suggested: { label: string; viewId: string } | undefined;
 
         const lower = query.toLowerCase();
-        if (lower.includes('rul') || lower.includes('predict') || lower.includes('remaining')) {
+        if (lower.includes('upload') || lower.includes('dataset') || lower.includes('s3') || lower.includes('cloud') || lower.includes('csv') || lower.includes('zip') || lower.includes('parquet')) {
+          reply = 'I have initialized the **Universal Upload Controller** for your project. You can ingest files (.csv, .parquet, .json, .zip), AWS S3 buckets, cloud databases, or industrial telemetry streams.';
+          intentLabel = 'LAUNCH_UPLOAD_CONTROLLER';
+          suggested = { label: '🚀 Launch Upload Controller', viewId: 'compiler' };
+        } else if (lower.includes('rul') || lower.includes('predict') || lower.includes('remaining')) {
           reply = 'Predictive Maintenance RUL Engine calculated Remaining Useful Life: 1,420 operating hours across Turbine Asset #4.';
           intentLabel = 'PREDICT_RUL';
-          suggested = { label: 'View RUL Analytics in Data Explorer', viewId: 'data_explorer' };
+          suggested = { label: 'View Data Explorer & Telemetry', viewId: 'data_explorer' };
         } else if (lower.includes('train') || lower.includes('automl') || lower.includes('model')) {
           reply = 'AutoML Training job triggered. Hyperparameter tuning active across XGBoost and LightGBM models on GPU Cluster 1.';
           intentLabel = 'TRAIN_AUTOML_MODEL';
-          suggested = { label: 'Open Train Node (Page 6)', viewId: 'node7' };
+          suggested = { label: 'Open ML Studio & Pipelines', viewId: 'pipeline_studio' };
         } else if (lower.includes('telemetry') || lower.includes('opc') || lower.includes('mqtt')) {
           reply = 'OPC UA & MQTT Telemetry stream normal. Ingestion rate: 45,000 events/sec with zero dropped packets.';
           intentLabel = 'CHECK_TELEMETRY';

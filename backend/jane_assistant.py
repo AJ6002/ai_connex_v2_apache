@@ -360,7 +360,15 @@ PLATFORM_TOOLS_SCHEMA = [
 
 def execute_platform_tool(tool_name: str, args: Dict[str, Any]) -> str:
     """Execute operational backend function calls."""
-    if tool_name == "check_pipeline_status":
+    if tool_name == "prepare_upload_controller":
+        return json.dumps({
+            "status": "READY",
+            "controller": "UniversalUploadController",
+            "supported_formats": [".csv", ".parquet", ".json", ".zip"],
+            "cloud_providers": ["AWS S3", "Snowflake", "Databricks", "PostgreSQL"],
+            "stream_protocols": ["OPC UA", "MQTT"]
+        })
+    elif tool_name == "check_pipeline_status":
         sid = args.get("session_id", "unknown")
         return json.dumps({
             "status": "RUNNING",
@@ -440,7 +448,14 @@ def run_jane_assistant(
 
     # Check for direct tool execution intents in input
     lower_input = user_input.lower()
-    if "pipeline status" in lower_input or "check status" in lower_input:
+    action_required = None
+
+    if any(k in lower_input for k in ["upload", "dataset", "s3", "cloud data", "ingest", "cmapss", "csv", "parquet", "opc ua", "mqtt", "big data"]):
+        action_required = "OPEN_UPLOAD_CONTROLLER"
+        tool_res = execute_platform_tool("prepare_upload_controller", {"session_id": session_id})
+        executed_tools.append({"tool": "prepare_upload_controller", "result": tool_res})
+        assistant_reply = "I've initialized the **Universal Upload Controller** for your project.\n\nYou can ingest data from:\n1. **Local Archives & Files** (.csv, .parquet, .json, multi-table .zip)\n2. **AWS S3 Buckets** (`s3://...` credentials & region)\n3. **Cloud & Relational DBs** (PostgreSQL, Snowflake, Databricks)\n4. **Industrial Streams** (OPC UA, MQTT telemetry topics)\n\nClick **Launch Upload Controller** below to proceed."
+    elif "pipeline status" in lower_input or "check status" in lower_input:
         tool_res = execute_platform_tool("check_pipeline_status", {"session_id": session_id})
         executed_tools.append({"tool": "check_pipeline_status", "result": tool_res})
         assistant_reply = f"The pipeline status for session `{session_id}` is **RUNNING** at **78.5% progress** (Stage: Model Evaluation & Hyperparameter Tuning)."
@@ -477,6 +492,7 @@ def run_jane_assistant(
     return {
         "session_id": session_id,
         "reply": assistant_reply,
+        "action_required": action_required,
         "rag_context_used": rag_context,
         "tools_executed": executed_tools
     }
