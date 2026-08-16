@@ -78,7 +78,7 @@ app.register_blueprint(dictionary_bp)
 
 
 # Upload storage directory
-UPLOAD_FOLDER = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "scratch", "uploads"))
+UPLOAD_FOLDER = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "scratch", "uploads"))
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
@@ -128,7 +128,7 @@ import os
 import uuid
 import json
 
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
@@ -184,11 +184,27 @@ def _compiled_csv_from_dic(dic) -> str | None:
     return dic.get("compiled_csv_path")
 
 
+NODE_NARRATION = {
+    "archive_discovery_node": "📦 Extracting and inventorying archive contents…",
+    "structure_analysis_node": "🔍 Analyzing file structures and column schemas…",
+    "entity_analysis_node": "🏷️ Identifying equipment entities and asset IDs…",
+    "relationship_analysis_node": "🔗 Mapping relational joins across telemetry tables…",
+    "temporal_analysis_node": "⏱️ Aligning timestamps and detecting temporal resolution…",
+    "feature_analysis_node": "📊 Cataloging sensor features and measurement channels…",
+    "quality_analysis_node": "✅ Assessing data quality, missingness, and integrity…",
+    "statistical_analysis_node": "📈 Computing statistical distributions and variance…",
+    "exploration_synthesizer_node": "🧠 Synthesizing dataset intelligence contract (DIC)…",
+    "hitl_node": "🛡️ Preparing Pre-Prepare review checkpoint…",
+    "pipeline_lock_node": "🔒 Locking validated pipeline configuration…",
+    "workflow_planner_node": "📋 Planning AutoML execution workflow…",
+}
+
+
 def _stream_agent_events(events_gen, session_id: str):
     """Translate LangGraph node-update events into SSE frames for the frontend.
 
     SSE event types emitted:
-      text      — assistant text delta
+      text      — assistant text delta / live narration
       interrupt — HITL pause (clarification | advise_upload | strategy_choice | compile_failure)
       compiled  — Scout produced the compiled CSV (carries compiled_csv_path)
       done      — stream end, carries session_id
@@ -198,6 +214,10 @@ def _stream_agent_events(events_gen, session_id: str):
         for event in events_gen:
             node = event.get("node", "")
             update = event.get("state_update")
+
+            # --- Emit friendly human narration for node starts ---
+            if node in NODE_NARRATION:
+                yield _sse("text", {"delta": NODE_NARRATION[node], "node": node})
 
             # --- HITL interrupt: event key is '__interrupt__', payload at Interrupt.value ---
             if node == "__interrupt__":
@@ -241,8 +261,8 @@ def agent_chat():
     if request.method == "OPTIONS":
         return jsonify({"status": "ok"}), 200
 
-    from aiconnex_agent.runner import execute_and_stream, resume_with_user_input, _compiled_graph
-    from aiconnex_agent.state import MasterAgentState
+    from agentic.runner import execute_and_stream, resume_with_user_input, _compiled_graph
+    from agentic.state import MasterAgentState
 
     data = request.get_json(force=True) or {}
     message = (data.get("message") or "").strip()
@@ -316,9 +336,9 @@ def agent_seed():
     if request.method == "OPTIONS":
         return jsonify({"status": "ok"}), 200
 
-    from aiconnex_agent.runner import _compiled_graph
-    from aiconnex_agent.parser.cuc_completion import is_manifest_minimally_complete
-    from aiconnex_agent.schemas import ConversationUnderstandingContract, Goal
+    from agentic.runner import _compiled_graph
+    from agentic.parser.cuc_completion import is_manifest_minimally_complete
+    from agentic.schemas import ConversationUnderstandingContract, Goal
 
     data = request.get_json(force=True) or {}
     manifest = data.get("manifest") or {}
@@ -415,7 +435,7 @@ def agent_resume():
     if request.method == "OPTIONS":
         return jsonify({"status": "ok"}), 200
 
-    from aiconnex_agent.runner import resume_with_user_input
+    from agentic.runner import resume_with_user_input
 
     data = request.get_json(force=True) or {}
     session_id = (data.get("session_id") or "").strip()
@@ -453,7 +473,7 @@ def agent_state():
     if not session_id:
         return jsonify({"error": "Query parameter 'session_id' is required."}), 400
 
-    from aiconnex_agent.runner import _compiled_graph
+    from agentic.runner import _compiled_graph
 
     config = {"configurable": {"thread_id": session_id}}
     try:
@@ -569,7 +589,7 @@ def upload_dataset():
         # --- SSE resumption path ---
         # Resume the parked advise_upload_node thread with the upload_path.
         # The graph routing will advance: advise_upload → planning_engine → Scout.
-        from aiconnex_agent.runner import resume_with_user_input
+        from agentic.runner import resume_with_user_input
 
         def _scout_events():
             # Resume the parked advise_upload_node with the saved file path.
@@ -602,7 +622,7 @@ def upload_dataset():
 
     # --- Legacy fallback: no session_id, fire-and-forget JSON response ---
     try:
-        from aiconnex_agent.runner import run_agent_pipeline
+        from agentic.runner import run_agent_pipeline
         res = run_agent_pipeline(f"Profile and compile uploaded dataset '{filename}'", upload_path=save_path)
         final_state = res.get("final_state", {})
         dic = final_state.get("dic", {})

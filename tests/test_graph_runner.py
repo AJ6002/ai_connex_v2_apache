@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
-from aiconnex_agent.runner import execute_and_stream
-from aiconnex_agent.state import MasterAgentState
+from agentic.runner import execute_and_stream
+from agentic.state import MasterAgentState
 
 
 @pytest.fixture(autouse=True)

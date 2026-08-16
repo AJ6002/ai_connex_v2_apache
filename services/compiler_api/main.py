@@ -17,8 +17,8 @@ from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 
-from aiconnex_zip_compiler.compiler import UnifiedCompiler
-from aiconnex_zip_compiler.models import CompilerWorkspace
+from services.aiconnex_zip_compiler.compiler import UnifiedCompiler
+from services.aiconnex_zip_compiler.models import CompilerWorkspace
 from .schemas import (
     CompilationJobStatusResponse,
     FileInspectResponse,
@@ -186,7 +186,7 @@ async def inspect_file_format(file: UploadFile = File(...)):
     POST /api/v1/compiler/inspect
     Fast schema and format inspection without full pipeline assembly.
     """
-    from aiconnex_zip_compiler.schema_gate import SchemaGate
+    from services.aiconnex_zip_compiler.schema_gate import SchemaGate
     import tempfile
 
     suffix = Path(file.filename).suffix

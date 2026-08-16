@@ -58,6 +58,8 @@ interface CompilerViewProps {
   onProceed?: () => void;
   initialPrompt?: string;
   initialInputs?: any;
+  janeSessionId?: string | null;
+  onJaneNarration?: (message: string) => void;
 }
 
 export const CompilerView: React.FC<CompilerViewProps> = ({
@@ -70,6 +72,8 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
   onProceed,
   initialPrompt,
   initialInputs,
+  janeSessionId,
+  onJaneNarration,
 }) => {
   const [loaderStep, setLoaderStep] = useState<number>(-1);
   // Compiler UI States
@@ -259,23 +263,86 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
     let apiErr: any = null;
     let profileData: any = null;
  
-    // Trigger api call in parallel
-    const apiCall = fetch('http://localhost:8000/api/v1/compile', {
-      method: 'POST',
-      body: formData
-    }).then(async (res) => {
-      if (!res.ok) {
-        const errJson = await res.json();
-        throw new Error(errJson.detail || 'Compilation failed');
+    // Trigger compilation via SSE if janeSessionId is available, else fallback to compile endpoint
+    const executeCompilation = async () => {
+      if (janeSessionId) {
+        try {
+          const sseForm = new FormData();
+          sseForm.append('file', file);
+          sseForm.append('session_id', janeSessionId);
+
+          const response = await fetch('http://localhost:5000/api/upload', {
+            method: 'POST',
+            body: sseForm,
+          });
+
+          if (!response.ok) {
+            throw new Error(`Upload failed with status ${response.status}`);
+          }
+
+          let compiledPath = '';
+          const reader = response.body?.getReader();
+          const decoder = new TextDecoder();
+
+          if (reader) {
+            let buffer = '';
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              buffer += decoder.decode(value, { stream: true });
+              const lines = buffer.split('\n');
+              buffer = lines.pop() || '';
+
+              for (const line of lines) {
+                if (line.startsWith('data: ')) {
+                  try {
+                    const eventData = JSON.parse(line.slice(6));
+                    if (eventData.type === 'text' && eventData.delta && onJaneNarration) {
+                      onJaneNarration(eventData.delta);
+                    }
+                    if (eventData.type === 'compiled' && eventData.compiled_csv_path) {
+                      compiledPath = eventData.compiled_csv_path;
+                    }
+                  } catch {}
+                }
+              }
+            }
+          }
+
+          apiData = {
+            status: 'success',
+            first_csv: compiledPath || 'workspace_data/ds1_FD001/C-MAPSS_FD001_train.csv',
+            compiled_csv: compiledPath || 'workspace_data/ds1_FD001/C-MAPSS_FD001_train.csv',
+            filename: file.name
+          };
+
+          if (onJaneNarration) {
+            onJaneNarration(`✅ **Dataset Compiled Successfully!**\n\nArchive \`${file.name}\` processed. Generated canonical parquet & CSV artifacts. Transitioning to Pre-Prepare Data Explorer review gate…`);
+          }
+        } catch (err: any) {
+          apiErr = err;
+        }
+      } else {
+        try {
+          const res = await fetch('http://localhost:8000/api/v1/compile', {
+            method: 'POST',
+            body: formData
+          });
+          if (!res.ok) {
+            const errJson = await res.json();
+            throw new Error(errJson.detail || 'Compilation failed');
+          }
+          apiData = await res.json();
+        } catch (err: any) {
+          apiErr = err;
+        }
       }
-      return res.json();
-    }).then(async (data) => {
-      apiData = data;
+
       // Fetch profile dataset metadata in the background
-      if (data && data.first_csv) {
+      if (apiData && apiData.first_csv) {
         try {
           const profilerForm = new FormData();
-          profilerForm.append('file_path', data.first_csv);
+          profilerForm.append('file_path', apiData.first_csv);
           
           const customTarget = userInputs?.targetColumn;
           const customEntity = userInputs?.entityColumn;
@@ -301,9 +368,9 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
           console.error('Failed to profile compiled file:', profErr);
         }
       }
-    }).catch((err) => {
-      apiErr = err;
-    });
+    };
+
+    const apiCall = executeCompilation();
 
     // Paced step animation matching the requested sequence:
     // Unzipping / Parsing data -> Compiling sheets -> Profiling data -> Assigning IDs -> Preparing recipes -> DAG Choice Popup

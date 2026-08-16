@@ -2,8 +2,8 @@
 import zipfile
 import pandas as pd
 import pytest
-from aiconnex_agent.graph import build_graph
-from aiconnex_agent.state import MasterAgentState
+from agentic.graph import build_graph
+from agentic.state import MasterAgentState
 
 
 @pytest.fixture

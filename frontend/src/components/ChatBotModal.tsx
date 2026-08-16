@@ -5,6 +5,11 @@ interface ChatBotModalProps {
   onClose: () => void;
   userId?: string;
   onNavigateView?: (viewId: string) => void;
+  isDocked?: boolean;
+  onDockChange?: (docked: boolean) => void;
+  onSessionCreated?: (sessionId: string) => void;
+  onUploadRequested?: () => void;
+  externalNarration?: string | null;
 }
 
 interface Message {
@@ -124,9 +129,15 @@ export const ChatBotModal: React.FC<ChatBotModalProps> = ({
   onClose,
   userId: initialUserId = '1223',
   onNavigateView,
+  isDocked,
+  onDockChange,
+  onSessionCreated,
+  onUploadRequested,
+  externalNarration,
 }) => {
   const [userId, setUserId] = useState(initialUserId);
-  const [isMinimized, setIsMinimized] = useState(false);
+  const [isMinimizedLocal, setIsMinimizedLocal] = useState(false);
+  const isMinimized = isDocked !== undefined ? isDocked : isMinimizedLocal;
   const [inputText, setInputText] = useState('');
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -139,6 +150,21 @@ export const ChatBotModal: React.FC<ChatBotModalProps> = ({
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Handle live external narration injected from Compiler or Pipeline SSE
+  useEffect(() => {
+    if (externalNarration && externalNarration.trim()) {
+      const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const narrationMsg: Message = {
+        sender: 'bot',
+        text: externalNarration,
+        html: renderMarkdownToHtml(externalNarration),
+        intent: 'Compiler • Live',
+        time: timeStr,
+      };
+      setMessages((prev) => [...prev, narrationMsg]);
+    }
+  }, [externalNarration]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -195,6 +221,20 @@ export const ChatBotModal: React.FC<ChatBotModalProps> = ({
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         };
         setMessages((prev) => [...prev, botMsg]);
+
+        // Propagate active LangGraph / Jane session ID
+        if (data.session_id && onSessionCreated) {
+          onSessionCreated(data.session_id);
+        }
+
+        // Automatic seamless transition: slide & dock Jane, then open upload dropzone
+        if (data.action_required === 'OPEN_UPLOAD_CONTROLLER') {
+          setTimeout(() => {
+            if (onUploadRequested) {
+              onUploadRequested();
+            }
+          }, 1000);
+        }
       } else {
         throw new Error('API offline');
       }
@@ -275,7 +315,13 @@ export const ChatBotModal: React.FC<ChatBotModalProps> = ({
 
             {/* Minimize / Expand Toggle */}
             <button
-              onClick={() => setIsMinimized(!isMinimized)}
+              onClick={() => {
+                if (onDockChange) {
+                  onDockChange(!isMinimized);
+                } else {
+                  setIsMinimizedLocal(!isMinimizedLocal);
+                }
+              }}
               title={isMinimized ? 'Expand to full size' : 'Minimize to bottom-right'}
               className="w-7 h-7 rounded-full hover:bg-white/10 flex items-center justify-center text-slate-300 hover:text-white transition-colors"
             >

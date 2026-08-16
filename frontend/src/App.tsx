@@ -28,6 +28,7 @@ import { CompilerView } from './views/CompilerView';
 import { DagInspectorView } from './views/DagInspectorView';
 import { WorkflowView } from './views/WorkflowView';
 import { PipelineStudioView } from './views/PipelineStudioView';
+import { PipelineNodeView } from './views/PipelineNodeView';
 import { MasterDataView } from './views/MasterDataView';
 import { TemplatesView } from './views/TemplatesView';
 import { WorkspaceView } from './views/WorkspaceView';
@@ -51,6 +52,9 @@ export default function App() {
   const [pendingView, setPendingView] = useState<ViewMode | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isChatModalOpen, setIsChatModalOpen] = useState(false);
+  const [isChatDocked, setIsChatDocked] = useState(false);
+  const [janeSessionId, setJaneSessionId] = useState<string | null>(null);
+  const [janeNarration, setJaneNarration] = useState<string | null>(null);
 
   const navigateTo = (view: ViewMode) => {
     if (view === currentView) return;
@@ -829,6 +833,8 @@ export default function App() {
             <CompilerView
               initialPrompt={userPrompt}
               initialInputs={initialOnboardingInputs}
+              janeSessionId={janeSessionId}
+              onJaneNarration={(msg) => setJaneNarration(msg)}
               onSendToMLOps={handleSendToMLOpsFromCompiler}
               onCompilationFinished={(csvPath, filename, profileData) => {
                 setCompiledCsvPath(csvPath);
@@ -929,12 +935,13 @@ export default function App() {
           )}
 
           {(currentView === 'vg1' || currentView === 'vg2') && (
-            <PipelineStudioView
+            <PipelineNodeView
+              nodeNumber={currentView === 'vg1' ? 7 : 8}
               compiledCsvPath={compiledCsvPath}
               runId={activeRunId}
               dagId={activeDagId}
-              family={activeFamily}
-              onNavigateTo={navigateTo}
+              algorithmFamily={activeFamily}
+              onProceed={() => navigateTo(currentView === 'vg1' ? 'vg2' : 'model_explorer')}
             />
           )}
         </div>
@@ -963,8 +970,20 @@ export default function App() {
       {/* Global Jane Chatbot Modal Window */}
       <ChatBotModal
         isOpen={isChatModalOpen}
-        onClose={() => setIsChatModalOpen(false)}
+        onClose={() => {
+          setIsChatModalOpen(false);
+          setIsChatDocked(false);
+        }}
         onNavigateView={(v) => navigateTo(v as ViewMode)}
+        isDocked={isChatDocked}
+        onDockChange={setIsChatDocked}
+        onSessionCreated={setJaneSessionId}
+        onUploadRequested={() => {
+          setIsChatDocked(true);
+          setIsChatModalOpen(true);
+          navigateTo('compiler');
+        }}
+        externalNarration={janeNarration}
       />
 
       {/* Persistent Footer Status Bar */}

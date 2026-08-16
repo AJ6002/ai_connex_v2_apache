@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 # Load root .env and local chatbot .env
-_root_env = Path(__file__).resolve().parent.parent.parent / ".env"
+_root_env = Path(__file__).resolve().parent.parent / ".env"
 if _root_env.exists():
     load_dotenv(_root_env)
 load_dotenv(override=True)

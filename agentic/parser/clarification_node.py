@@ -19,9 +19,9 @@ from typing import Any, Dict
 
 from langgraph.types import interrupt
 
-from aiconnex_agent.state import MasterAgentState
-from aiconnex_agent.parser.clarification_generator import ClarificationGenerator
-from aiconnex_agent.schemas import InterruptPayload
+from agentic.state import MasterAgentState
+from agentic.parser.clarification_generator import ClarificationGenerator
+from agentic.schemas import InterruptPayload
 
 logger = logging.getLogger(__name__)
 

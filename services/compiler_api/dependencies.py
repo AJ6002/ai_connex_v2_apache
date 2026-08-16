@@ -6,8 +6,8 @@ dependencies.py - Dependency Injection for Compiler API
 from __future__ import annotations
 
 from pathlib import Path
-from aiconnex_zip_compiler.config import CompilerConfig
-from aiconnex_zip_compiler.models import CompilerWorkspace
+from services.aiconnex_zip_compiler.config import CompilerConfig
+from services.aiconnex_zip_compiler.models import CompilerWorkspace
 
 
 def get_compiler_config() -> CompilerConfig:

@@ -23,7 +23,7 @@ from dotenv import load_dotenv
 
 # ─── 0. ENVIRONMENT CONFIGURATION ─────────────────────────────────────────────
 # Load root .env first, then local chatbot .env (with override)
-_REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+_REPO_ROOT = Path(__file__).resolve().parent.parent
 _root_env = _REPO_ROOT / ".env"
 if _root_env.exists():
     load_dotenv(_root_env)
@@ -148,7 +148,7 @@ def _get_context_builder():
     if not _kb_init_attempted:
         _kb_init_attempted = True
         try:
-            from aiconnex_agent.platform_kb import ContextBuilder
+            from agentic.platform_kb import ContextBuilder
             _context_builder = ContextBuilder()
             logger.info("[JaneKB] ContextBuilder initialized — 6-Layer Knowledge Base (S0–S6) active.")
         except Exception as exc:
@@ -173,7 +173,7 @@ def get_kb_context(user_input: str, tenant_id: str = "global", session_id: str =
         )
 
     try:
-        from aiconnex_agent.platform_kb import ContextRequest
+        from agentic.platform_kb import ContextRequest
         req = ContextRequest(
             query=user_input,
             knowledge_domain="all",
@@ -187,10 +187,33 @@ def get_kb_context(user_input: str, tenant_id: str = "global", session_id: str =
         res = builder.get_context(req)
         prompt_ctx = res.get("prompt_context", "")
         if prompt_ctx and prompt_ctx.strip():
-            # Keep prompt context clean and focused
+            return prompt_ctx.strip()
+        return "[No specific domain grounding matched for this query in Knowledge Base]"
+    except Exception as exc:
+        logger.warning(f"[JaneKB] Query retrieval degraded ({exc})")
+        return f"[Knowledge Base query degraded: {exc}]"
+
+
+def execute_platform_tool(tool_name: str, params: Dict[str, Any]) -> Dict[str, Any]:
+    """Execute platform action helpers or prepare interactive client intents."""
+    if tool_name == "prepare_upload_controller":
+        return {
+            "status": "ready",
+            "message": "Upload controller initialized for tabular/time-series ingestion.",
+            "accepted_formats": [".zip", ".csv", ".parquet", ".mat"],
+            "session_id": params.get("session_id", "")
+        }
+    return {"status": "ok", "tool": tool_name, "params": params}
+
+
+def run_jane_assistant(
+    session_id: str,
+    user_input: str,
+    api_key: Optional[str] = None,
     base_url: Optional[str] = None,
     model: Optional[str] = None,
-    tenant_id: str = "global"
+    tenant_id: str = "global",
+    retrieved_rag_docs: Optional[List[Dict[str, Any]]] = None
 ) -> Dict[str, Any]:
     """Main Orchestrator function for Assistant Jane.
     1. Fetches SQLite sliding window dialogue memory.
@@ -257,13 +280,6 @@ def get_kb_context(user_input: str, tenant_id: str = "global", session_id: str =
     action_required = None
     executed_tools = []
 
-    # Check for direct tool execution / navigation intents
-    lower_input = user_input.lower()
-    if any(k in lower_input for k in ["upload", "dataset", "s3", "cloud data", "ingest", "cmapss", "csv", "parquet", "opc ua", "mqtt", "big data"]):
-        action_required = "OPEN_UPLOAD_CONTROLLER"
-        tool_res = execute_platform_tool("prepare_upload_controller", {"session_id": session_id})
-        executed_tools.append({"tool": "prepare_upload_controller", "result": tool_res})
-
     max_tokens_val = int(os.environ.get("OPENROUTER_MAX_TOKENS", "1024"))
 
     # 5. Execute Dynamic LLM Inference
@@ -291,14 +307,34 @@ def get_kb_context(user_input: str, tenant_id: str = "global", session_id: str =
             "Please configure your API key in `x:\\TAS\\AICONNEX\\.env` to enable dynamic Jane responses."
         )
 
+    # Check for direct tool execution / navigation intents (from user query OR Jane's recommendation)
+    lower_input = user_input.lower()
+    explicit_upload = any(k in lower_input for k in [
+        "upload", "dataset", "s3", "cloud data", "ingest", "cmapss", "csv", "parquet", "opc ua", "mqtt", "big data"
+    ])
+    reply_lower = assistant_reply.lower()
+    jane_recommends_upload = any(k in reply_lower for k in [
+        "please upload", "drop your", "provide your dataset", "ready for your data", "upload your",
+        "upload the dataset", "upload the archive", "upload a zip", "drop the zip"
+    ])
+
+    if explicit_upload or jane_recommends_upload:
+        action_required = "OPEN_UPLOAD_CONTROLLER"
+        tool_res = execute_platform_tool("prepare_upload_controller", {"session_id": session_id})
+        executed_tools.append({"tool": "prepare_upload_controller", "result": tool_res})
+
     # Save assistant turn to SQLite memory
     save_chat_turn(session_id, "assistant", assistant_reply)
 
     # 6. Render high-fidelity Mistune HTML
     try:
-        from markdown_formatter import render_markdown_html
+        try:
+            from backend.markdown_formatter import render_markdown_html
+        except ImportError:
+            from markdown_formatter import render_markdown_html
         reply_html = render_markdown_html(assistant_reply)
-    except Exception:
+    except Exception as exc:
+        logger.warning(f"[JaneEngine] Markdown formatting fallback: {exc}")
         reply_html = None
 
     return {

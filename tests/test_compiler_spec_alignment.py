@@ -20,9 +20,9 @@ import pandas as pd
 import pytest
 from fastapi.testclient import TestClient
 
-from aiconnex_zip_compiler.compiler import UnifiedCompiler, CompileResult
-from aiconnex_zip_compiler.config import CompilerConfig
-from aiconnex_zip_compiler.models import CompilerState, CompilerWorkspace
+from services.aiconnex_zip_compiler.compiler import UnifiedCompiler, CompileResult
+from services.aiconnex_zip_compiler.config import CompilerConfig
+from services.aiconnex_zip_compiler.models import CompilerState, CompilerWorkspace
 from services.compiler_api.main import app
 
 

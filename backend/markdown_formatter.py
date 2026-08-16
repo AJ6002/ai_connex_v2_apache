@@ -38,11 +38,11 @@ class IndustrialHTMLRenderer(HTMLRenderer):
     def block_quote(self, text: str) -> str:
         # Check for GitHub-style alert markers
         alert_patterns = [
-            (r'\[!NOTE\]', 'bg-blue-50/90 border-blue-500 text-blue-950', 'NOTE'),
-            (r'\[!TIP\]', 'bg-emerald-50/90 border-emerald-500 text-emerald-950', 'TIP'),
-            (r'\[!IMPORTANT\]', 'bg-indigo-50/90 border-indigo-500 text-indigo-950', 'IMPORTANT'),
-            (r'\[!WARNING\]', 'bg-amber-50/90 border-amber-500 text-amber-950', 'WARNING'),
-            (r'\[!CAUTION\]', 'bg-rose-50/90 border-rose-500 text-rose-950', 'CAUTION'),
+            (r'\[!NOTE\]', 'bg-blue-50/90 border-blue-500 text-blue-950 industrial-alert industrial-alert-note', 'NOTE'),
+            (r'\[!TIP\]', 'bg-emerald-50/90 border-emerald-500 text-emerald-950 industrial-alert industrial-alert-tip', 'TIP'),
+            (r'\[!IMPORTANT\]', 'bg-indigo-50/90 border-indigo-500 text-indigo-950 industrial-alert industrial-alert-important', 'IMPORTANT'),
+            (r'\[!WARNING\]', 'bg-amber-50/90 border-amber-500 text-amber-950 industrial-alert industrial-alert-warning', 'WARNING'),
+            (r'\[!CAUTION\]', 'bg-rose-50/90 border-rose-500 text-rose-950 industrial-alert industrial-alert-caution', 'CAUTION'),
         ]
 
         for pat, style_cls, label in alert_patterns:
