@@ -37,9 +37,10 @@ import { DeveloperStudioView } from './views/DeveloperStudioView';
 import { SettingsView } from './views/SettingsView';
 import { SupportView } from './views/SupportView';
 import { AgentManagerView } from './views/AgentManagerView';
-import { PipelineNodeView } from './views/PipelineNodeView';
 import { OrchestratorBoardView } from './views/OrchestratorBoardView';
 import { DataExplorerView } from './views/DataExplorerView';
+import { ModelExplorerView } from './views/ModelExplorerView';
+import { DeploymentStudioView } from './views/DeploymentStudioView';
 import { HeroLandingView } from './views/HeroLandingView';
 import { ChatBotModal } from './components/ChatBotModal';
 import { OrbitArcSidebar } from './components/OrbitArcSidebar';
@@ -785,8 +786,42 @@ export default function App() {
               dagId={activeDagId}
               algorithmFamily={activeFamily}
               onProceedToPrepare={() => {
-                setCurrentView('node4');
+                setCurrentView('pipeline_studio');
               }}
+              onApproveDeliverables={() => {
+                const targetPath = compiledCsvPath || 'workspace_data/ds1_FD001/C-MAPSS_FD001_train.csv';
+                const form = new FormData();
+                form.append('file_path', targetPath);
+                fetch('http://localhost:8000/api/v1/train_models', {
+                  method: 'POST',
+                  body: form,
+                })
+                  .then(() => {})
+                  .catch(() => {})
+                  .finally(() => {
+                    navigateTo('model_explorer');
+                  });
+              }}
+            />
+          )}
+
+          {currentView === 'model_explorer' && (
+            <ModelExplorerView
+              compiledCsvPath={compiledCsvPath || undefined}
+              runId={activeRunId}
+              dagId={activeDagId}
+              algorithmFamily={activeFamily}
+              onNavigateTo={navigateTo}
+            />
+          )}
+
+          {currentView === 'deployment' && (
+            <DeploymentStudioView
+              compiledCsvPath={compiledCsvPath || undefined}
+              runId={activeRunId}
+              dagId={activeDagId}
+              algorithmFamily={activeFamily}
+              onNavigateTo={navigateTo}
             />
           )}
 
@@ -893,42 +928,13 @@ export default function App() {
             <OrchestratorBoardView onSelectNode={(nodeId) => navigateTo(nodeId)} />
           )}
 
-          {currentView === 'vg1' && (
-            <PipelineNodeView
-              nodeNumber={6}
+          {(currentView === 'vg1' || currentView === 'vg2') && (
+            <PipelineStudioView
               compiledCsvPath={compiledCsvPath}
               runId={activeRunId}
               dagId={activeDagId}
-              algorithmFamily={activeFamily}
-              onProceed={() => setCurrentView('node5')}
-            />
-          )}
-
-          {currentView === 'vg2' && (
-            <PipelineNodeView
-              nodeNumber={8}
-              compiledCsvPath={compiledCsvPath}
-              runId={activeRunId}
-              dagId={activeDagId}
-              algorithmFamily={activeFamily}
-              onProceed={() => setCurrentView('node9')}
-            />
-          )}
-
-          {currentView.startsWith('node') && (
-            <PipelineNodeView
-              nodeNumber={parseInt(currentView.replace('node', ''))}
-              compiledCsvPath={compiledCsvPath}
-              runId={activeRunId}
-              dagId={activeDagId}
-              algorithmFamily={activeFamily}
-              onProceed={() => {
-                const nodeNum = parseInt(currentView.replace('node', ''));
-                if (nodeNum === 4) setCurrentView('vg1');
-                else if (nodeNum === 5) setCurrentView('node7');
-                else if (nodeNum === 7) setCurrentView('vg2');
-                else if (nodeNum === 9) setCurrentView('pipeline_studio');
-              }}
+              family={activeFamily}
+              onNavigateTo={navigateTo}
             />
           )}
         </div>

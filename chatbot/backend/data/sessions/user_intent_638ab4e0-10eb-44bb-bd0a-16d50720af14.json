@@ -1,0 +1,142 @@
+{
+  "schema_version": "1.0",
+  "conversation": {
+    "session_id": "638ab4e0-10eb-44bb-bd0a-16d50720af14",
+    "conversation_id": "ui_1785840445481",
+    "timestamp": "2026-08-04T10:50:35.055452+00:00",
+    "phase": "pre_upload",
+    "dataset_uploaded": false,
+    "conversation_turn": 3
+  },
+  "goal": {
+    "primary_goal": "",
+    "secondary_goals": [],
+    "business_problem": "",
+    "candidate_ml_problem_types": [
+      {
+        "type": "classification",
+        "confidence": 0.9
+      }
+    ]
+  },
+  "observed": {
+    "industry_terms": [],
+    "equipment": [
+      "sensor",
+      "equipment",
+      "motor"
+    ],
+    "assets": [],
+    "datasets_mentioned": [],
+    "locations": [],
+    "time_periods": [],
+    "quantities": [],
+    "keywords": [
+      "outlier",
+      "thresholds",
+      "pipeline",
+      "failure",
+      "build",
+      "sensor",
+      "custom",
+      "classification",
+      "equipment",
+      "with",
+      "industry",
+      "file",
+      "streams",
+      "anomaly",
+      "motor",
+      "main",
+      "maintenance",
+      "engineer",
+      "focusing",
+      "accuracy",
+      "anomalies",
+      "detecting"
+    ],
+    "user_statements": [
+      "Build a failure classification pipeline with custom outlier thresholds for equipment sensor streams.",
+      "Its and csv file + motor industry for Equipment Anomaly & Sensor Streams",
+      "I am a maintenance engineer focusing on detecting sensor anomalies in motor equipment. Accuracy is my main requirement."
+    ]
+  },
+  "inferred": {
+    "industry": {
+      "value": "",
+      "confidence": 0.0
+    },
+    "user_role": {
+      "value": "engineer",
+      "confidence": 0.7
+    },
+    "business_domain": {
+      "value": "",
+      "confidence": 0.0
+    },
+    "experience_level": {
+      "value": "",
+      "confidence": 0.0
+    }
+  },
+  "dataset_expectation": {
+    "upload_status": "pending",
+    "expected_file_types": [
+      "CSV"
+    ],
+    "expected_dataset_type": "sensor",
+    "expected_duration": "",
+    "expected_sampling_rate": "",
+    "expected_size": ""
+  },
+  "constraints": {
+    "preferred_algorithms": [],
+    "preferred_frameworks": [],
+    "explainability_required": null,
+    "deployment_constraints": [],
+    "business_constraints": [],
+    "technical_constraints": []
+  },
+  "conversation_analysis": {
+    "urgency": {
+      "value": "normal",
+      "confidence": 0.6
+    },
+    "sentiment": "neutral",
+    "certainty_level": "",
+    "ambiguity_detected": false,
+    "missing_information": [
+      "Required field 'your primary goal' is still missing",
+      "Recommended field 'your industry' is still missing",
+      "Recommended field 'explainability requirements' is still missing"
+    ]
+  },
+  "clarifications_required": [
+    {
+      "question": "Could you tell me what you're hoping to achieve? What's the main goal or problem you'd like to solve?",
+      "reason": "Required field 'your primary goal' is still missing",
+      "priority": "high"
+    },
+    {
+      "question": "Which industry or sector are you operating in?",
+      "reason": "Recommended field 'your industry' is still missing",
+      "priority": "medium"
+    },
+    {
+      "question": "Do you need the model to be explainable or interpretable, or is a black-box approach acceptable?",
+      "reason": "Recommended field 'explainability requirements' is still missing",
+      "priority": "medium"
+    }
+  ],
+  "planning_hints": {
+    "recommended_next_action": "offer_quick_select",
+    "recommended_agents": [],
+    "wait_for_dataset": true,
+    "conversation_complete": false
+  },
+  "metadata": {
+    "llm_model": "qwen-2.5-coder-32b-instruct",
+    "parser_version": "",
+    "processing_time_ms": 8707
+  }
+}

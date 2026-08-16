@@ -89,7 +89,7 @@ export const WorkflowView: React.FC<WorkflowViewProps> = ({
           <div className="grid grid-cols-12 gap-4 items-center py-8 relative">
             {/* Column 1: Data Profiler */}
             <div className="col-span-2 flex flex-col items-center justify-center space-y-4">
-              <div onClick={() => onSelectView('node1')} className="p-4 bg-white border-2 border-tas-blue rounded-full shadow-md text-center hover:scale-105 transition-transform cursor-pointer w-36 h-36 flex flex-col items-center justify-center">
+              <div onClick={() => onSelectView('compiler')} className="p-4 bg-white border-2 border-tas-blue rounded-full shadow-md text-center hover:scale-105 transition-transform cursor-pointer w-36 h-36 flex flex-col items-center justify-center">
                 <span className="material-symbols-outlined text-tas-blue text-2xl mb-1">analytics</span>
                 <span className="font-mono text-xs font-bold text-tas-blue leading-tight">
                   DATA PROFILER

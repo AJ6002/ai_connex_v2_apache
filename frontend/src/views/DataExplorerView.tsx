@@ -33,6 +33,7 @@ interface DataExplorerViewProps {
   dagId?: string;
   algorithmFamily?: string;
   onProceedToPrepare: () => void;
+  onApproveDeliverables?: () => void;
 }
 
 export const DataExplorerView: React.FC<DataExplorerViewProps> = ({
@@ -40,7 +41,8 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({
   runId = 'run_20250115_143022',
   dagId = 'DAG_201',
   algorithmFamily = 'Anomaly Detection',
-  onProceedToPrepare
+  onProceedToPrepare,
+  onApproveDeliverables,
 }) => {
   const [activeTab, setActiveTab] = useState<'pre-prepare' | 'post-prepare' | 'post-fe' | 'post-train' | 'ad-hoc'>('pre-prepare');
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
@@ -117,6 +119,7 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({
             dagId={dagId}
             algorithmFamily={algorithmFamily}
             backendProfile={backendProfile}
+            onApproveDeliverables={onApproveDeliverables}
           />
         );
       case 'post-prepare':
@@ -160,7 +163,7 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-canvas font-sans">
+    <div className="flex flex-col min-h-screen bg-canvas font-sans animate-slideInRight">
       
       {/* Sub-Header / Control Hub */}
       <section className="sub-header-container">

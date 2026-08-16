@@ -1,0 +1,120 @@
+{
+  "schema_version": "1.0",
+  "conversation": {
+    "session_id": "0b29f4d7-fab2-4b4e-8209-4aeec38fa93e",
+    "conversation_id": "ui_1785897231018",
+    "timestamp": "2026-08-05T02:34:09.683103+00:00",
+    "phase": "pre_upload",
+    "dataset_uploaded": false,
+    "conversation_turn": 1
+  },
+  "goal": {
+    "primary_goal": "Target Prediction / Regression",
+    "secondary_goals": [],
+    "business_problem": "",
+    "candidate_ml_problem_types": [
+      {
+        "type": "prediction",
+        "confidence": 0.8
+      },
+      {
+        "type": "regression",
+        "confidence": 0.9
+      }
+    ]
+  },
+  "observed": {
+    "industry_terms": [],
+    "equipment": [],
+    "assets": [],
+    "datasets_mentioned": [],
+    "locations": [],
+    "time_periods": [],
+    "quantities": [],
+    "keywords": [
+      "life",
+      "want",
+      "useful",
+      "build",
+      "remaining",
+      "model",
+      "mapss",
+      "prediction",
+      "engines",
+      "turbofan"
+    ],
+    "user_statements": [
+      "I want to build a Remaining Useful Life prediction model for C-MAPSS turbofan engines"
+    ]
+  },
+  "inferred": {
+    "industry": {
+      "value": "",
+      "confidence": 0.0
+    },
+    "user_role": {
+      "value": "",
+      "confidence": 0.0
+    },
+    "business_domain": {
+      "value": "",
+      "confidence": 0.0
+    },
+    "experience_level": {
+      "value": "",
+      "confidence": 0.0
+    }
+  },
+  "dataset_expectation": {
+    "upload_status": "pending",
+    "expected_file_types": [],
+    "expected_dataset_type": "",
+    "expected_duration": "",
+    "expected_sampling_rate": "",
+    "expected_size": ""
+  },
+  "constraints": {
+    "preferred_algorithms": [],
+    "preferred_frameworks": [],
+    "explainability_required": null,
+    "deployment_constraints": [],
+    "business_constraints": [],
+    "technical_constraints": []
+  },
+  "conversation_analysis": {
+    "urgency": {
+      "value": "normal",
+      "confidence": 0.6
+    },
+    "sentiment": "neutral",
+    "certainty_level": "",
+    "ambiguity_detected": false,
+    "missing_information": [
+      "Required field 'the type of dataset' is still missing",
+      "Required field 'the file format(s)' is still missing"
+    ]
+  },
+  "clarifications_required": [
+    {
+      "question": "What type of data logs or streams will you be connecting — time-series telemetry, tabular logs, image sets, or process event records?",
+      "reason": "Required field 'the type of dataset' is still missing",
+      "priority": "high"
+    },
+    {
+      "question": "In what format is your dataset exported — CSV, JSON, Parquet, or database dumps?",
+      "reason": "Required field 'the file format(s)' is still missing",
+      "priority": "high"
+    }
+  ],
+  "planning_hints": {
+    "recommended_next_action": "prompt_for_upload",
+    "recommended_agents": [],
+    "wait_for_dataset": true,
+    "conversation_complete": true
+  },
+  "metadata": {
+    "llm_model": "qwen-2.5-coder-32b-instruct",
+    "parser_version": "",
+    "processing_time_ms": 8096
+  }
+}

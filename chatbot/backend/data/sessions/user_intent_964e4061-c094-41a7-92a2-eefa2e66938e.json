@@ -1,0 +1,120 @@
+{
+  "schema_version": "1.0",
+  "conversation": {
+    "session_id": "964e4061-c094-41a7-92a2-eefa2e66938e",
+    "conversation_id": "964e4061-c094-41a7-92a2-eefa2e66938e",
+    "timestamp": "2026-07-31T05:08:24.411298+00:00",
+    "phase": "pre_upload",
+    "dataset_uploaded": false,
+    "conversation_turn": 1
+  },
+  "goal": {
+    "primary_goal": "",
+    "secondary_goals": [],
+    "business_problem": "",
+    "candidate_ml_problem_types": []
+  },
+  "observed": {
+    "industry_terms": [],
+    "equipment": [],
+    "assets": [],
+    "datasets_mentioned": [],
+    "locations": [],
+    "time_periods": [],
+    "quantities": [],
+    "keywords": [
+      "manufacturing",
+      "engineer",
+      "explainability",
+      "priority",
+      "chemical",
+      "process",
+      "high"
+    ],
+    "user_statements": [
+      "Chemical manufacturing, process engineer, explainability is high priority"
+    ]
+  },
+  "inferred": {
+    "industry": {
+      "value": "manufacturing",
+      "confidence": 0.8
+    },
+    "user_role": {
+      "value": "engineer",
+      "confidence": 0.7
+    },
+    "business_domain": {
+      "value": "",
+      "confidence": 0.0
+    },
+    "experience_level": {
+      "value": "",
+      "confidence": 0.0
+    }
+  },
+  "dataset_expectation": {
+    "upload_status": "pending",
+    "expected_file_types": [],
+    "expected_dataset_type": "",
+    "expected_duration": "",
+    "expected_sampling_rate": "",
+    "expected_size": ""
+  },
+  "constraints": {
+    "preferred_algorithms": [],
+    "preferred_frameworks": [],
+    "explainability_required": true,
+    "deployment_constraints": [],
+    "business_constraints": [],
+    "technical_constraints": []
+  },
+  "conversation_analysis": {
+    "urgency": {
+      "value": "medium",
+      "confidence": 0.7
+    },
+    "sentiment": "neutral",
+    "certainty_level": "",
+    "ambiguity_detected": false,
+    "missing_information": [
+      "Required field 'your primary goal' is still missing",
+      "Required field 'the type of ML problem' is still missing",
+      "Required field 'the type of dataset' is still missing",
+      "Required field 'the file format(s)' is still missing"
+    ]
+  },
+  "clarifications_required": [
+    {
+      "question": "Could you tell me what you're hoping to achieve? What's the main goal or problem you'd like to solve?",
+      "reason": "Required field 'your primary goal' is still missing",
+      "priority": "high"
+    },
+    {
+      "question": "What kind of machine learning problem are you looking at — for example, regression, classification, forecasting, or anomaly detection?",
+      "reason": "Required field 'the type of ML problem' is still missing",
+      "priority": "high"
+    },
+    {
+      "question": "What type of data will you be working with? For example, time-series sensor data, tabular data, images, or text?",
+      "reason": "Required field 'the type of dataset' is still missing",
+      "priority": "high"
+    },
+    {
+      "question": "What file format will your data be in — CSV, JSON, Parquet, or something else?",
+      "reason": "Required field 'the file format(s)' is still missing",
+      "priority": "high"
+    }
+  ],
+  "planning_hints": {
+    "recommended_next_action": "ask_clarification",
+    "recommended_agents": [],
+    "wait_for_dataset": true,
+    "conversation_complete": false
+  },
+  "metadata": {
+    "llm_model": "qwen-2.5-coder-32b-instruct",
+    "parser_version": "",
+    "processing_time_ms": 19705
+  }
+}

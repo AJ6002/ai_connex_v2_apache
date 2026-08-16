@@ -1,0 +1,14 @@
+[
+  {
+    "turn": 1,
+    "question": "Hello! It's great to meet you. I see you might be unsure where to start. Here are the primary task pipelines I can build for you:\n\n1. **Target Prediction / Regression** (e.g., predicting TDS, COD, pH, or concentration levels)\n2. **Time-Series Forecasting** (e.g., 7-day effluent load trajectories)\n3. **Anomaly & Outlier Detection** (e.g., catching contamination spills)\n\nCould you please let me know which of these matches what you want to achieve with your data? This will help me guide you better.",
+    "user_reply": "hi",
+    "timestamp": "2026-08-04T18:06:16.147151+00:00"
+  },
+  {
+    "turn": 2,
+    "question": "Hello! It looks like we're ready to get started. To ensure we provide you with the best possible assistance, could you please let me know your primary goal? Here are a few options to choose from:\n\n1. **Regression / Target Prediction**: Predicting a continuous value based on input features.\n2. **Time-Series Forecasting**: Predicting future values based on past time-series data.\n3. **Anomaly Detection**: Identifying unusual patterns that do not conform to expected behavior.\n\nOnce you let me know your goal, we can proceed with uploading your dataset!",
+    "user_reply": "hi",
+    "timestamp": "2026-08-04T18:06:45.973300+00:00"
+  }
+]

@@ -1,0 +1,135 @@
+{
+  "schema_version": "1.0",
+  "conversation": {
+    "session_id": "ff55ce93-726a-4b65-8f62-d24fff9fa22c",
+    "conversation_id": "ff55ce93-726a-4b65-8f62-d24fff9fa22c",
+    "timestamp": "2026-07-31T04:53:33.134928+00:00",
+    "phase": "pre_upload",
+    "dataset_uploaded": false,
+    "conversation_turn": 2
+  },
+  "goal": {
+    "primary_goal": "build a regression model to forecast the tds (total dissolved solids) value for the next day using data from my chemical plant",
+    "secondary_goals": [],
+    "business_problem": "",
+    "candidate_ml_problem_types": [
+      {
+        "type": "regression",
+        "confidence": 0.9
+      }
+    ]
+  },
+  "observed": {
+    "industry_terms": [],
+    "equipment": [],
+    "assets": [],
+    "datasets_mentioned": [],
+    "locations": [],
+    "time_periods": [],
+    "quantities": [],
+    "keywords": [
+      "want",
+      "next",
+      "model",
+      "regression",
+      "total",
+      "forecast",
+      "build",
+      "dissolved",
+      "solids",
+      "value"
+    ],
+    "user_statements": [
+      "hi",
+      "I want to build a regression model to forecast the TDS (Total Dissolved Solids) value for the next day using data from my chemical plant."
+    ]
+  },
+  "inferred": {
+    "industry": {
+      "value": "",
+      "confidence": 0.0
+    },
+    "user_role": {
+      "value": "",
+      "confidence": 0.0
+    },
+    "business_domain": {
+      "value": "",
+      "confidence": 0.0
+    },
+    "experience_level": {
+      "value": "",
+      "confidence": 0.0
+    }
+  },
+  "dataset_expectation": {
+    "upload_status": "pending",
+    "expected_file_types": [],
+    "expected_dataset_type": "",
+    "expected_duration": "",
+    "expected_sampling_rate": "",
+    "expected_size": ""
+  },
+  "constraints": {
+    "preferred_algorithms": [],
+    "preferred_frameworks": [],
+    "explainability_required": null,
+    "deployment_constraints": [],
+    "business_constraints": [],
+    "technical_constraints": []
+  },
+  "conversation_analysis": {
+    "urgency": {
+      "value": "normal",
+      "confidence": 0.6
+    },
+    "sentiment": "neutral",
+    "certainty_level": "",
+    "ambiguity_detected": false,
+    "missing_information": [
+      "Required field 'the type of dataset' is still missing",
+      "Required field 'the file format(s)' is still missing",
+      "Recommended field 'your industry' is still missing",
+      "Recommended field 'your role' is still missing",
+      "Recommended field 'explainability requirements' is still missing"
+    ]
+  },
+  "clarifications_required": [
+    {
+      "question": "What type of data will you be working with? For example, time-series sensor data, tabular data, images, or text?",
+      "reason": "Required field 'the type of dataset' is still missing",
+      "priority": "high"
+    },
+    {
+      "question": "What file format will your data be in — CSV, JSON, Parquet, or something else?",
+      "reason": "Required field 'the file format(s)' is still missing",
+      "priority": "high"
+    },
+    {
+      "question": "Which industry or sector are you operating in?",
+      "reason": "Recommended field 'your industry' is still missing",
+      "priority": "medium"
+    },
+    {
+      "question": "What's your role — are you a data scientist, engineer, analyst, or something else?",
+      "reason": "Recommended field 'your role' is still missing",
+      "priority": "medium"
+    },
+    {
+      "question": "Do you need the model to be explainable or interpretable, or is a black-box approach acceptable?",
+      "reason": "Recommended field 'explainability requirements' is still missing",
+      "priority": "medium"
+    }
+  ],
+  "planning_hints": {
+    "recommended_next_action": "ask_clarification",
+    "recommended_agents": [],
+    "wait_for_dataset": true,
+    "conversation_complete": false
+  },
+  "metadata": {
+    "llm_model": "qwen-2.5-coder-32b-instruct",
+    "parser_version": "",
+    "processing_time_ms": 125290
+  }
+}

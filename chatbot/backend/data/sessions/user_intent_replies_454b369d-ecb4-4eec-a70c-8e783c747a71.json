@@ -1,0 +1,38 @@
+[
+  {
+    "turn": 1,
+    "question": "Could you tell me what you're hoping to achieve? What's the main goal or problem you'd like to solve?",
+    "user_reply": "Hi",
+    "timestamp": "2026-07-30T14:13:03.932517+00:00"
+  },
+  {
+    "turn": 2,
+    "question": "What kind of machine learning problem are you looking at \u2014 for example, regression, classification, forecasting, or anomaly detection?",
+    "user_reply": "I am an Aerospace Engineer and I want to predict turbine blades degradation using a parquet dataset",
+    "timestamp": "2026-07-30T14:13:18.946153+00:00"
+  },
+  {
+    "turn": 3,
+    "question": "What type of data will you be working with? For example, time-series sensor data, tabular data, images, or text?",
+    "user_reply": "I want to use anomaly detection. Also, the model needs to run locally on an edge device with under 10ms inference time.",
+    "timestamp": "2026-07-30T14:13:39.117718+00:00"
+  },
+  {
+    "turn": 4,
+    "question": "What file format will your data be in \u2014 CSV, JSON, Parquet, or something else?",
+    "user_reply": "I am working with time-series sensor data, and explainability is highly required due to FAA audits.",
+    "timestamp": "2026-07-30T14:13:55.343209+00:00"
+  },
+  {
+    "turn": 5,
+    "question": "Great, I have all the information I need! You can now upload your dataset and I'll take it from here.",
+    "user_reply": "Json",
+    "timestamp": "2026-07-30T14:14:02.070501+00:00"
+  },
+  {
+    "turn": 6,
+    "question": "Great, I have all the information I need! You can now upload your dataset and I'll take it from here.",
+    "user_reply": "\"I am a Financial Analyst and my goal is to forecast quarterly sales figures using historical data.",
+    "timestamp": "2026-07-30T14:14:27.590089+00:00"
+  }
+]

@@ -1,0 +1,8 @@
+[
+  {
+    "turn": 1,
+    "question": "Hello! It's great to meet you. To get started, could you tell me more about your goals? Are you looking to build a predictive model, analyze time-series data, detect anomalies, or something else? This will help me guide you better through the process.",
+    "user_reply": "hi",
+    "timestamp": "2026-08-03T13:00:33.506911+00:00"
+  }
+]

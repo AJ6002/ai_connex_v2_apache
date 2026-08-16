@@ -19,6 +19,8 @@ testing_ds/
 *.pth
 *.pt
 *.onnx
+*.gguf
+backend/models/*.gguf
 
 # ==========================================
 # 3. Scratch & Temporary Log Directories

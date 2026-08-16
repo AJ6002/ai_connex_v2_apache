@@ -1,0 +1,127 @@
+{
+  "schema_version": "1.0",
+  "conversation": {
+    "session_id": "69a32ea6-3609-4430-b845-049194ec1e19",
+    "conversation_id": "69a32ea6-3609-4430-b845-049194ec1e19",
+    "timestamp": "2026-07-30T14:04:30.987808+00:00",
+    "phase": "pre_upload",
+    "dataset_uploaded": false,
+    "conversation_turn": 5
+  },
+  "goal": {
+    "primary_goal": "use anomaly detection",
+    "secondary_goals": [],
+    "business_problem": "",
+    "candidate_ml_problem_types": [
+      {
+        "type": "anomaly detection",
+        "confidence": 0.9
+      }
+    ]
+  },
+  "observed": {
+    "industry_terms": [],
+    "equipment": [
+      "turbine",
+      "sensor"
+    ],
+    "assets": [],
+    "datasets_mentioned": [],
+    "locations": [],
+    "time_periods": [],
+    "quantities": [],
+    "keywords": [
+      "aerospace",
+      "maintenance",
+      "blades",
+      "predict",
+      "degradation",
+      "engineer",
+      "working",
+      "want",
+      "turbine",
+      "device",
+      "detection",
+      "also",
+      "anomaly",
+      "edge",
+      "with",
+      "model",
+      "locally",
+      "needs",
+      "required",
+      "sensor",
+      "data",
+      "highly",
+      "time",
+      "will",
+      "explainability",
+      "series"
+    ],
+    "user_statements": [
+      "\"I am an Aerospace Engineer working on turbine maintenance, and I want to predict turbine blades degradation using a parquet dataset",
+      "I want to use anomaly detection. Also, the model needs to run locally on an edge device with under 10ms inference time.",
+      "will be working with time-series sensor data, and explainability is highly required due to FAA audits.",
+      "csv",
+      "ok"
+    ]
+  },
+  "inferred": {
+    "industry": {
+      "value": "aerospace",
+      "confidence": 0.8
+    },
+    "user_role": {
+      "value": "engineer",
+      "confidence": 0.7
+    },
+    "business_domain": {
+      "value": "",
+      "confidence": 0.0
+    },
+    "experience_level": {
+      "value": "",
+      "confidence": 0.0
+    }
+  },
+  "dataset_expectation": {
+    "upload_status": "pending",
+    "expected_file_types": [
+      "CSV"
+    ],
+    "expected_dataset_type": "sensor",
+    "expected_duration": "",
+    "expected_sampling_rate": "",
+    "expected_size": ""
+  },
+  "constraints": {
+    "preferred_algorithms": [],
+    "preferred_frameworks": [],
+    "explainability_required": true,
+    "deployment_constraints": [],
+    "business_constraints": [],
+    "technical_constraints": []
+  },
+  "conversation_analysis": {
+    "urgency": {
+      "value": "normal",
+      "confidence": 0.6
+    },
+    "sentiment": "neutral",
+    "certainty_level": "",
+    "ambiguity_detected": true,
+    "missing_information": []
+  },
+  "clarifications_required": [],
+  "planning_hints": {
+    "recommended_next_action": "prompt_for_upload",
+    "recommended_agents": [],
+    "wait_for_dataset": true,
+    "conversation_complete": true
+  },
+  "metadata": {
+    "llm_model": "qwen-plus",
+    "parser_version": "",
+    "processing_time_ms": 717
+  }
+}

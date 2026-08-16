@@ -1,0 +1,14 @@
+[
+  {
+    "turn": 1,
+    "question": "What kind of machine learning problem are you looking at \u2014 for example, regression, classification, forecasting, or anomaly detection?",
+    "user_reply": "I want to predict equipment failure using sensor telemetry.",
+    "timestamp": "2026-07-30T14:01:28.790165+00:00"
+  },
+  {
+    "turn": 2,
+    "question": "Great, I have all the information I need! You can now upload your dataset and I'll take it from here.",
+    "user_reply": "\"I want to use anomaly detection, and the file is in CSV format.",
+    "timestamp": "2026-07-30T14:02:49.619239+00:00"
+  }
+]

@@ -1,0 +1,115 @@
+{
+  "schema_version": "1.0",
+  "conversation": {
+    "session_id": "683a0829-4c6b-41bd-9982-56fe6734a452",
+    "conversation_id": "ui_1785896732454",
+    "timestamp": "2026-08-05T02:25:59.770593+00:00",
+    "phase": "pre_upload",
+    "dataset_uploaded": false,
+    "conversation_turn": 1
+  },
+  "goal": {
+    "primary_goal": "Target Prediction / Regression",
+    "secondary_goals": [],
+    "business_problem": "",
+    "candidate_ml_problem_types": [
+      {
+        "type": "regression",
+        "confidence": 0.9
+      }
+    ]
+  },
+  "observed": {
+    "industry_terms": [],
+    "equipment": [],
+    "assets": [],
+    "datasets_mentioned": [],
+    "locations": [],
+    "time_periods": [],
+    "quantities": [],
+    "keywords": [
+      "turbofan",
+      "remaining",
+      "useful",
+      "scada",
+      "predict",
+      "want",
+      "life",
+      "engine",
+      "logs"
+    ],
+    "user_statements": [
+      "I want to predict Remaining Useful Life (RUL) for turbofan engine SCADA logs"
+    ]
+  },
+  "inferred": {
+    "industry": {
+      "value": "",
+      "confidence": 0.0
+    },
+    "user_role": {
+      "value": "",
+      "confidence": 0.0
+    },
+    "business_domain": {
+      "value": "",
+      "confidence": 0.0
+    },
+    "experience_level": {
+      "value": "",
+      "confidence": 0.0
+    }
+  },
+  "dataset_expectation": {
+    "upload_status": "pending",
+    "expected_file_types": [],
+    "expected_dataset_type": "",
+    "expected_duration": "",
+    "expected_sampling_rate": "",
+    "expected_size": ""
+  },
+  "constraints": {
+    "preferred_algorithms": [],
+    "preferred_frameworks": [],
+    "explainability_required": null,
+    "deployment_constraints": [],
+    "business_constraints": [],
+    "technical_constraints": []
+  },
+  "conversation_analysis": {
+    "urgency": {
+      "value": "normal",
+      "confidence": 0.6
+    },
+    "sentiment": "neutral",
+    "certainty_level": "",
+    "ambiguity_detected": false,
+    "missing_information": [
+      "Required field 'the type of dataset' is still missing",
+      "Required field 'the file format(s)' is still missing"
+    ]
+  },
+  "clarifications_required": [
+    {
+      "question": "What type of plant SCADA logs or sensor data will you be connecting — time-series telemetry streams, lab batch logs, or process event tables?",
+      "reason": "Required field 'the type of dataset' is still missing",
+      "priority": "high"
+    },
+    {
+      "question": "In what format are your plant data logs exported — CSV, JSON, Parquet, or SQL database dumps?",
+      "reason": "Required field 'the file format(s)' is still missing",
+      "priority": "high"
+    }
+  ],
+  "planning_hints": {
+    "recommended_next_action": "prompt_for_upload",
+    "recommended_agents": [],
+    "wait_for_dataset": true,
+    "conversation_complete": true
+  },
+  "metadata": {
+    "llm_model": "qwen-2.5-coder-32b-instruct",
+    "parser_version": "",
+    "processing_time_ms": 7397
+  }
+}

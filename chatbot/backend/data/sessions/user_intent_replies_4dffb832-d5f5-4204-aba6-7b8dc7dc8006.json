@@ -1,0 +1,8 @@
+[
+  {
+    "turn": 1,
+    "question": "Great! It sounds like you're looking to perform anomaly detection on your dataset. To get started, could you provide some more details about your dataset and the specific goals you have for this project?\n\nFor example:\n- What kind of data does your dataset contain?\n- Is it structured or unstructured data?\n- Are there any specific features or columns that you think might be important for detecting anomalies?\n- What is the expected size of the dataset?\n\nThis information will help me tailor the process to best suit your needs.",
+    "user_reply": "Upload dataset for anomaly detection",
+    "timestamp": "2026-08-04T17:36:11.853573+00:00"
+  }
+]

@@ -1,0 +1,8 @@
+[
+  {
+    "turn": 1,
+    "question": "Great to hear from you! You're working in chemical manufacturing as a process engineer with a strong focus on explainability. That's fantastic!\n\nTo ensure we can help you effectively, could you provide a bit more detail? Specifically:\n\n1. **Your Primary Goal**: What is the main objective you're trying to achieve with your machine learning project?\n2. **Type of ML Problem**: Are you looking to solve a classification problem, regression, clustering, or something else?\n3. **Type of Dataset**: Could you describe the kind of data you have or plan to use? For example, process parameters, chemical composition, etc.\n4. **File Format(s)**: What format(s) is/are your dataset(s) in? Common formats include CSV, Excel, JSON, etc.\n\nWith this information, I can guide you through the process more precisely and ensure everything aligns with your needs.",
+    "user_reply": "Chemical manufacturing, process engineer, explainability is high priority",
+    "timestamp": "2026-07-31T05:08:44.116672+00:00"
+  }
+]

@@ -1,0 +1,139 @@
+{
+  "schema_version": "1.0",
+  "conversation": {
+    "session_id": "454b369d-ecb4-4eec-a70c-8e783c747a71",
+    "conversation_id": "454b369d-ecb4-4eec-a70c-8e783c747a71",
+    "timestamp": "2026-07-30T14:13:02.529575+00:00",
+    "phase": "pre_upload",
+    "dataset_uploaded": false,
+    "conversation_turn": 6
+  },
+  "goal": {
+    "primary_goal": "forecast quarterly sales figures using historical data",
+    "secondary_goals": [],
+    "business_problem": "",
+    "candidate_ml_problem_types": [
+      {
+        "type": "anomaly detection",
+        "confidence": 0.9
+      }
+    ]
+  },
+  "observed": {
+    "industry_terms": [],
+    "equipment": [
+      "turbine",
+      "sensor"
+    ],
+    "assets": [],
+    "datasets_mentioned": [],
+    "locations": [],
+    "time_periods": [],
+    "quantities": [],
+    "keywords": [
+      "aerospace",
+      "using",
+      "blades",
+      "dataset",
+      "parquet",
+      "predict",
+      "degradation",
+      "engineer",
+      "want",
+      "turbine",
+      "device",
+      "detection",
+      "also",
+      "anomaly",
+      "edge",
+      "with",
+      "model",
+      "locally",
+      "needs",
+      "required",
+      "sensor",
+      "data",
+      "highly",
+      "time",
+      "audits",
+      "working",
+      "explainability",
+      "series",
+      "json",
+      "analyst",
+      "forecast",
+      "sales",
+      "goal",
+      "figures",
+      "historical",
+      "quarterly",
+      "financial"
+    ],
+    "user_statements": [
+      "Hi",
+      "I am an Aerospace Engineer and I want to predict turbine blades degradation using a parquet dataset",
+      "I want to use anomaly detection. Also, the model needs to run locally on an edge device with under 10ms inference time.",
+      "I am working with time-series sensor data, and explainability is highly required due to FAA audits.",
+      "Json",
+      "\"I am a Financial Analyst and my goal is to forecast quarterly sales figures using historical data."
+    ]
+  },
+  "inferred": {
+    "industry": {
+      "value": "aerospace",
+      "confidence": 0.8
+    },
+    "user_role": {
+      "value": "analyst",
+      "confidence": 0.8
+    },
+    "business_domain": {
+      "value": "",
+      "confidence": 0.0
+    },
+    "experience_level": {
+      "value": "",
+      "confidence": 0.0
+    }
+  },
+  "dataset_expectation": {
+    "upload_status": "pending",
+    "expected_file_types": [
+      "JSON"
+    ],
+    "expected_dataset_type": "sensor",
+    "expected_duration": "",
+    "expected_sampling_rate": "",
+    "expected_size": ""
+  },
+  "constraints": {
+    "preferred_algorithms": [],
+    "preferred_frameworks": [],
+    "explainability_required": true,
+    "deployment_constraints": [],
+    "business_constraints": [],
+    "technical_constraints": []
+  },
+  "conversation_analysis": {
+    "urgency": {
+      "value": "normal",
+      "confidence": 0.6
+    },
+    "sentiment": "neutral",
+    "certainty_level": "",
+    "ambiguity_detected": false,
+    "missing_information": []
+  },
+  "clarifications_required": [],
+  "planning_hints": {
+    "recommended_next_action": "prompt_for_upload",
+    "recommended_agents": [],
+    "wait_for_dataset": true,
+    "conversation_complete": true
+  },
+  "metadata": {
+    "llm_model": "qwen-plus",
+    "parser_version": "",
+    "processing_time_ms": 2205
+  }
+}

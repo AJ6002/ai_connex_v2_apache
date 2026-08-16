@@ -201,13 +201,12 @@ export const ChatBotModal: React.FC<ChatBotModalProps> = ({
     } catch {
       // Backend is offline — show a clean, helpful notice instead of fake data
       setTimeout(() => {
-        const offlineText = '⚠️ **Jane API Server is Offline.**\n\nUnable to reach the Jane Assistant backend on `http://localhost:5000`.\n\nTo start the backend server, run in your terminal:\n```bash\npython chatbot/backend/app.py\n```\nThen retry your question!';
+        const offlineText = '⚠️ **Jane API Server is Offline.**\n\nUnable to reach the Jane Assistant backend on `http://localhost:5000`.\n\nTo start the backend server, run in your terminal:\n```bash\npython backend/app.py\n```\nThen retry your question!';
         setMessages((prev) => [
           ...prev,
           {
             sender: 'bot',
             text: offlineText,
-            html: renderMarkdownToHtml(offlineText),
             intent: 'BACKEND_OFFLINE',
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           },

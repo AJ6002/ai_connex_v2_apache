@@ -1,0 +1,8 @@
+[
+  {
+    "turn": 1,
+    "question": "Great! It sounds like you're looking to perform anomaly detection on equipment data. To get started, could you provide more details about your dataset? Specifically, I need to know:\n\n- The type of data included in your dataset (e.g., sensor readings, maintenance logs).\n- The file format of your dataset (e.g., CSV, Excel, JSON).\n\nAdditionally, it would be helpful if you could share any specific goals or requirements you have for this project, such as the level of explainability you need in the results. This will help me tailor the solution to best fit your needs.",
+    "user_reply": "Upload dataset for equipment anomaly detection",
+    "timestamp": "2026-08-04T17:33:17.321842+00:00"
+  }
+]

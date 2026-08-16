@@ -422,48 +422,279 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
 
       {/* Main Container: Archive Dropzone & 4-Layer Tracker */}
       <div className="space-y-6">
-          {/* Section 1: Industrial Archive Dropzone */}
+          {/* Section 1: Universal Data Entry Upload Controller */}
           <div className="glass-card p-6 relative overflow-hidden">
-            <div className="flex justify-between items-center mb-4">
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[#E86326] text-xl">upload_file</span>
-                <h2 className="font-headline font-bold text-base text-primary">
-                  1. Multi-Format Industrial Archive Dropzone
-                </h2>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 border-b border-ui pb-4">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-[#2B0063] flex items-center justify-center text-white shadow-md">
+                  <span className="material-symbols-outlined text-xl">cloud_upload</span>
+                </div>
+                <div>
+                  <h2 className="font-headline font-bold text-base text-primary">
+                    Universal Data Entry & Ingestion Controller
+                  </h2>
+                  <p className="text-xs text-secondary font-mono">
+                    Select your industrial dataset entry point to profile and prepare sensor telemetry
+                  </p>
+                </div>
               </div>
-              <span className="text-[11px] font-mono text-muted">
-                Supports .zip, .csv, .txt, .mat, .xlsx (Max 5GB)
-              </span>
+
+              <div className="flex items-center gap-2 bg-[#2B0063]/10 p-1.5 rounded-2xl border border-[#2B0063]/20">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('upload')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold font-mono transition-all flex items-center gap-1.5 cursor-pointer ${
+                    activeTab === 'upload' ? 'bg-[#2B0063] text-white shadow-md' : 'text-secondary hover:text-primary'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-sm">tune</span>
+                  <span>Ingestion Hub</span>
+                </button>
+              </div>
             </div>
 
-            {/* Drop Area */}
-            <div 
-              onClick={() => document.getElementById('zip-file-input')?.click()}
-              className="border-2 border-dashed border-[#E86326]/40 hover:border-[#E86326] transition-all rounded-2xl p-8 text-center cursor-pointer group"
-              style={{background:'var(--bg-input)'}}
-            >
-              <input
-                type="file"
-                id="zip-file-input"
-                accept=".zip,.csv,.xlsx,.xls,.json,.txt,.mat"
-                onChange={handleFileChange}
-                style={{ display: 'none' }}
-              />
-              <div className="w-14 h-14 bg-[#2B0063] rounded-2xl border border-white/20 flex items-center justify-center mx-auto mb-3 shadow-lg group-hover:scale-110 transition-transform text-[#E86326]">
-                <span className="material-symbols-outlined text-3xl">cloud_upload</span>
-              </div>
-              <p className="font-headline font-bold text-sm text-primary">
-                Drag & Drop Industrial Telemetry Archives Here
-              </p>
-              <p className="text-secondary text-xs mt-1">
-                or <span className="text-[#E86326] font-bold underline">browse local storage</span> to select multi-table SCADA dataset
-              </p>
-              <div className="flex items-center justify-center gap-3 mt-4 text-[10px] font-mono text-secondary">
-                <span className="px-2 py-0.5 border border-ui rounded-lg" style={{background:'var(--bg-input)'}}>C-MAPSS Turbofan</span>
-                <span className="px-2 py-0.5 border border-ui rounded-lg" style={{background:'var(--bg-input)'}}>Wind Turbine SCADA</span>
-                <span className="px-2 py-0.5 border border-ui rounded-lg" style={{background:'var(--bg-input)'}}>IGBT Semiconductor</span>
-              </div>
+            {/* 4 Entry Point Option Tabs */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+              <button
+                type="button"
+                onClick={() => setQueryInput('files')}
+                className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                  queryInput !== 's3' && queryInput !== 'cloud' && queryInput !== 'stream'
+                    ? 'border-[#E86326] bg-[#E86326]/10 shadow-md ring-2 ring-[#E86326]/20'
+                    : 'border-ui hover:border-[#E86326]/40'
+                }`}
+                style={queryInput === 's3' || queryInput === 'cloud' || queryInput === 'stream' ? {background:'var(--bg-input)'} : {}}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="material-symbols-outlined text-xl text-[#E86326]">upload_file</span>
+                  <span className="text-[10px] font-mono font-extrabold uppercase px-2 py-0.5 rounded bg-[#E86326]/15 text-[#E86326]">Option 1</span>
+                </div>
+                <h4 className="font-bold text-xs text-primary">Local Archives & Files</h4>
+                <p className="text-[10px] text-secondary mt-0.5">.csv, .parquet, .json, .zip</p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setQueryInput('s3')}
+                className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                  queryInput === 's3'
+                    ? 'border-[#2B0063] bg-[#2B0063]/10 shadow-md ring-2 ring-[#2B0063]/20'
+                    : 'border-ui hover:border-[#2B0063]/40'
+                }`}
+                style={queryInput !== 's3' ? {background:'var(--bg-input)'} : {}}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="material-symbols-outlined text-xl text-[#2B0063]">cloud</span>
+                  <span className="text-[10px] font-mono font-extrabold uppercase px-2 py-0.5 rounded bg-[#2B0063]/15 text-[#2B0063]">Option 2</span>
+                </div>
+                <h4 className="font-bold text-xs text-primary">AWS S3 Cloud Storage</h4>
+                <p className="text-[10px] text-secondary mt-0.5">s3://bucket/key credentials</p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setQueryInput('cloud')}
+                className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                  queryInput === 'cloud'
+                    ? 'border-blue-600 bg-blue-500/10 shadow-md ring-2 ring-blue-500/20'
+                    : 'border-ui hover:border-blue-500/40'
+                }`}
+                style={queryInput !== 'cloud' ? {background:'var(--bg-input)'} : {}}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="material-symbols-outlined text-xl text-blue-600">database</span>
+                  <span className="text-[10px] font-mono font-extrabold uppercase px-2 py-0.5 rounded bg-blue-500/15 text-blue-600">Option 3</span>
+                </div>
+                <h4 className="font-bold text-xs text-primary">Cloud SQL & Big Data</h4>
+                <p className="text-[10px] text-secondary mt-0.5">Snowflake, Postgres, Databricks</p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setQueryInput('stream')}
+                className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                  queryInput === 'stream'
+                    ? 'border-purple-600 bg-purple-500/10 shadow-md ring-2 ring-purple-500/20'
+                    : 'border-ui hover:border-purple-500/40'
+                }`}
+                style={queryInput !== 'stream' ? {background:'var(--bg-input)'} : {}}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="material-symbols-outlined text-xl text-purple-600">sensors</span>
+                  <span className="text-[10px] font-mono font-extrabold uppercase px-2 py-0.5 rounded bg-purple-500/15 text-purple-600">Option 4</span>
+                </div>
+                <h4 className="font-bold text-xs text-primary">Industrial SCADA Stream</h4>
+                <p className="text-[10px] text-secondary mt-0.5">OPC UA, MQTT Telemetry</p>
+              </button>
             </div>
+
+            {/* TAB CONTENT 1: Local Files & Archives */}
+            {queryInput !== 's3' && queryInput !== 'cloud' && queryInput !== 'stream' && (
+              <div 
+                onClick={() => document.getElementById('zip-file-input')?.click()}
+                className="border-2 border-dashed border-[#E86326]/40 hover:border-[#E86326] transition-all rounded-2xl p-8 text-center cursor-pointer group"
+                style={{background:'var(--bg-input)'}}
+              >
+                <input
+                  type="file"
+                  id="zip-file-input"
+                  accept=".zip,.csv,.xlsx,.xls,.json,.txt,.mat,.parquet"
+                  onChange={handleFileChange}
+                  style={{ display: 'none' }}
+                />
+                <div className="w-14 h-14 bg-[#2B0063] rounded-2xl border border-white/20 flex items-center justify-center mx-auto mb-3 shadow-lg group-hover:scale-110 transition-transform text-[#E86326]">
+                  <span className="material-symbols-outlined text-3xl">cloud_upload</span>
+                </div>
+                <p className="font-headline font-bold text-sm text-primary">
+                  Drag & Drop Industrial Telemetry Archives Here
+                </p>
+                <p className="text-secondary text-xs mt-1">
+                  or <span className="text-[#E86326] font-bold underline">browse local storage</span> to select multi-table SCADA dataset
+                </p>
+                <div className="flex flex-wrap items-center justify-center gap-3 mt-4 text-[10px] font-mono text-secondary">
+                  <span className="px-2.5 py-1 border border-ui rounded-xl" style={{background:'var(--bg-input)'}}>C-MAPSS Turbofan (.zip)</span>
+                  <span className="px-2.5 py-1 border border-ui rounded-xl" style={{background:'var(--bg-input)'}}>Wind Turbine SCADA (.parquet)</span>
+                  <span className="px-2.5 py-1 border border-ui rounded-xl" style={{background:'var(--bg-input)'}}>IGBT Semiconductor (.csv)</span>
+                </div>
+              </div>
+            )}
+
+            {/* TAB CONTENT 2: AWS S3 Storage */}
+            {queryInput === 's3' && (
+              <div className="p-6 rounded-2xl border border-[#2B0063]/30 bg-[#2B0063]/5 space-y-4">
+                <div className="flex items-center gap-2 text-sm font-bold text-[#2B0063]">
+                  <span className="material-symbols-outlined">cloud</span>
+                  <span>AWS S3 Bucket Integration</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <label className="block text-secondary font-mono mb-1 font-bold">S3 Bucket Path / URI</label>
+                    <input
+                      type="text"
+                      defaultValue="s3://aiconnex-industrial-telemetry/cmapss-fd001.zip"
+                      className="w-full p-3 rounded-xl border border-ui font-mono text-xs text-primary bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-[#2B0063]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-secondary font-mono mb-1 font-bold">AWS Region</label>
+                    <input
+                      type="text"
+                      defaultValue="us-east-1"
+                      className="w-full p-3 rounded-xl border border-ui font-mono text-xs text-primary bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-[#2B0063]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-secondary font-mono mb-1 font-bold">AWS Access Key ID</label>
+                    <input
+                      type="password"
+                      defaultValue="AKIAIOSFODNN7EXAMPLE"
+                      className="w-full p-3 rounded-xl border border-ui font-mono text-xs text-primary bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-[#2B0063]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-secondary font-mono mb-1 font-bold">AWS Secret Access Key</label>
+                    <input
+                      type="password"
+                      defaultValue="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+                      className="w-full p-3 rounded-xl border border-ui font-mono text-xs text-primary bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-[#2B0063]"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const mockFile = new File(["dummy content"], "s3_cmapss_fd001.zip", { type: "application/zip" });
+                    triggerCompilation(mockFile, { targetColumn: 'RUL', problemType: 'regression' });
+                  }}
+                  className="w-full py-3 bg-[#2B0063] hover:bg-[#1e0046] text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-base">sync</span>
+                  <span>Connect S3 Bucket & Ingest Data</span>
+                </button>
+              </div>
+            )}
+
+            {/* TAB CONTENT 3: Cloud & Big Data Connection */}
+            {queryInput === 'cloud' && (
+              <div className="p-6 rounded-2xl border border-blue-500/30 bg-blue-500/5 space-y-4">
+                <div className="flex items-center gap-2 text-sm font-bold text-blue-600">
+                  <span className="material-symbols-outlined">database</span>
+                  <span>Cloud Database & Warehouse Connection</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <label className="block text-secondary font-mono mb-1 font-bold">Warehouse / DB Type</label>
+                    <select className="w-full p-3 rounded-xl border border-ui font-mono text-xs text-primary bg-white dark:bg-slate-900">
+                      <option>PostgreSQL / TimescaleDB (Port 5432)</option>
+                      <option>Snowflake Data Cloud</option>
+                      <option>Databricks Delta Lake</option>
+                      <option>Google BigQuery</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-secondary font-mono mb-1 font-bold">Connection String / Host</label>
+                    <input
+                      type="text"
+                      defaultValue="postgresql://postgres:pass@127.0.0.1:5432/aiconnex_scada"
+                      className="w-full p-3 rounded-xl border border-ui font-mono text-xs text-primary bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const mockFile = new File(["dummy content"], "scada_postgresql_export.csv", { type: "text/csv" });
+                    triggerCompilation(mockFile, { targetColumn: 'RUL', problemType: 'regression' });
+                  }}
+                  className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-base">hub</span>
+                  <span>Test Connection & Ingest SCADA Tables</span>
+                </button>
+              </div>
+            )}
+
+            {/* TAB CONTENT 4: Industrial Stream (OPC UA / MQTT) */}
+            {queryInput === 'stream' && (
+              <div className="p-6 rounded-2xl border border-purple-500/30 bg-purple-500/5 space-y-4">
+                <div className="flex items-center gap-2 text-sm font-bold text-purple-600">
+                  <span className="material-symbols-outlined">sensors</span>
+                  <span>Real-Time Industrial SCADA Telemetry Stream</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <label className="block text-secondary font-mono mb-1 font-bold">Protocol</label>
+                    <select className="w-full p-3 rounded-xl border border-ui font-mono text-xs text-primary bg-white dark:bg-slate-900">
+                      <option>OPC UA Server (opc.tcp://...)</option>
+                      <option>MQTT Broker (mqtts://...)</option>
+                      <option>Modbus TCP Gateway</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-secondary font-mono mb-1 font-bold">Endpoint URL / Topic</label>
+                    <input
+                      type="text"
+                      defaultValue="opc.tcp://industrial-gateway.plant.local:4840/UA/Telemetry"
+                      className="w-full p-3 rounded-xl border border-ui font-mono text-xs text-primary bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const mockFile = new File(["dummy content"], "opcua_stream_snapshot.parquet", { type: "application/octet-stream" });
+                    triggerCompilation(mockFile, { targetColumn: 'RUL', problemType: 'regression' });
+                  }}
+                  className="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-base">rss_feed</span>
+                  <span>Connect Stream & Capture Telemetry Snapshot</span>
+                </button>
+              </div>
+            )}
 
             {/* Error Message if any */}
             {compileError && (

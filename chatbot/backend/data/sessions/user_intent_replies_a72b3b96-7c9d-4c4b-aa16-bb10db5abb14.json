@@ -1,0 +1,8 @@
+[
+  {
+    "turn": 1,
+    "question": "What kind of machine learning problem are you looking at \u2014 for example, regression, classification, forecasting, or anomaly detection?",
+    "user_reply": "I want to predict equipment failures in my manufacturing plant",
+    "timestamp": "2026-07-30T08:39:02.790921+00:00"
+  }
+]

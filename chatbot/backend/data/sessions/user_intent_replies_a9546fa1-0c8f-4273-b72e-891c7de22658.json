@@ -1,0 +1,14 @@
+[
+  {
+    "turn": 1,
+    "question": "Hello Akshay! Nice to meet you. It's great to have you here. Could you tell me a bit more about what you're looking to achieve with your machine learning project? What's the main goal or problem you'd like to solve? This will help me provide the best guidance as you prepare to upload your dataset.",
+    "user_reply": "hello, i am akshay",
+    "timestamp": "2026-07-31T09:53:24.125626+00:00"
+  },
+  {
+    "turn": 2,
+    "question": "Thank you for providing those details! Building a regression model to predict TDS (Total Dissolved Solids) values for your chemical plant sounds like a valuable project. Before we proceed, could you please share a bit more information about your industry, your role, and any specific explainability requirements you might have for the model? This will help me tailor the solution to best fit your needs. Once I have that information, you can go ahead and upload your dataset, and I'll take care of the rest!",
+    "user_reply": "\"I want to build a regression model to predict TDS values for my chemical plant using time-series CSV files in a ZIP archive.\"",
+    "timestamp": "2026-07-31T09:54:28.756640+00:00"
+  }
+]

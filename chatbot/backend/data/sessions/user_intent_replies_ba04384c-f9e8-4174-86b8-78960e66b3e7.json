@@ -1,0 +1,14 @@
+[
+  {
+    "turn": 1,
+    "question": "Hello! Welcome to our MLOps Chatbot Assistant. It's great to hear from you. Before we get started with the upload process, I wanted to understand a bit more about what you're looking to achieve. Could you tell me what your primary goal or problem is? What kind of machine learning problem are you trying to solve, and what type of dataset will you be working with? Additionally, knowing the file format of your dataset would be helpful. If you could also share a bit about your industry, your role, and any specific explainability requirements, that would be fantastic! Let's start there.",
+    "user_reply": "hi",
+    "timestamp": "2026-07-31T07:15:59.618814+00:00"
+  },
+  {
+    "turn": 2,
+    "question": "That sounds like an excellent project aimed at improving efficiency and accuracy in your chemical plant operations! To ensure we build the most effective model, could you please provide a bit more information?\n\n1. **Industry Details**: Could you confirm the specific industry your chemical plant operates in? This helps in understanding any industry-specific nuances.\n2. **Your Role**: What is your role in the project? Are you a data scientist, engineer, or are you working with a team?\n3. **Explainability Requirements**: How important is model explainability for your project? Do you need insights into why the model makes certain predictions?\n\nOnce I have this information, I can guide you through the next steps, including uploading your dataset.",
+    "user_reply": "\"I want to build a regression model to predict TDS values for my chemical plant using time-series CSV files in a ZIP archive.\"",
+    "timestamp": "2026-07-31T07:23:34.320774+00:00"
+  }
+]

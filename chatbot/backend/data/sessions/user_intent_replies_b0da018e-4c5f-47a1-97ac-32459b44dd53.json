@@ -1,0 +1,8 @@
+[
+  {
+    "turn": 1,
+    "question": "Hello! Welcome to the Connexx Autonomous MLOps Assistant. It's great to have you here. I'm here to help you with your machine learning operations needs, whether you're looking to upload datasets, train models, or monitor performance.\n\nCould you tell me what you're hoping to achieve? What's the main goal or problem you'd like to solve? This will help me guide you through the process more effectively.",
+    "user_reply": "hi",
+    "timestamp": "2026-07-31T06:30:46.144050+00:00"
+  }
+]
