@@ -1,8 +1,0 @@
-[
-  {
-    "turn": 1,
-    "question": "Great! It sounds like you're interested in performing anomaly detection on your dataset. To get started, could you provide some more details about your dataset and the specific goals of your project? Here are a few questions to help us gather the necessary information:\n\n1. **Dataset Details**: Can you describe the type of data you have? For example, is it transactional data, sensor readings, or something else?\n2. **File Format**: What format is your dataset in? Common formats include CSV, Excel, JSON, etc.\n3. **Anomaly Detection Goals**: What specific anomalies are you looking to detect? Are there any particular patterns or behaviors you want to identify?\n4. **Industry Context**: Is there a specific industry context for this project? This can help tailor the solution to your needs.\n5. **Role**: Could you share your role in the project? This helps in understanding your perspective and requirements better.\n6. **Explainability**: How important is the explainability of the model's predictions to you?\n\nFeel free to provide as much detail as possible so we can set up the best solution for you!",
-    "user_reply": "Upload dataset for anomaly detection",
-    "timestamp": "2026-08-04T17:02:46.867148+00:00"
-  }
-]

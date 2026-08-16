@@ -1,8 +1,0 @@
-[
-  {
-    "turn": 1,
-    "question": "Thank you for providing all the necessary details! You can now upload your dataset, and I'll proceed to develop a model to predict the **Remaining Useful Life (RUL)** for your turbofan engine SCADA logs. This will help you optimize maintenance schedules and reduce unexpected downtime costs.",
-    "user_reply": "I want to predict Remaining Useful Life (RUL) for turbofan engine SCADA logs",
-    "timestamp": "2026-08-05T02:26:07.158395+00:00"
-  }
-]

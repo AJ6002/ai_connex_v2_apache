@@ -1,8 +1,0 @@
-[
-  {
-    "turn": 1,
-    "question": "Great, I have all the information I need! You can now upload your dataset and I'll take it from here.",
-    "user_reply": "I want to predict equipment failures in my manufacturing plant using sensor data. It's a time-series regression problem with CSV files.",
-    "timestamp": "2026-07-30T09:32:36.718368+00:00"
-  }
-]

@@ -1,8 +1,0 @@
-[
-  {
-    "turn": 1,
-    "question": "Thank you for providing that detailed information! Building a regression model to predict Total Dissolved Solids (TDS) values using time-series data from your chemical plant sounds like a great project.\n\nBefore we proceed, could you please share a bit more about your industry and your role within it? This will help me tailor the model and provide insights that are most relevant to your needs. Additionally, if there are any specific requirements for explainability or interpretability of the model, let me know so I can ensure it meets your standards.\n\nOnce I have this information, you can upload your dataset and I'll handle the rest!",
-    "user_reply": "\"I want to build a regression model to predict TDS values for my chemical plant using time-series CSV files in a ZIP archive.\"",
-    "timestamp": "2026-08-04T10:19:12.543524+00:00"
-  }
-]

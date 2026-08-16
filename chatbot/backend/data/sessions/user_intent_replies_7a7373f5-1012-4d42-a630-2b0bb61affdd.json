@@ -1,8 +1,0 @@
-[
-  {
-    "turn": 1,
-    "question": "Great! It sounds like you're interested in performing anomaly detection on your dataset. To get started, could you provide more details about the dataset you have? Specifically:\n\n- **Type of Dataset:** Is it structured (like a CSV or Excel file) or unstructured data?\n- **File Format:** What format is your dataset in? (e.g., CSV, Excel, JSON)\n- **Industry Context:** While not mandatory, knowing the industry can help tailor the solution better (e.g., finance, healthcare, manufacturing).\n- **Role:** What is your role in this project? (e.g., Data Scientist, Analyst, Engineer)\n\nThis information will help me guide you through the process more effectively.",
-    "user_reply": "Upload dataset for anomaly detection",
-    "timestamp": "2026-08-04T17:03:34.979755+00:00"
-  }
-]

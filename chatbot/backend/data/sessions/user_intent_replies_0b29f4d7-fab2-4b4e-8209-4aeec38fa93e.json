@@ -1,8 +1,0 @@
-[
-  {
-    "turn": 1,
-    "question": "To ensure we configure the most appropriate data handling and analysis workflow, could you please specify the type of dataset you will be using? Is it sensor data, historical maintenance logs, or something else? Additionally, what file formats will your dataset be in? Will it be CSV, Excel, or another format? This information is crucial for setting up the correct data ingestion and preprocessing steps.",
-    "user_reply": "I want to build a Remaining Useful Life prediction model for C-MAPSS turbofan engines",
-    "timestamp": "2026-08-05T02:34:17.856074+00:00"
-  }
-]

@@ -1,8 +1,0 @@
-[
-  {
-    "turn": 1,
-    "question": "Great to hear that you're looking to predict Remaining Useful Life (RUL) for a turbofan engine! This is a classic problem in predictive maintenance, typically addressed using machine learning to forecast when maintenance or replacement might be needed based on sensor data.\n\nBefore we proceed, could you let me know a bit more about the specifics of your project?\n\n1. **Type of ML Problem**: Are you focusing on regression (predicting a continuous value for RUL), or is it a classification problem (e.g., predicting whether the engine will fail within a certain period)?\n2. **Type of Dataset**: What kind of data do you have? Is it time-series data from sensors, or do you have other types of information?\n3. **File Format(s)**: In what format is your data? Common formats include CSV, Excel, or other structured data files.\n4. **Industry**: While this isn't strictly necessary, knowing your industry can help tailor our approach.\n5. **Role**: Your role in the project can also provide context.\n6. **Explainability Requirements**: How important is it to be able to explain the model's decisions? This can influence the choice of algorithms.\n\nFeel free to share as much or as little as you have, and we can take it from there!",
-    "user_reply": "I want to predict RUL for turbofan engine",
-    "timestamp": "2026-07-31T04:44:42.284458+00:00"
-  }
-]

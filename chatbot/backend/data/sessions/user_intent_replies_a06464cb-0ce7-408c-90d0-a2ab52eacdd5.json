@@ -1,8 +1,0 @@
-[
-  {
-    "turn": 1,
-    "question": "Hello! It's great to meet you. To get started, could you let me know which of these primary goals you're aiming for with your data?\n\n1. **Target Prediction / Regression** (e.g., predicting TDS, COD, pH, or concentration levels)\n2. **Time-Series Forecasting** (e.g., 7-day effluent load trajectories)\n3. **Anomaly & Outlier Detection** (e.g., catching contamination spills)\n\nIf you're not sure, here\u2019s a quick menu to help:\n\n- **1**: Predict specific water quality parameters.\n- **2**: Forecast future effluent loads.\n- **3**: Detect anomalies or contamination events.\n\nLooking forward to helping you achieve your objectives!",
-    "user_reply": "hi",
-    "timestamp": "2026-08-04T18:40:10.450569+00:00"
-  }
-]

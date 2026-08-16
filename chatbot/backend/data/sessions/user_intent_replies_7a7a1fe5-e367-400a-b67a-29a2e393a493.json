@@ -1,8 +1,0 @@
-[
-  {
-    "turn": 1,
-    "question": "Thank you for providing all the necessary details! You can now upload your C-MAPSS turbofan engine SCADA logs dataset. Once uploaded, I'll proceed to train the Remaining Useful Life (RUL) predictor to help optimize maintenance schedules and reduce operational risks.",
-    "user_reply": "Train a Remaining Useful Life (RUL) predictor for C-MAPSS turbofan engine SCADA logs.",
-    "timestamp": "2026-08-05T02:26:34.439396+00:00"
-  }
-]

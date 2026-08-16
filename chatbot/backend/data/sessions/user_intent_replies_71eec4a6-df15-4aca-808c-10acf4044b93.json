@@ -1,8 +1,0 @@
-[
-  {
-    "turn": 1,
-    "question": "Great! Building a regression model to predict TDS (Total Dissolved Solids) values for your chemical plant from time-series data is a fantastic project. It sounds like you have a solid plan in mind.\n\nBefore we proceed, I just need a bit more information to ensure we cover all the bases:\n\n1. **Your Industry**: Can you provide a bit more detail about your chemical plant's industry and specific processes? This helps in tailoring the model to your needs.\n2. **Your Role**: What is your role in the project? This helps me understand your perspective and adjust the guidance accordingly.\n3. **Explainability Requirements**: How important is it for the model to be explainable? This will influence the model selection and the way we interpret the results.\n\nOnce I have this information, you can upload your dataset and we'll be ready to start building the model!",
-    "user_reply": "\"I want to build a regression model to predict TDS values for my chemical plant using time-series CSV files in a ZIP archive.\"",
-    "timestamp": "2026-07-31T05:35:44.709145+00:00"
-  }
-]

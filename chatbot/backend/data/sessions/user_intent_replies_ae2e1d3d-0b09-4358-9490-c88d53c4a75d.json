@@ -1,8 +1,0 @@
-[
-  {
-    "turn": 1,
-    "question": "That sounds like a great project! To ensure we get the best results, I\u2019d love to gather a bit more information to tailor the solution to your specific needs.\n\n1. **Your Industry**: Could you specify which segment of the chemical industry your plant operates in? This helps in understanding any industry-specific nuances.\n2. **Your Role**: What is your role within the company? Are you an engineer, data scientist, or another professional?\n3. **Explainability Requirements**: How important is model interpretability to you? Will stakeholders need to understand how the model makes its predictions?\n\nFeel free to share as much detail as possible on these points so we can proceed efficiently. Once we have this information, you can go ahead and upload your dataset, and I\u2019ll handle the rest!",
-    "user_reply": "\"I want to build a regression model to predict TDS values for my chemical plant using time-series CSV files in a ZIP archive.\"",
-    "timestamp": "2026-08-04T10:18:09.887565+00:00"
-  }
-]

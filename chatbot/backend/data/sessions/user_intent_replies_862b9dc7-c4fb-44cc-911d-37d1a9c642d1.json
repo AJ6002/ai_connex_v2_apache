@@ -1,8 +1,0 @@
-[
-  {
-    "turn": 1,
-    "question": "Great! It sounds like you're interested in performing anomaly detection on your dataset. To get started, could you provide more details about your dataset? Specifically, I would need to know:\n\n- The type of data you have (e.g., numerical, categorical, time-series).\n- The file format(s) your dataset is in (e.g., CSV, Excel, JSON).\n- Any specific requirements or constraints you might have regarding explainability or model performance.\n\nOnce I have this information, we can proceed with uploading your dataset and setting up the anomaly detection process.",
-    "user_reply": "Upload dataset for anomaly detection",
-    "timestamp": "2026-08-04T17:04:06.792095+00:00"
-  }
-]
