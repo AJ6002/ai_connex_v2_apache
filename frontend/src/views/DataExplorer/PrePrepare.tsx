@@ -1,17 +1,13 @@
-import React, { useState, useMemo } from 'react';
-import { 
-  Workflow, 
-  GitCommit, 
-  ArrowRight, 
-  Info, 
-  AlertCircle,
-  FileText,
+import React, { useState, useMemo, useEffect } from 'react';
+import Plot from 'react-plotly.js';
+import {
+  Workflow,
+  GitCommit,
+  ArrowRight,
   Sliders,
   Cpu,
   Search,
   CheckCircle,
-  AlertTriangle,
-  TrendingUp,
   ShieldCheck,
   Activity,
   Layers,
@@ -20,23 +16,209 @@ import {
   Database,
   LineChart as LineChartIcon,
   Maximize2,
-  Filter
+  Filter,
+  TrendingUp,
 } from 'lucide-react';
-import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
-  ScatterChart,
-  Scatter,
-  XAxis,
-  YAxis,
-  Tooltip,
-  CartesianGrid,
-  Cell
-} from 'recharts';
 
+// ─────────────────────────────────────────────────────────────────
+// THEME CONSTANTS – single source of truth, matches index.css tokens
+// ─────────────────────────────────────────────────────────────────
+const T = {
+  coral:       '#FF6B35',
+  coralSoft:   '#FF8F5A',
+  coralHover:  '#E85520',
+  coralGlow:   'rgba(255,107,53,0.18)',
+  eggplant:    '#280B43',
+  eggplantMid: '#3A1259',
+  eggplantDeep:'#1A0530',
+  white:       '#FFFFFF',
+  // light-theme surface equivalents (used for cards when bg-canvas is light)
+  surfaceCard:   'var(--bg-card)',
+  surfacePage:   'var(--bg-canvas)',
+  borderLight:   'var(--border-light)',
+  borderMedium:  'var(--border-medium)',
+  textMain:      'var(--text-main)',
+  textMuted:     'var(--text-muted)',
+  // semantic status
+  critical: '#ef4444',
+  warning:  '#f59e0b',
+  optimal:  '#10b981',
+};
+
+// ─────────────────────────────────────────────────────────────────
+// Shared Plotly layout config (applied to every Plotly chart)
+// ─────────────────────────────────────────────────────────────────
+function buildPlotlyLayout(overrides: Partial<Plotly.Layout> = {}): Partial<Plotly.Layout> {
+  return {
+    margin:      { t: 12, r: 16, b: 38, l: 48 },
+    paper_bgcolor: 'transparent',
+    plot_bgcolor:  'transparent',
+    font: { family: "'JetBrains Mono', monospace", size: 10, color: '#64748b' },
+    xaxis: {
+      gridcolor: 'rgba(100,116,139,0.12)',
+      gridwidth: 1,
+      zerolinecolor: 'rgba(100,116,139,0.20)',
+      tickfont: { size: 10, family: "'JetBrains Mono', monospace" },
+    },
+    yaxis: {
+      gridcolor: 'rgba(100,116,139,0.12)',
+      gridwidth: 1,
+      tickfont: { size: 10, family: "'JetBrains Mono', monospace" },
+    },
+    hoverlabel: {
+      bgcolor:   '#0f172a',
+      bordercolor: T.coral,
+      font: { family: "'JetBrains Mono', monospace", size: 11, color: '#ffffff' },
+    },
+    showlegend: false,
+    autosize:   true,
+    ...overrides,
+  };
+}
+
+const PLOTLY_CONFIG: Partial<Plotly.Config> = {
+  displayModeBar: true,
+  displaylogo: false,
+  modeBarButtonsToRemove: ['lasso2d', 'select2d', 'toImage', 'sendDataToCloud'],
+  responsive: true,
+};
+
+// ─────────────────────────────────────────────────────────────────
+// Mini SVG charts for Diagnostic Signal cards (kept native – they
+// are 100px thumbnail-sized and don't need Plotly overhead)
+// ─────────────────────────────────────────────────────────────────
+function MissingBarsChart({ data }: { data: Array<{ column: string; missing_pct: number }> }) {
+  const items = (data?.length > 0) ? data.slice(0, 4) : [{ column: 'All Channels', missing_pct: 0 }];
+  return (
+    <div className="w-full h-full flex flex-col justify-center gap-1.5 px-2">
+      {items.map((item, idx) => {
+        const pct = Math.min(100, Math.max(0, item.missing_pct));
+        const bar = pct > 10 ? T.critical : pct > 1 ? T.warning : T.optimal;
+        return (
+          <div key={idx}>
+            <div className="flex justify-between text-[10px] font-mono mb-0.5" style={{ color: '#64748b' }}>
+              <span className="truncate max-w-[130px] font-semibold">{item.column}</span>
+              <span className="font-bold" style={{ color: bar }}>{pct.toFixed(1)}%</span>
+            </div>
+            <div className="w-full h-[7px] rounded-full overflow-hidden" style={{ background: 'rgba(100,116,139,0.15)' }}>
+              <div className="h-full rounded-full" style={{ width: `${Math.max(3, pct)}%`, background: bar }} />
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function SvgBoxPlot({ data }: { data: Record<string, any> }) {
+  const min = data.min ?? 0; const p25 = data.p25 ?? 25; const median = data.median ?? 50;
+  const p75 = data.p75 ?? 75; const max = data.max ?? 100;
+  const range = (max - min) || 1;
+  const gx = (v: number) => 24 + ((v - min) / range) * 252;
+  return (
+    <svg viewBox="0 0 300 90" className="w-full h-full">
+      <line x1={gx(min)} y1="45" x2={gx(p25)} y2="45" stroke="#475569" strokeWidth="2" />
+      <line x1={gx(p75)} y1="45" x2={gx(max)} y2="45" stroke="#475569" strokeWidth="2" />
+      <line x1={gx(min)} y1="30" x2={gx(min)} y2="60" stroke="#475569" strokeWidth="2" />
+      <line x1={gx(max)} y1="30" x2={gx(max)} y2="60" stroke="#475569" strokeWidth="2" />
+      <rect x={gx(p25)} y="22" width={Math.max(3, gx(p75) - gx(p25))} height="46"
+        rx="5" fill={T.coralGlow} stroke={T.coral} strokeWidth="2" />
+      <line x1={gx(median)} y1="22" x2={gx(median)} y2="68" stroke={T.coral} strokeWidth="3" />
+      <text x={gx(min)} y="20" textAnchor="middle" fill="#94a3b8" fontSize="8" fontFamily="monospace">Min</text>
+      <text x={gx(median)} y="84" textAnchor="middle" fill={T.coral} fontSize="9" fontWeight="bold" fontFamily="monospace">Med: {median}</text>
+      <text x={gx(max)} y="20" textAnchor="middle" fill="#94a3b8" fontSize="8" fontFamily="monospace">Max</text>
+    </svg>
+  );
+}
+
+function SvgSkewnessGauge({ data }: { data: Record<string, any> }) {
+  const skew = data.skewness ?? 0;
+  const px = 150 + (Math.max(-4, Math.min(4, skew)) / 4) * 110;
+  const isSkewed = Math.abs(skew) > 1.5;
+  return (
+    <svg viewBox="0 0 300 80" className="w-full h-full">
+      <rect x="30" y="32" width="115" height="12" rx="4" fill="rgba(59,130,246,0.18)" />
+      <rect x="155" y="32" width="115" height="12" rx="4" fill="rgba(239,68,68,0.18)" />
+      <line x1="150" y1="24" x2="150" y2="52" stroke="#0f172a" strokeWidth="2" />
+      <circle cx={px} cy="38" r="9" fill={isSkewed ? T.critical : T.optimal} stroke="#ffffff" strokeWidth="2" />
+      <text x="34" y="62" fill="#3b82f6" fontSize="8" fontWeight="bold">Left-Skewed</text>
+      <text x="150" y="18" textAnchor="middle" fill="#0f172a" fontSize="8" fontWeight="bold">Normal</text>
+      <text x="266" y="62" textAnchor="end" fill={T.critical} fontSize="8" fontWeight="bold">Right-Skewed</text>
+    </svg>
+  );
+}
+
+function SvgCorrelations({ data }: { data: Array<{ col_a: string; col_b: string; correlation: number }> }) {
+  if (!data?.length) return (
+    <div className="w-full h-full flex items-center justify-center text-[10px] font-mono" style={{ color: '#94a3b8' }}>
+      Orthogonal — No strong collinearity detected
+    </div>
+  );
+  return (
+    <div className="w-full h-full flex flex-col justify-center gap-1.5 px-2">
+      {data.slice(0, 3).map((item, i) => {
+        const r = Math.abs(item.correlation);
+        return (
+          <div key={i} className="flex items-center justify-between text-[10px] font-mono px-2 py-1 rounded-lg"
+               style={{ background: 'rgba(100,116,139,0.08)', border: '1px solid rgba(100,116,139,0.15)' }}>
+            <span className="truncate max-w-[150px] font-semibold text-slate-700">{item.col_a} ↔ {item.col_b}</span>
+            <span className="font-bold px-1.5 py-0.5 rounded text-[9px]"
+                  style={{ background: r > 0.85 ? 'rgba(245,158,11,0.15)' : 'rgba(16,185,129,0.15)',
+                           color: r > 0.85 ? T.warning : T.optimal }}>r = {r.toFixed(2)}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function SvgSchemaDonut({ data }: { data: { numeric: number; categorical: number; constant: number } }) {
+  const num = data.numeric ?? 0; const cat = data.categorical ?? 0; const con = data.constant ?? 0;
+  const total = (num + cat + con) || 1;
+  const nPct = (num / total) * 100; const cPct = (cat / total) * 100;
+  return (
+    <div className="w-full h-full flex items-center justify-around px-3">
+      <div className="relative w-16 h-16">
+        <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+          <circle cx="18" cy="18" r="15.915" fill="none" stroke="rgba(100,116,139,0.15)" strokeWidth="4" />
+          <circle cx="18" cy="18" r="15.915" fill="none" stroke={T.coral} strokeWidth="4"
+            strokeDasharray={`${nPct} ${100 - nPct}`} />
+          <circle cx="18" cy="18" r="15.915" fill="none" stroke="#8b5cf6" strokeWidth="4"
+            strokeDasharray={`${cPct} ${100 - cPct}`} strokeDashoffset={`-${nPct}`} />
+        </svg>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="text-xs font-bold font-mono text-slate-800">{total}</span>
+        </div>
+      </div>
+      <div className="text-[10px] font-mono space-y-1">
+        <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm" style={{ background: T.coral }} />Numeric: <strong>{num}</strong></div>
+        <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-purple-500" />Categorical: <strong>{cat}</strong></div>
+        {con > 0 && <div className="flex items-center gap-1.5 text-rose-600 font-bold"><span className="w-2.5 h-2.5 rounded-sm" style={{ background: T.critical }} />Constant: <strong>{con}</strong></div>}
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Status badge helper
+// ─────────────────────────────────────────────────────────────────
+function StatusBadge({ status, metric }: { status: string; metric: string }) {
+  const cfg = status === 'CRITICAL'
+    ? { bg: 'rgba(239,68,68,0.12)', text: T.critical, border: 'rgba(239,68,68,0.30)' }
+    : status === 'WARNING'
+      ? { bg: 'rgba(245,158,11,0.12)', text: T.warning, border: 'rgba(245,158,11,0.30)' }
+      : { bg: 'rgba(16,185,129,0.12)', text: T.optimal, border: 'rgba(16,185,129,0.30)' };
+  return (
+    <span className="text-[9px] font-bold font-mono px-2 py-0.5 rounded-full border"
+      style={{ background: cfg.bg, color: cfg.text, borderColor: cfg.border }}>
+      {metric}
+    </span>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// INTERFACE
+// ─────────────────────────────────────────────────────────────────
 interface PrePrepareProps {
   onProceed?: () => void;
   compiledCsvPath?: string;
@@ -47,209 +229,9 @@ interface PrePrepareProps {
   onApproveDeliverables?: () => void;
 }
 
-// ── Dynamic Mini-Chart Renderers for Middle Section Cards ──────────────────────
-
-/** Horizontal Bar Chart for Missingness distribution across top columns */
-function MissingBarsChart({ data }: { data: Array<{ column: string; missing_pct: number }> }) {
-  const items = (data && data.length > 0) ? data.slice(0, 4) : [{ column: 'All Channels', missing_pct: 0 }];
-  
-  return (
-    <div className="w-full h-full flex flex-col justify-center gap-1.5 px-2 py-1">
-      {items.map((item, idx) => {
-        const pct = Math.min(100, Math.max(0, item.missing_pct));
-        const barColor = pct > 10 ? '#ef4444' : pct > 1 ? '#f59e0b' : '#10b981';
-        return (
-          <div key={idx} className="space-y-0.5">
-            <div className="flex justify-between text-[10px] font-mono text-slate-600">
-              <span className="truncate max-w-[140px] font-semibold">{item.column}</span>
-              <span className="font-bold" style={{ color: barColor }}>{pct.toFixed(1)}%</span>
-            </div>
-            <div className="w-full h-2 bg-slate-200/80 rounded-full overflow-hidden">
-              <div 
-                className="h-full rounded-full transition-all duration-700" 
-                style={{ width: `${Math.max(4, pct)}%`, backgroundColor: barColor }}
-              />
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-/** Dynamic 5-Point Box Plot for Outlier & IQR Fences */
-function BoxPlotChart({ data }: { data: Record<string, any> }) {
-  const min = data.min ?? 0;
-  const p25 = data.p25 ?? 25;
-  const median = data.median ?? 50;
-  const p75 = data.p75 ?? 75;
-  const max = data.max ?? 100;
-  const colName = data.col ?? 'Primary Feature';
-
-  const range = (max - min) || 1;
-  const getX = (val: number) => 30 + ((val - min) / range) * 240;
-
-  const xMin = getX(min);
-  const xP25 = getX(p25);
-  const xMed = getX(median);
-  const xP75 = getX(p75);
-  const xMax = getX(max);
-
-  return (
-    <div className="w-full h-full flex flex-col justify-center items-center">
-      <svg viewBox="0 0 300 100" className="w-full h-full">
-        <line x1="30" y1="50" x2="270" y2="50" stroke="#cbd5e1" strokeWidth="1.5" strokeDasharray="3" />
-        <line x1={xMin} y1="50" x2={xP25} y2="50" stroke="#475569" strokeWidth="2" />
-        <line x1={xP75} y1="50" x2={xMax} y2="50" stroke="#475569" strokeWidth="2" />
-        <line x1={xMin} y1="35" x2={xMin} y2="65" stroke="#475569" strokeWidth="2" strokeLinecap="round" />
-        <line x1={xMax} y1="35" x2={xMax} y2="65" stroke="#475569" strokeWidth="2" strokeLinecap="round" />
-        
-        <rect 
-          x={xP25} 
-          y="28" 
-          width={Math.max(4, xP75 - xP25)} 
-          height="44" 
-          rx="4" 
-          fill="rgba(255, 107, 53, 0.15)" 
-          stroke="#FF6B35" 
-          strokeWidth="2" 
-        />
-        <line x1={xMed} y1="28" x2={xMed} y2="72" stroke="#FF6B35" strokeWidth="3" />
-
-        <text x={xMin} y="22" textAnchor="middle" fill="#64748b" fontSize="8" fontFamily="monospace">Min: {min}</text>
-        <text x={xMed} y="88" textAnchor="middle" fill="#FF6B35" fontSize="9" fontWeight="bold" fontFamily="monospace">Med: {median}</text>
-        <text x={xMax} y="22" textAnchor="middle" fill="#64748b" fontSize="8" fontFamily="monospace">Max: {max}</text>
-      </svg>
-      <span className="text-[9.5px] font-mono text-slate-500 truncate mt-0.5">Feature: <strong>{colName}</strong></span>
-    </div>
-  );
-}
-
-/** Skewness Diverging Gauge */
-function SkewnessGaugeChart({ data }: { data: Record<string, any> }) {
-  const skew = data.skewness ?? 0.0;
-  const col = data.col ?? 'Target Feature';
-  const clampedSkew = Math.max(-4, Math.min(4, skew));
-  const pointerX = 150 + (clampedSkew / 4) * 110;
-  const isSkewed = Math.abs(skew) > 1.5;
-
-  return (
-    <div className="w-full h-full flex flex-col justify-center items-center">
-      <svg viewBox="0 0 300 90" className="w-full h-full">
-        <rect x="30" y="38" width="115" height="12" rx="4" fill="rgba(59, 130, 246, 0.2)" />
-        <rect x="155" y="38" width="115" height="12" rx="4" fill="rgba(239, 68, 68, 0.2)" />
-        <line x1="150" y1="30" x2="150" y2="58" stroke="#0f172a" strokeWidth="2" />
-        
-        <circle cx={pointerX} cy="44" r="8" fill={isSkewed ? '#ef4444' : '#10b981'} stroke="#ffffff" strokeWidth="2" />
-        
-        <text x="35" y="68" fill="#3b82f6" fontSize="8" fontWeight="bold">Left-Tailed (-)</text>
-        <text x="150" y="24" textAnchor="middle" fill="#0f172a" fontSize="8.5" fontWeight="bold">Normal (0.0)</text>
-        <text x="265" y="68" textAnchor="end" fill="#ef4444" fontSize="8" fontWeight="bold">Right-Tailed (+)</text>
-      </svg>
-      <span className="text-[9.5px] font-mono text-slate-500 truncate">
-        Feature: <strong>{col}</strong> (Skew = <strong className={isSkewed ? 'text-rose-600' : 'text-emerald-600'}>{skew}</strong>)
-      </span>
-    </div>
-  );
-}
-
-/** Top Correlation Strength Matrix */
-function CorrelationsChart({ data }: { data: Array<{ col_a: string; col_b: string; correlation: number }> }) {
-  const items = (data && data.length > 0) ? data.slice(0, 3) : [];
-
-  if (items.length === 0) {
-    return (
-      <div className="w-full h-full flex items-center justify-center text-[10px] text-slate-400 font-mono">
-        Orthogonal feature channels (No strong collinearity)
-      </div>
-    );
-  }
-
-  return (
-    <div className="w-full h-full flex flex-col justify-center gap-1.5 px-2">
-      {items.map((item, idx) => {
-        const corr = Math.abs(item.correlation);
-        const isHigh = corr > 0.85;
-        return (
-          <div key={idx} className="flex items-center justify-between p-1.5 bg-slate-50 rounded-lg border border-slate-200/80 text-[10px] font-mono">
-            <div className="flex items-center gap-1 truncate max-w-[170px]">
-              <span className="font-bold text-slate-700 truncate">{item.col_a}</span>
-              <span className="text-slate-400">↔</span>
-              <span className="font-bold text-slate-700 truncate">{item.col_b}</span>
-            </div>
-            <span className={`px-1.5 py-0.5 rounded font-bold text-[9px] ${
-              isHigh ? 'bg-amber-100 text-amber-800 border border-amber-300' : 'bg-emerald-100 text-emerald-800'
-            }`}>
-              r = {corr.toFixed(2)}
-            </span>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-/** Schema Breakdown Donut */
-function SchemaDonutChart({ data }: { data: { numeric: number; categorical: number; constant: number } }) {
-  const num = data.numeric ?? 0;
-  const cat = data.categorical ?? 0;
-  const con = data.constant ?? 0;
-  const total = (num + cat + con) || 1;
-
-  const numPct = (num / total) * 100;
-  const catPct = (cat / total) * 100;
-
-  return (
-    <div className="w-full h-full flex items-center justify-around px-3">
-      <div className="relative w-16 h-16 flex items-center justify-center">
-        <svg viewBox="0 0 36 36" className="w-full h-full transform -rotate-90">
-          <circle cx="18" cy="18" r="15.915" fill="none" stroke="#e2e8f0" strokeWidth="4" />
-          <circle 
-            cx="18" 
-            cy="18" 
-            r="15.915" 
-            fill="none" 
-            stroke="#FF6B35" 
-            strokeWidth="4" 
-            strokeDasharray={`${numPct} ${100 - numPct}`}
-          />
-          <circle 
-            cx="18" 
-            cy="18" 
-            r="15.915" 
-            fill="none" 
-            stroke="#8b5cf6" 
-            strokeWidth="4" 
-            strokeDasharray={`${catPct} ${100 - catPct}`}
-            strokeDashoffset={`-${numPct}`}
-          />
-        </svg>
-        <div className="absolute text-center">
-          <span className="text-xs font-bold font-mono text-slate-800">{total}</span>
-        </div>
-      </div>
-      <div className="text-[10px] font-mono space-y-1">
-        <div className="flex items-center gap-1.5 text-slate-700">
-          <span className="w-2.5 h-2.5 rounded-sm bg-[#FF6B35]" />
-          <span>Numeric: <strong>{num}</strong></span>
-        </div>
-        <div className="flex items-center gap-1.5 text-slate-700">
-          <span className="w-2.5 h-2.5 rounded-sm bg-purple-500" />
-          <span>Categorical: <strong>{cat}</strong></span>
-        </div>
-        {con > 0 && (
-          <div className="flex items-center gap-1.5 text-rose-600 font-bold">
-            <span className="w-2.5 h-2.5 rounded-sm bg-rose-500" />
-            <span>Constant: <strong>{con}</strong></span>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// ── Main PrePrepare View Component ────────────────────────────────────────────
-
+// ─────────────────────────────────────────────────────────────────
+// MAIN COMPONENT
+// ─────────────────────────────────────────────────────────────────
 export const PrePrepare: React.FC<PrePrepareProps> = ({
   onProceed,
   runId = 'run_20250115_143022',
@@ -259,383 +241,433 @@ export const PrePrepare: React.FC<PrePrepareProps> = ({
   onApproveDeliverables,
 }) => {
   const profile = backendProfile || {};
-
-  // Extract core metrics
-  const rowsTotal = profile.rows_total ?? 14200;
-  const colsTotal = profile.columns ?? 26;
-  const readinessScore = profile.readiness_score ?? 88;
-  const duplicatePct = profile.duplicate_pct ?? 0.0;
-  const outlierPct = profile.outlier_pct ?? 2.1;
+  const rowsTotal     = profile.rows_total    ?? 14200;
+  const colsTotal     = profile.columns       ?? 26;
+  const readiness     = profile.readiness_score ?? 88;
+  const duplicatePct  = profile.duplicate_pct  ?? 0.0;
+  const outlierPct    = profile.outlier_pct    ?? 2.1;
   const maxMissingPct = profile.max_missing_pct ?? 0.0;
-  const mostMissingCol = profile.most_missing_col || 'None';
-  const mostSkewedCol = profile.most_skewed_col || 'None';
-  const columnStats: Array<any> = profile.column_stats || [];
-  const sampleRecords: Array<any> = profile.sample_records || [];
+  const missingCol    = profile.most_missing_col || 'None';
+  const skewedCol     = profile.most_skewed_col  || 'None';
+  const columnStats   = (profile.column_stats   ?? []) as Array<any>;
+  const sampleRecords = (profile.sample_records  ?? []) as Array<any>;
+  const topCorrs      = (profile.top_correlations ?? []) as Array<any>;
 
-  // Bottom Section State (Interactive Visual Picker)
-  const [selectedColumn, setSelectedColumn] = useState<string>(
-    columnStats[0]?.column || mostSkewedCol || 'col_1'
-  );
-  const [chartType, setChartType] = useState<'histogram' | 'trend' | 'boxplot' | 'scatter'>('histogram');
-
-  // Update selectedColumn if profile loads after initial mount
-  React.useEffect(() => {
-    if (columnStats.length > 0 && (!selectedColumn || selectedColumn === 'col_1')) {
-      const bestDefault = columnStats.find(c => c.mean !== null)?.column || columnStats[0].column;
-      setSelectedColumn(bestDefault);
-    }
-  }, [columnStats, selectedColumn]);
-
-  // Find selected column stats
-  const activeColStat = useMemo(() => {
-    return columnStats.find(c => c.column === selectedColumn) || columnStats[0] || {
-      column: selectedColumn,
-      dtype: 'float64',
-      mean: 48.2,
-      std: 12.4,
-      min: 10.0,
-      p25: 35.0,
-      median: 48.0,
-      p75: 62.0,
-      max: 98.0,
-      skewness: 0.42,
-      outlier_pct: 1.2,
-      missing_pct: 0.0,
-      histogram_bins: [
-        { bin: '10-25', count: 12 },
-        { bin: '25-40', count: 48 },
-        { bin: '40-55', count: 95 },
-        { bin: '55-70', count: 62 },
-        { bin: '70-85', count: 28 },
-        { bin: '85-100', count: 5 }
-      ]
-    };
-  }, [columnStats, selectedColumn]);
-
-  // Executive Assessment Pillars
-  const execAssessment = profile.executive_assessment || {
+  const execAssess = profile.executive_assessment || {
     ingestion_integrity: `Successfully ingested ${rowsTotal.toLocaleString()} records across ${colsTotal} feature channels with ${duplicatePct}% duplicate row rate.`,
-    critical_signals: maxMissingPct > 1.0 
-      ? `Telemetry risk identified: Column '${mostMissingCol}' contains ${maxMissingPct}% missing records.`
-      : `Dataset demonstrates optimal telemetry integrity with zero critical schema drops.`,
-    pipeline_strategy: `AutoML routing selected ${dagId} (${algorithmFamily}) to model multi-channel sensor variance and isolate anomalous telemetry.`
+    critical_signals:    maxMissingPct > 1
+      ? `Telemetry gap: '${missingCol}' contains ${maxMissingPct}% missing records.`
+      : 'Dataset demonstrates optimal telemetry integrity with zero critical schema drops.',
+    pipeline_strategy: `AutoML routing selected ${dagId} (${algorithmFamily}) to model multi-channel sensor variance.`,
   };
 
-  // Causal Rationale
-  const causalRationale = profile.causal_rationale || {
-    step_1_compiler: `Assembled raw batch files into unified matrix (${rowsTotal.toLocaleString()} rows, ${colsTotal} channels).`,
-    step_2_profiler: `Statistical audit flagged ${outlierPct}% outlier density and skewness in '${mostSkewedCol}'.`,
-    step_3_orchestrator: `Matched topology traits: Unsupervised target + temporal sensor variance ➔ ${dagId}.`,
-    step_4_recipe: `Resolved preprocessing recipe: RobustScaler (IQR) + Forward-fill imputation + Lag transforms.`
+  const causal = profile.causal_rationale || {
+    step_1_compiler:     `Assembled raw batch files into unified matrix (${rowsTotal.toLocaleString()} rows, ${colsTotal} channels).`,
+    step_2_profiler:     `Statistical audit flagged ${outlierPct}% outlier density in '${skewedCol}'.`,
+    step_3_orchestrator: `Topology match: Unsupervised + temporal sensor variance ➔ ${dagId}.`,
+    step_4_recipe:       `Recipe locked: RobustScaler (IQR) + Forward-fill imputation + Lag transforms.`,
   };
 
-  // Diagnostic Signals (Ranked dynamically)
-  const diagnosticSignals = (profile.diagnostic_signals && profile.diagnostic_signals.length > 0)
+  // ── Diagnostic signals fallback ──────────────────────────────
+  const diagSignals: Array<any> = profile.diagnostic_signals?.length
     ? profile.diagnostic_signals
     : [
         {
-          id: 'sig_missingness',
-          title: maxMissingPct > 0 ? 'Sensor Telemetry Dropout' : 'Telemetry Completeness',
-          feature: mostMissingCol !== 'None' ? mostMissingCol : 'Global Channels',
+          id: 'sig_miss', title: maxMissingPct > 0 ? 'Sensor Telemetry Dropout' : 'Telemetry Completeness',
+          feature: missingCol !== 'None' ? missingCol : 'Global Channels',
           metric: `${maxMissingPct}% Missing`,
           status: maxMissingPct > 10 ? 'CRITICAL' : maxMissingPct > 1 ? 'WARNING' : 'OPTIMAL',
-          operational_impact: maxMissingPct > 0 
-            ? `Intermittent telemetry gap in '${mostMissingCol}' will halt standard downstream estimators.`
+          operational_impact: maxMissingPct > 0
+            ? `Intermittent telemetry gap in '${missingCol}' will halt downstream estimators.`
             : 'Zero missing values detected across all ingested feature channels.',
-          recommended_treatment: maxMissingPct > 0 
-            ? 'Apply forward-fill temporal imputation or KNN interpolation during Stage 2 (Prepare).'
+          recommended_treatment: maxMissingPct > 0
+            ? 'Apply forward-fill temporal imputation or KNN interpolation in Stage 2 (Prepare).'
             : 'Schema completeness verified. No imputation required.',
           chart_type: 'missing_bars',
-          chart_payload: [{ column: mostMissingCol, missing_pct: maxMissingPct }]
+          chart_payload: [{ column: missingCol, missing_pct: maxMissingPct }],
         },
         {
-          id: 'sig_outliers',
-          title: 'Transient Sensor Spike Anomaly',
-          feature: mostSkewedCol !== 'None' ? mostSkewedCol : 'Sensor Fleet',
+          id: 'sig_out', title: outlierPct > 1.5 ? 'Transient Sensor Spike Anomaly' : 'Sensor Variance Stability',
+          feature: skewedCol !== 'None' ? skewedCol : 'Sensor Fleet',
           metric: `${outlierPct}% Outlier Rows`,
           status: outlierPct > 5 ? 'CRITICAL' : outlierPct > 1.5 ? 'WARNING' : 'OPTIMAL',
-          operational_impact: `Extreme sensor spikes identified beyond 1.5x IQR bounds in '${mostSkewedCol}'. Distorts loss functions if unclipped.`,
-          recommended_treatment: 'Apply RobustScaler (median and interquartile clipping) in Stage 2 to insulate model weights.',
+          operational_impact: outlierPct > 1.5
+            ? `Spikes beyond 1.5× IQR in '${skewedCol}' distort loss gradients.`
+            : 'Readings within normal operational boundaries. No extreme distortion.',
+          recommended_treatment: outlierPct > 1.5
+            ? 'Apply RobustScaler (median + IQR clipping) in Stage 2.'
+            : 'Standard Z-score scaling suitable.',
           chart_type: 'boxplot',
-          chart_payload: { col: mostSkewedCol, min: 10, p25: 35, median: 52, p75: 78, max: 145 }
+          chart_payload: { col: skewedCol, min: 10, p25: 35, median: 52, p75: 78, max: 145 },
         },
         {
-          id: 'sig_skewness',
-          title: 'Distribution Asymmetry & Skew',
-          feature: mostSkewedCol !== 'None' ? mostSkewedCol : 'Telemetry Channels',
+          id: 'sig_skew', title: (profile.max_skewness ?? 3.2) > 1.5 ? 'Distribution Asymmetry & Skew' : 'Distribution Normality',
+          feature: skewedCol !== 'None' ? skewedCol : 'Channels',
           metric: `Skewness: ${(profile.max_skewness ?? 3.2).toFixed(2)}`,
           status: (profile.max_skewness ?? 3.2) > 3.0 ? 'CRITICAL' : (profile.max_skewness ?? 3.2) > 1.5 ? 'WARNING' : 'OPTIMAL',
-          operational_impact: `Heavy-tail non-Gaussian distribution in '${mostSkewedCol}' violates normal distribution assumptions.`,
-          recommended_treatment: `Apply Yeo-Johnson Power Transformation or logarithmic scaling on '${mostSkewedCol}' during Stage 2.`,
+          operational_impact: (profile.max_skewness ?? 3.2) > 1.5
+            ? `Heavy-tail distribution in '${skewedCol}' biases linear estimators.`
+            : 'Feature distributions exhibit balanced symmetry.',
+          recommended_treatment: (profile.max_skewness ?? 3.2) > 1.5
+            ? `Apply Yeo-Johnson transform on '${skewedCol}' in Stage 2.`
+            : 'Retain standard continuous scaling.',
           chart_type: 'skewness_gauge',
-          chart_payload: { skewness: (profile.max_skewness ?? 3.2), col: mostSkewedCol }
+          chart_payload: { skewness: profile.max_skewness ?? 3.2, col: skewedCol },
         },
         {
-          id: 'sig_collinearity',
-          title: 'Channel Independence & Collinearity',
-          feature: 'Sensor Pairs',
-          metric: 'r = 0.88',
-          status: 'WARNING',
-          operational_impact: 'Strong collinear coupling observed between primary pressure and vibration sensor channels.',
-          recommended_treatment: 'Apply PCA decomposition or VIF correlation pruning in Stage 4 (Feature Engineering).',
+          id: 'sig_corr', title: (topCorrs[0]?.correlation ?? 0) > 0.85 ? 'Multicollinearity Redundancy' : 'Channel Independence',
+          feature: topCorrs.length ? `${topCorrs[0].col_a} ↔ ${topCorrs[0].col_b}` : 'Sensor Pairs',
+          metric: topCorrs.length ? `r = ${(topCorrs[0].correlation ?? 0).toFixed(2)}` : 'Orthogonal',
+          status: (topCorrs[0]?.correlation ?? 0) > 0.85 ? 'WARNING' : 'OPTIMAL',
+          operational_impact: (topCorrs[0]?.correlation ?? 0) > 0.85
+            ? 'Collinear coupling indicates duplicated physical measurement channels.'
+            : 'Diverse variance profiles. Minimal redundancy.',
+          recommended_treatment: (topCorrs[0]?.correlation ?? 0) > 0.85
+            ? 'Apply PCA or VIF pruning in Stage 4 (Feature Engineering).'
+            : 'Retain all channels for full operational representation.',
           chart_type: 'correlations',
-          chart_payload: profile.top_correlations || []
+          chart_payload: topCorrs,
         },
         {
-          id: 'sig_schema',
-          title: 'Schema Consistency & Integrity',
+          id: 'sig_schema', title: 'Schema Consistency & Integrity',
           feature: `${colsTotal} Ingested Channels`,
           metric: `${colsTotal} Matched`,
-          status: 'OPTIMAL',
-          operational_impact: 'All feature channels contain valid continuous operational variance without parsing clashes.',
-          recommended_treatment: 'Lock schema mapping for automated preprocessing.',
+          status: (profile.constant_cols?.length ?? 0) > 0 ? 'WARNING' : 'OPTIMAL',
+          operational_impact: (profile.constant_cols?.length ?? 0) > 0
+            ? `Detected ${profile.constant_cols.length} zero-variance constant columns.`
+            : 'All feature channels contain active operational variance.',
+          recommended_treatment: (profile.constant_cols?.length ?? 0) > 0
+            ? 'Drop constant features in Stage 2 to conserve memory.'
+            : 'Lock schema mapping for automated preprocessing.',
           chart_type: 'schema_donut',
-          chart_payload: { numeric: colsTotal - 2, categorical: 2, constant: 0 }
-        }
+          chart_payload: {
+            numeric:     (columnStats.filter(c => c.mean !== undefined && c.mean !== null).length),
+            categorical: (columnStats.filter(c => c.mean === undefined || c.mean === null).length),
+            constant:    (profile.constant_cols?.length ?? 0),
+          },
+        },
       ];
 
-  const renderSignalChart = (sig: any) => {
-    switch (sig.chart_type) {
-      case 'missing_bars':
-        return <MissingBarsChart data={sig.chart_payload} />;
-      case 'boxplot':
-        return <BoxPlotChart data={sig.chart_payload} />;
-      case 'skewness_gauge':
-        return <SkewnessGaugeChart data={sig.chart_payload} />;
-      case 'correlations':
-        return <CorrelationsChart data={sig.chart_payload} />;
-      case 'schema_donut':
-        return <SchemaDonutChart data={sig.chart_payload} />;
-      default:
-        return <div className="w-full h-full flex items-center justify-center text-xs text-slate-400 font-mono">Dynamic Chart Canvas</div>;
-    }
-  };
+  // ── Bottom section: Interactive Feature Inspector ────────────
+  const numericCols = columnStats.filter(c => c.mean !== null && c.mean !== undefined);
+  const allCols     = columnStats.length > 0 ? columnStats : [{ column: skewedCol || 'sensor_1', dtype: 'float64' }];
 
-  // Prepare data for Time-Series Trend & Scatter charts
+  const firstNumericCol = numericCols[0]?.column || allCols[0]?.column || 'col_1';
+  const [selectedCol, setSelectedCol] = useState(firstNumericCol);
+  const [chartMode, setChartMode]     = useState<'histogram' | 'trend' | 'boxplot' | 'scatter'>('histogram');
+
+  useEffect(() => {
+    if (numericCols.length > 0) {
+      setSelectedCol(numericCols[0].column);
+    }
+  }, [profile.column_stats]);
+
+  const activeCol = useMemo(() =>
+    columnStats.find(c => c.column === selectedCol) || numericCols[0] || {},
+  [columnStats, selectedCol]);
+
   const trendData = useMemo(() => {
     if (sampleRecords.length > 0) {
       return sampleRecords.map((r, i) => ({
-        index: i,
-        timestamp: r.timestamp || r.date || r.time || `#${i + 1}`,
-        value: typeof r[selectedColumn] === 'number' ? r[selectedColumn] : parseFloat(r[selectedColumn]) || 0,
-        target: r.target || r.failure_label || r.anomaly || (typeof r[selectedColumn] === 'number' ? r[selectedColumn] * 0.9 : 0)
+        i,
+        v: typeof r[selectedCol] === 'number' ? r[selectedCol] : parseFloat(r[selectedCol] ?? '0') || 0,
       }));
     }
-    // Synthetic fallback trend curve if sample_records empty
-    return Array.from({ length: 60 }).map((_, i) => ({
-      index: i,
-      timestamp: `T-${60 - i}m`,
-      value: Math.sin(i * 0.2) * 15 + 50 + (Math.random() * 4 - 2),
-      target: Math.sin(i * 0.2 + 0.5) * 12 + 48
+    // synthetic fallback
+    return Array.from({ length: 80 }).map((_, i) => ({
+      i,
+      v: Math.sin(i * 0.18) * 14 + 52 + (Math.random() * 5 - 2.5),
     }));
-  }, [sampleRecords, selectedColumn]);
+  }, [sampleRecords, selectedCol]);
 
+  // ── Plotly traces per chart mode ──────────────────────────────
+  const plotlyData = useMemo((): Plotly.Data[] => {
+    switch (chartMode) {
+      case 'histogram': {
+        const bins = activeCol.histogram_bins ?? [];
+        return bins.length > 0
+          ? [{
+              type: 'bar' as const,
+              x: bins.map((b: any) => b.bin),
+              y: bins.map((b: any) => b.count),
+              name: selectedCol,
+              marker: {
+                color: bins.map((_: any, i: number) => i % 2 === 0 ? T.coral : T.coralSoft),
+                line: { color: T.coralHover, width: 0.5 },
+              },
+              hovertemplate: '<b>%{x}</b><br>Count: %{y}<extra></extra>',
+            }]
+          : [{
+              type: 'histogram' as const,
+              x: trendData.map(d => d.v),
+              name: selectedCol,
+              autobinx: true,
+              marker: { color: T.coral, line: { color: T.coralHover, width: 0.5 } },
+              opacity: 0.85,
+              hovertemplate: '%{x}<br>Count: %{y}<extra></extra>',
+            }];
+      }
+
+      case 'trend':
+        return [{
+          type: 'scatter' as const,
+          mode: 'lines' as const,
+          x: trendData.map(d => d.i),
+          y: trendData.map(d => d.v),
+          name: selectedCol,
+          line: { color: T.coral, width: 2.5, shape: 'spline' as const },
+          fill: 'tozeroy' as const,
+          fillcolor: T.coralGlow,
+          hovertemplate: 'T=%{x}<br>Value: %{y:.3f}<extra></extra>',
+        }];
+
+      case 'boxplot':
+        return [{
+          type: 'box' as const,
+          y: trendData.map(d => d.v),
+          name: selectedCol,
+          boxpoints: 'outliers' as const,
+          jitter: 0.3,
+          marker: { color: T.coral, size: 4, opacity: 0.7 },
+          line: { color: T.coralHover, width: 2 },
+          fillcolor: T.coralGlow,
+          whiskerwidth: 0.7,
+          hovertemplate: '%{y:.4f}<extra></extra>',
+        }];
+
+      case 'scatter': {
+        // Scatter feature vs. itself shifted (proxy if no explicit target)
+        const xs = trendData.slice(0, -1).map(d => d.v);
+        const ys = trendData.slice(1).map(d => d.v);
+        return [{
+          type: 'scatter' as const,
+          mode: 'markers' as const,
+          x: xs,
+          y: ys,
+          name: `${selectedCol} [t] vs [t+1]`,
+          marker: {
+            color: xs.map(v => v),
+            colorscale: [[0, T.eggplantMid], [0.5, T.coral], [1, '#fbbf24']] as any,
+            size: 5,
+            opacity: 0.70,
+            showscale: true,
+            colorbar: { thickness: 10, len: 0.7, tickfont: { size: 9 } },
+          },
+          hovertemplate: 'X: %{x:.3f}<br>Y: %{y:.3f}<extra></extra>',
+        }];
+      }
+
+      default:
+        return [];
+    }
+  }, [chartMode, activeCol, trendData, selectedCol]);
+
+  const plotlyLayout = useMemo((): Partial<Plotly.Layout> => {
+    const base = buildPlotlyLayout({
+      xaxis: {
+        title: chartMode === 'scatter' ? `${selectedCol} [t]` : chartMode === 'trend' ? 'Sample Index' : undefined,
+        gridcolor: 'rgba(100,116,139,0.12)',
+        zerolinecolor: 'rgba(100,116,139,0.20)',
+        tickfont: { size: 10, family: "'JetBrains Mono', monospace" },
+      } as any,
+      yaxis: {
+        title: chartMode === 'scatter' ? `${selectedCol} [t+1]` : selectedCol,
+        gridcolor: 'rgba(100,116,139,0.12)',
+        tickfont: { size: 10, family: "'JetBrains Mono', monospace" },
+      } as any,
+    });
+    return base;
+  }, [chartMode, selectedCol]);
+
+  // ── Readiness colour ─────────────────────────────────────────
+  const readinessColor = readiness >= 80 ? T.optimal : readiness >= 50 ? T.warning : T.critical;
+
+  // ── Signal mini-chart renderer ───────────────────────────────
+  const renderMiniChart = (sig: any) => {
+    switch (sig.chart_type) {
+      case 'missing_bars':   return <MissingBarsChart data={sig.chart_payload} />;
+      case 'boxplot':        return <SvgBoxPlot data={sig.chart_payload} />;
+      case 'skewness_gauge': return <SvgSkewnessGauge data={sig.chart_payload} />;
+      case 'correlations':   return <SvgCorrelations data={sig.chart_payload} />;
+      case 'schema_donut':   return <SvgSchemaDonut data={sig.chart_payload} />;
+      default:               return null;
+    }
+  };
+
+  // ─────────────────────────────────────────────────────────────
   return (
-    <div className="page-container font-sans text-xs space-y-6 pb-16">
-      
-      {/* 🚀 Top Status & Navigation Bar */}
+    <div className="page-container" style={{ gap: 20 }}>
+
+      {/* ── STATUS BAR ─────────────────────────────────────────── */}
       <section className="status-action-bar">
         <div className="status-bar-info">
-          <div className="status-bar-icon-block">
-            <Workflow size={20} />
-          </div>
+          <div className="status-bar-icon-block"><Workflow size={20} /></div>
           <div className="status-bar-details">
             <div className="status-bar-title-row">
-              <span>Pipeline Stage 1: Pre-Prepare Audit Hub</span>
-              <span className="status-run-badge">
-                <GitCommit size={10} /> {runId}
-              </span>
+              <span>Pipeline Stage 1 · Pre-Prepare Audit Hub</span>
+              <span className="status-run-badge"><GitCommit size={10} />{runId}</span>
             </div>
             <div className="status-bar-parameters">
-              <div className="param-item">
-                <span>Selected Pipeline:</span>
-                <span className="highlight-orange font-bold font-mono">🏆 {dagId}</span>
-              </div>
-              <span>•</span>
-              <div className="param-item">
-                <span>Family:</span>
-                <span className="highlight-green font-bold">{algorithmFamily}</span>
-              </div>
-              <span>•</span>
-              <div className="param-item">
-                <span>Telemetry Channels:</span>
-                <span className="highlight-blue font-bold font-mono">{colsTotal} mapped</span>
-              </div>
+              <div className="param-item">Pipeline: <strong style={{ color: T.coral }}>{dagId}</strong></div>
+              <span style={{ color: T.textMuted }}>·</span>
+              <div className="param-item">Family: <strong style={{ color: T.optimal }}>{algorithmFamily}</strong></div>
+              <span style={{ color: T.textMuted }}>·</span>
+              <div className="param-item">Channels: <strong style={{ fontFamily: 'var(--font-mono)' }}>{colsTotal} mapped</strong></div>
             </div>
           </div>
         </div>
-
         {onProceed && (
           <button className="proceed-cta-btn cursor-pointer" onClick={onProceed}>
-            <span>Proceed to Preparation</span>
-            <ArrowRight size={16} />
+            Proceed to Preparation <ArrowRight size={15} />
           </button>
         )}
       </section>
 
-      {/* 📋 TOP SECTION: EXECUTIVE DATASET ASSESSMENT BANNER */}
-      <section className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-5 rounded-2xl border border-slate-800 shadow-md">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-4 mb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#FF6B35] flex items-center justify-center text-white shadow-md">
-              <ShieldCheck size={22} />
+      {/* ── TOP: EXECUTIVE ASSESSMENT ──────────────────────────── */}
+      <section style={{
+        background: `linear-gradient(135deg, ${T.eggplantDeep} 0%, ${T.eggplantMid} 60%, ${T.eggplant} 100%)`,
+        border: '1px solid rgba(255,255,255,0.10)',
+        borderRadius: 16,
+        padding: '20px 24px',
+      }}>
+        {/* Header row */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16,
+                      borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: 16, marginBottom: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            <div style={{ width: 44, height: 44, borderRadius: 12, background: T.coral, display: 'flex',
+                          alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <ShieldCheck size={22} color="#fff" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-white flex items-center gap-2">
-                Executive Dataset Assessment
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/10 text-slate-300 border border-white/10">
-                  Automated Audit
-                </span>
-              </h2>
-              <p className="text-[11px] text-slate-400">
-                Real-time diagnostic evaluation of compiled telemetry across ingestion, data quality, and model routing.
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ color: '#fff', fontWeight: 700, fontSize: 14 }}>Executive Dataset Assessment</span>
+                <span style={{ fontSize: 10, fontFamily: 'var(--font-mono)', padding: '2px 8px', borderRadius: 99,
+                               background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.60)',
+                               border: '1px solid rgba(255,255,255,0.10)' }}>Automated Audit</span>
+              </div>
+              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', marginTop: 3 }}>
+                Real-time diagnostic evaluation across ingestion integrity, telemetry risks, and model routing.
               </p>
             </div>
           </div>
-
-          <div className="flex items-center gap-3 self-start md:self-auto">
-            <div className="text-right">
-              <span className="text-[10px] text-slate-400 block uppercase font-mono tracking-wider">Readiness Score</span>
-              <span className={`text-base font-bold font-mono ${
-                readinessScore >= 80 ? 'text-emerald-400' : readinessScore >= 50 ? 'text-amber-400' : 'text-rose-400'
-              }`}>
-                {readinessScore} / 100
-              </span>
+          {/* Readiness Score */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.45)',
+                            textTransform: 'uppercase', letterSpacing: '0.08em' }}>Readiness Score</div>
+              <div style={{ fontSize: 22, fontWeight: 800, fontFamily: 'var(--font-mono)', color: readinessColor }}>
+                {readiness}<span style={{ fontSize: 13, opacity: 0.6 }}>/100</span>
+              </div>
             </div>
-            <div className={`w-3.5 h-3.5 rounded-full animate-pulse ${
-              readinessScore >= 80 ? 'bg-emerald-500' : readinessScore >= 50 ? 'bg-amber-500' : 'bg-rose-500'
-            }`} />
+            <div style={{ width: 12, height: 12, borderRadius: '50%', background: readinessColor,
+                          boxShadow: `0 0 8px ${readinessColor}` }} className="animate-pulse" />
           </div>
         </div>
 
-        {/* 3 Pillars Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-[11px]">
-          <div className="p-3 bg-white/5 rounded-xl border border-white/10 space-y-1">
-            <div className="flex items-center gap-1.5 text-emerald-400 font-bold text-[11.5px]">
-              <Database size={13} />
-              <span>1. Ingestion &amp; Schema Integrity</span>
+        {/* 3 Pillars */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12 }}>
+          {[
+            { icon: <Database size={13} />, label: '1. Ingestion & Schema Integrity', text: execAssess.ingestion_integrity, color: T.optimal },
+            { icon: <Activity size={13} />, label: '2. Telemetry Risk Factors',       text: execAssess.critical_signals,    color: T.warning  },
+            { icon: <Layers size={13} />,   label: '3. Pipeline Strategy',             text: execAssess.pipeline_strategy,   color: T.coralSoft },
+          ].map((p, i) => (
+            <div key={i} style={{ padding: '12px 14px', borderRadius: 12,
+                                  background: 'rgba(255,255,255,0.04)',
+                                  border: '1px solid rgba(255,255,255,0.08)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: p.color,
+                            fontWeight: 700, fontSize: 11, marginBottom: 6 }}>
+                {p.icon}{p.label}
+              </div>
+              <p style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.65)', lineHeight: 1.55 }}>{p.text}</p>
             </div>
-            <p className="text-slate-300 text-[10.5px] leading-relaxed">
-              {execAssessment.ingestion_integrity}
-            </p>
-          </div>
-
-          <div className="p-3 bg-white/5 rounded-xl border border-white/10 space-y-1">
-            <div className="flex items-center gap-1.5 text-amber-400 font-bold text-[11.5px]">
-              <Activity size={13} />
-              <span>2. Telemetry Risk Factors</span>
-            </div>
-            <p className="text-slate-300 text-[10.5px] leading-relaxed">
-              {execAssessment.critical_signals}
-            </p>
-          </div>
-
-          <div className="p-3 bg-white/5 rounded-xl border border-white/10 space-y-1">
-            <div className="flex items-center gap-1.5 text-[#FF8F5A] font-bold text-[11.5px]">
-              <Layers size={13} />
-              <span>3. Pipeline Strategy</span>
-            </div>
-            <p className="text-slate-300 text-[10.5px] leading-relaxed">
-              {execAssessment.pipeline_strategy}
-            </p>
-          </div>
+          ))}
         </div>
       </section>
 
-      {/* 🚦 KPI SCORECARD & DATASET SPECS */}
-      <section className="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono">
-        <div className="p-3.5 bg-white rounded-2xl border border-slate-200 shadow-2xs text-center space-y-0.5">
-          <span className="text-[10px] text-slate-500 block uppercase tracking-wider">Total Ingested Rows</span>
-          <span className="text-base font-bold text-slate-900">{rowsTotal.toLocaleString()}</span>
-        </div>
-
-        <div className="p-3.5 bg-white rounded-2xl border border-slate-200 shadow-2xs text-center space-y-0.5">
-          <span className="text-[10px] text-slate-500 block uppercase tracking-wider">Active Channels</span>
-          <span className="text-base font-bold text-slate-900">{colsTotal} Columns</span>
-        </div>
-
-        <div className="p-3.5 bg-white rounded-2xl border border-slate-200 shadow-2xs text-center space-y-0.5">
-          <span className="text-[10px] text-slate-500 block uppercase tracking-wider">Row Duplication</span>
-          <span className={`text-base font-bold ${duplicatePct > 0 ? 'text-amber-600' : 'text-emerald-600'}`}>
-            {duplicatePct.toFixed(1)}%
-          </span>
-        </div>
-
-        <div className="p-3.5 bg-white rounded-2xl border border-slate-200 shadow-2xs text-center space-y-0.5">
-          <span className="text-[10px] text-slate-500 block uppercase tracking-wider">Outlier Variance</span>
-          <span className={`text-base font-bold ${outlierPct > 2 ? 'text-rose-600' : 'text-emerald-600'}`}>
-            {outlierPct.toFixed(1)}%
-          </span>
-        </div>
+      {/* ── KPI SCORECARD ROW ──────────────────────────────────── */}
+      <section style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+        {[
+          { label: 'Total Ingested Rows', value: rowsTotal.toLocaleString(), color: 'var(--text-main)' },
+          { label: 'Active Channels',     value: `${colsTotal} Columns`,       color: 'var(--text-main)' },
+          { label: 'Row Duplication',     value: `${duplicatePct.toFixed(1)}%`, color: duplicatePct > 0 ? T.warning : T.optimal },
+          { label: 'Outlier Variance',    value: `${outlierPct.toFixed(1)}%`,   color: outlierPct > 2 ? T.critical : T.optimal },
+        ].map((kpi, i) => (
+          <div key={i} className="dashboard-card" style={{ padding: '14px 18px', gap: 4, textAlign: 'center' }}>
+            <span style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.07em',
+                           color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>{kpi.label}</span>
+            <span style={{ fontSize: 20, fontWeight: 800, fontFamily: 'var(--font-mono)', color: kpi.color }}>
+              {kpi.value}
+            </span>
+          </div>
+        ))}
       </section>
 
-      {/* 🧩 MIDDLE SECTION: DYNAMIC RANKED DIAGNOSTIC SIGNAL CARDS */}
-      <section className="space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <BarChart2 className="text-[#FF6B35]" size={18} />
-            <h3 className="font-bold text-slate-900 text-sm">
-              Ranked Diagnostic Quality Signals &amp; Actionable Treatments
-            </h3>
+      {/* ── MIDDLE: RANKED DIAGNOSTIC SIGNAL CARDS ─────────────── */}
+      <section>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <BarChart2 size={18} color={T.coral} />
+            <span style={{ fontWeight: 700, fontSize: 13.5, color: 'var(--text-main)' }}>
+              Ranked Diagnostic Quality Signals & Actionable Treatments
+            </span>
           </div>
-          <span className="text-[10.5px] font-mono text-slate-500">
-            {diagnosticSignals.length} Active Audit Signals
+          <span style={{ fontSize: 10.5, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
+            {diagSignals.length} Active Audit Signals — sorted by severity
           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {diagnosticSignals.map((sig: any) => {
-            const isCritical = sig.status === 'CRITICAL';
-            const isWarning = sig.status === 'WARNING';
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
+          {diagSignals.map((sig: any) => {
+            const isCrit = sig.status === 'CRITICAL';
+            const isWarn = sig.status === 'WARNING';
+            const borderC = isCrit ? 'rgba(239,68,68,0.35)' : isWarn ? 'rgba(245,158,11,0.30)' : 'var(--border-light)';
             return (
-              <div 
-                key={sig.id}
-                className={`p-4 bg-white rounded-2xl border transition-all flex flex-col justify-between gap-3 shadow-2xs ${
-                  isCritical 
-                    ? 'border-rose-300 bg-rose-50/10' 
-                    : isWarning 
-                      ? 'border-amber-300 bg-amber-50/10' 
-                      : 'border-slate-200 hover:border-slate-300'
-                }`}
-              >
-                <div className="flex justify-between items-start gap-2 border-b border-slate-100 pb-2.5">
+              <div key={sig.id} className="dashboard-card" style={{
+                gap: 12, padding: '16px',
+                borderColor: borderC,
+                background: isCrit ? 'rgba(239,68,68,0.04)' : isWarn ? 'rgba(245,158,11,0.03)' : 'var(--bg-card)',
+              }}>
+                {/* Card Header */}
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
+                              borderBottom: '1px solid var(--border-light)', paddingBottom: 10, gap: 8 }}>
                   <div>
-                    <h4 className="font-bold text-slate-900 text-xs flex items-center gap-1.5">
-                      <span>{sig.title}</span>
-                    </h4>
-                    <span className="text-[10px] font-mono text-slate-500 truncate block mt-0.5">
-                      Target: <strong className="text-slate-700">{sig.feature}</strong>
-                    </span>
+                    <div style={{ fontWeight: 700, fontSize: 12, color: 'var(--text-main)' }}>{sig.title}</div>
+                    <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', marginTop: 2 }}>
+                      Target: <strong style={{ color: 'var(--text-secondary)' }}>{sig.feature}</strong>
+                    </div>
                   </div>
-                  <span className={`text-[9px] font-bold font-mono px-2 py-0.5 rounded-full border ${
-                    isCritical 
-                      ? 'bg-rose-100 text-rose-700 border-rose-200' 
-                      : isWarning 
-                        ? 'bg-amber-100 text-amber-800 border-amber-200' 
-                        : 'bg-emerald-100 text-emerald-800 border-emerald-200'
-                  }`}>
-                    {sig.metric}
-                  </span>
+                  <StatusBadge status={sig.status} metric={sig.metric} />
                 </div>
 
-                <div className="w-full h-[100px] bg-slate-50 rounded-xl p-1 overflow-hidden border border-slate-100 flex items-center justify-center">
-                  {renderSignalChart(sig)}
+                {/* Mini Chart */}
+                <div style={{ width: '100%', height: 100, borderRadius: 10, overflow: 'hidden',
+                              background: 'rgba(100,116,139,0.05)', border: '1px solid var(--border-light)',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {renderMiniChart(sig)}
                 </div>
 
-                <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200/80 text-[10.5px] text-slate-700 leading-snug space-y-1">
-                  <div className="flex items-center gap-1 font-bold text-slate-800 text-[10px] uppercase tracking-wider">
-                    <Search size={11} className="text-blue-600" />
-                    <span>Operational Impact</span>
+                {/* Operational Impact */}
+                <div style={{ padding: '10px 12px', borderRadius: 10,
+                              background: 'rgba(100,116,139,0.06)', border: '1px solid var(--border-light)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 10,
+                                textTransform: 'uppercase', letterSpacing: '0.07em',
+                                fontWeight: 700, color: '#3b82f6', marginBottom: 4 }}>
+                    <Search size={11} />Operational Impact
                   </div>
-                  <p className="text-slate-600">{sig.operational_impact}</p>
+                  <p style={{ fontSize: 10.5, color: 'var(--text-muted)', lineHeight: 1.5 }}>{sig.operational_impact}</p>
                 </div>
 
-                <div className="p-2.5 bg-amber-50/50 rounded-xl border border-amber-200 text-[10.5px] text-amber-950 leading-snug space-y-1">
-                  <div className="flex items-center gap-1 font-bold text-amber-900 text-[10px] uppercase tracking-wider">
-                    <Sliders size={11} className="text-amber-700" />
-                    <span>Recommended Treatment</span>
+                {/* Recommended Treatment */}
+                <div style={{ padding: '10px 12px', borderRadius: 10,
+                              background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.20)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 10,
+                                textTransform: 'uppercase', letterSpacing: '0.07em',
+                                fontWeight: 700, color: '#b45309', marginBottom: 4 }}>
+                    <Sliders size={11} />Recommended Treatment
                   </div>
-                  <p className="text-amber-900 font-medium">{sig.recommended_treatment}</p>
+                  <p style={{ fontSize: 10.5, color: '#92400e', lineHeight: 1.5, fontWeight: 500 }}>
+                    {sig.recommended_treatment}
+                  </p>
                 </div>
               </div>
             );
@@ -643,288 +675,209 @@ export const PrePrepare: React.FC<PrePrepareProps> = ({
         </div>
       </section>
 
-      {/* 🔍 BOTTOM SECTION: INTERACTIVE RECHARTS FEATURE INSPECTOR & VISUAL PICKER */}
-      <section className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-5">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-[#FF6B35]/10 text-[#FF6B35] flex items-center justify-center">
-                <Search size={16} />
-              </div>
-              <h3 className="font-bold text-slate-900 text-sm">
-                Interactive Feature Inspector &amp; Visual Explorer
-              </h3>
+      {/* ── BOTTOM: PLOTLY INTERACTIVE FEATURE INSPECTOR ─────────── */}
+      <section className="dashboard-card" style={{ padding: '20px 24px', gap: 0 }}>
+        {/* Inspector Header */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
+                      gap: 16, flexWrap: 'wrap', borderBottom: '1px solid var(--border-light)',
+                      paddingBottom: 16, marginBottom: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ width: 36, height: 36, borderRadius: 10, background: T.coralGlow,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <TrendingUp size={17} color={T.coral} />
             </div>
-            <p className="text-[11px] text-slate-500">
-              Inspect individual telemetry channels, analyze distributions, detect time-series drifts, and evaluate outlier bounds.
-            </p>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: 13.5, color: 'var(--text-main)' }}>
+                Interactive Feature Inspector & Visual Explorer
+              </div>
+              <p style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>
+                Inspect any telemetry channel — distributions, drift, outlier bounds, and lag correlations.
+              </p>
+            </div>
           </div>
 
-          {/* Interactive Feature & Chart Controls */}
-          <div className="flex flex-wrap items-center gap-3">
-            {/* Feature Dropdown Selector */}
-            <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
-              <Filter size={13} className="text-slate-500" />
-              <label htmlFor="feature-select" className="text-[10.5px] font-bold text-slate-700">Feature:</label>
+          {/* Controls */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            {/* Feature select */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 12px',
+                          borderRadius: 10, background: 'rgba(100,116,139,0.08)',
+                          border: '1px solid var(--border-medium)' }}>
+              <Filter size={13} color="var(--text-muted)" />
+              <span style={{ fontSize: 10.5, fontWeight: 700, color: 'var(--text-muted)' }}>Feature:</span>
               <select
-                id="feature-select"
-                value={selectedColumn}
-                onChange={(e) => setSelectedColumn(e.target.value)}
-                className="bg-transparent text-[11px] font-mono font-bold text-[#FF6B35] outline-none cursor-pointer max-w-[180px] truncate"
+                value={selectedCol}
+                onChange={e => setSelectedCol(e.target.value)}
+                style={{ background: 'transparent', border: 'none', outline: 'none', cursor: 'pointer',
+                         fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700,
+                         color: T.coral, maxWidth: 180 }}
               >
-                {columnStats.length > 0 ? (
-                  columnStats.map((col: any) => (
-                    <option key={col.column} value={col.column} className="text-slate-900 font-sans">
-                      {col.column} ({col.dtype})
-                    </option>
-                  ))
-                ) : (
-                  <option value={selectedColumn}>{selectedColumn}</option>
-                )}
+                {allCols.map((col: any) => (
+                  <option key={col.column} value={col.column}>
+                    {col.column} ({col.dtype})
+                  </option>
+                ))}
               </select>
             </div>
 
-            {/* Chart Type Toggle Tabs */}
-            <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-[10.5px] font-bold">
-              <button
-                onClick={() => setChartType('histogram')}
-                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 ${
-                  chartType === 'histogram' ? 'bg-white text-[#FF6B35] shadow-xs' : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                <BarChart2 size={12} />
-                <span>Histogram</span>
-              </button>
-
-              <button
-                onClick={() => setChartType('trend')}
-                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 ${
-                  chartType === 'trend' ? 'bg-white text-[#FF6B35] shadow-xs' : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                <LineChartIcon size={12} />
-                <span>Time Trend</span>
-              </button>
-
-              <button
-                onClick={() => setChartType('boxplot')}
-                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 ${
-                  chartType === 'boxplot' ? 'bg-white text-[#FF6B35] shadow-xs' : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                <Maximize2 size={12} />
-                <span>Boxplot &amp; Fences</span>
-              </button>
-
-              <button
-                onClick={() => setChartType('scatter')}
-                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 ${
-                  chartType === 'scatter' ? 'bg-white text-[#FF6B35] shadow-xs' : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                <Activity size={12} />
-                <span>Target Scatter</span>
-              </button>
+            {/* Chart type tabs */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 2, padding: '4px',
+                          borderRadius: 12, background: 'rgba(100,116,139,0.08)',
+                          border: '1px solid var(--border-light)' }}>
+              {([
+                { key: 'histogram', icon: <BarChart2 size={13} />,       label: 'Histogram'   },
+                { key: 'trend',     icon: <LineChartIcon size={13} />,    label: 'Time Trend'  },
+                { key: 'boxplot',   icon: <Maximize2 size={13} />,        label: 'Boxplot'     },
+                { key: 'scatter',   icon: <Activity size={13} />,         label: 'Lag Scatter' },
+              ] as const).map(btn => (
+                <button
+                  key={btn.key}
+                  onClick={() => setChartMode(btn.key)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 5, padding: '6px 12px', borderRadius: 8,
+                    border: 'none', cursor: 'pointer', fontSize: 11, fontWeight: 600, transition: 'all 0.18s',
+                    background: chartMode === btn.key ? T.coral : 'transparent',
+                    color:      chartMode === btn.key ? '#fff' : 'var(--text-muted)',
+                    boxShadow:  chartMode === btn.key ? `0 2px 8px ${T.coralGlow}` : 'none',
+                  }}
+                >
+                  {btn.icon}{btn.label}
+                </button>
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Feature Inspector Body: Chart + Metrics Sidebar */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          
-          {/* Main Visual Chart Canvas (3 cols) */}
-          <div className="lg:col-span-3 bg-slate-50/70 rounded-2xl p-4 border border-slate-200 flex flex-col justify-between min-h-[300px]">
-            <div className="flex justify-between items-center text-[11px] font-mono text-slate-500 mb-2">
-              <span>
-                Visualizing: <strong className="text-slate-800">{selectedColumn}</strong> • View: <strong className="text-[#FF6B35] uppercase">{chartType}</strong>
-              </span>
-              <span>150 Sampled Telemetry Windows</span>
-            </div>
-
-            <div className="w-full h-[240px]">
-              {chartType === 'histogram' && (
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={activeColStat.histogram_bins || []}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                    <XAxis dataKey="bin" stroke="#64748b" fontSize={10} fontFamily="monospace" />
-                    <YAxis stroke="#64748b" fontSize={10} fontFamily="monospace" />
-                    <Tooltip 
-                      contentStyle={{ backgroundColor: '#0f172a', borderRadius: '10px', border: 'none', color: '#fff', fontSize: '11px' }}
-                    />
-                    <Bar dataKey="count" fill="#FF6B35" radius={[4, 4, 0, 0]}>
-                      {(activeColStat.histogram_bins || []).map((_: any, index: number) => (
-                        <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#FF6B35' : '#FF8F5A'} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              )}
-
-              {chartType === 'trend' && (
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={trendData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                    <XAxis dataKey="timestamp" stroke="#64748b" fontSize={10} fontFamily="monospace" />
-                    <YAxis stroke="#64748b" fontSize={10} fontFamily="monospace" />
-                    <Tooltip 
-                      contentStyle={{ backgroundColor: '#0f172a', borderRadius: '10px', border: 'none', color: '#fff', fontSize: '11px' }}
-                    />
-                    <Line type="monotone" dataKey="value" name={selectedColumn} stroke="#FF6B35" strokeWidth={2.5} dot={false} />
-                  </LineChart>
-                </ResponsiveContainer>
-              )}
-
-              {chartType === 'boxplot' && (
-                <div className="w-full h-full flex items-center justify-center p-4">
-                  <BoxPlotChart data={{
-                    col: selectedColumn,
-                    min: activeColStat.min ?? 0,
-                    p25: activeColStat.p25 ?? 25,
-                    median: activeColStat.median ?? 50,
-                    p75: activeColStat.p75 ?? 75,
-                    max: activeColStat.max ?? 100
-                  }} />
-                </div>
-              )}
-
-              {chartType === 'scatter' && (
-                <ResponsiveContainer width="100%" height="100%">
-                  <ScatterChart>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                    <XAxis dataKey="value" name={selectedColumn} stroke="#64748b" fontSize={10} fontFamily="monospace" />
-                    <YAxis dataKey="target" name="Target Signal" stroke="#64748b" fontSize={10} fontFamily="monospace" />
-                    <Tooltip 
-                      cursor={{ strokeDasharray: '3 3' }}
-                      contentStyle={{ backgroundColor: '#0f172a', borderRadius: '10px', border: 'none', color: '#fff', fontSize: '11px' }}
-                    />
-                    <Scatter name={selectedColumn} data={trendData} fill="#FF6B35" />
-                  </ScatterChart>
-                </ResponsiveContainer>
-              )}
-            </div>
+        {/* Chart + Sidebar Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 240px', gap: 20 }}>
+          {/* Plotly Main Chart */}
+          <div style={{ borderRadius: 14, overflow: 'hidden', border: '1px solid var(--border-light)',
+                        background: 'rgba(100,116,139,0.04)', minHeight: 320 }}>
+            <Plot
+              data={plotlyData}
+              layout={plotlyLayout}
+              config={PLOTLY_CONFIG}
+              style={{ width: '100%', height: 320 }}
+              useResizeHandler
+            />
           </div>
 
-          {/* Contextual Metric & Recommendation Sidebar (1 col) */}
-          <div className="p-4 bg-slate-50/80 rounded-2xl border border-slate-200 flex flex-col justify-between gap-3 text-[11px]">
+          {/* Metric Sidebar */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {/* Feature title */}
             <div>
-              <span className="text-[10px] font-mono text-slate-400 block uppercase tracking-wider mb-1">
+              <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.07em',
+                            color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: 4 }}>
                 Feature Health Profile
-              </span>
-              <h4 className="font-bold text-slate-900 text-xs font-mono truncate">
-                {selectedColumn}
-              </h4>
-            </div>
-
-            <div className="space-y-1.5 font-mono text-[10.5px]">
-              <div className="flex justify-between border-b border-slate-200/60 pb-1">
-                <span className="text-slate-500">Data Type:</span>
-                <span className="font-bold text-slate-800">{activeColStat.dtype || 'float64'}</span>
               </div>
-              <div className="flex justify-between border-b border-slate-200/60 pb-1">
-                <span className="text-slate-500">Missingness:</span>
-                <span className={`font-bold ${activeColStat.missing_pct > 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
-                  {activeColStat.missing_pct ?? 0}%
-                </span>
-              </div>
-              <div className="flex justify-between border-b border-slate-200/60 pb-1">
-                <span className="text-slate-500">Mean / Std:</span>
-                <span className="font-bold text-slate-800">{activeColStat.mean ?? 'N/A'} / {activeColStat.std ?? 'N/A'}</span>
-              </div>
-              <div className="flex justify-between border-b border-slate-200/60 pb-1">
-                <span className="text-slate-500">Skewness:</span>
-                <span className={`font-bold ${Math.abs(activeColStat.skewness ?? 0) > 1.5 ? 'text-rose-600' : 'text-slate-800'}`}>
-                  {activeColStat.skewness ?? '0.0'}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-500">Outliers (IQR):</span>
-                <span className={`font-bold ${activeColStat.outlier_pct > 2 ? 'text-amber-600' : 'text-emerald-600'}`}>
-                  {activeColStat.outlier_pct ?? 0}%
-                </span>
+              <div style={{ fontSize: 12, fontWeight: 700, fontFamily: 'var(--font-mono)',
+                            color: 'var(--text-main)', wordBreak: 'break-all' }}>
+                {selectedCol}
               </div>
             </div>
 
-            <div className="p-2.5 bg-amber-50 rounded-xl border border-amber-200/80 text-[10px] text-amber-950 leading-snug">
-              <strong className="block font-bold text-amber-900 mb-0.5">Stage 2 Action:</strong>
-              {activeColStat.missing_pct > 0 ? (
-                <span>Apply forward-fill temporal imputation to bridge null gap.</span>
-              ) : Math.abs(activeColStat.skewness ?? 0) > 2.0 ? (
-                <span>Apply Yeo-Johnson power transform to normalize distribution.</span>
-              ) : activeColStat.outlier_pct > 2.0 ? (
-                <span>Apply RobustScaler (IQR bounds) to insulate loss gradients.</span>
-              ) : (
-                <span>Feature is well-conditioned. Standard continuous scaling applied.</span>
-              )}
+            {/* Metric rows */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 0,
+                          border: '1px solid var(--border-light)', borderRadius: 12, overflow: 'hidden' }}>
+              {[
+                { k: 'Data Type',       v: activeCol.dtype || 'float64',                   c: 'var(--text-main)' },
+                { k: 'Missingness',     v: `${activeCol.missing_pct ?? 0}%`,                c: (activeCol.missing_pct ?? 0) > 0 ? T.critical : T.optimal },
+                { k: 'Mean',            v: activeCol.mean   != null ? `${activeCol.mean}`   : 'N/A', c: 'var(--text-main)' },
+                { k: 'Std Dev',         v: activeCol.std    != null ? `${activeCol.std}`    : 'N/A', c: 'var(--text-main)' },
+                { k: 'Median',          v: activeCol.median != null ? `${activeCol.median}` : 'N/A', c: 'var(--text-main)' },
+                { k: 'Skewness',        v: activeCol.skewness != null ? `${activeCol.skewness}` : 'N/A', c: Math.abs(activeCol.skewness ?? 0) > 1.5 ? T.warning : T.optimal },
+                { k: 'IQR Outliers',    v: `${activeCol.outlier_pct ?? 0}%`,                c: (activeCol.outlier_pct ?? 0) > 2 ? T.warning : T.optimal },
+              ].map((row, i) => (
+                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                                      padding: '7px 12px', fontSize: 10.5, fontFamily: 'var(--font-mono)',
+                                      borderBottom: i < 6 ? '1px solid var(--border-light)' : 'none',
+                                      background: i % 2 === 0 ? 'rgba(100,116,139,0.03)' : 'transparent' }}>
+                  <span style={{ color: 'var(--text-muted)', fontWeight: 500 }}>{row.k}</span>
+                  <span style={{ fontWeight: 700, color: row.c }}>{row.v}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Stage 2 action card */}
+            <div style={{ padding: '12px 14px', borderRadius: 12,
+                          background: 'rgba(245,158,11,0.07)', border: '1px solid rgba(245,158,11,0.22)' }}>
+              <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.07em',
+                            fontWeight: 700, color: '#92400e', marginBottom: 5 }}>
+                Stage 2 Preparation Action
+              </div>
+              <p style={{ fontSize: 10.5, color: '#78350f', lineHeight: 1.55, fontWeight: 500 }}>
+                {(activeCol.missing_pct ?? 0) > 0
+                  ? 'Apply forward-fill temporal imputation to bridge null telemetry gap.'
+                  : Math.abs(activeCol.skewness ?? 0) > 2.0
+                    ? 'Apply Yeo-Johnson power transform to normalize distribution.'
+                    : (activeCol.outlier_pct ?? 0) > 2.0
+                      ? 'Apply RobustScaler (IQR bounds) to insulate loss gradients.'
+                      : 'Feature is well-conditioned. Standard continuous scaling applied.'}
+              </p>
             </div>
           </div>
-
         </div>
       </section>
 
-      {/* 🧩 AUTONOMOUS ROUTING CAUSAL CHAIN */}
-      <section className="p-5 bg-gradient-to-r from-indigo-50/70 via-slate-50 to-blue-50/70 rounded-2xl border border-indigo-200 shadow-2xs space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Workflow className="text-indigo-600" size={18} />
-            <h3 className="font-bold text-slate-900 text-sm">
-              Model Selection &amp; Pipeline Selection Rationale
-            </h3>
+      {/* ── CAUSAL RATIONALE CHAIN ─────────────────────────────── */}
+      <section style={{
+        padding: '20px 24px', borderRadius: 16,
+        background: 'linear-gradient(135deg, rgba(99,102,241,0.06) 0%, rgba(100,116,139,0.04) 100%)',
+        border: '1px solid rgba(99,102,241,0.20)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                      marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Workflow size={18} color="#6366f1" />
+            <span style={{ fontWeight: 700, fontSize: 13.5, color: 'var(--text-main)' }}>
+              Model Selection & Pipeline Selection Rationale
+            </span>
           </div>
-          <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-indigo-600 text-white">
+          <span style={{ fontSize: 10, fontFamily: 'var(--font-mono)', fontWeight: 700,
+                         padding: '4px 12px', borderRadius: 99, background: '#6366f1', color: '#fff' }}>
             Auto-Resolved: {dagId}
           </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-[11px]">
-          <div className="p-3 bg-white rounded-xl border border-blue-200 shadow-2xs space-y-1">
-            <span className="font-bold text-blue-900 flex items-center gap-1">
-              <Cpu size={12} className="text-blue-600" />
-              1. Compiler Ingestion
-            </span>
-            <p className="text-slate-600 text-[10.5px]">{causalRationale.step_1_compiler}</p>
-          </div>
-
-          <div className="p-3 bg-white rounded-xl border border-teal-200 shadow-2xs space-y-1">
-            <span className="font-bold text-teal-900 flex items-center gap-1">
-              <Sliders size={12} className="text-teal-600" />
-              2. Statistical Audit
-            </span>
-            <p className="text-slate-600 text-[10.5px]">{causalRationale.step_2_profiler}</p>
-          </div>
-
-          <div className="p-3 bg-white rounded-xl border border-amber-200 shadow-2xs space-y-1">
-            <span className="font-bold text-amber-900 flex items-center gap-1">
-              <Workflow size={12} className="text-amber-600" />
-              3. Topology Routing
-            </span>
-            <p className="text-slate-600 text-[10.5px]">{causalRationale.step_3_orchestrator}</p>
-          </div>
-
-          <div className="p-3 bg-white rounded-xl border border-purple-200 shadow-2xs space-y-1">
-            <span className="font-bold text-purple-900 flex items-center gap-1">
-              <CheckCircle size={12} className="text-purple-600" />
-              4. Recipe Locking
-            </span>
-            <p className="text-slate-600 text-[10.5px]">{causalRationale.step_4_recipe}</p>
-          </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+          {[
+            { icon: <Cpu size={13} color="#3b82f6" />,       label: '1. Compiler Ingestion',  text: causal.step_1_compiler,     border: 'rgba(59,130,246,0.25)'  },
+            { icon: <Sliders size={13} color="#14b8a6" />,   label: '2. Statistical Audit',   text: causal.step_2_profiler,     border: 'rgba(20,184,166,0.25)'  },
+            { icon: <Workflow size={13} color={T.warning} />, label: '3. Topology Routing',   text: causal.step_3_orchestrator, border: `rgba(245,158,11,0.25)` },
+            { icon: <CheckCircle size={13} color="#a855f7" />, label: '4. Recipe Locking',   text: causal.step_4_recipe,       border: 'rgba(168,85,247,0.25)' },
+          ].map((step, i) => (
+            <div key={i} className="dashboard-card" style={{ gap: 6, padding: '12px 14px', borderColor: step.border, borderWidth: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontWeight: 700, fontSize: 11, color: 'var(--text-main)' }}>
+                {step.icon}{step.label}
+              </div>
+              <p style={{ fontSize: 10.5, color: 'var(--text-muted)', lineHeight: 1.55 }}>{step.text}</p>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* 🚀 STAGE 2 PREPARATION VERIFICATION & HITL APPROVAL */}
-      <section className="p-6 bg-gradient-to-r from-slate-900 via-purple-950 to-slate-900 rounded-3xl text-white shadow-lg flex flex-col md:flex-row items-center justify-between gap-4 border border-white/10">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-[#FF6B35] flex items-center justify-center text-white text-2xl font-bold shadow-md shrink-0">
-            <Sparkles size={24} />
+      {/* ── HITL APPROVAL FOOTER ───────────────────────────────── */}
+      <section style={{
+        padding: '20px 28px',
+        background: `linear-gradient(135deg, ${T.eggplantDeep} 0%, #4c1d95 60%, ${T.eggplant} 100%)`,
+        borderRadius: 20,
+        border: '1px solid rgba(255,255,255,0.08)',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        gap: 20, flexWrap: 'wrap',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <div style={{ width: 48, height: 48, borderRadius: 14, background: T.coral,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Sparkles size={24} color="#fff" />
           </div>
           <div>
-            <h3 className="font-bold text-sm text-white flex items-center gap-2">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#fff', fontWeight: 700, fontSize: 14 }}>
               Preparation Deliverables Verification
-              <span className="bg-emerald-500/20 text-emerald-300 text-[10px] font-mono px-2 py-0.5 rounded-full border border-emerald-500/30">
-                Audited &amp; Ready
-              </span>
-            </h3>
-            <p className="text-xs text-white/70 font-mono mt-0.5">
-              Diagnostic audit complete for {rowsTotal.toLocaleString()} rows. Pre-processing transforms locked for Stage 2 (Prepare). Ready to dispatch?
+              <span style={{ fontSize: 10, fontFamily: 'var(--font-mono)', padding: '2px 8px', borderRadius: 99,
+                             background: 'rgba(16,185,129,0.18)', color: '#6ee7b7',
+                             border: '1px solid rgba(16,185,129,0.30)' }}>Audited & Ready</span>
+            </div>
+            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.60)', fontFamily: 'var(--font-mono)', marginTop: 4 }}>
+              Diagnostic audit complete for {rowsTotal.toLocaleString()} rows. Pre-processing transforms locked for Stage 2.
             </p>
           </div>
         </div>
@@ -932,10 +885,19 @@ export const PrePrepare: React.FC<PrePrepareProps> = ({
         {onApproveDeliverables && (
           <button
             onClick={onApproveDeliverables}
-            className="w-full md:w-auto px-6 py-3 bg-[#FF6B35] hover:bg-[#e85520] text-white font-mono text-xs font-bold rounded-2xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer shrink-0"
+            style={{
+              padding: '12px 24px', background: T.coral, color: '#fff',
+              fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700,
+              borderRadius: 14, border: 'none', cursor: 'pointer',
+              boxShadow: `0 4px 16px ${T.coralGlow}`,
+              display: 'flex', alignItems: 'center', gap: 8,
+              transition: 'all 0.2s', flexShrink: 0,
+            }}
+            onMouseEnter={e => (e.currentTarget.style.background = T.coralHover)}
+            onMouseLeave={e => (e.currentTarget.style.background = T.coral)}
           >
-            <span className="material-symbols-outlined text-base">verified</span>
-            <span>Approve &amp; Dispatch Deliverables to ML Studio</span>
+            <CheckCircle size={16} />
+            Approve & Dispatch Deliverables to ML Studio
           </button>
         )}
       </section>
