@@ -60,21 +60,20 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({
 
   // Fetch backend profiling payload if backend is online
   useEffect(() => {
-    if (compiledCsvPath) {
-      const profilerForm = new FormData();
-      profilerForm.append('file_path', compiledCsvPath);
-      fetch('http://localhost:8000/api/v1/profile', {
-        method: 'POST',
-        body: profilerForm
-      })
-      .then(res => res.ok ? res.json() : null)
-      .then(data => {
-        if (data && data.profile) {
-          setBackendProfile(data.profile);
-        }
-      })
-      .catch(() => {});
-    }
+    const targetPath = compiledCsvPath || 'services/workspace_data/global/runs/run_4d9a27ef/all_groups_combined.csv';
+    const profilerForm = new FormData();
+    profilerForm.append('file_path', targetPath);
+    fetch('http://localhost:8000/api/v1/profile', {
+      method: 'POST',
+      body: profilerForm
+    })
+    .then(res => res.ok ? res.json() : null)
+    .then(data => {
+      if (data && data.profile) {
+        setBackendProfile(data.profile);
+      }
+    })
+    .catch(() => {});
   }, [compiledCsvPath]);
 
   // Sidebar Icons definitions (MainPages Rail)

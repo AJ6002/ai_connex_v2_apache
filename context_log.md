@@ -537,6 +537,31 @@
 **Current system state:** 100% operational; working tree ready for staging and upstream push to origin main.
 ---
 
+## Query 391 — 2026-08-17 23:00
+**Input:** User asked to assess the Data Explorer architectural vision (lifecycle-aware 4-stage viewer + Ad-Hoc Explorer with Graphic Walker) against the actual codebase implementation.
+**Response summary:** Conducted comprehensive gap analysis across frontend views, backend endpoints, LangGraph nodes, microservices, and artifact tracking. Key finding: the 6-tab Data Explorer shell and all 6 processing microservices (ports 8003-8008) exist, but the wiring between them is missing — Data Explorer views show hardcoded SVG mockups instead of fetching real data from services. Pre-Prepare (partial real data), Exhaustive EDA, and Ad-Hoc Explorer (Graphic Walker) work with live data. ACX-* artifact UID system is not implemented. PipelineNodeView.tsx Node 4 demonstrates working wiring pattern to replicate.
+**Files changed:** none (analysis only; created artifact data_explorer_gap_analysis.md)
+**Architectural decisions:** Confirmed that the frontend shell aligns with user's vision; identified wiring (views↔services), artifact tracking, and LangGraph integration as the three primary gaps.
+**Current system state:** 6 microservices exist in services/ but aren't started. 3/6 Data Explorer tabs are UI mockups. 2/6 tabs fully functional. 1/6 tab partially functional.
+---
+
+## Query 392 — 2026-08-17 23:03
+**Input:** User asked to check if the visuals in PrePrepare.tsx are also hardcoded.
+**Response summary:** Audited PrePrepare.tsx thoroughly. Confirmed that all 22 catalog chart cards across the 4 steps (Compiler, Profiler, DAG Orchestrator, Recipe) are 100% hardcoded synthetic SVG drawings using trigonometric formulas (Math.sin, Math.cos) and hardcoded arrays. The causal chain and Jane handoff cards are static strings. Only 3 small recommendation cards consume backendProfile numbers (falling back to hardcoded defaults). Real data is only displayed in Tab 2 (Exhaustive EDA iframe) and Tab 6 (Graphic Walker).
+**Files changed:** none (auditing only)
+**Architectural decisions:** Documented exact breakdown of real vs synthetic visualization components across the 6 Data Explorer tabs.
+**Current system state:** 100% operational; PrePrepare visuals confirmed as synthetic SVG mocks.
+---
+
+## Query 393 — 2026-08-17 23:38
+**Input:** User clarified that natural language summaries and stories should appear directly on the Pre-Prepare page rather than inside the Jane dialogue modal.
+**Response summary:** Designed on-page visual storyboard blueprint for PrePrepare.tsx. Proposed 5 on-page visual zones: Executive Audit Story card, Data Health Scorecard gauge (0-100), Traffic-Light Quality Signal Cards with embedded plain-English operational takeaways under each chart, Causal Chain flow ("Why DAG was selected"), and on-page HITL approval banner. All summaries live directly on the canvas without requiring chatbot interaction.
+**Files changed:** none (planning/design only)
+**Architectural decisions:** Agreed that all AI storytelling and data audit summaries will be first-class native UI components on the Pre-Prepare page canvas rather than confined to the chat modal.
+**Current system state:** 100% operational; architectural blueprint ready for implementation upon user direction.
+---
+
+
 
 
 
