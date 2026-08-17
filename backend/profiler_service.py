@@ -108,6 +108,17 @@ def profile_dataframe(df: pd.DataFrame) -> dict:
                 outlier_count = int(outlier_mask.sum())
                 outlier_flags |= outlier_mask.fillna(False)
 
+                # 10-bin histogram distribution for Recharts
+                hist_counts, bin_edges = np.histogram(vals, bins=min(10, max(3, int(np.sqrt(len(vals))))))
+                hist_bins = []
+                for b_idx in range(len(hist_counts)):
+                    hist_bins.append({
+                        "bin": f"{bin_edges[b_idx]:.2f}-{bin_edges[b_idx+1]:.2f}",
+                        "count": int(hist_counts[b_idx]),
+                        "bin_start": round(float(bin_edges[b_idx]), 2),
+                        "bin_end": round(float(bin_edges[b_idx+1]), 2),
+                    })
+
                 stat.update({
                     "mean": round(float(vals.mean()), 4) if not np.isnan(vals.mean()) else 0.0,
                     "std": round(float(vals.std()), 4) if not np.isnan(vals.std()) else 0.0,
@@ -123,6 +134,7 @@ def profile_dataframe(df: pd.DataFrame) -> dict:
                     "iqr": round(iqr, 4),
                     "lower_fence": round(lower, 4),
                     "upper_fence": round(upper, 4),
+                    "histogram_bins": hist_bins,
                 })
 
                 # Update aggregate skewness signal
@@ -358,6 +370,13 @@ def profile_dataframe(df: pd.DataFrame) -> dict:
         "step_4_recipe": f"Configured preprocessing recipe: RobustScaler (IQR) + Forward-fill imputation + Anomaly scoring."
     }
 
+    # ── Sort Diagnostic Signals by Severity Priority ──────────────────────────
+    status_priority = {"CRITICAL": 0, "WARNING": 1, "OPTIMAL": 2}
+    diagnostic_signals.sort(key=lambda s: status_priority.get(s.get("status", "OPTIMAL"), 3))
+
+    # ── Sample Records for Interactive Feature Inspector (First 150 Rows) ──────
+    sample_records = sample.head(150).replace({np.nan: None, np.inf: None, -np.inf: None}).to_dict(orient="records")
+
     return {
         "rows_total": rows_total,
         "rows_sampled": rows_sampled,
@@ -381,6 +400,7 @@ def profile_dataframe(df: pd.DataFrame) -> dict:
         "diagnostic_signals": diagnostic_signals,
         "executive_assessment": executive_assessment,
         "causal_rationale": causal_rationale,
+        "sample_records": sample_records,
     }
 
 

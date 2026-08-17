@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   Workflow, 
   GitCommit, 
@@ -17,8 +17,25 @@ import {
   Layers,
   Sparkles,
   BarChart2,
-  Database
+  Database,
+  LineChart as LineChartIcon,
+  Maximize2,
+  Filter
 } from 'lucide-react';
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  ScatterChart,
+  Scatter,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  Cell
+} from 'recharts';
 
 interface PrePrepareProps {
   onProceed?: () => void;
@@ -30,7 +47,7 @@ interface PrePrepareProps {
   onApproveDeliverables?: () => void;
 }
 
-// ── Dynamic Mini-Chart Renderers (Real Data Driven) ───────────────────────────
+// ── Dynamic Mini-Chart Renderers for Middle Section Cards ──────────────────────
 
 /** Horizontal Bar Chart for Missingness distribution across top columns */
 function MissingBarsChart({ data }: { data: Array<{ column: string; missing_pct: number }> }) {
@@ -81,16 +98,12 @@ function BoxPlotChart({ data }: { data: Record<string, any> }) {
   return (
     <div className="w-full h-full flex flex-col justify-center items-center">
       <svg viewBox="0 0 300 100" className="w-full h-full">
-        {/* Baseline axis */}
         <line x1="30" y1="50" x2="270" y2="50" stroke="#cbd5e1" strokeWidth="1.5" strokeDasharray="3" />
-        
-        {/* Whiskers */}
         <line x1={xMin} y1="50" x2={xP25} y2="50" stroke="#475569" strokeWidth="2" />
         <line x1={xP75} y1="50" x2={xMax} y2="50" stroke="#475569" strokeWidth="2" />
         <line x1={xMin} y1="35" x2={xMin} y2="65" stroke="#475569" strokeWidth="2" strokeLinecap="round" />
         <line x1={xMax} y1="35" x2={xMax} y2="65" stroke="#475569" strokeWidth="2" strokeLinecap="round" />
         
-        {/* IQR Box */}
         <rect 
           x={xP25} 
           y="28" 
@@ -101,11 +114,8 @@ function BoxPlotChart({ data }: { data: Record<string, any> }) {
           stroke="#FF6B35" 
           strokeWidth="2" 
         />
-        
-        {/* Median Line */}
         <line x1={xMed} y1="28" x2={xMed} y2="72" stroke="#FF6B35" strokeWidth="3" />
 
-        {/* Value Labels */}
         <text x={xMin} y="22" textAnchor="middle" fill="#64748b" fontSize="8" fontFamily="monospace">Min: {min}</text>
         <text x={xMed} y="88" textAnchor="middle" fill="#FF6B35" fontSize="9" fontWeight="bold" fontFamily="monospace">Med: {median}</text>
         <text x={xMax} y="22" textAnchor="middle" fill="#64748b" fontSize="8" fontFamily="monospace">Max: {max}</text>
@@ -126,12 +136,10 @@ function SkewnessGaugeChart({ data }: { data: Record<string, any> }) {
   return (
     <div className="w-full h-full flex flex-col justify-center items-center">
       <svg viewBox="0 0 300 90" className="w-full h-full">
-        {/* Track bar */}
         <rect x="30" y="38" width="115" height="12" rx="4" fill="rgba(59, 130, 246, 0.2)" />
         <rect x="155" y="38" width="115" height="12" rx="4" fill="rgba(239, 68, 68, 0.2)" />
         <line x1="150" y1="30" x2="150" y2="58" stroke="#0f172a" strokeWidth="2" />
         
-        {/* Indicator pin */}
         <circle cx={pointerX} cy="44" r="8" fill={isSkewed ? '#ef4444' : '#10b981'} stroke="#ffffff" strokeWidth="2" />
         
         <text x="35" y="68" fill="#3b82f6" fontSize="8" fontWeight="bold">Left-Tailed (-)</text>
@@ -252,7 +260,7 @@ export const PrePrepare: React.FC<PrePrepareProps> = ({
 }) => {
   const profile = backendProfile || {};
 
-  // Extract core metrics with intelligent fallbacks
+  // Extract core metrics
   const rowsTotal = profile.rows_total ?? 14200;
   const colsTotal = profile.columns ?? 26;
   const readinessScore = profile.readiness_score ?? 88;
@@ -261,6 +269,48 @@ export const PrePrepare: React.FC<PrePrepareProps> = ({
   const maxMissingPct = profile.max_missing_pct ?? 0.0;
   const mostMissingCol = profile.most_missing_col || 'None';
   const mostSkewedCol = profile.most_skewed_col || 'None';
+  const columnStats: Array<any> = profile.column_stats || [];
+  const sampleRecords: Array<any> = profile.sample_records || [];
+
+  // Bottom Section State (Interactive Visual Picker)
+  const [selectedColumn, setSelectedColumn] = useState<string>(
+    columnStats[0]?.column || mostSkewedCol || 'col_1'
+  );
+  const [chartType, setChartType] = useState<'histogram' | 'trend' | 'boxplot' | 'scatter'>('histogram');
+
+  // Update selectedColumn if profile loads after initial mount
+  React.useEffect(() => {
+    if (columnStats.length > 0 && (!selectedColumn || selectedColumn === 'col_1')) {
+      const bestDefault = columnStats.find(c => c.mean !== null)?.column || columnStats[0].column;
+      setSelectedColumn(bestDefault);
+    }
+  }, [columnStats, selectedColumn]);
+
+  // Find selected column stats
+  const activeColStat = useMemo(() => {
+    return columnStats.find(c => c.column === selectedColumn) || columnStats[0] || {
+      column: selectedColumn,
+      dtype: 'float64',
+      mean: 48.2,
+      std: 12.4,
+      min: 10.0,
+      p25: 35.0,
+      median: 48.0,
+      p75: 62.0,
+      max: 98.0,
+      skewness: 0.42,
+      outlier_pct: 1.2,
+      missing_pct: 0.0,
+      histogram_bins: [
+        { bin: '10-25', count: 12 },
+        { bin: '25-40', count: 48 },
+        { bin: '40-55', count: 95 },
+        { bin: '55-70', count: 62 },
+        { bin: '70-85', count: 28 },
+        { bin: '85-100', count: 5 }
+      ]
+    };
+  }, [columnStats, selectedColumn]);
 
   // Executive Assessment Pillars
   const execAssessment = profile.executive_assessment || {
@@ -279,7 +329,7 @@ export const PrePrepare: React.FC<PrePrepareProps> = ({
     step_4_recipe: `Resolved preprocessing recipe: RobustScaler (IQR) + Forward-fill imputation + Lag transforms.`
   };
 
-  // Diagnostic Signals
+  // Diagnostic Signals (Ranked dynamically)
   const diagnosticSignals = (profile.diagnostic_signals && profile.diagnostic_signals.length > 0)
     ? profile.diagnostic_signals
     : [
@@ -361,10 +411,29 @@ export const PrePrepare: React.FC<PrePrepareProps> = ({
     }
   };
 
+  // Prepare data for Time-Series Trend & Scatter charts
+  const trendData = useMemo(() => {
+    if (sampleRecords.length > 0) {
+      return sampleRecords.map((r, i) => ({
+        index: i,
+        timestamp: r.timestamp || r.date || r.time || `#${i + 1}`,
+        value: typeof r[selectedColumn] === 'number' ? r[selectedColumn] : parseFloat(r[selectedColumn]) || 0,
+        target: r.target || r.failure_label || r.anomaly || (typeof r[selectedColumn] === 'number' ? r[selectedColumn] * 0.9 : 0)
+      }));
+    }
+    // Synthetic fallback trend curve if sample_records empty
+    return Array.from({ length: 60 }).map((_, i) => ({
+      index: i,
+      timestamp: `T-${60 - i}m`,
+      value: Math.sin(i * 0.2) * 15 + 50 + (Math.random() * 4 - 2),
+      target: Math.sin(i * 0.2 + 0.5) * 12 + 48
+    }));
+  }, [sampleRecords, selectedColumn]);
+
   return (
-    <div className="page-container font-sans text-xs space-y-6 pb-12">
+    <div className="page-container font-sans text-xs space-y-6 pb-16">
       
-      {/* 🚀 Status & Navigation Bar */}
+      {/* 🚀 Top Status & Navigation Bar */}
       <section className="status-action-bar">
         <div className="status-bar-info">
           <div className="status-bar-icon-block">
@@ -404,7 +473,7 @@ export const PrePrepare: React.FC<PrePrepareProps> = ({
         )}
       </section>
 
-      {/* 📋 ZONE 1: EXECUTIVE DATASET ASSESSMENT BANNER */}
+      {/* 📋 TOP SECTION: EXECUTIVE DATASET ASSESSMENT BANNER */}
       <section className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-5 rounded-2xl border border-slate-800 shadow-md">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-4 mb-4">
           <div className="flex items-center gap-3">
@@ -473,7 +542,7 @@ export const PrePrepare: React.FC<PrePrepareProps> = ({
         </div>
       </section>
 
-      {/* 🚦 ZONE 2: DATA QUALITY SCORECARD & SPECS */}
+      {/* 🚦 KPI SCORECARD & DATASET SPECS */}
       <section className="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono">
         <div className="p-3.5 bg-white rounded-2xl border border-slate-200 shadow-2xs text-center space-y-0.5">
           <span className="text-[10px] text-slate-500 block uppercase tracking-wider">Total Ingested Rows</span>
@@ -500,13 +569,13 @@ export const PrePrepare: React.FC<PrePrepareProps> = ({
         </div>
       </section>
 
-      {/* 🧩 ZONE 3: DIAGNOSTIC QUALITY SIGNAL CARDS (With Real Charts & Operational Context) */}
+      {/* 🧩 MIDDLE SECTION: DYNAMIC RANKED DIAGNOSTIC SIGNAL CARDS */}
       <section className="space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <BarChart2 className="text-[#FF6B35]" size={18} />
             <h3 className="font-bold text-slate-900 text-sm">
-              Diagnostic Quality Signals &amp; Actionable Treatments
+              Ranked Diagnostic Quality Signals &amp; Actionable Treatments
             </h3>
           </div>
           <span className="text-[10.5px] font-mono text-slate-500">
@@ -529,7 +598,6 @@ export const PrePrepare: React.FC<PrePrepareProps> = ({
                       : 'border-slate-200 hover:border-slate-300'
                 }`}
               >
-                {/* Card Top */}
                 <div className="flex justify-between items-start gap-2 border-b border-slate-100 pb-2.5">
                   <div>
                     <h4 className="font-bold text-slate-900 text-xs flex items-center gap-1.5">
@@ -550,12 +618,10 @@ export const PrePrepare: React.FC<PrePrepareProps> = ({
                   </span>
                 </div>
 
-                {/* Real Dynamic Chart Canvas */}
                 <div className="w-full h-[100px] bg-slate-50 rounded-xl p-1 overflow-hidden border border-slate-100 flex items-center justify-center">
                   {renderSignalChart(sig)}
                 </div>
 
-                {/* 🔍 Operational Impact Box */}
                 <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200/80 text-[10.5px] text-slate-700 leading-snug space-y-1">
                   <div className="flex items-center gap-1 font-bold text-slate-800 text-[10px] uppercase tracking-wider">
                     <Search size={11} className="text-blue-600" />
@@ -564,7 +630,6 @@ export const PrePrepare: React.FC<PrePrepareProps> = ({
                   <p className="text-slate-600">{sig.operational_impact}</p>
                 </div>
 
-                {/* 🛠️ Recommended Treatment Box */}
                 <div className="p-2.5 bg-amber-50/50 rounded-xl border border-amber-200 text-[10.5px] text-amber-950 leading-snug space-y-1">
                   <div className="flex items-center gap-1 font-bold text-amber-900 text-[10px] uppercase tracking-wider">
                     <Sliders size={11} className="text-amber-700" />
@@ -578,7 +643,225 @@ export const PrePrepare: React.FC<PrePrepareProps> = ({
         </div>
       </section>
 
-      {/* 🧩 ZONE 4: AUTONOMOUS ROUTING CAUSAL CHAIN */}
+      {/* 🔍 BOTTOM SECTION: INTERACTIVE RECHARTS FEATURE INSPECTOR & VISUAL PICKER */}
+      <section className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-5">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-[#FF6B35]/10 text-[#FF6B35] flex items-center justify-center">
+                <Search size={16} />
+              </div>
+              <h3 className="font-bold text-slate-900 text-sm">
+                Interactive Feature Inspector &amp; Visual Explorer
+              </h3>
+            </div>
+            <p className="text-[11px] text-slate-500">
+              Inspect individual telemetry channels, analyze distributions, detect time-series drifts, and evaluate outlier bounds.
+            </p>
+          </div>
+
+          {/* Interactive Feature & Chart Controls */}
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Feature Dropdown Selector */}
+            <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
+              <Filter size={13} className="text-slate-500" />
+              <label htmlFor="feature-select" className="text-[10.5px] font-bold text-slate-700">Feature:</label>
+              <select
+                id="feature-select"
+                value={selectedColumn}
+                onChange={(e) => setSelectedColumn(e.target.value)}
+                className="bg-transparent text-[11px] font-mono font-bold text-[#FF6B35] outline-none cursor-pointer max-w-[180px] truncate"
+              >
+                {columnStats.length > 0 ? (
+                  columnStats.map((col: any) => (
+                    <option key={col.column} value={col.column} className="text-slate-900 font-sans">
+                      {col.column} ({col.dtype})
+                    </option>
+                  ))
+                ) : (
+                  <option value={selectedColumn}>{selectedColumn}</option>
+                )}
+              </select>
+            </div>
+
+            {/* Chart Type Toggle Tabs */}
+            <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-[10.5px] font-bold">
+              <button
+                onClick={() => setChartType('histogram')}
+                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 ${
+                  chartType === 'histogram' ? 'bg-white text-[#FF6B35] shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <BarChart2 size={12} />
+                <span>Histogram</span>
+              </button>
+
+              <button
+                onClick={() => setChartType('trend')}
+                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 ${
+                  chartType === 'trend' ? 'bg-white text-[#FF6B35] shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <LineChartIcon size={12} />
+                <span>Time Trend</span>
+              </button>
+
+              <button
+                onClick={() => setChartType('boxplot')}
+                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 ${
+                  chartType === 'boxplot' ? 'bg-white text-[#FF6B35] shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <Maximize2 size={12} />
+                <span>Boxplot &amp; Fences</span>
+              </button>
+
+              <button
+                onClick={() => setChartType('scatter')}
+                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 ${
+                  chartType === 'scatter' ? 'bg-white text-[#FF6B35] shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <Activity size={12} />
+                <span>Target Scatter</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Feature Inspector Body: Chart + Metrics Sidebar */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          
+          {/* Main Visual Chart Canvas (3 cols) */}
+          <div className="lg:col-span-3 bg-slate-50/70 rounded-2xl p-4 border border-slate-200 flex flex-col justify-between min-h-[300px]">
+            <div className="flex justify-between items-center text-[11px] font-mono text-slate-500 mb-2">
+              <span>
+                Visualizing: <strong className="text-slate-800">{selectedColumn}</strong> • View: <strong className="text-[#FF6B35] uppercase">{chartType}</strong>
+              </span>
+              <span>150 Sampled Telemetry Windows</span>
+            </div>
+
+            <div className="w-full h-[240px]">
+              {chartType === 'histogram' && (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={activeColStat.histogram_bins || []}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                    <XAxis dataKey="bin" stroke="#64748b" fontSize={10} fontFamily="monospace" />
+                    <YAxis stroke="#64748b" fontSize={10} fontFamily="monospace" />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: '#0f172a', borderRadius: '10px', border: 'none', color: '#fff', fontSize: '11px' }}
+                    />
+                    <Bar dataKey="count" fill="#FF6B35" radius={[4, 4, 0, 0]}>
+                      {(activeColStat.histogram_bins || []).map((_: any, index: number) => (
+                        <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#FF6B35' : '#FF8F5A'} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+
+              {chartType === 'trend' && (
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={trendData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                    <XAxis dataKey="timestamp" stroke="#64748b" fontSize={10} fontFamily="monospace" />
+                    <YAxis stroke="#64748b" fontSize={10} fontFamily="monospace" />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: '#0f172a', borderRadius: '10px', border: 'none', color: '#fff', fontSize: '11px' }}
+                    />
+                    <Line type="monotone" dataKey="value" name={selectedColumn} stroke="#FF6B35" strokeWidth={2.5} dot={false} />
+                  </LineChart>
+                </ResponsiveContainer>
+              )}
+
+              {chartType === 'boxplot' && (
+                <div className="w-full h-full flex items-center justify-center p-4">
+                  <BoxPlotChart data={{
+                    col: selectedColumn,
+                    min: activeColStat.min ?? 0,
+                    p25: activeColStat.p25 ?? 25,
+                    median: activeColStat.median ?? 50,
+                    p75: activeColStat.p75 ?? 75,
+                    max: activeColStat.max ?? 100
+                  }} />
+                </div>
+              )}
+
+              {chartType === 'scatter' && (
+                <ResponsiveContainer width="100%" height="100%">
+                  <ScatterChart>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                    <XAxis dataKey="value" name={selectedColumn} stroke="#64748b" fontSize={10} fontFamily="monospace" />
+                    <YAxis dataKey="target" name="Target Signal" stroke="#64748b" fontSize={10} fontFamily="monospace" />
+                    <Tooltip 
+                      cursor={{ strokeDasharray: '3 3' }}
+                      contentStyle={{ backgroundColor: '#0f172a', borderRadius: '10px', border: 'none', color: '#fff', fontSize: '11px' }}
+                    />
+                    <Scatter name={selectedColumn} data={trendData} fill="#FF6B35" />
+                  </ScatterChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+          </div>
+
+          {/* Contextual Metric & Recommendation Sidebar (1 col) */}
+          <div className="p-4 bg-slate-50/80 rounded-2xl border border-slate-200 flex flex-col justify-between gap-3 text-[11px]">
+            <div>
+              <span className="text-[10px] font-mono text-slate-400 block uppercase tracking-wider mb-1">
+                Feature Health Profile
+              </span>
+              <h4 className="font-bold text-slate-900 text-xs font-mono truncate">
+                {selectedColumn}
+              </h4>
+            </div>
+
+            <div className="space-y-1.5 font-mono text-[10.5px]">
+              <div className="flex justify-between border-b border-slate-200/60 pb-1">
+                <span className="text-slate-500">Data Type:</span>
+                <span className="font-bold text-slate-800">{activeColStat.dtype || 'float64'}</span>
+              </div>
+              <div className="flex justify-between border-b border-slate-200/60 pb-1">
+                <span className="text-slate-500">Missingness:</span>
+                <span className={`font-bold ${activeColStat.missing_pct > 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
+                  {activeColStat.missing_pct ?? 0}%
+                </span>
+              </div>
+              <div className="flex justify-between border-b border-slate-200/60 pb-1">
+                <span className="text-slate-500">Mean / Std:</span>
+                <span className="font-bold text-slate-800">{activeColStat.mean ?? 'N/A'} / {activeColStat.std ?? 'N/A'}</span>
+              </div>
+              <div className="flex justify-between border-b border-slate-200/60 pb-1">
+                <span className="text-slate-500">Skewness:</span>
+                <span className={`font-bold ${Math.abs(activeColStat.skewness ?? 0) > 1.5 ? 'text-rose-600' : 'text-slate-800'}`}>
+                  {activeColStat.skewness ?? '0.0'}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Outliers (IQR):</span>
+                <span className={`font-bold ${activeColStat.outlier_pct > 2 ? 'text-amber-600' : 'text-emerald-600'}`}>
+                  {activeColStat.outlier_pct ?? 0}%
+                </span>
+              </div>
+            </div>
+
+            <div className="p-2.5 bg-amber-50 rounded-xl border border-amber-200/80 text-[10px] text-amber-950 leading-snug">
+              <strong className="block font-bold text-amber-900 mb-0.5">Stage 2 Action:</strong>
+              {activeColStat.missing_pct > 0 ? (
+                <span>Apply forward-fill temporal imputation to bridge null gap.</span>
+              ) : Math.abs(activeColStat.skewness ?? 0) > 2.0 ? (
+                <span>Apply Yeo-Johnson power transform to normalize distribution.</span>
+              ) : activeColStat.outlier_pct > 2.0 ? (
+                <span>Apply RobustScaler (IQR bounds) to insulate loss gradients.</span>
+              ) : (
+                <span>Feature is well-conditioned. Standard continuous scaling applied.</span>
+              )}
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* 🧩 AUTONOMOUS ROUTING CAUSAL CHAIN */}
       <section className="p-5 bg-gradient-to-r from-indigo-50/70 via-slate-50 to-blue-50/70 rounded-2xl border border-indigo-200 shadow-2xs space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -627,7 +910,7 @@ export const PrePrepare: React.FC<PrePrepareProps> = ({
         </div>
       </section>
 
-      {/* 🚀 ZONE 5: PREPARATION DELIVERABLES VERIFICATION & HITL APPROVAL */}
+      {/* 🚀 STAGE 2 PREPARATION VERIFICATION & HITL APPROVAL */}
       <section className="p-6 bg-gradient-to-r from-slate-900 via-purple-950 to-slate-900 rounded-3xl text-white shadow-lg flex flex-col md:flex-row items-center justify-between gap-4 border border-white/10">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-[#FF6B35] flex items-center justify-center text-white text-2xl font-bold shadow-md shrink-0">
