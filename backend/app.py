@@ -16,12 +16,13 @@ natural language responses. Hardcoded templates act ONLY as emergency fallbacks.
 """
 
 import os
+import sys
+import uuid
+from datetime import datetime
 from pathlib import Path
 import logging
 from flask import Flask, request, jsonify, send_file, send_from_directory
 from dotenv import load_dotenv
-
-import sys
 # Load root .env first, then local backend .env (with override)
 _root_env = Path(__file__).resolve().parents[1] / ".env"
 if _root_env.exists():
@@ -745,28 +746,35 @@ def upload_dataset():
 
     if session_id:
         # --- SSE resumption path ---
-        from agentic.runner import resume_with_user_input, _compiled_graph
-        from services.aiconnex_zip_compiler.compiler import UnifiedCompiler
-
-        # Check if the thread is actually parked at advise_upload in LangGraph
-        config = {"configurable": {"thread_id": session_id}}
         is_parked = False
+        resume_with_user_input = None
+        _compiled_graph = None
+
         try:
-            snapshot = _compiled_graph.get_state(config)
-            if snapshot and snapshot.next:
-                tasks = getattr(snapshot, "tasks", None) or ()
-                for task in tasks:
-                    interrupts = getattr(task, "interrupts", None) or ()
-                    for intr in interrupts:
-                        val = getattr(intr, "value", intr)
-                        if isinstance(val, dict) and val.get("interrupt_type") == "advise_upload":
-                            is_parked = True
+            from agentic.runner import resume_with_user_input as _resume_fn, _compiled_graph as _graph
+            resume_with_user_input = _resume_fn
+            _compiled_graph = _graph
+
+            # Check if the thread is actually parked at advise_upload in LangGraph
+            config = {"configurable": {"thread_id": session_id}}
+            if _compiled_graph is not None:
+                snapshot = _compiled_graph.get_state(config)
+                if snapshot and snapshot.next:
+                    tasks = getattr(snapshot, "tasks", None) or ()
+                    for task in tasks:
+                        interrupts = getattr(task, "interrupts", None) or ()
+                        for intr in interrupts:
+                            val = getattr(intr, "value", intr)
+                            if isinstance(val, dict) and val.get("interrupt_type") == "advise_upload":
+                                is_parked = True
+                                break
+                        if is_parked:
                             break
-                    if is_parked:
-                        break
         except Exception as exc:
-            logger.warning(f"[Upload] Check state failed: {exc}")
+            logger.warning(f"[Upload] LangGraph runner not available or check state failed: {exc}")
             is_parked = False
+
+        from services.aiconnex_zip_compiler.compiler import UnifiedCompiler
 
         def _direct_compile_stream(target_path: str, orig_filename: str, sess_id: str):
             """Run UnifiedCompiler directly and stream real compilation SSE events."""
@@ -1000,18 +1008,40 @@ def profile_dataset():
     - outlier_pct (row-level)
     - max_missing_pct, most_missing_col
     """
-    from profiler_service import profile_from_path
+    from profiler_service import profile_dataframe
+    import pandas as pd
 
-    file_path = (request.form.get("file_path") or "").strip()
+    data = request.get_json(force=True, silent=True) or {}
+    file_path = request.form.get("file_path") or data.get("file_path") or request.args.get("file_path")
+
+    if "file" in request.files:
+        file = request.files["file"]
+        if file.filename.endswith(".parquet"):
+            df = pd.read_parquet(file)
+        elif file.filename.endswith(".xlsx") or file.filename.endswith(".xls"):
+            df = pd.read_excel(file)
+        else:
+            df = pd.read_csv(file)
+        res = profile_dataframe(df)
+        return jsonify({**res, "profile": res}), 200
+
     if not file_path:
-        return jsonify({"error": "file_path is required in form data."}), 400
+        return jsonify({"error": "file_path or file is required"}), 400
+
+    if not os.path.exists(file_path):
+        return jsonify({"error": f"File not found: {file_path}"}), 404
 
     try:
-        result = profile_from_path(file_path)
-        # Option C: Export profile report snapshot to tenant workspace reports/
+        if file_path.endswith(".parquet"):
+            df = pd.read_parquet(file_path)
+        elif file_path.endswith(".xlsx") or file_path.endswith(".xls"):
+            df = pd.read_excel(file_path)
+        else:
+            df = pd.read_csv(file_path)
+
+        result = profile_dataframe(df)
         try:
-            tenant_id = (request.form.get("tenant_id") or "global").strip()
-            # Extract run_id if part of path
+            tenant_id = (request.form.get("tenant_id") or data.get("tenant_id") or "global").strip()
             norm_path = file_path.replace("\\", "/")
             run_match = re.search(r"run_([a-zA-Z0-9]+)", norm_path)
             run_id = f"run_{run_match.group(1)}" if run_match else f"run_{uuid.uuid4().hex[:8]}"
@@ -1019,7 +1049,7 @@ def profile_dataset():
         except Exception as rep_err:
             logger.warning(f"[Profile] Non-fatal profile report export error: {rep_err}")
 
-        return jsonify({"profile": result})
+        return jsonify({**result, "profile": result}), 200
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
@@ -1756,13 +1786,38 @@ def download_gguf_model_endpoint():
 def execute_tri_agent_endpoint():
     """
     POST /api/v1/tri_agent/execute
-    Runs the 3-Stage Cascading Metaphorical Agent Workflow across Qwen 3-4B, Qwen 2.5-Coder 3B, and Qwen 2.5-Coder 1.5B.
+    Runs the 3-Stage Cascading Metaphorical Agent Workflow across Qwen 3-4B, Phi-4-mini, and Qwen 2.5-Coder 3B.
     """
     from tri_llm_orchestrator import tri_orchestrator
     data = request.get_json(force=True, silent=True) or request.args or {}
     filename = data.get("file_name") or "C-MAPSS_FD001_train.csv"
+    intent = data.get("intent") or "predictive_maintenance_rul"
 
-    res = tri_orchestrator.execute_tri_agent_pipeline({"filename": filename, "rows": 500, "cols": 27})
+    res = tri_orchestrator.execute_tri_agent_pipeline({"filename": filename, "rows": 500, "cols": 27, "intent": intent})
+    return jsonify(res), 200
+
+
+@app.route("/api/v1/pipeline/execute_end_to_end", methods=["POST", "GET"])
+def execute_end_to_end_pipeline_endpoint():
+    """
+    POST /api/v1/pipeline/execute_end_to_end
+    Executes the 100% autonomous, intelligent, offline end-to-end MLOps pipeline:
+    1. Primary Brain (Qwen3-4B): Intent parsing & formatted deliverables manifest generation.
+    2. Reasoning Specialist (Phi-4-mini): Single-spin data prep & feature engineering.
+    3. Coding & SQL Specialist (Qwen2.5-Coder-3B): ML Studio multi-candidate training & validation gates.
+    4. Presenter Agent: Automated deployment presentation at Data Studio or ML Studio.
+    """
+    from tri_llm_orchestrator import tri_orchestrator
+    data = request.get_json(force=True, silent=True) or request.args or {}
+    filename = data.get("file_name") or data.get("filename") or "C-MAPSS_FD001_train.csv"
+    intent = data.get("intent") or "turbofan_remaining_useful_life"
+
+    res = tri_orchestrator.execute_tri_agent_pipeline({
+        "filename": filename,
+        "rows": 500,
+        "cols": 27,
+        "intent": intent
+    })
     return jsonify(res), 200
 
 
