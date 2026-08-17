@@ -10,6 +10,9 @@ interface ChatBotModalProps {
   onSessionCreated?: (sessionId: string) => void;
   onUploadRequested?: () => void;
   externalNarration?: string | null;
+  interruptData?: any;
+  onInterruptResolved?: () => void;
+  activeSessionId?: string | null;
 }
 
 interface Message {
@@ -19,6 +22,8 @@ interface Message {
   intent?: string;
   time: string;
   quickAction?: { label: string; viewId: string };
+  options?: string[];
+  isInterrupt?: boolean;
 }
 
 function renderMarkdownToHtml(md: string): string {
@@ -89,39 +94,43 @@ function renderMarkdownToHtml(md: string): string {
     return placeholder;
   });
 
-  // 3. Headings
-  html = html.replace(/^### (.*$)/gim, '<h3 class="font-bold text-[13px] text-slate-900 mt-2.5 mb-1">$1</h3>');
-  html = html.replace(/^## (.*$)/gim, '<h2 class="font-bold text-[14px] text-slate-900 mt-3 mb-1.5">$1</h2>');
-  html = html.replace(/^# (.*$)/gim, '<h1 class="font-bold text-[15px] text-slate-900 mt-3.5 mb-2">$1</h1>');
+  // 3. Headings (###, ##, #)
+  html = html.replace(/^### (.*$)/gim, '<h4 class="font-bold text-xs text-slate-800 mt-2 mb-1">$1</h4>');
+  html = html.replace(/^## (.*$)/gim, '<h3 class="font-bold text-sm text-slate-900 mt-2.5 mb-1">$1</h3>');
+  html = html.replace(/^# (.*$)/gim, '<h2 class="font-bold text-base text-slate-900 mt-3 mb-1.5">$1</h2>');
 
-  // 4. Bold & Italic
-  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong class="font-semibold text-slate-900">$1</strong>');
-  html = html.replace(/\*([^*]+)\*/g, '<em class="italic text-slate-800">$1</em>');
+  // 3. Bold (**text** or __text__)
+  html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-slate-900">$1</strong>');
+  html = html.replace(/__(.*?)__/g, '<strong class="font-semibold text-slate-900">$1</strong>');
 
-  // 5. Inline Code
-  html = html.replace(/`([^`]+)`/g, '<code class="bg-slate-100 text-[#E86326] px-1 py-0.5 rounded font-mono text-[11px] border border-slate-200">$1</code>');
+  // 4. Italic (*text* or _text_)
+  html = html.replace(/\*(.*?)\*/g, '<em class="italic text-slate-700">$1</em>');
+  html = html.replace(/_(.*?)_/g, '<em class="italic text-slate-700">$1</em>');
 
-  // 6. Bullet Lists & Numbered Lists
-  html = html.replace(/^[-*] (.*$)/gim, '<li class="ml-4 list-disc text-slate-700 my-0.5">$1</li>');
-  html = html.replace(/^(\d+)\. (.*$)/gim, '<li class="ml-4 list-decimal text-slate-700 my-0.5">$2</li>');
+  // 5. Inline code (`code`)
+  html = html.replace(/`([^`]+)`/g, '<code class="bg-slate-100 text-amber-700 px-1.5 py-0.5 rounded text-[11px] font-mono border border-slate-200">$1</code>');
 
-  // Wrap consecutive <li> into <ul> or <ol>
-  html = html.replace(/((?:<li class="[^"]*list-disc[^"]*">.*?<\/li>\s*)+)/g, '<ul class="my-1.5 space-y-0.5 pl-2">$1</ul>');
-  html = html.replace(/((?:<li class="[^"]*list-decimal[^"]*">.*?<\/li>\s*)+)/g, '<ol class="my-1.5 space-y-0.5 pl-2">$1</ol>');
+  // 6. Blockquotes (> text)
+  html = html.replace(/^> (.*$)/gim, '<blockquote class="border-l-2 border-amber-500 pl-3 py-1 my-1.5 text-slate-600 bg-amber-50/50 rounded-r text-xs italic">$1</blockquote>');
 
-  // 7. Paragraphs & Line Breaks
-  html = html.replace(/\n\n+/g, '</p><p class="my-1 leading-relaxed">');
+  // 7. Unordered lists (* or - items)
+  html = html.replace(/^[\*\-] (.*$)/gim, '<li class="ml-4 list-disc text-xs text-slate-700 my-0.5">$1</li>');
+
+  // 8. Ordered lists (1. items)
+  html = html.replace(/^\d+\. (.*$)/gim, '<li class="ml-4 list-decimal text-xs text-slate-700 my-0.5">$1</li>');
+
+  // 9. Paragraph breaks (double newlines)
+  html = html.replace(/\n\n+/g, '</p><p class="my-1.5">');
+
+  // 10. Single newlines to line breaks (preserving intentional spacing)
   html = html.replace(/\n/g, '<br/>');
 
-  // 8. Restore Tables & Code Blocks
-  tables.forEach((t, i) => {
-    html = html.replace(`__TABLE_BLOCK_${i}__`, t);
-  });
-  codeBlocks.forEach((c, i) => {
-    html = html.replace(`__CODE_BLOCK_${i}__`, c);
+  // Restore code blocks
+  codeBlocks.forEach((block, idx) => {
+    html = html.replace(`__CODE_BLOCK_${idx}__`, block);
   });
 
-  return html;
+  return `<p class="my-1">${html}</p>`;
 }
 
 export const ChatBotModal: React.FC<ChatBotModalProps> = ({
@@ -134,6 +143,10 @@ export const ChatBotModal: React.FC<ChatBotModalProps> = ({
   onSessionCreated,
   onUploadRequested,
   externalNarration,
+  externalNarrationNode,
+  interruptData,
+  onInterruptResolved,
+  activeSessionId,
 }) => {
   const [userId, setUserId] = useState(initialUserId);
   const [isMinimizedLocal, setIsMinimizedLocal] = useState(false);
@@ -155,16 +168,58 @@ export const ChatBotModal: React.FC<ChatBotModalProps> = ({
   useEffect(() => {
     if (externalNarration && externalNarration.trim()) {
       const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      
+      let intentBadge = 'Compiler • Live';
+      if (externalNarrationNode) {
+        const formatted = externalNarrationNode
+          .replace(/_node$/, '')
+          .split('_')
+          .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
+          .join(' ');
+        intentBadge = `Scout • ${formatted}`;
+      }
+
       const narrationMsg: Message = {
         sender: 'bot',
         text: externalNarration,
         html: renderMarkdownToHtml(externalNarration),
-        intent: 'Compiler • Live',
+        intent: intentBadge,
         time: timeStr,
       };
       setMessages((prev) => [...prev, narrationMsg]);
     }
-  }, [externalNarration]);
+  }, [externalNarration, externalNarrationNode]);
+
+  // Handle interactive clarification interrupt events from LangGraph
+  useEffect(() => {
+    if (interruptData) {
+      let questionText = "";
+      if (interruptData.questions && Array.isArray(interruptData.questions)) {
+        questionText = interruptData.questions.join("\n\n");
+      } else if (interruptData.question) {
+        questionText = String(interruptData.question);
+      } else if (interruptData.message) {
+        questionText = String(interruptData.message);
+      } else {
+        questionText = "Clarification needed: Please select an option to proceed.";
+      }
+
+      const options: string[] = Array.isArray(interruptData.options) ? interruptData.options : [];
+      const htmlContent = interruptData.question_html || renderMarkdownToHtml(questionText);
+
+      const interruptMsg: Message = {
+        sender: 'bot',
+        text: questionText,
+        html: htmlContent,
+        intent: 'Clarification Checkpoint',
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        options: options,
+        isInterrupt: true,
+      };
+
+      setMessages((prev) => [...prev, interruptMsg]);
+    }
+  }, [interruptData]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -190,23 +245,39 @@ export const ChatBotModal: React.FC<ChatBotModalProps> = ({
     setIsLoading(true);
 
     try {
-      // Send request to Jane Chatbot API gateway (port 5000) or fallback
+      // Send request to Jane Chatbot API gateway (port 8000 or 5000) or fallback
+      const bodyPayload = {
+        userId,
+        session_id: activeSessionId || undefined,
+        sessionId: activeSessionId || undefined,
+        message: query,
+        query,
+      };
+
       let response: Response | null = null;
       try {
-        response = await fetch('http://localhost:5000/api/v1/jane/chat', {
+        response = await fetch('http://localhost:8000/api/v1/jane/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId, message: query, query }),
+          body: JSON.stringify(bodyPayload),
         });
       } catch {
         try {
-          response = await fetch('/api/chat', {
+          response = await fetch('http://localhost:5000/api/v1/jane/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId, message: query }),
+            body: JSON.stringify(bodyPayload),
           });
         } catch {
-          // offline
+          try {
+            response = await fetch('/api/v1/jane/chat', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(bodyPayload),
+            });
+          } catch {
+            // offline
+          }
         }
       }
 
@@ -219,6 +290,7 @@ export const ChatBotModal: React.FC<ChatBotModalProps> = ({
           html: data.reply_html || data.html || renderMarkdownToHtml(rawText),
           intent: data.intent ? `Intent: ${data.intent}` : 'Jane • AI Assistant',
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          options: data.options || [],
         };
         setMessages((prev) => [...prev, botMsg]);
 
@@ -241,7 +313,7 @@ export const ChatBotModal: React.FC<ChatBotModalProps> = ({
     } catch {
       // Backend is offline — show a clean, helpful notice instead of fake data
       setTimeout(() => {
-        const offlineText = '⚠️ **Jane API Server is Offline.**\n\nUnable to reach the Jane Assistant backend on `http://localhost:5000`.\n\nTo start the backend server, run in your terminal:\n```bash\npython backend/app.py\n```\nThen retry your question!';
+        const offlineText = '⚠️ **Jane API Server is Offline.**\n\nUnable to reach the Jane Assistant backend on `http://localhost:8000` or `http://localhost:5000`.\n\nTo start the backend server, run in your terminal:\n```bash\npython backend/app.py\n```\nThen retry your question!';
         setMessages((prev) => [
           ...prev,
           {
@@ -254,6 +326,102 @@ export const ChatBotModal: React.FC<ChatBotModalProps> = ({
       }, 300);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleClarificationChoice = async (choice: string) => {
+    if (isLoading) return;
+    if (interruptData) {
+      const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const userMsg: Message = { sender: 'user', text: choice, time: timeStr };
+      setMessages((prev) => [...prev, userMsg]);
+      setIsLoading(true);
+
+      try {
+        const targetSession = activeSessionId || 'default_session';
+        const bodyPayload = {
+          userId,
+          session_id: targetSession,
+          message: choice,
+          user_input: choice,
+        };
+
+        let response = await fetch('http://localhost:8000/api/agent/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(bodyPayload),
+        }).catch(() => null);
+
+        if (!response || !response.ok) {
+          response = await fetch('http://localhost:5000/api/agent/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(bodyPayload),
+          }).catch(() => null);
+        }
+
+        if (response && response.ok) {
+          const reader = response.body?.getReader();
+          const decoder = new TextDecoder();
+          if (reader) {
+            let buffer = '';
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              buffer += decoder.decode(value, { stream: true });
+              const lines = buffer.split('\n');
+              buffer = lines.pop() || '';
+
+              for (const line of lines) {
+                if (line.startsWith('data: ')) {
+                  try {
+                    const eventData = JSON.parse(line.slice(6));
+                    if (eventData.type === 'text' && eventData.delta) {
+                      setMessages((prev) => [
+                        ...prev,
+                        {
+                          sender: 'bot',
+                          text: eventData.delta,
+                          html: renderMarkdownToHtml(eventData.delta),
+                          intent: 'Compiler • Resumed',
+                          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                        },
+                      ]);
+                    }
+                    if (eventData.type === 'interrupt' && eventData.payload) {
+                      const qText = Array.isArray(eventData.payload.questions)
+                        ? eventData.payload.questions.join('\n\n')
+                        : (eventData.payload.question || eventData.payload.message || 'Clarification needed');
+                      setMessages((prev) => [
+                        ...prev,
+                        {
+                          sender: 'bot',
+                          text: qText,
+                          html: eventData.payload.question_html || renderMarkdownToHtml(qText),
+                          intent: 'Clarification Checkpoint',
+                          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                          options: eventData.payload.options || [],
+                          isInterrupt: true,
+                        },
+                      ]);
+                    }
+                  } catch {}
+                }
+              }
+            }
+          }
+          if (onInterruptResolved) {
+            onInterruptResolved();
+          }
+        }
+      } catch (err) {
+        console.error('[ChatBotModal] Failed to submit clarification:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      // Conversational clarification chip click
+      await handleSendMessage(choice);
     }
   };
 
@@ -372,6 +540,24 @@ export const ChatBotModal: React.FC<ChatBotModalProps> = ({
                     />
                   ) : (
                     <p className="leading-relaxed whitespace-pre-wrap">{msg.text}</p>
+                  )}
+
+                  {/* Interactive Clarification Option Chips */}
+                  {msg.options && msg.options.length > 0 && (
+                    <div className="mt-2.5 pt-2 border-t border-slate-100 flex flex-wrap gap-1.5">
+                      <span className="text-[10px] font-semibold text-slate-500 w-full mb-0.5">Select option:</span>
+                      {msg.options.map((opt, oIdx) => (
+                        <button
+                          key={oIdx}
+                          onClick={() => handleClarificationChoice(opt)}
+                          className="clarification-chip-btn"
+                          title={`Select ${opt}`}
+                        >
+                          <span className="material-symbols-outlined text-[11px] text-[#FF6B35]">check_circle</span>
+                          <span>{opt}</span>
+                        </button>
+                      ))}
+                    </div>
                   )}
 
                   {msg.quickAction && (
