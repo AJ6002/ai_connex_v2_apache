@@ -1756,13 +1756,38 @@ def download_gguf_model_endpoint():
 def execute_tri_agent_endpoint():
     """
     POST /api/v1/tri_agent/execute
-    Runs the 3-Stage Cascading Metaphorical Agent Workflow across Qwen 3-4B, Qwen 2.5-Coder 3B, and Qwen 2.5-Coder 1.5B.
+    Runs the 3-Stage Cascading Metaphorical Agent Workflow across Qwen 3-4B, Phi-4-mini, and Qwen 2.5-Coder 3B.
     """
     from tri_llm_orchestrator import tri_orchestrator
     data = request.get_json(force=True, silent=True) or request.args or {}
     filename = data.get("file_name") or "C-MAPSS_FD001_train.csv"
+    intent = data.get("intent") or "predictive_maintenance_rul"
 
-    res = tri_orchestrator.execute_tri_agent_pipeline({"filename": filename, "rows": 500, "cols": 27})
+    res = tri_orchestrator.execute_tri_agent_pipeline({"filename": filename, "rows": 500, "cols": 27, "intent": intent})
+    return jsonify(res), 200
+
+
+@app.route("/api/v1/pipeline/execute_end_to_end", methods=["POST", "GET"])
+def execute_end_to_end_pipeline_endpoint():
+    """
+    POST /api/v1/pipeline/execute_end_to_end
+    Executes the 100% autonomous, intelligent, offline end-to-end MLOps pipeline:
+    1. Primary Brain (Qwen3-4B): Intent parsing & formatted deliverables manifest generation.
+    2. Reasoning Specialist (Phi-4-mini): Single-spin data prep & feature engineering.
+    3. Coding & SQL Specialist (Qwen2.5-Coder-3B): ML Studio multi-candidate training & validation gates.
+    4. Presenter Agent: Automated deployment presentation at Data Studio or ML Studio.
+    """
+    from tri_llm_orchestrator import tri_orchestrator
+    data = request.get_json(force=True, silent=True) or request.args or {}
+    filename = data.get("file_name") or data.get("filename") or "C-MAPSS_FD001_train.csv"
+    intent = data.get("intent") or "turbofan_remaining_useful_life"
+
+    res = tri_orchestrator.execute_tri_agent_pipeline({
+        "filename": filename,
+        "rows": 500,
+        "cols": 27,
+        "intent": intent
+    })
     return jsonify(res), 200
 
 
