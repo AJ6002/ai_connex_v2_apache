@@ -26,6 +26,7 @@ backend/models/*.gguf
 # 3. Scratch & Temporary Log Directories
 # ==========================================
 scratch/
+graphify-out/
 *.log
 logs/
 .system_generated/
