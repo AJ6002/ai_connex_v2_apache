@@ -86,4 +86,19 @@ def test_job_manager_security_bounds():
     assert "--memory" in cmd and "1g" in cmd
     assert "--user" in cmd and "10001:10001" in cmd
 
+def test_intent_normalizer():
+    import importlib
+    norm_mod = importlib.import_module("data-studio.intake.normalizer")
+    normalize_user_intent = norm_mod.normalize_user_intent
+
+    intent = normalize_user_intent(
+        user_goal="Predict remaining useful life for turbofan engines",
+        tenant_uid="tenant-99",
+        user_uid="user-11"
+    )
+    assert intent.requires_model is True
+    assert intent.intent_type == "time_series_forecast"
+    assert intent.tenant_uid == "tenant-99"
+
+
 
