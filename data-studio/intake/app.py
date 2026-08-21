@@ -11,8 +11,10 @@ from pydantic import BaseModel
 
 from contracts.dataset.dataset_contract import DatasetContract
 from contracts.intent.intent_contract import IntentContract
-from data-studio.discovery.inspector import inspect_dataset_archive
-from data-studio.intake.normalizer import normalize_user_intent
+import importlib
+inspect_dataset_archive = importlib.import_module("data-studio.discovery.inspector").inspect_dataset_archive
+normalize_user_intent = importlib.import_module("data-studio.intake.normalizer").normalize_user_intent
+
 
 app = FastAPI(
     title="AI-Connex Production Ingestion API",

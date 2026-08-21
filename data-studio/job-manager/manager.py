@@ -5,7 +5,7 @@ Manages container lifecycles with strict resource limits and network isolation.
 
 import os
 import subprocess
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List
 
 class DockerJobManager:
     def __init__(self, default_memory_limit: str = "1g", default_cpu_limit: str = "2.0"):

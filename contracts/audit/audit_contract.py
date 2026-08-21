@@ -2,7 +2,7 @@
 Audit Contract - Security event log and compliance trail contract.
 """
 
-from typing import List, Dict, Any, Optional
+from typing import Dict, Any
 from pydantic import BaseModel, Field
 from datetime import datetime
 

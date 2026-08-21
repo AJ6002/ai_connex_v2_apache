@@ -2,7 +2,7 @@
 Discovery Contract - Safe lightweight dataset inspection discovery artifact.
 """
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Optional
 from pydantic import BaseModel, Field
 
 class DatasetDiscoveryArtifact(BaseModel):

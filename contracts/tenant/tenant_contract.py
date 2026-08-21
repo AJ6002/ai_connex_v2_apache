@@ -2,7 +2,7 @@
 Tenant Context Contract - Multi-tenant identity, security, and quota context.
 """
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from pydantic import BaseModel, Field
 
 class TenantContract(BaseModel):

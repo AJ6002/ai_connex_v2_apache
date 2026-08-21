@@ -2,7 +2,7 @@
 Tool Contract - Tool Gateway capability contract.
 """
 
-from typing import List, Dict, Any, Optional
+from typing import Dict, Any
 from pydantic import BaseModel, Field
 
 class ToolContract(BaseModel):

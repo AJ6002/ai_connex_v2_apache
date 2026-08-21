@@ -2,7 +2,7 @@
 PREPARE Contract - Data cleaning, transformation, and readiness contract.
 """
 
-from typing import List, Dict, Any, Optional
+from typing import Dict, Optional
 from pydantic import BaseModel, Field
 
 class PrepareContract(BaseModel):

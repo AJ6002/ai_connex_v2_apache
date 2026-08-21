@@ -4,8 +4,7 @@ Lightweight Dataset Inspector - Safe metadata and candidate schema discovery.
 
 import os
 import zipfile
-import tarfile
-from typing import Dict, Any, List, Optional
+from typing import Dict, List
 from contracts.discovery.discovery_contract import DatasetDiscoveryArtifact
 
 def inspect_dataset_archive(file_path: str, asset_id: str) -> DatasetDiscoveryArtifact:

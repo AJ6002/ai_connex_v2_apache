@@ -2,7 +2,7 @@
 PyArrow Columnar Memory Converter - In-memory schema and Arrow table conversion.
 """
 
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 import pyarrow as pa
 import pyarrow.parquet as pq
 

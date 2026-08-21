@@ -2,7 +2,7 @@
 Profile Contract - Data Profiler structural, statistical, and temporal metrics schema.
 """
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict
 from pydantic import BaseModel, Field
 
 class ProfileContract(BaseModel):

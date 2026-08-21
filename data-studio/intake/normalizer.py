@@ -3,9 +3,9 @@ Intent Envelope Normalizer - Converts user request text and metadata into typed 
 """
 
 import uuid
-from typing import Dict, Any, List, Optional
+from typing import List, Optional
 from contracts.intent.intent_contract import IntentContract
-from registries.intent.registry import INTENT_REGISTRY, lookup_intent_policy
+from registries.intent.registry import lookup_intent_policy
 
 def normalize_user_intent(
     user_goal: str,

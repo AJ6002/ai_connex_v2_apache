@@ -2,7 +2,7 @@
 DAG Contract - Computational strategy definition contract.
 """
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict
 from pydantic import BaseModel, Field
 
 class DAGContract(BaseModel):

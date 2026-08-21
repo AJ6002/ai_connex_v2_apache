@@ -2,7 +2,6 @@
 Telemetry Contract - Industrial sensor and telemetry stream contract.
 """
 
-from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
 from datetime import datetime
 

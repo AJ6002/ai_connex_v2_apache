@@ -2,7 +2,6 @@
 Deployment Contract - Production serving deployment policy and endpoint contract.
 """
 
-from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
 
 class DeploymentContract(BaseModel):

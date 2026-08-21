@@ -2,7 +2,7 @@
 Feature Contract - Feature engineering and dataset feature set contract.
 """
 
-from typing import List, Dict, Any, Optional
+from typing import List
 from pydantic import BaseModel, Field
 
 class FeatureContract(BaseModel):

@@ -1,42 +1,10 @@
-# ─── Core ML / Data ──────────────────────────────────────────────────────────
-pandas>=2.0.0
-numpy>=1.24.0
-scikit-learn>=1.2.0
-xgboost>=1.7.0
-pyarrow>=12.0.0
-shap>=0.42.0
-scipy>=1.10.0
-
-# ─── AWS ─────────────────────────────────────────────────────────────────────
-boto3>=1.26.0
-sagemaker>=2.140.0
-
-# ─── Web, API & Chatbot Services ─────────────────────────────────────────────
-flask>=3.0.0
-flask-cors>=4.0.0
-fastapi>=0.100.0
-uvicorn>=0.20.0
-python-multipart>=0.0.6
-mistune>=3.0.0
-openai>=1.0.0
-python-dotenv>=1.0.0
-pyyaml>=6.0.0
-
-# ─── Agentic Orchestration & LangGraph ───────────────────────────────────────
-langgraph>=0.2.0
-langgraph-checkpoint-sqlite>=2.0.0
-langchain-community>=0.2.0
-pydantic>=2.0.0
-
-# ─── Platform Knowledge Base (PostgreSQL, Qdrant, MinIO) ──────────────────────
-psycopg2-binary>=2.9.9
-pgvector>=0.2.0
-qdrant-client>=1.7.0
-minio>=7.2.0
-sentence-transformers>=2.2.0
-
-# ─── Testing & Quality ───────────────────────────────────────────────────────
-pytest>=7.4.0
-pytest-cov>=4.1.0
-ruff>=0.1.0
-packaging>=23.0
+# AI-Connex Production Runtime Pinned Dependencies
+fastapi==0.110.0
+uvicorn==0.28.0
+pydantic==2.6.0
+pyarrow==19.0.1
+pandas==2.2.0
+openpyxl==3.1.2
+python-multipart==0.0.9
+python-dotenv==1.0.0
+packaging==23.2

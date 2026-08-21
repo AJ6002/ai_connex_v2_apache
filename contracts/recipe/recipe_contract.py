@@ -2,7 +2,7 @@
 Recipe Contract - Parameterized step-by-step execution recipe contract.
 """
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from pydantic import BaseModel, Field
 
 class RecipeStep(BaseModel):
