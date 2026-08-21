@@ -18,7 +18,18 @@ export type ViewMode =
   | 'orchestrator_board'
   | 'data_explorer'
   | 'model_explorer'
-  | 'deployment';
+  | 'deployment'
+  | 'prepare'
+  | 'feature_engineering'
+  | 'train'
+  | 'deploy'
+  | 'node3'
+  | 'node4'
+  | 'node5'
+  | 'node6'
+  | 'node7'
+  | 'node8'
+  | 'node9';
 
 export type SidebarStyle = 'orbital' | 'slim';
 

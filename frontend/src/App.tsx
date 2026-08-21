@@ -79,6 +79,7 @@ export default function App() {
   const [userPrompt, setUserPrompt] = useState<string>('');
   const [initialOnboardingInputs, setInitialOnboardingInputs] = useState<any>(null);
   const [pendingCucSeed, setPendingCucSeed] = useState<any>(null);
+  const [executionMode, setExecutionMode] = useState<'EXPLORATION_ONLY' | 'PREPARATION_ONLY' | 'FULL_AUTOML' | 'DIRECT_NAVIGATION'>('FULL_AUTOML');
 
   // Domain Data States
   const [models, setModels] = useState<ModelRegistryItem[]>(INITIAL_MODELS);
@@ -97,8 +98,32 @@ export default function App() {
 
   const handleSidebarStyleChange = (style: SidebarStyle) => {
     setSidebarStyle(style);
-    localStorage.setItem('aic_sidebar_style', style);
   };
+
+  useEffect(() => {
+    localStorage.setItem('aiconnex_sidebar_style', sidebarStyle);
+  }, [sidebarStyle]);
+
+  // Listen for global in-app navigation & assistant events
+  useEffect(() => {
+    const handleNavEvent = (e: any) => {
+      if (e.detail) navigateTo(e.detail as ViewMode);
+    };
+    const handleOpenJane = (_e: any) => {
+      setIsChatModalOpen(true);
+    };
+    const handleToast = (e: any) => {
+      if (e.detail) showToast(e.detail);
+    };
+    window.addEventListener('aic-navigate', handleNavEvent);
+    window.addEventListener('aic-open-jane', handleOpenJane);
+    window.addEventListener('aic-toast', handleToast);
+    return () => {
+      window.removeEventListener('aic-navigate', handleNavEvent);
+      window.removeEventListener('aic-open-jane', handleOpenJane);
+      window.removeEventListener('aic-toast', handleToast);
+    };
+  }, [currentView]);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -791,6 +816,8 @@ export default function App() {
               runId={activeRunId}
               dagId={activeDagId}
               algorithmFamily={activeFamily}
+              executionMode={executionMode}
+              janeSessionId={janeSessionId || undefined}
               onProceedToPrepare={() => {
                 setCurrentView('pipeline_studio');
               }}
@@ -840,6 +867,7 @@ export default function App() {
               initialPrompt={userPrompt}
               initialInputs={initialOnboardingInputs}
               janeSessionId={janeSessionId}
+              executionMode={executionMode}
               onJaneNarration={(msg, node) => setJaneNarration({ text: msg, node })}
               onJaneInterrupt={(payload) => setActiveInterrupt(payload)}
               onUploadStarted={(_filename) => {
@@ -856,15 +884,16 @@ export default function App() {
                 setCompiledCsvPath(csvPath);
                 if (profileData && profileData.profile && !profileData.profile.error) {
                   const prof = profileData.profile;
-                  const randHex = Math.floor(Math.random() * 0xffffffff).toString(16).padStart(8, '0');
-                  setActiveRunId('run_' + randHex);
-                  setActiveDagId(prof.recommended_dag_id || 'DAG_514');
-                  setActiveFamily(prof.algorithm_family || 'Regression');
+                  const actualRunId = profileData.run_id || prof.run_id || ('run_' + Math.floor(Math.random() * 0xffffffff).toString(16).padStart(8, '0'));
+                  setActiveRunId(actualRunId);
+                  const qwen = profileData.qwen_semantics || {};
+                  setActiveDagId(prof.recommended_dag_id || qwen.domain || 'Direct EDA');
+                  setActiveFamily(prof.algorithm_family || qwen.domain || 'Visual Profiler');
                 } else {
-                  const randHex = Math.floor(Math.random() * 0xffffffff).toString(16).padStart(8, '0');
-                  setActiveRunId('run_' + randHex);
-                  setActiveDagId('DAG_514');
-                  setActiveFamily('Regression');
+                  const actualRunId = profileData?.run_id || ('run_' + Math.floor(Math.random() * 0xffffffff).toString(16).padStart(8, '0'));
+                  setActiveRunId(actualRunId);
+                  setActiveDagId('Direct EDA');
+                  setActiveFamily('Visual Profiler');
                 }
                 // When real compilation finishes, dock Jane to the bottom-right corner and transition to data explorer!
                 setIsChatDocked(true);
@@ -886,6 +915,7 @@ export default function App() {
             <WorkflowView
               onRunDagPipeline={handleRunDagPipeline}
               isJobRunning={!!activeJob}
+              onSelectView={navigateTo}
             />
           )}
 
@@ -1001,9 +1031,13 @@ export default function App() {
         isDocked={isChatDocked}
         onDockChange={setIsChatDocked}
         onSessionCreated={setJaneSessionId}
+        onExecutionModeChange={setExecutionMode}
         onUploadRequested={(cucSeed) => {
           // Store the CUC seed from Jane's conversation
           setPendingCucSeed(cucSeed || null);
+          if (cucSeed?.execution_mode) {
+            setExecutionMode(cucSeed.execution_mode);
+          }
           // Pre-populate CompilerView wizard with Jane's extracted intent
           if (cucSeed) {
             setInitialOnboardingInputs({

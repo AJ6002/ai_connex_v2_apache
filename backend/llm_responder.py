@@ -41,54 +41,57 @@ def generate_llm_response(
     context_data: Optional[Dict[str, Any]] = None,
     system_role: str = "assistant"
 ) -> str:
-    """Generate a dynamic, natural language chatbot response using Local Offline GGUF LLMs or OpenRouter."""
-    use_offline = os.environ.get("USE_OFFLINE_LLM", "true").lower() in ("true", "1", "yes")
-    api_key = _get_api_key()
-
-    if use_offline or not api_key:
-        logger.info("[LLMResponder] Operating in Local Offline GGUF Mode.")
-        return generate_local_gguf_response(
+    """Generate a dynamic chatbot response. Primary intent is Tier 1 Local Offline LLM; Fallback is Tier 2 OpenRouter API."""
+    # 1. PRIMARY INTENT — TIER 1 LOCAL OFFLINE LLM (Local GGUF / Ollama / Local KB)
+    try:
+        local_reply = generate_local_gguf_response(
             user_prompt=user_message,
             context={"intent": intent, "context_data": context_data},
             model_key="qwen3-4b-q4"
         )
+        if local_reply and len(local_reply.strip()) > 5:
+            logger.info("[LLMResponder] Primary Tier 1 Local Offline LLM response generated successfully.")
+            return local_reply.strip()
+    except Exception as exc:
+        logger.warning(f"[LLMResponder] Tier 1 Local LLM unavailable ({exc}) — falling back to Tier 2 OpenRouter API")
 
-    base_url = os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
-    model = os.environ.get("OPENROUTER_MODEL") or os.environ.get("LLM_MODEL") or "qwen/qwen-2.5-coder-32b-instruct"
+    # 2. FALLBACK INTENT — TIER 2 CLOUD API CREDITS (OpenRouter / Gemini)
+    api_key = _get_api_key()
+    if api_key:
+        base_url = os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
+        model = os.environ.get("OPENROUTER_MODEL") or os.environ.get("LLM_MODEL") or "qwen/qwen-2.5-coder-32b-instruct"
 
-    ctx_str = f"\nContext State: {context_data}" if context_data else ""
-    sys_prompt = (
-        "You are the AIConnex Autonomous MLOps Chatbot Assistant. "
-        "Write a warm, professional, highly engaging, natural language conversational response to the user. "
-        "Acknowledge what they said, explain what actions are taking place or what information is needed, "
-        "and guide them naturally.\n"
-        "IMPORTANT RULES:\n"
-        "1. Do NOT assume the user was already in the middle of uploading a dataset unless a dataset or file upload has actually been mentioned.\n"
-        "2. If the user repeats a simple greeting or seems unsure (turn >= 2 with low information), DO NOT repeat the same broad open-ended question. "
-        "Escalate by offering a clear menu of choices (e.g. 1. Regression / Target Prediction, 2. Time-Series Forecasting, 3. Anomaly Detection).\n"
-        "3. Do NOT ask the user for granular physical dataset attributes such as sensor types, sampling frequency, or database storage formats. "
-        "These physical traits are auto-detected by the Scout Agent when the dataset is uploaded. Simply confirm their primary operational goal and invite them to upload their dataset.\n"
-        "4. Do NOT output raw JSON or code blocks — output clear, human-like Markdown text.\n"
-        f"Intent Detected: {intent}{ctx_str}"
-    )
-
-    try:
-        client = OpenAI(api_key=api_key, base_url=base_url, timeout=10.0)
-        response = client.chat.completions.create(
-            model=model,
-            messages=[
-                {"role": "system", "content": sys_prompt},
-                {"role": "user", "content": user_message}
-            ],
-            temperature=0.7,
-            max_tokens=350
+        ctx_str = f"\nContext State: {context_data}" if context_data else ""
+        sys_prompt = (
+            "You are the AIConnex Autonomous MLOps Chatbot Assistant. "
+            "Write a warm, professional, highly engaging, natural language conversational response to the user. "
+            "Acknowledge what they said, explain what actions are taking place or what information is needed, "
+            "and guide them naturally.\n"
+            "IMPORTANT RULES:\n"
+            "1. Do NOT assume the user was already in the middle of uploading a dataset unless a dataset or file upload has actually been mentioned.\n"
+            "2. If the user repeats a simple greeting or seems unsure, offer a clear menu of choices.\n"
+            "3. Do NOT output raw JSON or code blocks — output clear, human-like Markdown text.\n"
+            f"Intent Detected: {intent}{ctx_str}"
         )
 
-        content = response.choices[0].message.content.strip()
-        if content:
-            return content
-    except Exception as exc:
-        logger.warning(f"[LLMResponder] Live LLM call failed, using fallback: {exc}")
+        try:
+            client = OpenAI(api_key=api_key, base_url=base_url, timeout=10.0)
+            response = client.chat.completions.create(
+                model=model,
+                messages=[
+                    {"role": "system", "content": sys_prompt},
+                    {"role": "user", "content": user_message}
+                ],
+                temperature=0.7,
+                max_tokens=350
+            )
+
+            content = response.choices[0].message.content.strip()
+            if content:
+                logger.info(f"[LLMResponder] Generated response using Tier 2 Cloud LLM ({model}).")
+                return content
+        except Exception as exc:
+            logger.warning(f"[LLMResponder] Tier 2 Cloud API call failed: {exc}")
 
     return _heuristic_fallback(intent, context_data)
 

@@ -35,6 +35,7 @@ interface FilePreviewData {
   total_row_count?: number;
   json_content?: any;
   text_content?: string;
+  message?: string;
   error_message?: string;
 }
 

@@ -59,6 +59,7 @@ interface CompilerViewProps {
   initialPrompt?: string;
   initialInputs?: any;
   janeSessionId?: string | null;
+  executionMode?: 'EXPLORATION_ONLY' | 'PREPARATION_ONLY' | 'FULL_AUTOML' | 'DIRECT_NAVIGATION';
   onJaneNarration?: (message: string, node?: string) => void;
   onJaneInterrupt?: (interruptPayload: any) => void;
   onUploadStarted?: (fileName: string) => void;
@@ -75,6 +76,7 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
   initialPrompt,
   initialInputs,
   janeSessionId,
+  executionMode = 'FULL_AUTOML',
   onJaneNarration,
   onJaneInterrupt,
   onUploadStarted,
@@ -234,6 +236,13 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
       setSelectedFile(file);
       setPendingFile(file);
       
+      // Fast Exploration Lane: Direct ingestion without ML target questions
+      if (executionMode === 'EXPLORATION_ONLY' || executionMode === 'PREPARATION_ONLY') {
+        if (onUploadStarted) onUploadStarted(file.name);
+        triggerCompilation(file);
+        return;
+      }
+      
       // Pre-populate wizard fields from filename heuristics and Jane's extracted initialInputs
       const lowerName = file.name.toLowerCase();
       const heuristicTarget = lowerName.includes('insurance') ? 'charges' : (lowerName.includes('house_prices') ? 'SalePrice' : (lowerName.includes('manufacturing') ? 'RUL' : ''));
@@ -250,9 +259,6 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
       if (!initialInputs?.problemType) setProblemTypeInput(heuristicType);
 
       // INTENT GATE: Show wizard confirmation modal before starting compilation.
-      // The wizard buttons are the ONLY paths to triggerCompilation for manual uploads.
-      // This ensures user intent (target column, problem type) is confirmed before the
-      // backend LangGraph pipeline is invoked.
       setShowWizard(true);
     }
   };
@@ -264,6 +270,44 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
     setIsCompiling(true);
     setCompileError(null);
 
+    const effectiveSessionId = janeSessionId || 'default_session';
+
+    // ── DATA STUDIO FAST-LANE INGESTION ─────────────────────────
+    if (executionMode === 'EXPLORATION_ONLY' || executionMode === 'PREPARATION_ONLY') {
+      try {
+        if (onJaneNarration) {
+          onJaneNarration(`📊 **Ingesting dataset \`${file.name}\` for Data Studio Exploration...**\nComputing 50+ statistical metrics, IQR fences, and AI telemetry health diagnostics.`, 'studio_profiler_node');
+        }
+        const ingestForm = new FormData();
+        ingestForm.append('file', file);
+        ingestForm.append('session_id', effectiveSessionId);
+        ingestForm.append('execution_mode', executionMode);
+
+        const ingestRes = await fetch('http://localhost:8000/api/v1/studio/ingest', {
+          method: 'POST',
+          body: ingestForm
+        });
+
+        if (!ingestRes.ok) {
+          const errBody = await ingestRes.json().catch(() => ({}));
+          throw new Error(errBody.error || `Fast-track studio ingestion failed (${ingestRes.status})`);
+        }
+
+        const ingestData = await ingestRes.json();
+        setCompiledData(ingestData);
+        if (onCompilationFinished) {
+          onCompilationFinished(ingestData.csv_path, ingestData.filename, ingestData);
+        }
+        return;
+      } catch (ingestErr: any) {
+        console.error('[CompilerView] Studio ingestion error:', ingestErr);
+        setCompileError(ingestErr.message || 'Dataset exploration ingestion failed');
+      } finally {
+        setIsCompiling(false);
+      }
+      return;
+    }
+
     const formData = new FormData();
     formData.append('file', file);
 
@@ -271,7 +315,6 @@ export const CompilerView: React.FC<CompilerViewProps> = ({
     let apiErr: any = null;
     let profileData: any = null;
 
-    const effectiveSessionId = janeSessionId || 'default_session';
     if (effectiveSessionId) {
       // Real Jane-Centric SSE Compilation
       try {

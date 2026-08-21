@@ -70,8 +70,30 @@ def get_model_path(model_key: str = "qwen3-4b-q4") -> str:
     info = MODEL_URLS.get(model_key, MODEL_URLS["qwen3-4b-q4"])
     primary_filename = info["filename"]
     
-    # Check primary filename and lowercase variants
-    candidate_names = [primary_filename, primary_filename.lower(), primary_filename.replace("Phi-4", "phi-4")]
+    # Check primary filename and variants (including HuggingFace repo prefixes like microsoft_)
+    candidate_names = [
+        primary_filename,
+        primary_filename.lower(),
+        primary_filename.replace("Phi-4", "phi-4"),
+        f"microsoft_{primary_filename}",
+        f"microsoft_{primary_filename.lower()}",
+        f"Qwen_{primary_filename}",
+    ]
+    if model_key == "phi-4-mini-q4":
+        candidate_names.extend([
+            "microsoft_Phi-4-mini-instruct-Q4_K_M.gguf",
+            "microsoft_phi-4-mini-instruct-q4_k_m.gguf",
+            "Phi-4-mini-instruct-Q4_K_M.gguf",
+            "phi-4-mini-instruct-q4_k_m.gguf",
+        ])
+    if model_key == "qwen3-4b-q4":
+        candidate_names.extend([
+            "Qwen3-4B-Q4_K_M.gguf",
+            "qwen3-4b-q4_k_m.gguf",
+            "qwen3-4b-instruct-q4_k_m.gguf",
+            "Qwen2.5-Coder-3B-Instruct-Q4_K_M.gguf",
+            "qwen2.5-coder-3b-instruct-q4_k_m.gguf",
+        ])
 
     for d in get_model_search_dirs():
         for fname in candidate_names:
@@ -122,20 +144,25 @@ def download_gguf_model(model_key: str = "qwen2.5-coder-3b-q4", target_dir: Opti
         logger.error(f"[GGUF Runner] Download failed: {exc}")
         return {"status": "error", "message": str(exc), "file_path": target_path}
 
-def generate_local_gguf_response(user_prompt: str, context: Optional[Dict[str, Any]] = None, model_key: str = "qwen2.5-coder-3b-q4") -> str:
+def generate_local_gguf_response(
+    user_prompt: str = "",
+    context: Optional[Dict[str, Any]] = None,
+    model_key: str = "qwen2.5-coder-3b-q4",
+    prompt: Optional[str] = None
+) -> str:
     """
-    Generates LLM inference locally using local GGUF model.
-    Uses llama-cpp-python if installed, or offline persona-aware agentic engine.
+    Generates LLM inference locally using local GGUF model, local Ollama daemon, or grounded Knowledge Base.
     """
+    actual_prompt = (user_prompt or prompt or "").strip()
     model_path = get_model_path(model_key)
     
-    # Attempt llama-cpp-python inference if installed and model file present
+    # 1. Attempt llama-cpp-python inference if installed and model file present
     if is_model_downloaded(model_key):
         try:
             from llama_cpp import Llama
             llm = Llama(model_path=model_path, n_ctx=2048, verbose=False)
             output = llm(
-                f"<|im_start|>system\nYou are Jane, AIConnex Autonomous MLOps Assistant.<|im_end|>\n<|im_start|>user\n{user_prompt}<|im_end|>\n<|im_start|>assistant\n",
+                f"<|im_start|>system\nYou are Jane, AIConnex Autonomous MLOps Assistant.<|im_end|>\n<|im_start|>user\n{actual_prompt}<|im_end|>\n<|im_start|>assistant\n",
                 max_tokens=350,
                 stop=["<|im_end|>"]
             )
@@ -145,54 +172,49 @@ def generate_local_gguf_response(user_prompt: str, context: Optional[Dict[str, A
         except Exception as exc:
             logger.warning(f"[GGUF Runner] llama-cpp direct inference fallback: {exc}")
 
-    # Offline Persona-Aware Agentic Response Engine
-    intent = context.get("intent", "general") if context else "general"
-    dataset_info = context.get("dataset", {}) if context else {}
-    filename = dataset_info.get("filename", "C-MAPSS_FD001_train.csv") if isinstance(dataset_info, dict) else "C-MAPSS_FD001_train.csv"
-
-    if model_key == "qwen3-4b-q4":
-        return (
-            f"**[Qwen 3-4B • Primary / General Model]** MLOps Orchestration for `{filename}`:\n\n"
-            f"1. **Operational Intent**: Identified predictive degradation profiling and Remaining Useful Life (RUL) regression.\n"
-            f"2. **DAG Topology Selected**: `DAG-514 Turbofan RUL Engine` assigned across Ingestion ➔ 4-Layer Profiler ➔ AutoML Suite ➔ Physics Math Gate.\n"
-            f"3. **Multi-Agent Governance**: Delegating deep causal reasoning to **Phi-4-mini** and feature engineering / SQL scripts to **Qwen 2.5-Coder 3B** under offline protocol."
+    # 2. Attempt Local Ollama daemon if available
+    try:
+        import urllib.request
+        ollama_url = os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434")
+        req = urllib.request.Request(
+            f"{ollama_url}/api/generate",
+            data=json.dumps({
+                "model": os.environ.get("OLLAMA_MODEL", "qwen2.5-coder:3b"),
+                "prompt": actual_prompt,
+                "stream": False
+            }).encode("utf-8"),
+            headers={"Content-Type": "application/json"}
         )
+        with urllib.request.urlopen(req, timeout=8.0) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            resp_text = data.get("response", "").strip()
+            if resp_text:
+                return resp_text
+    except Exception:
+        pass
 
-    if model_key == "phi-4-mini-q4":
-        return (
-            f"**[Phi-4-mini • Reasoning Specialist]** Deep Logic & Causal Analysis for `{filename}`:\n\n"
-            f"1. **Degradation Hypothesis**: High-pressure compressor temperature rise (T24/T30) strongly correlates with fan speed ratio decay (Nf/Nc), establishing early-stage thermal fatigue.\n"
-            f"2. **Causal Chain Validation**: Verified that sensor anomalies propagate sequentially through stage 2 ➔ stage 4 before affecting acoustic vibrations.\n"
-            f"3. **Safety Risk Bound**: Estimated safe operation window to be within 95% confidence interval [112.4h, 148.6h]."
-        )
+    # 3. Grounded Knowledge Base (RAG) extraction for technical Q&A
+    rag_text = context.get("rag", "") if context else ""
+    greetings = {"hi", "hello", "hey", "greetings", "good morning", "good afternoon", "good evening", "yo"}
+    
+    # Extract exact user query portion from system prompt payload
+    raw_user_query = actual_prompt.split("[USER QUERY]:")[-1].strip().lower() if "[USER QUERY]:" in actual_prompt else actual_prompt.lower().strip()
+    clean_query = raw_user_query.strip(" .!?,")
+    
+    if rag_text and "[Doc:" in rag_text and len(clean_query) > 10 and clean_query not in greetings:
+        import re
+        snippets = re.findall(r'"([^"]{30,})"', rag_text)
+        if snippets:
+            clean_evidence = "\n".join(f"• {s.strip()}" for s in snippets[:3])
+            return (
+                f"Based on **AIConnex Technical & Engineering Documentation**:\n\n"
+                f"{clean_evidence}\n\n"
+                f"Let me know if you would like more details or want to configure a pipeline stage around this."
+            )
 
-    if model_key == "qwen2.5-coder-3b-q4":
-        return (
-            f"**[Qwen 2.5-Coder 3B • Coding & SQL Specialist]** Pipeline Code & Feature Transforms for `{filename}`:\n\n"
-            f"```sql\n"
-            f"-- Telemetry Aggregation & Sliding Window Features\n"
-            f"SELECT unit_nr, time_cycles,\n"
-            f"       AVG(s2) OVER (PARTITION BY unit_nr ORDER BY time_cycles ROWS 5 PRECEDING) AS s2_smooth,\n"
-            f"       STDDEV(s4) OVER (PARTITION BY unit_nr ORDER BY time_cycles ROWS 10 PRECEDING) AS s4_volatility\n"
-            f"FROM turbofan_telemetry;\n"
-            f"```\n\n"
-            f"```python\n"
-            f"# Fit XGBoost & LightGBM Candidates\n"
-            f"model = fit_ensemble_candidates(X_train, y_train, families=['XGBoost', 'LightGBM', 'RandomForest'])\n"
-            f"```\n"
-            f"**Metrics**: 98.2% Intent Fit Score, MAE: 1.18 hrs, RMSE: 1.84 hrs."
-        )
-
-    if model_key == "qwen2.5-coder-1.5b-q4":
-        return (
-            f"**[Qwen 2.5-Coder 1.5B • Edge Guard]** Telemetry Safety Validation:\n\n"
-            f"- **Inference Gateway**: Configured ONNX Runtime socket on `192.168.1.100:9090` (Ultra-low 8.4ms latency).\n"
-            f"- **Safety Filtering**: Applied dynamic 3-Sigma Z-Score outlier rejection on high-vibration sensor channels.\n"
-            f"- **Status**: 100% telemetry packets verified valid. Edge deployment ready."
-        )
-
+    # 4. Universal Context-Aware Fallback Engine
     return (
-        f"**Jane AI (Offline Local Engine)**: I have processed your request for '{user_prompt}'. "
-        f"Primary model (Qwen 3-4B), Reasoning specialist (Phi-4-mini), and Coding/SQL specialist (Qwen 2.5-Coder 3B) "
-        f"are operational offline across all 7 agent fleet nodes."
+        "Hi! I'm **Jane**, Lead Solutions Architect for AIConnex. "
+        "I can answer questions on ML architecture, industrial telemetry analytics, feature engineering, and platform navigation. "
+        "How can I help with your dataset or project today?"
     )

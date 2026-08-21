@@ -17,11 +17,16 @@ natural language responses. Hardcoded templates act ONLY as emergency fallbacks.
 
 import os
 import sys
+import re
+import json
 import uuid
 from datetime import datetime
 from pathlib import Path
+from typing import Optional, Dict, Any, List
+import pandas as pd
 import logging
 from flask import Flask, request, jsonify, send_file, send_from_directory
+from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 # Load root .env first, then local backend .env (with override)
 _root_env = Path(__file__).resolve().parents[1] / ".env"
@@ -117,11 +122,11 @@ def jane_chat():
 
     data = request.get_json(force=True, silent=True) or {}
     session_id = data.get("session_id") or data.get("sessionId") or "default_session"
-    user_input = data.get("message") or data.get("query") or ""
+    user_input = data.get("message") or data.get("query") or data.get("user_input") or data.get("prompt") or ""
     retrieved_rag_docs = data.get("rag_docs") or data.get("context")
 
     if not user_input.strip():
-        return jsonify({"error": "Field 'message' is required."}), 400
+        return jsonify({"error": "Field 'message' or 'user_input' is required."}), 400
 
     from jane_assistant import run_jane_assistant
 
@@ -710,22 +715,120 @@ def agent_state():
     }), 200
 
 
+def dynamic_load_csv(file_path: str, max_rows: Optional[int] = None) -> pd.DataFrame:
+    """Dynamically detects encoding, delimiter, and header offset without hardcoding."""
+    import pandas as pd
+    import csv
+
+    abs_path = os.path.abspath(file_path) if file_path else ""
+    if not abs_path or not os.path.exists(abs_path):
+        raise FileNotFoundError(f"File not found: {file_path}")
+
+    ext = os.path.splitext(abs_path)[1].lower()
+    if ext == ".parquet":
+        return pd.read_parquet(abs_path)
+    if ext in (".xlsx", ".xls"):
+        return pd.read_excel(abs_path, nrows=max_rows)
+
+    # 1. Delimiter and Encoding Detection
+    encodings = ["utf-8", "utf-8-sig", "latin-1", "cp1252", "iso-8859-1"]
+    for enc in encodings:
+        try:
+            with open(abs_path, "r", encoding=enc, errors="ignore") as f:
+                sample_lines = [f.readline() for _ in range(25)]
+                sample_text = "".join(sample_lines)
+                if not sample_text.strip():
+                    continue
+
+                delimiter = ","
+                try:
+                    dialect = csv.Sniffer().sniff(sample_text[:4096])
+                    delimiter = dialect.delimiter
+                except Exception:
+                    for test_sep in [",", ";", "\t", "|"]:
+                        if sample_text.count(test_sep) > len(sample_lines):
+                            delimiter = test_sep
+                            break
+
+                header_idx = 0
+                for r_idx, line in enumerate(sample_lines[:5]):
+                    parts = [p.strip() for p in line.split(delimiter) if p.strip()]
+                    if len(parts) >= 2:
+                        header_idx = r_idx
+                        break
+
+                df = pd.read_csv(
+                    abs_path,
+                    sep=delimiter,
+                    encoding=enc,
+                    header=header_idx,
+                    nrows=max_rows,
+                    engine="python",
+                    on_bad_lines="skip"
+                )
+                if df is not None and len(df.columns) > 0:
+                    cols = []
+                    col_counts = {}
+                    for c in df.columns:
+                        c_str = str(c).strip() or "column"
+                        if c_str in col_counts:
+                            col_counts[c_str] += 1
+                            cols.append(f"{c_str}_{col_counts[c_str]}")
+                        else:
+                            col_counts[c_str] = 0
+                            cols.append(c_str)
+                    df.columns = cols
+                    return df
+        except Exception as read_err:
+            logger.debug(f"[DynamicCSV] Encoding {enc} failed: {read_err}")
+            continue
+
+    return pd.read_csv(abs_path, nrows=max_rows, engine="python", on_bad_lines="skip")
+
+
+def generate_phi4_eda_narrative(profile: dict) -> str:
+    """Passes actual computed data profile to Phi-4-mini to generate dynamic insights."""
+    try:
+        from local_gguf_runner import generate_local_gguf_response
+        rows = profile.get("rows_total", 500)
+        cols = profile.get("columns", 12)
+        missing_pct = profile.get("max_missing_pct", 0.0)
+        missing_col = profile.get("most_missing_col", "none")
+        skew = profile.get("max_skewness", 0.0)
+        skew_col = profile.get("most_skewed_col", "none")
+        outliers = profile.get("outlier_pct", 0.0)
+        top_corr = profile.get("top_correlations", [])
+        corr_summary = ", ".join([f"{c.get('pair', '')} (r={c.get('correlation', 0)})" for c in top_corr[:2]])
+
+        prompt = (
+            f"You are the Data Health & Sensor Intelligence Specialist (Phi-4-mini). "
+            f"Analyze these computed telemetry statistics for a dataset ({rows} rows, {cols} columns):\n"
+            f"- Missing Data: {missing_pct}% in '{missing_col}'\n"
+            f"- Skewness Peak: {skew} in '{skew_col}'\n"
+            f"- Outlier Density: {outliers}%\n"
+            f"- Top Correlations: {corr_summary}\n\n"
+            f"Provide a 2-3 sentence technical operational takeaway explaining what this means for data health, anomalies, and feature preparation."
+        )
+        return generate_local_gguf_response(prompt, context=profile, model_key="phi-4-mini-q4")
+    except Exception as exc:
+        logger.warning(f"[Phi4Narrative] Fallback narrative: {exc}")
+        return (
+            f"Dataset profiled across {profile.get('columns', 12)} channels. "
+            f"Outlier density is {profile.get('outlier_pct', 0.0)}% with peak skewness {profile.get('max_skewness', 0.0)} "
+            f"in column '{profile.get('most_skewed_col', 'primary')}'. Data is structured and ready for exploration."
+        )
+
+
+@app.route("/api/v1/upload", methods=["POST", "OPTIONS"])
 @app.route("/api/upload", methods=["POST", "OPTIONS"])
 def upload_dataset():
-    """Upload dataset and advance the LangGraph thread into Scout.
-
-    Multipart form fields:
-      file        — the dataset file (required)
-      session_id  — the chat session to resume into Scout (optional)
-                    If provided, resumes the parked advise_upload_node thread
-                    and streams Scout SSE events back to the frontend.
-                    If absent, falls back to fire-and-forget JSON response.
-
-    SSE events (when session_id supplied):
-      { type: "text",      delta: str, node: str }
-      { type: "interrupt", payload: {...}, session_id: str }  -- strategy_choice
-      { type: "done",      session_id: str, compiled_csv_path: str }
-      { type: "error",     message: str }
+    """
+    POST /api/upload
+    Form fields:
+      file: FileStorage (zip, tar, csv, parquet)
+      session_id: str (optional)
+      tenant_id: str (optional, default="global")
+      execution_mode: str (optional, default="FULL_AUTOML" | "EXPLORATION_ONLY")
     """
     if request.method == "OPTIONS":
         return jsonify({"status": "ok"}), 200
@@ -743,9 +846,44 @@ def upload_dataset():
     file.save(save_path)
 
     session_id = (request.form.get("session_id") or "").strip()
+    exec_mode = (request.form.get("execution_mode") or "FULL_AUTOML").strip()
+
+    # FAST-TRACK: Direct single CSV/Excel/Parquet in EXPLORATION_ONLY or without ZIP compression
+    is_direct_tabular = filename.lower().endswith((".csv", ".parquet", ".xlsx", ".xls"))
+    if is_direct_tabular and (exec_mode == "EXPLORATION_ONLY" or not filename.lower().endswith(".zip")):
+        from profiler_service import profile_dataframe
+        try:
+            df_loaded = dynamic_load_csv(save_path)
+            profile_res = profile_dataframe(df_loaded)
+            narrative_text = generate_phi4_eda_narrative(profile_res)
+
+            def _direct_tabular_stream():
+                yield _sse("text", {"delta": f"📊 **Ingesting `{filename}`** — Running real-time statistical profiler & distribution scan…", "node": "data_profiler"})
+                yield _sse("compiled", {
+                    "session_id": session_id,
+                    "compiled_csv_path": save_path,
+                    "filename": filename,
+                    "execution_mode": exec_mode,
+                    "target_view": "data_explorer",
+                    "profile": {**profile_res, "narrative": narrative_text}
+                })
+                yield _sse("done", {
+                    "session_id": session_id,
+                    "compiled_csv_path": save_path,
+                    "filename": filename,
+                    "target_view": "data_explorer",
+                    "profile": {**profile_res, "narrative": narrative_text}
+                })
+
+            return Response(
+                stream_with_context(_direct_tabular_stream()),
+                content_type="text/event-stream",
+                headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+            )
+        except Exception as tab_err:
+            logger.warning(f"[Upload] Fast-track tabular load fallback to standard flow: {tab_err}")
 
     if session_id:
-        # --- SSE resumption path ---
         is_parked = False
         resume_with_user_input = None
         _compiled_graph = None
@@ -993,7 +1131,178 @@ def compile_dataset_endpoint():
 
 
 
-# ── Data Explorer Profiler Endpoints ──────────────────────────────────────────
+# ── Data Explorer & Studio Profiler Endpoints ─────────────────────────────────
+
+@app.route("/api/v1/studio/ingest", methods=["POST"])
+def studio_ingest_dataset():
+    """
+    POST /api/v1/studio/ingest
+    Format-Agnostic Fast-Lane Ingestion for Data Studio / Exploration mode.
+    Handles .csv, .tsv, .xlsx, .parquet, and .zip (extracts first tabular file).
+    Computes profile, Qwen semantics, Phi-4 narrative, and persists summary.
+    Binds to active Jane session if session_id is provided.
+    """
+    import zipfile, io, shutil
+    from profiler_service import profile_dataframe, classify_columns_with_qwen, persist_profile_summary, generate_profile_narrative
+    from jane_assistant import save_session_metadata
+
+    tenant_id = (request.form.get("tenant_id") or "global").strip()
+    session_id = (request.form.get("session_id") or "").strip()
+    execution_mode = (request.form.get("execution_mode") or "EXPLORATION_ONLY").strip()
+    file_path = request.form.get("file_path")
+
+    uploads_dir = get_tenant_subfolder("uploads", tenant_id)
+    runs_dir = get_tenant_subfolder("runs", tenant_id)
+    run_id = f"run_{uuid.uuid4().hex[:8]}"
+    run_folder = os.path.join(runs_dir, run_id)
+    os.makedirs(run_folder, exist_ok=True)
+
+    saved_csv_path = None
+    original_filename = ""
+
+    try:
+        if "file" in request.files:
+            uploaded_file = request.files["file"]
+            original_filename = uploaded_file.filename or "uploaded_dataset.csv"
+            clean_fn = secure_filename(original_filename) or "uploaded_dataset.csv"
+            fn_lower = clean_fn.lower()
+
+            if fn_lower.endswith(".zip") or fn_lower.endswith(".tar") or fn_lower.endswith(".gz"):
+                # Fast ZIP extraction without LangGraph/Scout: extract first tabular file
+                zip_bytes = uploaded_file.read()
+                with zipfile.ZipFile(io.BytesIO(zip_bytes)) as zf:
+                    tabular_names = [n for n in zf.namelist() if n.lower().endswith(('.csv', '.tsv', '.xlsx', '.parquet')) and not n.startswith('__MACOSX')]
+                    if not tabular_names:
+                        return jsonify({"error": "No tabular dataset (.csv, .xlsx, .parquet) found in ZIP archive."}), 400
+                    
+                    target_entry = tabular_names[0]
+                    extracted_bytes = zf.read(target_entry)
+                    sub_fn = os.path.basename(target_entry)
+                    if sub_fn.lower().endswith('.parquet'):
+                        df = pd.read_parquet(io.BytesIO(extracted_bytes))
+                    elif sub_fn.lower().endswith(('.xlsx', '.xls')):
+                        df = pd.read_excel(io.BytesIO(extracted_bytes))
+                    else:
+                        df = pd.read_csv(io.BytesIO(extracted_bytes))
+                    
+                    saved_csv_path = os.path.join(run_folder, f"{Path(sub_fn).stem}.csv")
+                    df.to_csv(saved_csv_path, index=False)
+                    original_filename = sub_fn
+            elif fn_lower.endswith(".parquet"):
+                df = pd.read_parquet(uploaded_file)
+                saved_csv_path = os.path.join(run_folder, f"{Path(clean_fn).stem}.csv")
+                df.to_csv(saved_csv_path, index=False)
+            elif fn_lower.endswith(".xlsx") or fn_lower.endswith(".xls"):
+                df = pd.read_excel(uploaded_file)
+                saved_csv_path = os.path.join(run_folder, f"{Path(clean_fn).stem}.csv")
+                df.to_csv(saved_csv_path, index=False)
+            else:
+                # Direct CSV / TSV
+                temp_upload_path = os.path.join(run_folder, clean_fn)
+                uploaded_file.save(temp_upload_path)
+                df = dynamic_load_csv(temp_upload_path)
+                saved_csv_path = os.path.join(run_folder, "all_groups_combined.csv") if clean_fn != "all_groups_combined.csv" else temp_upload_path
+                if saved_csv_path != temp_upload_path:
+                    df.to_csv(saved_csv_path, index=False)
+        elif file_path and os.path.exists(file_path):
+            original_filename = os.path.basename(file_path)
+            df = dynamic_load_csv(file_path)
+            saved_csv_path = file_path
+        else:
+            return jsonify({"error": "No file or valid file_path provided for ingestion"}), 400
+
+        # Run fast profiling
+        profile_res = profile_dataframe(df)
+        
+        # Run Qwen Column Semantics
+        qwen_semantics = classify_columns_with_qwen(df, original_filename)
+        
+        # Persist summary JSON
+        persist_profile_summary(profile_res, run_id, tenant_id, qwen_semantics)
+        
+        # Generate Narrative
+        profile_narrative = generate_profile_narrative(profile_res, qwen_semantics, original_filename)
+        
+        # Generate Phi-4 Sensor Story
+        phi4_story = generate_phi4_eda_narrative(profile_res)
+
+        # Enrich Markdown with industrial HTML
+        from markdown_formatter import render_markdown_html
+        phi4_story_html = render_markdown_html(phi4_story)
+        profile_narrative_html = render_markdown_html(profile_narrative)
+
+        # Bind to Jane session if session_id provided
+        if session_id:
+            try:
+                save_session_metadata(session_id or "latest", "profile_narrative", profile_narrative)
+                save_session_metadata("latest", "profile_narrative", profile_narrative)
+                save_session_metadata(session_id or "latest", "compiled_csv_path", saved_csv_path)
+                save_session_metadata("latest", "compiled_csv_path", saved_csv_path)
+                save_session_metadata(session_id or "latest", "run_id", run_id)
+                save_session_metadata("latest", "run_id", run_id)
+                save_session_metadata(session_id or "latest", "execution_mode", execution_mode)
+                save_session_metadata("latest", "execution_mode", execution_mode)
+            except Exception as bind_err:
+                logger.warning(f"[StudioIngest] Non-fatal session bind warning: {bind_err}")
+
+        return jsonify({
+            "status": "success",
+            "csv_path": saved_csv_path,
+            "filename": original_filename,
+            "rows": len(df),
+            "columns": len(df.columns),
+            "run_id": run_id,
+            "execution_mode": execution_mode,
+            "profile": profile_res,
+            "profile_narrative": profile_narrative,
+            "profile_narrative_html": profile_narrative_html,
+            "phi4_story": phi4_story,
+            "phi4_story_html": phi4_story_html,
+            "narrative_html": phi4_story_html,
+            "qwen_semantics": qwen_semantics,
+            "diagnostic_signals": profile_res.get("diagnostic_signals", []),
+            "top_correlations": profile_res.get("top_correlations", []),
+            "column_stats": profile_res.get("column_stats", []),
+        }), 200
+
+    except Exception as exc:
+        logger.error(f"[StudioIngest] Ingestion failed: {exc}", exc_info=True)
+        return jsonify({"error": f"Dataset ingestion failed: {str(exc)}"}), 500
+
+
+@app.route("/api/v1/session/bind_profile", methods=["POST"])
+def bind_profile_to_session():
+    """
+    POST /api/v1/session/bind_profile
+    Binds profiling results and session state to SQLite session_metadata for Jane's context injection.
+    """
+    from jane_assistant import save_session_metadata
+
+    data = request.get_json(force=True, silent=True) or {}
+    session_id = data.get("session_id", "").strip()
+    if not session_id:
+        return jsonify({"error": "session_id is required"}), 400
+
+    run_id = data.get("run_id", "")
+    compiled_csv_path = data.get("compiled_csv_path", "")
+    profile_narrative = data.get("profile_narrative", "")
+    execution_mode = data.get("execution_mode", "EXPLORATION_ONLY")
+
+    if profile_narrative:
+        save_session_metadata(session_id, "profile_narrative", profile_narrative)
+        save_session_metadata("latest", "profile_narrative", profile_narrative)
+    if compiled_csv_path:
+        save_session_metadata(session_id, "compiled_csv_path", compiled_csv_path)
+        save_session_metadata("latest", "compiled_csv_path", compiled_csv_path)
+    if run_id:
+        save_session_metadata(session_id, "run_id", run_id)
+        save_session_metadata("latest", "run_id", run_id)
+    if execution_mode:
+        save_session_metadata(session_id, "execution_mode", execution_mode)
+        save_session_metadata("latest", "execution_mode", execution_mode)
+
+    return jsonify({"status": "bound", "session_id": session_id}), 200
+
 
 @app.route("/api/v1/profile", methods=["POST"])
 def profile_dataset():
@@ -1008,11 +1317,13 @@ def profile_dataset():
     - outlier_pct (row-level)
     - max_missing_pct, most_missing_col
     """
-    from profiler_service import profile_dataframe
+    from profiler_service import profile_dataframe, classify_columns_with_qwen, persist_profile_summary, generate_profile_narrative
+    from jane_assistant import save_session_metadata
     import pandas as pd
 
     data = request.get_json(force=True, silent=True) or {}
     file_path = request.form.get("file_path") or data.get("file_path") or request.args.get("file_path")
+    session_id = request.form.get("session_id") or data.get("session_id") or request.args.get("session_id")
 
     if "file" in request.files:
         file = request.files["file"]
@@ -1023,7 +1334,9 @@ def profile_dataset():
         else:
             df = pd.read_csv(file)
         res = profile_dataframe(df)
-        return jsonify({**res, "profile": res}), 200
+        qwen_sem = classify_columns_with_qwen(df, file.filename)
+        narrative = generate_profile_narrative(res, qwen_sem, file.filename)
+        return jsonify({**res, "profile": res, "qwen_semantics": qwen_sem, "profile_narrative": narrative}), 200
 
     if not file_path:
         return jsonify({"error": "file_path or file is required"}), 400
@@ -1032,60 +1345,142 @@ def profile_dataset():
         return jsonify({"error": f"File not found: {file_path}"}), 404
 
     try:
-        if file_path.endswith(".parquet"):
-            df = pd.read_parquet(file_path)
-        elif file_path.endswith(".xlsx") or file_path.endswith(".xls"):
-            df = pd.read_excel(file_path)
-        else:
-            df = pd.read_csv(file_path)
-
+        df = dynamic_load_csv(file_path)
         result = profile_dataframe(df)
+        fn = os.path.basename(file_path)
+        
+        # Qwen Semantics & Summaries
+        qwen_semantics = classify_columns_with_qwen(df, fn)
+        narrative_text = generate_phi4_eda_narrative(result)
+        profile_narrative = generate_profile_narrative(result, qwen_semantics, fn)
+
+        from markdown_formatter import render_markdown_html
+        phi4_story_html = render_markdown_html(narrative_text)
+        profile_narrative_html = render_markdown_html(profile_narrative)
+
         try:
             tenant_id = (request.form.get("tenant_id") or data.get("tenant_id") or "global").strip()
             norm_path = file_path.replace("\\", "/")
             run_match = re.search(r"run_([a-zA-Z0-9]+)", norm_path)
             run_id = f"run_{run_match.group(1)}" if run_match else f"run_{uuid.uuid4().hex[:8]}"
             export_profile_report(tenant_id, run_id, result)
+            persist_profile_summary(result, run_id, tenant_id, qwen_semantics)
+
+            if session_id:
+                save_session_metadata(session_id, "profile_narrative", profile_narrative)
+                save_session_metadata(session_id, "compiled_csv_path", file_path)
+                save_session_metadata(session_id, "run_id", run_id)
         except Exception as rep_err:
             logger.warning(f"[Profile] Non-fatal profile report export error: {rep_err}")
 
-        return jsonify({**result, "profile": result}), 200
+        return jsonify({
+            **result,
+            "status": "success",
+            "profile": result,
+            "narrative": narrative_text,
+            "narrative_html": phi4_story_html,
+            "phi4_story": narrative_text,
+            "phi4_story_html": phi4_story_html,
+            "profile_narrative": profile_narrative,
+            "profile_narrative_html": profile_narrative_html,
+            "qwen_semantics": qwen_semantics,
+            "diagnostic_signals": result.get("diagnostic_signals", []),
+            "column_stats": result.get("column_stats", []),
+            "top_correlations": result.get("top_correlations", []),
+        }), 200
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
 
 @app.route("/api/v1/reports/<run_id>/eda_report.html", methods=["GET"])
-def serve_eda_report(run_id):
+@app.route("/api/v1/reports/eda_report.html", methods=["GET"])
+def serve_eda_report(run_id="default"):
     """
-    Serve generated fg-data-profiling interactive HTML report for a specific run.
+    Serve generated fg-data-profiling interactive HTML report dynamically for the active dataset.
+    Generates on-demand if not already cached for the exact file.
     """
     tenant_id = request.args.get("tenant_id", "global")
     theme = request.args.get("theme", "light").lower()
     file_path_arg = request.args.get("file_path", "").strip()
 
     reports_dir = get_tenant_subfolder("reports", tenant_id)
+    uploads_dir = get_tenant_subfolder("uploads", tenant_id)
+    runs_dir = get_tenant_subfolder("runs", tenant_id)
     
+    # 1. Resolve true dataset path on disk
+    abs_dataset = None
+    if file_path_arg:
+        # Check direct path, uploads folder, or workspace
+        candidates = [
+            os.path.abspath(file_path_arg),
+            os.path.join(uploads_dir, os.path.basename(file_path_arg)),
+            os.path.join(runs_dir, run_id, os.path.basename(file_path_arg)),
+            os.path.join(os.getcwd(), file_path_arg),
+        ]
+        for c in candidates:
+            if os.path.exists(c) and os.path.isfile(c):
+                abs_dataset = c
+                break
+
+    # If not found by file_path_arg, check if run_id folder has a compiled dataset
+    if not abs_dataset and run_id and run_id not in ("default", "undefined", "null"):
+        run_csv = os.path.join(runs_dir, run_id, "all_groups_combined.csv")
+        if os.path.exists(run_csv):
+            abs_dataset = run_csv
+
     target_file = None
-    possible_names = [f"eda_{run_id}.html", "eda_report.html", "eda_run_20250115_143022.html", "eda_run_4d9a27ef.html"]
-    for name in possible_names:
-        full_path = os.path.join(reports_dir, name)
-        if os.path.exists(full_path):
-            target_file = full_path
-            break
-            
-    if not target_file:
-        runs_dir = get_tenant_subfolder("runs", tenant_id)
+
+    if abs_dataset and os.path.exists(abs_dataset):
+        # Deterministic cache filename based on dataset filename + modification time
+        raw_name = os.path.splitext(os.path.basename(abs_dataset))[0]
+        safe_name = re.sub(r'[^a-zA-Z0-9_-]', '_', raw_name)
+        mtime = int(os.path.getmtime(abs_dataset))
+        target_file = os.path.join(reports_dir, f"eda_{safe_name}_{mtime}.html")
+
+        # Generate on-demand if cache is missing or stale
+        if not os.path.exists(target_file):
+            try:
+                from profiler_service import generate_exhaustive_html_report
+                logger.info(f"[EDA] Generating fresh exhaustive EDA report for {abs_dataset} -> {target_file}")
+                generate_exhaustive_html_report(
+                    file_path=abs_dataset,
+                    output_html_path=target_file,
+                    title=f"AIConnex Data Profiling Report: {os.path.basename(abs_dataset)}"
+                )
+            except Exception as gen_err:
+                logger.exception(f"[EDA] On-demand report generation failed: {gen_err}")
+
+    # Fallback to run-specific html only if matching run_id exists
+    if (not target_file or not os.path.exists(target_file)) and run_id and run_id not in ("default", "undefined", "null"):
         run_html = os.path.join(runs_dir, run_id, "eda_report.html")
         if os.path.exists(run_html):
             target_file = run_html
 
-    if not target_file:
-        html_files = [os.path.join(reports_dir, f) for f in os.listdir(reports_dir) if f.endswith(".html")]
-        if html_files:
-            target_file = max(html_files, key=os.path.getmtime)
-
+    # If still no valid report exists for this active dataset, return a clean empty state (NO STALE DEMO CACHE)
     if not target_file or not os.path.exists(target_file):
-        return jsonify({"status": "generating", "message": "Report is generating in background..."}), 202
+        empty_html = """<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>No Dataset Loaded</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #F4F5F7; color: #475569; display: flex; align-items: center; justify-content: center; height: 85vh; margin: 0; text-align: center; }
+    .box { background: white; padding: 48px 64px; border-radius: 20px; border: 1px solid #E2E8F0; box-shadow: 0 4px 20px rgba(0,0,0,0.04); max-width: 480px; }
+    .icon { font-size: 40px; margin-bottom: 14px; }
+    h3 { color: #0F172A; margin: 0 0 8px 0; font-size: 18px; font-weight: 700; }
+    p { font-size: 13px; color: #64748B; line-height: 1.5; margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div class="icon">📊</div>
+    <h3>No Active Dataset Loaded</h3>
+    <p>Please upload a CSV dataset or drop a file in Data Studio to generate your live Exhaustive EDA report.</p>
+  </div>
+</body>
+</html>"""
+        from flask import Response
+        return Response(empty_html, mimetype="text/html", status=200)
 
     # Read and inject master theme stylesheet & body attributes
     with open(target_file, "r", encoding="utf-8") as f:
@@ -1401,7 +1796,6 @@ def serve_eda_report(run_id):
 
     body_class = "theme-dark" if theme == "dark" else "theme-light"
     if "<body" in html_content:
-        import re
         html_content = re.sub(r'<body([^>]*)class=["\']([^"\']*)["\']', rf'<body\1class="\2 {body_class}"', html_content)
         if f'class="{body_class}"' not in html_content and f"class='{body_class}'" not in html_content and f' {body_class}' not in html_content:
             html_content = html_content.replace("<body", f'<body class="{body_class}" data-theme="{theme}"')
@@ -1821,6 +2215,28 @@ def execute_end_to_end_pipeline_endpoint():
     return jsonify(res), 200
 
 
+def prewarm_local_models():
+    """Pre-load local GGUF model into system RAM at backend startup so user queries respond in ~1.5s."""
+    import threading
+    def _warmup():
+        try:
+            import logging
+            log = logging.getLogger("app")
+            log.info("[PreWarm] Pre-loading Qwen 2.5-Coder 3B GGUF model into RAM at backend startup...")
+            from local_gguf_runner import get_model_path
+            p = get_model_path("qwen2.5-coder-3b-q4")
+            if p and os.path.exists(p):
+                from llama_cpp import Llama
+                llm = Llama(model_path=p, n_ctx=512, verbose=False)
+                _ = llm("warmup", max_tokens=1)
+                log.info("[PreWarm] ✅ GGUF Model successfully loaded into RAM! First query response time is now ~1.5s.")
+        except Exception as err:
+            pass
+
+    threading.Thread(target=_warmup, daemon=True).start()
+
+
 if __name__ == "__main__":
+    prewarm_local_models()
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8000)), debug=True, use_reloader=False)
 

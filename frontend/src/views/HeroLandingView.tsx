@@ -77,11 +77,11 @@ export const HeroLandingView: React.FC<HeroLandingViewProps> = ({ onSelectView, 
                 })
                   .then((res) => res.json())
                   .then((data) => {
-                    const dest = data.deployment_deliverables?.target_destination_view === 'DataStudio' ? 'data_explorer' : 'ml_studio';
+                    const dest = data.deployment_deliverables?.target_destination_view === 'DataStudio' ? 'data_explorer' : 'model_explorer';
                     onSelectView(dest as ViewMode);
                   })
                   .catch(() => {
-                    onSelectView('ml_studio');
+                    onSelectView('model_explorer');
                   });
               }}
               className="w-full sm:w-auto bg-[#2B0063] hover:bg-[#3C1053] text-white font-bold px-8 py-3.5 rounded-full flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl active:scale-95 duration-200 group cursor-pointer text-sm sm:text-base border border-[#E86326]/40"

@@ -3,8 +3,8 @@ import { BarChart2, Loader2, AlertCircle, Info, Sliders, TableIcon, TrendingUp, 
 
 // Lazy-load Graphic Walker with fallback handling
 const GraphicWalkerComponent = lazy(() =>
-  import('@kanaries/graphic-walker').then((mod) => ({
-    default: mod.GraphicWalker || mod.default,
+  import('@kanaries/graphic-walker').then((mod: any) => ({
+    default: (mod.GraphicWalker || mod.default) as React.ComponentType<any>,
   }))
 );
 
@@ -73,24 +73,68 @@ function parseCSVtoGWDataset(csvText: string): {
   fields: { fid: string; name: string; semanticType: 'quantitative' | 'nominal'; analyticType: 'measure' | 'dimension' }[];
   dataSource: Record<string, any>[];
 } {
-  const lines = csvText.trim().split('\n');
-  const headers = lines[0].split(',').map((h) => h.trim().replace(/"/g, ''));
+  if (!csvText || !csvText.trim()) {
+    return { fields: [], dataSource: [] };
+  }
+
+  const lines = csvText.trim().split(/\r?\n/).filter((l) => l.trim().length > 0);
+  if (lines.length === 0) return { fields: [], dataSource: [] };
+
+  // Detect delimiter (, or ; or \t)
+  const firstLine = lines[0];
+  const commaCount = (firstLine.match(/,/g) || []).length;
+  const semiCount = (firstLine.match(/;/g) || []).length;
+  const tabCount = (firstLine.match(/\t/g) || []).length;
+  const delimiter = semiCount > commaCount ? ';' : tabCount > commaCount ? '\t' : ',';
+
+  // Robust line splitter for quoted CSV values
+  const splitLine = (line: string): string[] => {
+    const res: string[] = [];
+    let current = '';
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      if (char === '"') {
+        inQuotes = !inQuotes;
+      } else if (char === delimiter && !inQuotes) {
+        res.push(current.trim().replace(/^"|"$/g, ''));
+        current = '';
+      } else {
+        current += char;
+      }
+    }
+    res.push(current.trim().replace(/^"|"$/g, ''));
+    return res;
+  };
+
+  const rawHeaders = splitLine(lines[0]);
+  const headers = rawHeaders.map((h, i) => h || `Col_${i + 1}`);
 
   const sampleLines = lines.slice(1, 5001); // cap at 5000 rows for smooth UI
   const dataSource = sampleLines.map((line) => {
-    const vals = line.split(',');
+    const vals = splitLine(line);
     const row: Record<string, any> = {};
     headers.forEach((h, i) => {
-      const raw = (vals[i] ?? '').trim().replace(/"/g, '');
-      const num = parseFloat(raw);
-      row[h] = isNaN(num) ? raw : num;
+      const raw = vals[i] ?? '';
+      if (raw === '' || raw.toLowerCase() === 'nan' || raw.toLowerCase() === 'null') {
+        row[h] = null;
+      } else {
+        const num = parseFloat(raw);
+        row[h] = isNaN(num) || raw.trim() !== String(num) ? raw : num;
+      }
     });
     return row;
   });
 
   const fields = headers.map((h) => {
-    const firstVal = dataSource[0]?.[h];
-    const isNumeric = typeof firstVal === 'number';
+    // Check first 10 non-null values to infer numeric vs nominal
+    let isNumeric = false;
+    for (const r of dataSource.slice(0, 10)) {
+      if (r[h] !== null && typeof r[h] === 'number') {
+        isNumeric = true;
+        break;
+      }
+    }
     return {
       fid: h,
       name: h,

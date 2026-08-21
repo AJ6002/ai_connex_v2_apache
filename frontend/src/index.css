@@ -342,10 +342,98 @@
   font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 
-/* ── Donut / SVG ring ──────────────────────────────────── */
+/* ── Don't / SVG ring ──────────────────────────────────── */
 .donut-ring {
   stroke-dasharray: 100, 100;
   transition: stroke-dasharray 1s ease-out;
+}
+
+/* ── Phi-4 Story & AI Reasoning Output Styling ─────────── */
+.phi4-story-content {
+  color: #1E293B;
+}
+html.dark .phi4-story-content,
+[data-theme="dark"] .phi4-story-content {
+  color: #E2E8F0;
+}
+
+.phi4-story-content p {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+.phi4-story-content ol {
+  list-style: none;
+  counter-reset: reasoning-step;
+  padding-left: 0;
+  margin: 0.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.phi4-story-content ol > li {
+  position: relative;
+  padding-left: 1.85rem;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: #334155;
+}
+html.dark .phi4-story-content ol > li,
+[data-theme="dark"] .phi4-story-content ol > li {
+  color: #CBD5E1;
+}
+
+.phi4-story-content ol > li::before {
+  counter-increment: reasoning-step;
+  content: counter(reasoning-step);
+  position: absolute;
+  left: 0;
+  top: 0.05rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  background-color: #280B43;
+  color: #FFFFFF;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 700;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+html.dark .phi4-story-content ol > li::before,
+[data-theme="dark"] .phi4-story-content ol > li::before {
+  background-color: #4C1D95;
+  color: #F3E8FF;
+}
+
+.phi4-story-content strong {
+  font-weight: 700;
+  color: #0F172A;
+}
+html.dark .phi4-story-content strong,
+[data-theme="dark"] .phi4-story-content strong {
+  color: #FFFFFF;
+}
+
+.phi4-story-content code {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 0.15rem 0.375rem;
+  border-radius: 0.25rem;
+  background-color: #F1F5F9;
+  color: #E85520;
+  border: 1px solid #CBD5E1;
+}
+html.dark .phi4-story-content code,
+[data-theme="dark"] .phi4-story-content code {
+  background-color: #1E293B;
+  color: #FF8F5A;
+  border-color: #334155;
 }
 
 /* ── Scrollbars (thin, eggplant-glass) ─────────────────── */

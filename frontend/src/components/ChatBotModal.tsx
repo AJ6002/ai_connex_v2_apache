@@ -9,7 +9,9 @@ interface ChatBotModalProps {
   onDockChange?: (docked: boolean) => void;
   onSessionCreated?: (sessionId: string) => void;
   onUploadRequested?: (cucSeed?: any) => void;
+  onExecutionModeChange?: (mode: 'EXPLORATION_ONLY' | 'PREPARATION_ONLY' | 'FULL_AUTOML' | 'DIRECT_NAVIGATION') => void;
   externalNarration?: string | null;
+  externalNarrationNode?: string | null;
   interruptData?: any;
   onInterruptResolved?: () => void;
   activeSessionId?: string | null;
@@ -142,6 +144,7 @@ export const ChatBotModal: React.FC<ChatBotModalProps> = ({
   onDockChange,
   onSessionCreated,
   onUploadRequested,
+  onExecutionModeChange,
   externalNarration,
   externalNarrationNode,
   interruptData,
@@ -244,74 +247,46 @@ export const ChatBotModal: React.FC<ChatBotModalProps> = ({
     if (!textToSend) setInputText('');
     setIsLoading(true);
 
-    try {
-      // Send request to Jane Chatbot API gateway (port 8000 or 5000) or fallback
-      const bodyPayload = {
-        userId,
-        session_id: activeSessionId || undefined,
-        sessionId: activeSessionId || undefined,
-        message: query,
-        query,
-      };
+    // Send request to Jane Chatbot API gateway (port 8000 or 5000) or fallback
+    const bodyPayload = {
+      userId,
+      session_id: activeSessionId || undefined,
+      sessionId: activeSessionId || undefined,
+      message: query,
+      query,
+      user_input: query,
+    };
 
-      let response: Response | null = null;
+    let response: Response | null = null;
+    try {
+      response = await fetch('http://localhost:8000/api/v1/jane/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bodyPayload),
+      });
+    } catch {
       try {
-        response = await fetch('http://localhost:8000/api/v1/jane/chat', {
+        response = await fetch('http://localhost:5000/api/v1/jane/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(bodyPayload),
         });
       } catch {
         try {
-          response = await fetch('http://localhost:5000/api/v1/jane/chat', {
+          response = await fetch('/api/v1/jane/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(bodyPayload),
           });
         } catch {
-          try {
-            response = await fetch('/api/v1/jane/chat', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(bodyPayload),
-            });
-          } catch {
-            // offline
-          }
+          // completely offline
         }
       }
+    }
 
-      if (response && response.ok) {
-        const data = await response.json();
-        const rawText = data.reply || data.response || data.botResponse || data.answer || "No response received from Jane.";
-        const botMsg: Message = {
-          sender: 'bot',
-          text: rawText,
-          html: data.reply_html || data.html || renderMarkdownToHtml(rawText),
-          intent: data.intent ? `Intent: ${data.intent}` : 'Jane • AI Assistant',
-          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          options: data.options || [],
-        };
-        setMessages((prev) => [...prev, botMsg]);
-
-        // Propagate active LangGraph / Jane session ID
-        if (data.session_id && onSessionCreated) {
-          onSessionCreated(data.session_id);
-        }
-
-        // Automatic seamless transition: slide & dock Jane, then open upload dropzone
-        if (data.action_required === 'OPEN_UPLOAD_CONTROLLER') {
-          setTimeout(() => {
-            if (onUploadRequested) {
-              onUploadRequested(data.cuc_seed || null);
-            }
-          }, 1000);
-        }
-      } else {
-        throw new Error('API offline');
-      }
-    } catch {
-      // Backend is offline — show a clean, helpful notice instead of fake data
+    if (!response || !response.ok) {
+      // Backend is genuinely offline
+      setIsLoading(false);
       setTimeout(() => {
         const offlineText = '⚠️ **Jane API Server is Offline.**\n\nUnable to reach the Jane Assistant backend on `http://localhost:8000` or `http://localhost:5000`.\n\nTo start the backend server, run in your terminal:\n```bash\npython backend/app.py\n```\nThen retry your question!';
         setMessages((prev) => [
@@ -324,6 +299,59 @@ export const ChatBotModal: React.FC<ChatBotModalProps> = ({
           },
         ]);
       }, 300);
+      return;
+    }
+
+    try {
+      const data = await response.json();
+      const rawText = data.reply || data.response || data.botResponse || data.answer || "No response received from Jane.";
+      const botMsg: Message = {
+        sender: 'bot',
+        text: rawText,
+        html: data.reply_html || data.html || renderMarkdownToHtml(rawText),
+        intent: data.intent ? `Intent: ${data.intent}` : 'Jane • AI Assistant',
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        options: data.options || [],
+      };
+      setMessages((prev) => [...prev, botMsg]);
+
+      // Propagate active LangGraph / Jane session ID
+      if (data.session_id && onSessionCreated) {
+        try { onSessionCreated(data.session_id); } catch {}
+      }
+
+      if (data.execution_mode && onExecutionModeChange) {
+        try { onExecutionModeChange(data.execution_mode); } catch {}
+      }
+
+      // Mid-session intent upgrade feedback
+      if (data.action_required === 'UPGRADE_SESSION_MODE' || (data.execution_mode === 'FULL_AUTOML' && data.reply && data.reply.toLowerCase().includes('upgraded'))) {
+        try { window.dispatchEvent(new CustomEvent('aic-toast', { detail: '🚀 Session mode promoted to Full AutoML. All 6 stages unlocked!' })); } catch {}
+      }
+
+      // Direct UI View Navigation (Mode 4)
+      if (data.action_required === 'NAVIGATE_VIEW' && data.target_view) {
+        setTimeout(() => {
+          if (onNavigateView) {
+            try { onNavigateView(data.target_view); } catch {}
+          }
+        }, 600);
+      }
+
+      // Automatic seamless transition: slide & dock Jane, then open upload dropzone with execution mode
+      if (data.action_required === 'OPEN_UPLOAD_CONTROLLER') {
+        setTimeout(() => {
+          if (onUploadRequested) {
+            const seedData = data.cuc_seed || {};
+            if (!seedData.execution_mode && data.execution_mode) {
+              seedData.execution_mode = data.execution_mode;
+            }
+            try { onUploadRequested(seedData); } catch {}
+          }
+        }, 1000);
+      }
+    } catch (err) {
+      console.warn('[JaneModal] Non-fatal error processing response payload:', err);
     } finally {
       setIsLoading(false);
     }

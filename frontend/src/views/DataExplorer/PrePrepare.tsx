@@ -227,6 +227,8 @@ interface PrePrepareProps {
   algorithmFamily?: string;
   backendProfile?: Record<string, any> | null;
   onApproveDeliverables?: () => void;
+  executionMode?: 'EXPLORATION_ONLY' | 'PREPARATION_ONLY' | 'FULL_AUTOML' | 'DIRECT_NAVIGATION';
+  onOpenGraphicWalker?: () => void;
 }
 
 // ─────────────────────────────────────────────────────────────────
@@ -234,37 +236,102 @@ interface PrePrepareProps {
 // ─────────────────────────────────────────────────────────────────
 export const PrePrepare: React.FC<PrePrepareProps> = ({
   onProceed,
-  runId = 'run_20250115_143022',
-  dagId = 'DAG_201',
-  algorithmFamily = 'Anomaly Detection',
+  runId,
+  dagId,
+  algorithmFamily,
   backendProfile = null,
   onApproveDeliverables,
+  executionMode = 'FULL_AUTOML',
+  onOpenGraphicWalker,
+  compiledCsvPath,
 }) => {
+  // ── EMPTY STATE: When no dataset is compiled or active ───────────
+  if (!compiledCsvPath && !backendProfile) {
+    return (
+      <div className="p-8 max-w-[1400px] mx-auto animate-fadeIn">
+        <div className="bg-white rounded-3xl border border-slate-200 p-12 text-center shadow-xs flex flex-col items-center justify-center min-h-[480px]">
+          <div className="w-16 h-16 rounded-2xl bg-[#FF6B35]/10 border border-[#FF6B35]/25 flex items-center justify-center text-[#FF6B35] mb-5 shadow-xs">
+            <span className="material-symbols-outlined text-3xl">upload_file</span>
+          </div>
+          <h2 className="text-xl font-bold text-slate-900 mb-2">No Active Telemetry Dataset Loaded</h2>
+          <p className="text-sm text-slate-500 max-w-md mb-8 leading-relaxed">
+            Upload your CSV, Parquet, or XLSX dataset to generate automated statistical profiles, sensor health signals, and AI-driven telemetry stories.
+          </p>
+          <div className="flex items-center gap-3.5">
+            <button
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent('aic-navigate', { detail: 'compiler' }));
+              }}
+              className="px-6 py-3 bg-[#FF6B35] hover:bg-[#E85520] text-white font-bold text-xs rounded-xl transition-all shadow-md shadow-[#FF6B35]/20 flex items-center gap-2 cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-base">cloud_upload</span>
+              <span>Open Ingestion &amp; Compiler Studio</span>
+            </button>
+            <button
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent('aic-open-jane', { detail: 'Please upload my dataset' }));
+              }}
+              className="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all border border-slate-200 flex items-center gap-2 cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-base text-[#FF6B35]">auto_awesome</span>
+              <span>Ask Jane Assistant</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── LOADING STATE: Profiling in progress for active file ─────────
+  if (compiledCsvPath && !backendProfile) {
+    const activeFileName = compiledCsvPath.replace(/\\/g, '/').split('/').pop();
+    return (
+      <div className="p-8 max-w-[1400px] mx-auto animate-fadeIn">
+        <div className="bg-white rounded-3xl border border-slate-200 p-12 text-center shadow-xs flex flex-col items-center justify-center min-h-[450px]">
+          <div className="w-14 h-14 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 mb-5 animate-pulse">
+            <span className="material-symbols-outlined text-3xl">insights</span>
+          </div>
+          <h2 className="text-lg font-bold text-slate-900 mb-2">Analyzing Telemetry &amp; Computing Profile...</h2>
+          <p className="text-xs text-slate-600 font-mono mb-4 bg-slate-50 px-3.5 py-1.5 rounded-lg border border-slate-200 inline-block">
+            {activeFileName}
+          </p>
+          <p className="text-xs text-slate-400 max-w-sm">
+            Calculating sensor distributions, IQR outlier fences, correlation matrices, and Phi-4-mini causal narrative.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   const profile = backendProfile || {};
-  const rowsTotal     = profile.rows_total    ?? 14200;
-  const colsTotal     = profile.columns       ?? 26;
-  const readiness     = profile.readiness_score ?? 88;
+  const rowsTotal     = profile.rows_total    ?? 0;
+  const colsTotal     = profile.columns       ?? 0;
+  const readiness     = profile.readiness_score ?? 0;
   const duplicatePct  = profile.duplicate_pct  ?? 0.0;
-  const outlierPct    = profile.outlier_pct    ?? 2.1;
+  const outlierPct    = profile.outlier_pct    ?? 0.0;
   const maxMissingPct = profile.max_missing_pct ?? 0.0;
   const missingCol    = profile.most_missing_col || 'None';
-  const skewedCol     = profile.most_skewed_col  || 'None';
+  const skewedCol     = profile.most_skewed_col  || (profile.column_stats?.[0]?.column || 'sensor_1');
   const columnStats   = (profile.column_stats   ?? []) as Array<any>;
   const sampleRecords = (profile.sample_records  ?? []) as Array<any>;
   const topCorrs      = (profile.top_correlations ?? []) as Array<any>;
+
+  const effectiveRunId = (runId && runId !== 'run_20250115_143022') ? runId : (compiledCsvPath ? 'session_live' : 'pending');
+  const effectiveDagId = profile.recommended_dag_id || (dagId && dagId !== 'DAG_201' ? dagId : 'AutoML Pipeline');
+  const effectiveFamily = profile.algorithm_family || (algorithmFamily && algorithmFamily !== 'Anomaly Detection' ? algorithmFamily : 'Telemetry Inspection');
 
   const execAssess = profile.executive_assessment || {
     ingestion_integrity: `Successfully ingested ${rowsTotal.toLocaleString()} records across ${colsTotal} feature channels with ${duplicatePct}% duplicate row rate.`,
     critical_signals:    maxMissingPct > 1
       ? `Telemetry gap: '${missingCol}' contains ${maxMissingPct}% missing records.`
       : 'Dataset demonstrates optimal telemetry integrity with zero critical schema drops.',
-    pipeline_strategy: `AutoML routing selected ${dagId} (${algorithmFamily}) to model multi-channel sensor variance.`,
+    pipeline_strategy: `AutoML routing selected ${effectiveDagId} (${effectiveFamily}) to model multi-channel sensor variance.`,
   };
 
   const causal = profile.causal_rationale || {
     step_1_compiler:     `Assembled raw batch files into unified matrix (${rowsTotal.toLocaleString()} rows, ${colsTotal} channels).`,
     step_2_profiler:     `Statistical audit flagged ${outlierPct}% outlier density in '${skewedCol}'.`,
-    step_3_orchestrator: `Topology match: Unsupervised + temporal sensor variance ➔ ${dagId}.`,
+    step_3_orchestrator: `Topology match: Unsupervised + temporal sensor variance ➔ ${effectiveDagId}.`,
     step_4_recipe:       `Recipe locked: RobustScaler (IQR) + Forward-fill imputation + Lag transforms.`,
   };
 
@@ -432,8 +499,7 @@ export const PrePrepare: React.FC<PrePrepareProps> = ({
           line: { color: T.coralHover, width: 2 },
           fillcolor: T.coralGlow,
           whiskerwidth: 0.7,
-          hovertemplate: '%{y:.4f}<extra></extra>',
-        }];
+        } as any];
 
       case 'scatter': {
         // Scatter feature vs. itself shifted (proxy if no explicit target)
@@ -504,48 +570,120 @@ export const PrePrepare: React.FC<PrePrepareProps> = ({
           <div className="status-bar-icon-block"><Workflow size={20} /></div>
           <div className="status-bar-details">
             <div className="status-bar-title-row">
-              <span>Pipeline Stage 1 · Pre-Prepare Audit Hub</span>
-              <span className="status-run-badge"><GitCommit size={10} />{runId}</span>
+              <span>{executionMode === 'EXPLORATION_ONLY' ? 'Dataset Exploration & Visual Profiling Hub' : 'Pipeline Stage 1 · Pre-Prepare Audit Hub'}</span>
+              <span className="status-run-badge"><GitCommit size={10} />{effectiveRunId}</span>
+              {executionMode === 'EXPLORATION_ONLY' && (
+                <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 font-bold">
+                  Standalone Visual Mode
+                </span>
+              )}
             </div>
             <div className="status-bar-parameters">
-              <div className="param-item">Pipeline: <strong style={{ color: T.coral }}>{dagId}</strong></div>
+              <div className="param-item">{executionMode === 'EXPLORATION_ONLY' ? 'Engine:' : 'Pipeline:'} <strong style={{ color: T.coral }}>{executionMode === 'EXPLORATION_ONLY' ? 'Direct Fast-Track EDA' : effectiveDagId}</strong></div>
               <span style={{ color: T.textMuted }}>·</span>
-              <div className="param-item">Family: <strong style={{ color: T.optimal }}>{algorithmFamily}</strong></div>
+              <div className="param-item">Family: <strong style={{ color: T.optimal }}>{executionMode === 'EXPLORATION_ONLY' ? (profile.qwen_semantics?.domain ? profile.qwen_semantics.domain.replace(/_/g, ' ').toUpperCase() : 'Visual Profiler') : effectiveFamily}</strong></div>
               <span style={{ color: T.textMuted }}>·</span>
               <div className="param-item">Channels: <strong style={{ fontFamily: 'var(--font-mono)' }}>{colsTotal} mapped</strong></div>
+              {profile.qwen_semantics?.suggested_target && (
+                <>
+                  <span style={{ color: T.textMuted }}>·</span>
+                  <div className="param-item">Target: <strong style={{ color: '#8b5cf6', fontFamily: 'var(--font-mono)' }}>{profile.qwen_semantics.suggested_target}</strong></div>
+                </>
+              )}
             </div>
           </div>
         </div>
-        {onProceed && (
+        {executionMode === 'EXPLORATION_ONLY' ? (
+          onOpenGraphicWalker && (
+            <button className="proceed-cta-btn cursor-pointer bg-purple-700 hover:bg-purple-800 text-white" onClick={onOpenGraphicWalker}>
+              <BarChart2 size={15} /> Open Graphic Walker
+            </button>
+          )
+        ) : onProceed ? (
           <button className="proceed-cta-btn cursor-pointer" onClick={onProceed}>
             Proceed to Preparation <ArrowRight size={15} />
           </button>
-        )}
+        ) : null}
       </section>
+
+      {/* ── PHI-4-MINI DYNAMIC NARRATIVE CARD ─────────────────── */}
+      {(profile.phi4_story || profile.narrative) && (
+        <section
+          className="p-4 sm:p-5 rounded-2xl flex items-start gap-4 shadow-xs"
+          style={{
+            background: '#FFFFFF',
+            border: '1px solid #E2E8F0',
+            borderLeft: '4px solid #280B43',
+          }}
+        >
+          <div
+            style={{
+              width: 38,
+              height: 38,
+              borderRadius: 10,
+              background: '#F5F3FF',
+              color: '#280B43',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+              border: '1px solid #DDD6FE',
+              marginTop: 2,
+            }}
+          >
+            <Sparkles size={18} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
+              <span style={{ fontSize: 13, fontWeight: 700, fontFamily: 'var(--font-mono)', color: '#0F172A', letterSpacing: '-0.01em' }}>
+                🧠 Phi-4-mini Sensor Health & Operational Takeaways
+              </span>
+              <span style={{ fontSize: 10, fontFamily: 'var(--font-mono)', padding: '2px 8px', borderRadius: 99, background: '#F5F3FF', color: '#5B21B6', border: '1px solid #DDD6FE', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Dynamic AI Reasoning
+              </span>
+            </div>
+            <div
+              className="phi4-story-content"
+              style={{ fontSize: 12, color: '#1E293B', lineHeight: 1.6 }}
+              dangerouslySetInnerHTML={{
+                __html: (profile.phi4_story_html || profile.narrative_html)
+                  ? (profile.phi4_story_html || profile.narrative_html)
+                  : (profile.phi4_story || profile.narrative || '')
+                      .replace(/\*\*\[([^\]]+)\]\*\*/g, '<span style="display:inline-block; padding:2px 8px; border-radius:6px; background:#F5F3FF; color:#4C1D95; font-family:var(--font-mono); font-weight:700; font-size:11px; border:1px solid #DDD6FE; margin-right:6px;">$1</span>')
+                      .replace(/(\d+)\.\s+\*\*([^*]+)\*\*:\s*/g, '<div style="margin-top:8px; display:flex; align-items:flex-start; gap:8px;"><span style="width:18px; height:18px; border-radius:50%; background:#280B43; color:#FFFFFF; font-family:var(--font-mono); font-weight:700; font-size:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:2px;">$1</span><div style="flex:1;"><strong style="font-weight:700; color:#0F172A;">$2:</strong> ')
+                      .replace(/\*\*([^*]+)\*\*/g, '<strong style="font-weight:700; color:#0F172A;">$1</strong>')
+                      .replace(/`([^`]+)`/g, '<code style="padding:2px 6px; border-radius:4px; background:#F1F5F9; color:#E85520; font-family:var(--font-mono); font-size:11px; border:1px solid #CBD5E1;">$1</code>')
+                      .replace(/➔|->/g, '➔')
+              }}
+            />
+          </div>
+        </section>
+      )}
 
       {/* ── TOP: EXECUTIVE ASSESSMENT ──────────────────────────── */}
       <section style={{
-        background: `linear-gradient(135deg, ${T.eggplantDeep} 0%, ${T.eggplantMid} 60%, ${T.eggplant} 100%)`,
-        border: '1px solid rgba(255,255,255,0.10)',
+        background: '#FFFFFF',
+        border: '1px solid #E2E8F0',
         borderRadius: 16,
         padding: '20px 24px',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
       }}>
         {/* Header row */}
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16,
-                      borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: 16, marginBottom: 16 }}>
+                      borderBottom: '1px solid #E2E8F0', paddingBottom: 16, marginBottom: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-            <div style={{ width: 44, height: 44, borderRadius: 12, background: T.coral, display: 'flex',
+            <div style={{ width: 42, height: 42, borderRadius: 12, background: 'rgba(255,107,53,0.12)', color: '#FF6B35', border: '1px solid rgba(255,107,53,0.25)', display: 'flex',
                           alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <ShieldCheck size={22} color="#fff" />
+              <ShieldCheck size={22} color="#FF6B35" />
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ color: '#fff', fontWeight: 700, fontSize: 14 }}>Executive Dataset Assessment</span>
+                <span style={{ color: '#0F172A', fontWeight: 800, fontSize: 15 }}>Executive Dataset Assessment</span>
                 <span style={{ fontSize: 10, fontFamily: 'var(--font-mono)', padding: '2px 8px', borderRadius: 99,
-                               background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.60)',
-                               border: '1px solid rgba(255,255,255,0.10)' }}>Automated Audit</span>
+                               background: '#F1F5F9', color: '#475569',
+                               border: '1px solid #E2E8F0', fontWeight: 600 }}>Automated Audit</span>
               </div>
-              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', marginTop: 3 }}>
+              <p style={{ fontSize: 11.5, color: '#64748B', marginTop: 3 }}>
                 Real-time diagnostic evaluation across ingestion integrity, telemetry risks, and model routing.
               </p>
             </div>
@@ -553,10 +691,10 @@ export const PrePrepare: React.FC<PrePrepareProps> = ({
           {/* Readiness Score */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
             <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.45)',
-                            textTransform: 'uppercase', letterSpacing: '0.08em' }}>Readiness Score</div>
-              <div style={{ fontSize: 22, fontWeight: 800, fontFamily: 'var(--font-mono)', color: readinessColor }}>
-                {readiness}<span style={{ fontSize: 13, opacity: 0.6 }}>/100</span>
+              <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: '#64748B',
+                            textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>Readiness Score</div>
+              <div style={{ fontSize: 24, fontWeight: 800, fontFamily: 'var(--font-mono)', color: readinessColor }}>
+                {readiness}<span style={{ fontSize: 13, opacity: 0.6, color: '#64748B' }}>/100</span>
               </div>
             </div>
             <div style={{ width: 12, height: 12, borderRadius: '50%', background: readinessColor,
@@ -567,18 +705,18 @@ export const PrePrepare: React.FC<PrePrepareProps> = ({
         {/* 3 Pillars */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12 }}>
           {[
-            { icon: <Database size={13} />, label: '1. Ingestion & Schema Integrity', text: execAssess.ingestion_integrity, color: T.optimal },
-            { icon: <Activity size={13} />, label: '2. Telemetry Risk Factors',       text: execAssess.critical_signals,    color: T.warning  },
-            { icon: <Layers size={13} />,   label: '3. Pipeline Strategy',             text: execAssess.pipeline_strategy,   color: T.coralSoft },
+            { icon: <Database size={14} />, label: '1. Ingestion & Schema Integrity', text: execAssess.ingestion_integrity, color: '#059669' },
+            { icon: <Activity size={14} />, label: '2. Telemetry Risk Factors',       text: execAssess.critical_signals,    color: '#D97706' },
+            { icon: <Layers size={14} />,   label: '3. Pipeline Strategy',             text: execAssess.pipeline_strategy,   color: '#E85520' },
           ].map((p, i) => (
-            <div key={i} style={{ padding: '12px 14px', borderRadius: 12,
-                                  background: 'rgba(255,255,255,0.04)',
-                                  border: '1px solid rgba(255,255,255,0.08)' }}>
+            <div key={i} style={{ padding: '14px 16px', borderRadius: 12,
+                                  background: '#F8FAFC',
+                                  border: '1px solid #E2E8F0' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: p.color,
-                            fontWeight: 700, fontSize: 11, marginBottom: 6 }}>
+                            fontWeight: 700, fontSize: 11.5, marginBottom: 8 }}>
                 {p.icon}{p.label}
               </div>
-              <p style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.65)', lineHeight: 1.55 }}>{p.text}</p>
+              <p style={{ fontSize: 11, color: '#334155', lineHeight: 1.6 }}>{p.text}</p>
             </div>
           ))}
         </div>
@@ -871,35 +1009,85 @@ export const PrePrepare: React.FC<PrePrepareProps> = ({
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#fff', fontWeight: 700, fontSize: 14 }}>
-              Preparation Deliverables Verification
+              {executionMode === 'EXPLORATION_ONLY' ? 'Visual Exploration & Quality Audit Summary' : 'Preparation Deliverables Verification'}
               <span style={{ fontSize: 10, fontFamily: 'var(--font-mono)', padding: '2px 8px', borderRadius: 99,
                              background: 'rgba(16,185,129,0.18)', color: '#6ee7b7',
-                             border: '1px solid rgba(16,185,129,0.30)' }}>Audited & Ready</span>
+                             border: '1px solid rgba(16,185,129,0.30)' }}>
+                {executionMode === 'EXPLORATION_ONLY' ? 'Exploration Active' : 'Audited & Ready'}
+              </span>
             </div>
             <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.60)', fontFamily: 'var(--font-mono)', marginTop: 4 }}>
-              Diagnostic audit complete for {rowsTotal.toLocaleString()} rows. Pre-processing transforms locked for Stage 2.
+              {executionMode === 'EXPLORATION_ONLY'
+                ? `Dynamic profiling complete for ${rowsTotal.toLocaleString()} rows across ${colsTotal} channels. AutoML training is gated in exploration mode.`
+                : `Diagnostic audit complete for ${rowsTotal.toLocaleString()} rows. Pre-processing transforms locked for Stage 2.`}
             </p>
           </div>
         </div>
 
-        {onApproveDeliverables && (
-          <button
-            onClick={onApproveDeliverables}
-            style={{
-              padding: '12px 24px', background: T.coral, color: '#fff',
-              fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700,
-              borderRadius: 14, border: 'none', cursor: 'pointer',
-              boxShadow: `0 4px 16px ${T.coralGlow}`,
-              display: 'flex', alignItems: 'center', gap: 8,
-              transition: 'all 0.2s', flexShrink: 0,
-            }}
-            onMouseEnter={e => (e.currentTarget.style.background = T.coralHover)}
-            onMouseLeave={e => (e.currentTarget.style.background = T.coral)}
-          >
-            <CheckCircle size={16} />
-            Approve & Dispatch Deliverables to ML Studio
-          </button>
-        )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          {executionMode === 'EXPLORATION_ONLY' ? (
+            <>
+              <button
+                onClick={() => {
+                  const blob = new Blob([JSON.stringify(profile, null, 2)], { type: 'application/json' });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `data_profile_${runId}.json`;
+                  a.click();
+                }}
+                style={{
+                  padding: '12px 18px', background: 'rgba(255,255,255,0.12)', color: '#fff',
+                  fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700,
+                  borderRadius: 14, border: '1px solid rgba(255,255,255,0.20)', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: 6,
+                  transition: 'all 0.2s', flexShrink: 0,
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.20)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.12)')}
+              >
+                <Database size={15} />
+                Export Profile JSON
+              </button>
+
+              {onOpenGraphicWalker && (
+                <button
+                  onClick={onOpenGraphicWalker}
+                  style={{
+                    padding: '12px 24px', background: T.coral, color: '#fff',
+                    fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700,
+                    borderRadius: 14, border: 'none', cursor: 'pointer',
+                    boxShadow: `0 4px 16px ${T.coralGlow}`,
+                    display: 'flex', alignItems: 'center', gap: 8,
+                    transition: 'all 0.2s', flexShrink: 0,
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.background = T.coralHover)}
+                  onMouseLeave={e => (e.currentTarget.style.background = T.coral)}
+                >
+                  <BarChart2 size={16} />
+                  Open Graphic Walker Visual Studio
+                </button>
+              )}
+            </>
+          ) : onApproveDeliverables && (
+            <button
+              onClick={onApproveDeliverables}
+              style={{
+                padding: '12px 24px', background: T.coral, color: '#fff',
+                fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700,
+                borderRadius: 14, border: 'none', cursor: 'pointer',
+                boxShadow: `0 4px 16px ${T.coralGlow}`,
+                display: 'flex', alignItems: 'center', gap: 8,
+                transition: 'all 0.2s', flexShrink: 0,
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = T.coralHover)}
+              onMouseLeave={e => (e.currentTarget.style.background = T.coral)}
+            >
+              <CheckCircle size={16} />
+              Approve & Dispatch Deliverables to ML Studio
+            </button>
+          )}
+        </div>
       </section>
 
     </div>

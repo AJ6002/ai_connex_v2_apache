@@ -176,7 +176,21 @@ def _call_llm(
     dic_context: dict,
     api_key: str,
 ) -> str:
-    """Call Qwen 32B via OpenRouter. Returns raw JSON string."""
+    """Call LLM for HITL extraction. Primary: Tier 1 Local LLM; Fallback: Tier 2 OpenRouter API."""
+    # 1. Primary Intent: Tier 1 Local Offline LLM
+    try:
+        from local_gguf_runner import generate_local_gguf_response
+        local_reply = generate_local_gguf_response(
+            user_prompt=message,
+            context={"history": history, "dic_context": dic_context},
+            model_key="qwen2.5-coder-3b-q4"
+        )
+        if local_reply and len(local_reply.strip()) > 5 and ("{" in local_reply or "selected_recipe_id" in local_reply):
+            return local_reply.strip()
+    except Exception:
+        pass
+
+    # 2. Fallback Intent: Tier 2 OpenRouter API
     from openai import OpenAI
 
     base_url = os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
@@ -204,6 +218,9 @@ def _call_llm(
         messages.append({"role": role, "content": turn.get("content", "")})
 
     messages.append({"role": "user", "content": message})
+
+    if not api_key:
+        return "{}"
 
     client = OpenAI(api_key=api_key, base_url=base_url, timeout=12.0)
     response = client.chat.completions.create(

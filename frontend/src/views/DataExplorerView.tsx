@@ -34,15 +34,19 @@ interface DataExplorerViewProps {
   algorithmFamily?: string;
   onProceedToPrepare: () => void;
   onApproveDeliverables?: () => void;
+  executionMode?: 'EXPLORATION_ONLY' | 'PREPARATION_ONLY' | 'FULL_AUTOML' | 'DIRECT_NAVIGATION';
+  janeSessionId?: string;
 }
 
 export const DataExplorerView: React.FC<DataExplorerViewProps> = ({
   compiledCsvPath,
-  runId = 'run_20250115_143022',
+  runId,
   dagId = 'DAG_201',
   algorithmFamily = 'Anomaly Detection',
   onProceedToPrepare,
   onApproveDeliverables,
+  executionMode = 'FULL_AUTOML',
+  janeSessionId,
 }) => {
   const [activeTab, setActiveTab] = useState<'pre-prepare' | 'exhaustive-eda' | 'post-prepare' | 'post-fe' | 'post-train' | 'ad-hoc'>('pre-prepare');
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
@@ -58,11 +62,17 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({
     setTheme(prev => prev === 'light' ? 'dark' : 'light');
   };
 
-  // Fetch backend profiling payload if backend is online
+  // Fetch backend profiling payload if dataset is active
   useEffect(() => {
-    const targetPath = compiledCsvPath || 'services/workspace_data/global/runs/run_4d9a27ef/all_groups_combined.csv';
+    if (!compiledCsvPath) {
+      setBackendProfile(null);
+      return;
+    }
     const profilerForm = new FormData();
-    profilerForm.append('file_path', targetPath);
+    profilerForm.append('file_path', compiledCsvPath);
+    if (janeSessionId) {
+      profilerForm.append('session_id', janeSessionId);
+    }
     fetch('http://localhost:8000/api/v1/profile', {
       method: 'POST',
       body: profilerForm
@@ -70,25 +80,46 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({
     .then(res => res.ok ? res.json() : null)
     .then(data => {
       if (data && data.profile) {
-        setBackendProfile(data.profile);
+        const combinedProfile = {
+          ...data.profile,
+          qwen_semantics: data.qwen_semantics || data.profile?.qwen_semantics || {},
+          phi4_story: data.narrative || data.phi4_story || data.profile?.phi4_story || '',
+          phi4_story_html: data.phi4_story_html || data.narrative_html || data.profile?.phi4_story_html || '',
+          profile_narrative: data.profile_narrative || data.profile?.profile_narrative || '',
+          profile_narrative_html: data.profile_narrative_html || data.profile?.profile_narrative_html || '',
+        };
+        setBackendProfile(combinedProfile);
+        // Bind profile summary to Jane session memory
+        if (janeSessionId && data.profile_narrative) {
+          fetch('http://localhost:8000/api/v1/session/bind_profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              session_id: janeSessionId,
+              run_id: runId || data.run_id || 'session_live',
+              compiled_csv_path: compiledCsvPath,
+              profile_narrative: data.profile_narrative,
+              execution_mode: executionMode
+            })
+          }).catch(() => {});
+        }
       }
     })
     .catch(() => {});
-  }, [compiledCsvPath]);
+  }, [compiledCsvPath, janeSessionId, executionMode]);
 
   // Sidebar Icons definitions (MainPages Rail)
   const sidebarTopIcons = [
-    { id: 'magic', icon: <Sparkles size={18} />, classes: "sidebar-icon-magic" },
-    { id: 'chat', icon: <MessageSquare size={18} /> },
-    { id: 'upload', icon: <UploadCloud size={18} /> },
-    { id: 'analytics', icon: <BarChart2 size={18} />, classes: "sidebar-icon-active" },
-    { id: 'cleanup', icon: <Eraser size={18} /> },
-    { id: 'tasks', icon: <CheckSquare size={18} /> },
-    { id: 'lab', icon: <Beaker size={18} /> },
-    { id: 'flow', icon: <Workflow size={18} /> },
-    { id: 'docs', icon: <FileText size={18} /> },
-    { id: 'deploy', icon: <Rocket size={18} /> },
-    { id: 'growth', icon: <TrendingUp size={18} /> },
+    { icon: Sparkles, id: 'aic-agent', label: 'AI Intelligence' },
+    { icon: MessageSquare, id: 'chat-dock', label: 'Jane Assistant' },
+    { icon: UploadCloud, id: 'upload-hub', label: 'Data Ingestion' },
+    { icon: BarChart2, id: 'profiler', label: 'Statistical Profiler' },
+    { icon: Eraser, id: 'cleaner', label: 'Data Cleansing' },
+    { icon: CheckSquare, id: 'validation', label: 'Industrial Rules' },
+    { icon: Beaker, id: 'experiments', label: 'Feature Lab' },
+    { icon: Workflow, id: 'dag-studio', label: 'DAG Studio' },
+    { icon: FileText, id: 'audit-log', label: 'Audit Manifest' },
+    { icon: Rocket, id: 'deployment', label: 'Edge Gateway' },
   ];
 
   const sidebarBottomIcons = [
@@ -97,15 +128,22 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({
     { id: 'storage', icon: <Database size={18} /> }
   ];
 
-  // Pipeline stage tabs
-  const tabs = [
-    { id: 'pre-prepare', label: 'Pre-Prepare', badge: 'Brain', number: 1 },
-    { id: 'exhaustive-eda', label: 'Exhaustive EDA', badge: 'fg-Profiler', number: 2 },
-    { id: 'post-prepare', label: 'Post-Prepare', badge: 'Prepare', number: 3 },
-    { id: 'post-fe', label: 'Post-F.E', badge: 'Feature Engineered', number: 4 },
-    { id: 'post-train', label: 'Post-Train', badge: 'Training', number: 5 },
-    { id: 'ad-hoc', label: 'Ad-Hoc Explorer', badge: 'Visual Query', number: 6 }
-  ];
+  // Pipeline Execution Stage Tabs definition (Mode-Aware)
+  const isExploreMode = executionMode === 'EXPLORATION_ONLY' || executionMode === 'PREPARATION_ONLY';
+  const tabs = isExploreMode
+    ? [
+        { id: 'pre-prepare', label: 'Data Health', badge: 'Profiler', number: '01' },
+        { id: 'exhaustive-eda', label: 'Deep EDA', badge: 'Statistics', number: '02' },
+        { id: 'ad-hoc', label: 'Visual Query', badge: 'Graphic Walker', number: '03' },
+      ]
+    : [
+        { id: 'pre-prepare', label: 'Pre-Prepare', badge: 'Brain', number: '01' },
+        { id: 'exhaustive-eda', label: 'Exhaustive EDA', badge: 'Deep-EDA', number: '02' },
+        { id: 'post-prepare', label: 'Post-Prepare', badge: 'Cleaned', number: '03' },
+        { id: 'post-fe', label: 'Post-FE', badge: 'Features', number: '04' },
+        { id: 'post-train', label: 'Post-Train', badge: 'Model', number: '05' },
+        { id: 'ad-hoc', label: 'Ad-Hoc Explorer', badge: 'Visual', number: '06' },
+      ];
 
   // Render correct subpage
   const renderSubpage = () => {
@@ -115,16 +153,17 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({
           <PrePrepare 
             onProceed={() => setActiveTab('post-prepare')}
             compiledCsvPath={compiledCsvPath}
-            runId={runId}
+            runId={runId || 'session_live'}
             dagId={dagId}
             algorithmFamily={algorithmFamily}
             backendProfile={backendProfile}
             onApproveDeliverables={onApproveDeliverables}
+            executionMode={executionMode}
+            onOpenGraphicWalker={() => setActiveTab('ad-hoc')}
           />
         );
       case 'exhaustive-eda':
-        const effectiveRunId = (runId && runId !== 'undefined' && runId !== 'null') ? runId : 'run_20250115_143022';
-        const activeCsvName = compiledCsvPath ? compiledCsvPath.replace(/\\/g, '/').split('/').pop() : 'all_groups_combined.csv';
+        const activeCsvName = compiledCsvPath ? compiledCsvPath.replace(/\\/g, '/').split('/').pop() : 'No Dataset Loaded';
         return (
           <div className="p-6 max-w-[1700px] mx-auto animate-fadeIn space-y-4">
             <div className="flex items-center justify-between bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
@@ -155,7 +194,7 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({
             </div>
             
             <iframe 
-              src={`http://localhost:8000/api/v1/reports/${effectiveRunId}/eda_report.html?theme=${theme}&file_path=${encodeURIComponent(compiledCsvPath || '')}`}
+              src={`http://localhost:8000/api/v1/reports/eda_report.html?theme=${theme}&file_path=${encodeURIComponent(compiledCsvPath || '')}`}
               className="w-full h-[82vh] rounded-2xl border border-slate-200 shadow-sm bg-white transition-all"
               title="Exhaustive Data Profiling Report"
             />
@@ -167,7 +206,7 @@ export const DataExplorerView: React.FC<DataExplorerViewProps> = ({
           <PostPrepare 
             onProceed={() => setActiveTab('post-fe')}
             compiledCsvPath={compiledCsvPath}
-            runId={runId}
+            runId={runId || 'session_live'}
             dagId={dagId}
           />
         );
