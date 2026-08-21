@@ -1,0 +1,17 @@
+# AI-Connex Codeowners File
+# Direct code ownership to primary maintainers
+
+* @AJ6002
+
+# Core Engine & Contracts
+/contracts/ @AJ6002
+/data-studio/ @AJ6002
+/registries/ @AJ6002
+/sandbox/ @AJ6002
+
+# Presentation Shell
+/frontend/ @AJ6002
+
+# Security & Infrastructure
+/.github/ @AJ6002
+/Dockerfile @AJ6002
