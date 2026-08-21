@@ -73,3 +73,14 @@ jobs:
           file: ./Dockerfile
           push: false
           tags: aiconnex-base:latest
+
+      - name: Run Trivy Security Vulnerability Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'aiconnex-base:latest'
+          format: 'table'
+          exit-code: '0'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+

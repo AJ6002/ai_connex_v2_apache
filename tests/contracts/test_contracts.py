@@ -71,3 +71,19 @@ def test_discovery_contract():
     )
     assert artifact.is_safe is True
     assert len(artifact.member_inventory) == 2
+
+def test_job_manager_security_bounds():
+    import importlib
+    job_mgr_mod = importlib.import_module("data-studio.job-manager.manager")
+    DockerJobManager = job_mgr_mod.DockerJobManager
+    manager = DockerJobManager(default_memory_limit="1g", default_cpu_limit="2.0")
+    cmd = manager.build_container_command(
+        image_tag="parser-csv:v1",
+        input_host_path="tests/fixtures/sample.csv",
+        output_host_dir="tests/fixtures/output"
+    )
+    assert "--network" in cmd and "none" in cmd
+    assert "--memory" in cmd and "1g" in cmd
+    assert "--user" in cmd and "10001:10001" in cmd
+
+
