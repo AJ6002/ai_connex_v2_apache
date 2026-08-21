@@ -33,6 +33,8 @@ logs/
 .langgraph_api/
 mlruns/
 outputs/
+context_log.md
+
 
 # ==========================================
 # 4. Python & Node Environment & Caches
