@@ -1,0 +1,28 @@
+{
+  "unit_registry": {
+    "temperature": ["°C", "°F", "K"],
+    "pressure": ["PSI", "bar", "kPa", "MPa"],
+    "vibration": ["mm/s", "g", "in/s", "m/s²"],
+    "flow_rate": ["GPM", "m³/h", "L/min"],
+    "rotational_speed": ["RPM", "rad/s", "Hz"]
+  },
+  "asset_taxonomy": [
+    "Compressor",
+    "Turbofan",
+    "Centrifugal Pump",
+    "Gas Turbine",
+    "Gearbox",
+    "Wind Turbine",
+    "Semiconductor IGBT",
+    "Dispenser"
+  ],
+  "failure_modes": [
+    "Bearing Degradation",
+    "Cavitation",
+    "Fouling",
+    "Seal Failure",
+    "Thermal Overload",
+    "Imbalance",
+    "Misalignment"
+  ]
+}

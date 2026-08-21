@@ -1,9 +1,0 @@
-{
-  "dependencies": [
-    "."
-  ],
-  "graphs": {
-    "aiconnex_master_supervisor": "./agentic/studio.py:graph"
-  },
-  "env": ".env"
-}

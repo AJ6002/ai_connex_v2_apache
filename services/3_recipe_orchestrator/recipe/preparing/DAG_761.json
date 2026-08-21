@@ -1,5 +1,0 @@
-{
-  "impute_strategy": "median",
-  "scale_method": "robust",
-  "categorical_encoding": "none"
-}

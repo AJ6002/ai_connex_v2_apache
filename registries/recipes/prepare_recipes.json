@@ -1,0 +1,45 @@
+{
+  "recipes": [
+    {
+      "recipe_id": "recipe_vibration_clean_v1",
+      "recipe_name": "Standard Industrial Vibration Preparation",
+      "domain": "industrial_telemetry",
+      "target_task": "vibration_profiling",
+      "steps": [
+        {
+          "step_id": "s1",
+          "operation": "forward_fill_imputation",
+          "parameters": { "limit": 5 }
+        },
+        {
+          "step_id": "s2",
+          "operation": "unit_conversion",
+          "parameters": { "from": "in/s", "to": "mm/s" }
+        },
+        {
+          "step_id": "s3",
+          "operation": "outlier_clip",
+          "parameters": { "std_dev_threshold": 4.0 }
+        }
+      ]
+    },
+    {
+      "recipe_id": "recipe_turbofan_rul_v1",
+      "recipe_name": "Turbofan RUL Pre-Processing Recipe",
+      "domain": "aerospace",
+      "target_task": "regression_rul",
+      "steps": [
+        {
+          "step_id": "s1",
+          "operation": "drop_constant_columns",
+          "parameters": { "threshold": 0.0 }
+        },
+        {
+          "step_id": "s2",
+          "operation": "minmax_scale",
+          "parameters": { "feature_range": [0, 1] }
+        }
+      ]
+    }
+  ]
+}

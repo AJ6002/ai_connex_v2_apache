@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "KnowledgeDocumentMetadata",
+  "type": "object",
+  "properties": {
+    "document_id": { "type": "string" },
+    "title": { "type": "string" },
+    "category": {
+      "type": "string",
+      "enum": [
+        "platform",
+        "industrial-domains",
+        "asset-families",
+        "glossary",
+        "recipes",
+        "data-quality",
+        "manuals",
+        "sops",
+        "policies",
+        "failure-modes"
+      ]
+    },
+    "tenant_scope": { "type": "string" },
+    "asset_family": { "type": "string" },
+    "version": { "type": "string" },
+    "document_hash": { "type": "string" },
+    "is_retired": { "type": "boolean", "default": false }
+  },
+  "required": ["document_id", "title", "category", "tenant_scope", "version", "document_hash"]
+}

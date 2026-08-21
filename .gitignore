@@ -77,6 +77,7 @@ credentials/
 # ==========================================
 # 7. Obsolete Snapshots & Reference Repos
 # ==========================================
+archive_legacy/
 14AUG/
 aic/
 aic-2/
@@ -89,3 +90,4 @@ h2o-3/
 h2o_ref/
 platform_llmaindex/
 langui/
+
