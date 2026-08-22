@@ -1,0 +1,42 @@
+{
+  "lockfile_version": "1.0.0",
+  "pipeline": "Level 4 Sandbox",
+  "updated_at": "2026-08-22T08:38:27.217642",
+  "images": {
+    "parser-discovery": {
+      "image": "parser-discovery:latest",
+      "digest": "sha256:a2f2383596655861ca3254624f4bd14b266a44f143b6a5214e51c70bdc82a75d",
+      "sbom": "parser-discovery_sbom.json",
+      "built_at": "2026-08-22T08:34:36.290194",
+      "status": "APPROVED_SIGNED"
+    },
+    "parser-csv": {
+      "image": "parser-csv:latest",
+      "digest": "sha256:67113dbc4457b0530597430960e6284d05694213b920291f1739cb9b34ed1a41",
+      "sbom": "parser-csv_sbom.json",
+      "built_at": "2026-08-22T08:35:42.904299",
+      "status": "APPROVED_SIGNED"
+    },
+    "parser-xlsx": {
+      "image": "parser-xlsx:latest",
+      "digest": "sha256:bce94b2bfdd5ba92844295cb681461c1f216995d6e560e94e81703e3791eaa1b",
+      "sbom": "parser-xlsx_sbom.json",
+      "built_at": "2026-08-22T08:36:44.278941",
+      "status": "APPROVED_SIGNED"
+    },
+    "parser-parquet": {
+      "image": "parser-parquet:latest",
+      "digest": "sha256:d606b6c12c9ba8af0f4a97245dfa59ac8a1fa66b9a224e1ecfe54244e32f9b79",
+      "sbom": "parser-parquet_sbom.json",
+      "built_at": "2026-08-22T08:37:13.838334",
+      "status": "APPROVED_SIGNED"
+    },
+    "parser-compile": {
+      "image": "parser-compile:latest",
+      "digest": "sha256:7c9c65916c073bdbae121966c29ab97f2406200e16b84f9bb8a4595e8ac607d2",
+      "sbom": "parser-compile_sbom.json",
+      "built_at": "2026-08-22T08:38:27.204099",
+      "status": "APPROVED_SIGNED"
+    }
+  }
+}
