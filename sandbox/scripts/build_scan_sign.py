@@ -3,11 +3,11 @@ Build, Scan, SBOM, Sign & Lock script for all 5 sandbox parser images.
 Builds images -> verifies dependencies -> Trivy scan -> SBOM generation -> Cosign signing -> records digests.lock.
 """
 
-import os
-import sys
-import json
-import subprocess
 import hashlib
+import json
+import os
+import subprocess
+import sys
 from datetime import datetime
 from pathlib import Path
 
@@ -78,9 +78,9 @@ def build_scan_sign():
         trivy_cmd = f"trivy image --severity CRITICAL,HIGH {full_tag}"
         code, trivy_out = run_cmd(trivy_cmd)
         if code == 0:
-            print(f"[OK] Trivy security vulnerability scan: PASSED")
+            print("[OK] Trivy security vulnerability scan: PASSED")
         else:
-            print(f"[WARN] Trivy scan completed with warnings (or trivy binary missing)")
+            print("[WARN] Trivy scan completed with warnings (or trivy binary missing)")
 
         # 4. Syft SBOM Generation
         sbom_path = sbom_dir / f"{image_name}_sbom.json"
@@ -103,9 +103,9 @@ def build_scan_sign():
             sign_cmd = f"cosign sign --key {cosign_key} --yes {full_tag}"
             code, sign_out = run_cmd(sign_cmd)
             if code == 0:
-                print(f"[OK] Cosign signature attached: VERIFIED")
+                print("[OK] Cosign signature attached: VERIFIED")
             else:
-                print(f"[WARN] Cosign signature skipped in local mode")
+                print("[WARN] Cosign signature skipped in local mode")
 
         digests[image_name] = {
             "image": full_tag,
@@ -125,7 +125,7 @@ def build_scan_sign():
             "images": digests
         }, f, indent=2)
 
-    print(f"\n=== All 5 Sandbox Images Built, Scanned, Signed, & Locked! ===")
+    print("\n=== All 5 Sandbox Images Built, Scanned, Signed, & Locked! ===")
     print(f"Lockfile written to: {lockfile_path.name}")
 
 

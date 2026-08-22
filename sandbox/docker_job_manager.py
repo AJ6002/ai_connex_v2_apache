@@ -4,23 +4,19 @@ Enforces Cosign signature verification, network isolation, non-root execution, r
 manifest collection, and quarantine handling.
 """
 
-import os
-import sys
 import json
 import shutil
 import subprocess
 import uuid
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, Optional, List, Tuple
+from typing import Any
 
 import yaml
 
-from contracts.sandbox.result_manifest_contract import ParserResultManifest
-
 
 class DockerJobManager:
-    def __init__(self, config_path: Optional[Path] = None):
+    def __init__(self, config_path: Path | None = None):
         if config_path is None:
             config_path = Path(__file__).parent / "config" / "job_manager_config.yml"
         
@@ -51,9 +47,9 @@ class DockerJobManager:
         capability: str,
         input_dir: Path,
         output_dir: Path,
-        job_id: Optional[str] = None,
-        env_vars: Optional[Dict[str, str]] = None
-    ) -> Tuple[bool, Optional[Dict[str, Any]], str]:
+        job_id: str | None = None,
+        env_vars: dict[str, str] | None = None
+    ) -> tuple[bool, dict[str, Any] | None, str]:
         """Runs a sandbox container job under strict security controls."""
         if job_id is None:
             job_id = f"job_{uuid.uuid4().hex[:8]}"

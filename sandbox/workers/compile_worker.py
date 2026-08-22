@@ -4,18 +4,15 @@ Executes inside parser-compile sandbox container under non-root 10001:10001 with
 Strictly prohibits arbitrary/agent-generated SQL strings; uses pre-validated YAML compilation templates.
 """
 
-import sys
-import os
-import glob
 import hashlib
+import os
+import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, List
 
+import datafusion
 import pyarrow as pa
 import pyarrow.parquet as pq
-import datafusion
-import yaml
 
 from contracts.sandbox.result_manifest_contract import ParserResultManifest
 
@@ -124,7 +121,7 @@ def process_compile():
         print(f"Compile Parser successfully built Parquet artifact: {output_parquet_path} ({row_count} rows)")
 
     except Exception as e:
-        print(f"Compile Parser Error: {str(e)}", file=sys.stderr)
+        print(f"Compile Parser Error: {e!s}", file=sys.stderr)
         sys.exit(1)
 
 

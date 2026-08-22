@@ -3,10 +3,10 @@ Parquet Inspection Worker - Minimal schema and statistics validator for Parquet 
 Executes inside parser-parquet sandbox container under non-root 10001:10001 with read-only rootfs.
 """
 
-import sys
-import os
 import hashlib
+import os
 import shutil
+import sys
 from datetime import datetime
 from pathlib import Path
 
@@ -81,7 +81,7 @@ def process_parquet():
         print(f"Parquet Parser successfully validated & output artifact: {output_parquet_path} ({row_count} rows)")
 
     except Exception as e:
-        print(f"Parquet Parser Error: {str(e)}", file=sys.stderr)
+        print(f"Parquet Parser Error: {e!s}", file=sys.stderr)
         sys.exit(1)
 
 
