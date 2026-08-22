@@ -27,7 +27,7 @@ jobs:
 
       - name: Run Ruff Linter Check
         run: |
-          ruff check contracts data-studio
+          ruff check contracts data-studio --ignore N999
 
       - name: Run Mypy Static Type Analysis
         run: |

@@ -4,6 +4,7 @@ Deployment Contract - Production serving deployment policy and endpoint contract
 
 from pydantic import BaseModel, Field
 
+
 class DeploymentContract(BaseModel):
     deployment_id: str = Field(..., description="Unique deployment ID")
     model_id: str = Field(..., description="Target model artifact ID")

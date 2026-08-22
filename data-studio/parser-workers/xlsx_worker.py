@@ -2,12 +2,14 @@
 XLSX Parser Worker Container Entrypoint.
 """
 
-import sys
-import os
 import json
+import os
+import sys
+
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
+
 
 def parse_xlsx(input_xlsx_path: str, output_dir: str):
     if not os.path.exists(input_xlsx_path):

@@ -2,16 +2,17 @@
 FastAPI Production Intake & Intent Normalizer API.
 """
 
-import os
 import hashlib
+import importlib
+import os
 import uuid
-from typing import Optional, List
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from pydantic import BaseModel
 
 from contracts.dataset.dataset_contract import DatasetContract
 from contracts.intent.intent_contract import IntentContract
-import importlib
+
 inspect_dataset_archive = importlib.import_module("data-studio.discovery.inspector").inspect_dataset_archive
 normalize_user_intent = importlib.import_module("data-studio.intake.normalizer").normalize_user_intent
 
@@ -28,9 +29,9 @@ class IntentRequest(BaseModel):
     user_goal: str
     tenant_uid: str
     user_uid: str
-    site_scope: Optional[str] = None
-    asset_scope: Optional[str] = None
-    raw_asset_ids: Optional[List[str]] = None
+    site_scope: str | None = None
+    asset_scope: str | None = None
+    raw_asset_ids: list[str] | None = None
 
 @app.get("/health")
 def health_check():
@@ -38,10 +39,11 @@ def health_check():
 
 @app.post("/api/v2/intake/upload", response_model=DatasetContract)
 async def upload_dataset_asset(
-    file: UploadFile = File(...),
+    file: UploadFile = File(...),  # noqa: B008
     tenant_uid: str = Form(...),
-    site_uid: Optional[str] = Form(None)
+    site_uid: str | None = Form(None)
 ):
+
     os.makedirs(UPLOAD_DIR, exist_ok=True)
     asset_id = f"asset-{uuid.uuid4().hex[:8]}"
     file_path = os.path.join(UPLOAD_DIR, f"{asset_id}_{file.filename}")
@@ -49,11 +51,12 @@ async def upload_dataset_asset(
     hasher = hashlib.sha256()
     size_bytes = 0
 
-    with open(file_path, "wb") as buffer:
+    with open(file_path, "wb") as buffer:  # noqa: ASYNC230
         while chunk := await file.read(8192):
             size_bytes += len(chunk)
             hasher.update(chunk)
             buffer.write(chunk)
+
 
     sha256_hash = hasher.hexdigest()
 

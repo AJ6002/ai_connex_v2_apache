@@ -3,17 +3,18 @@ Intent Envelope Normalizer - Converts user request text and metadata into typed 
 """
 
 import uuid
-from typing import List, Optional
+
 from contracts.intent.intent_contract import IntentContract
 from registries.intent.registry import lookup_intent_policy
+
 
 def normalize_user_intent(
     user_goal: str,
     tenant_uid: str,
     user_uid: str,
-    site_scope: Optional[str] = None,
-    asset_scope: Optional[str] = None,
-    raw_asset_ids: Optional[List[str]] = None
+    site_scope: str | None = None,
+    asset_scope: str | None = None,
+    raw_asset_ids: list[str] | None = None
 ) -> IntentContract:
     """
     Map natural language user goal to intent category and typed IntentContract.

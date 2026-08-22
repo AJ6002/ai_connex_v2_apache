@@ -4,8 +4,9 @@ Lightweight Dataset Inspector - Safe metadata and candidate schema discovery.
 
 import os
 import zipfile
-from typing import Dict, List
+
 from contracts.discovery.discovery_contract import DatasetDiscoveryArtifact
+
 
 def inspect_dataset_archive(file_path: str, asset_id: str) -> DatasetDiscoveryArtifact:
     """
@@ -18,10 +19,10 @@ def inspect_dataset_archive(file_path: str, asset_id: str) -> DatasetDiscoveryAr
             security_findings=[f"File not found: {file_path}"]
         )
 
-    security_findings: List[str] = []
-    member_inventory: List[str] = []
-    member_sizes: Dict[str, int] = {}
-    detected_formats: List[str] = []
+    security_findings: list[str] = []
+    member_inventory: list[str] = []
+    member_sizes: dict[str, int] = {}
+    detected_formats: list[str] = []
 
     file_size = os.path.getsize(file_path)
     # Security limits
@@ -43,8 +44,9 @@ def inspect_dataset_archive(file_path: str, asset_id: str) -> DatasetDiscoveryAr
                     ext = name.split(".")[-1].lower()
                     if ext in ["csv", "xlsx", "json", "parquet"] and ext not in detected_formats:
                         detected_formats.append(ext)
-        except Exception as e:
-            security_findings.append(f"Invalid or corrupted ZIP archive: {str(e)}")
+        except (zipfile.BadZipFile, OSError, ValueError) as e:
+            security_findings.append(f"Invalid or corrupted ZIP archive: {e!s}")
+
 
     return DatasetDiscoveryArtifact(
         asset_id=asset_id,

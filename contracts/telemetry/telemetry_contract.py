@@ -2,8 +2,10 @@
 Telemetry Contract - Industrial sensor and telemetry stream contract.
 """
 
-from pydantic import BaseModel, Field
 from datetime import datetime
+
+from pydantic import BaseModel, Field
+
 
 class TelemetryContract(BaseModel):
     sensor_id: str = Field(..., description="Unique sensor tag ID")
