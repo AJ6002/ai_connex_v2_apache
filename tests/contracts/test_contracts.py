@@ -61,8 +61,13 @@ def test_discovery_contract():
     assert len(artifact.member_inventory) == 2
 
 def test_job_manager_security_bounds():
-    import importlib
-    job_mgr_mod = importlib.import_module("data-studio.job-manager.manager")
+    import importlib.util
+    from pathlib import Path
+    fpath = Path(__file__).resolve().parent.parent.parent / "data-studio" / "job-manager" / "manager.py"
+    spec = importlib.util.spec_from_file_location("manager_mod", fpath)
+    assert spec is not None and spec.loader is not None
+    job_mgr_mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(job_mgr_mod)
     DockerJobManager = job_mgr_mod.DockerJobManager
     manager = DockerJobManager(default_memory_limit="1g", default_cpu_limit="2.0")
     cmd = manager.build_container_command(
@@ -75,8 +80,13 @@ def test_job_manager_security_bounds():
     assert "--user" in cmd and "10001:10001" in cmd
 
 def test_intent_normalizer():
-    import importlib
-    norm_mod = importlib.import_module("data-studio.intake.normalizer")
+    import importlib.util
+    from pathlib import Path
+    fpath = Path(__file__).resolve().parent.parent.parent / "data-studio" / "intake" / "normalizer.py"
+    spec = importlib.util.spec_from_file_location("norm_mod", fpath)
+    assert spec is not None and spec.loader is not None
+    norm_mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(norm_mod)
     normalize_user_intent = norm_mod.normalize_user_intent
 
     intent = normalize_user_intent(
@@ -87,6 +97,7 @@ def test_intent_normalizer():
     assert intent.requires_model is True
     assert intent.intent_type == "time_series_forecast"
     assert intent.tenant_uid == "tenant-99"
+
 
 
 

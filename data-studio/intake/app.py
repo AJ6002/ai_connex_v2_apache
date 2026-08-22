@@ -4,8 +4,10 @@ FastAPI Production Intake & Intent Normalizer API.
 
 import hashlib
 import importlib
+import importlib.util
 import os
 import uuid
+from pathlib import Path
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from pydantic import BaseModel
@@ -13,8 +15,21 @@ from pydantic import BaseModel
 from contracts.dataset.dataset_contract import DatasetContract
 from contracts.intent.intent_contract import IntentContract
 
-inspect_dataset_archive = importlib.import_module("data-studio.discovery.inspector").inspect_dataset_archive
-normalize_user_intent = importlib.import_module("data-studio.intake.normalizer").normalize_user_intent
+_base_dir = Path(__file__).resolve().parent.parent
+_insp_path = _base_dir / "discovery" / "inspector.py"
+_insp_spec = importlib.util.spec_from_file_location("inspector_mod", _insp_path)
+assert _insp_spec is not None and _insp_spec.loader is not None
+_insp_mod = importlib.util.module_from_spec(_insp_spec)
+_insp_spec.loader.exec_module(_insp_mod)
+inspect_dataset_archive = _insp_mod.inspect_dataset_archive
+
+_norm_path = _base_dir / "intake" / "normalizer.py"
+_norm_spec = importlib.util.spec_from_file_location("normalizer_mod", _norm_path)
+assert _norm_spec is not None and _norm_spec.loader is not None
+_norm_mod = importlib.util.module_from_spec(_norm_spec)
+_norm_spec.loader.exec_module(_norm_mod)
+normalize_user_intent = _norm_mod.normalize_user_intent
+
 
 
 app = FastAPI(

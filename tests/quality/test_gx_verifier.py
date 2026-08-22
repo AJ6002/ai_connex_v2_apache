@@ -2,14 +2,20 @@
 Unit tests for Data Quality Verifier & Promotion Gates.
 """
 
-import importlib
+import importlib.util
 import tempfile
 from pathlib import Path
 
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-gx_verifier_mod = importlib.import_module("data-studio.quality.gx_verifier")
+_file_path = Path(__file__).resolve().parent.parent.parent / "data-studio" / "quality" / "gx_verifier.py"
+_spec = importlib.util.spec_from_file_location("gx_verifier_mod", _file_path)
+if _spec is None or _spec.loader is None:
+    raise ImportError(f"Could not load module from {_file_path}")
+gx_verifier_mod = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(gx_verifier_mod)
+
 DataQualityVerifier = gx_verifier_mod.DataQualityVerifier
 DataQualityResult = gx_verifier_mod.DataQualityResult
 
