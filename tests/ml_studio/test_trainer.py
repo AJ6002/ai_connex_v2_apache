@@ -1,12 +1,22 @@
 """
 Unit tests for ML Studio BaselineTrainer and MLflowTracker.
+Executes when scikit-learn and mlflow are installed (requirements-ml.txt).
 """
 
 import pandas as pd
+import pytest
 
-from ml_studio.trainer import BaselineTrainer
+try:
+    import mlflow  # noqa: F401
+    import sklearn  # noqa: F401
+
+    from ml_studio.trainer import BaselineTrainer
+    HAS_ML_DEPS = True
+except ImportError:
+    HAS_ML_DEPS = False
 
 
+@pytest.mark.skipif(not HAS_ML_DEPS, reason="Heavy ML dependencies are isolated in requirements-ml.txt")
 def test_baseline_classification_trainer():
     df = pd.DataFrame({
         "feature_1": [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0],
@@ -28,6 +38,7 @@ def test_baseline_classification_trainer():
     assert 0.0 <= result["metrics"]["accuracy"] <= 1.0
 
 
+@pytest.mark.skipif(not HAS_ML_DEPS, reason="Heavy ML dependencies are isolated in requirements-ml.txt")
 def test_baseline_regression_trainer():
     df = pd.DataFrame({
         "feature_1": [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0],
