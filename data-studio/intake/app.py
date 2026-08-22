@@ -48,9 +48,18 @@ class IntentRequest(BaseModel):
     asset_scope: str | None = None
     raw_asset_ids: list[str] | None = None
 
+from fastapi import Response
+from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
+
+
 @app.get("/health")
 def health_check():
     return {"status": "HEALTHY", "version": "2.0.0"}
+
+@app.get("/metrics")
+def metrics_endpoint():
+    return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
+
 
 @app.post("/api/v2/intake/upload", response_model=DatasetContract)
 async def upload_dataset_asset(

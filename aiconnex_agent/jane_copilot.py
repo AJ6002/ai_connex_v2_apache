@@ -8,6 +8,7 @@ from typing import Any, TypedDict
 from langgraph.graph import END, START, StateGraph
 
 from aiconnex_agent.local_gguf_client import LocalGGUFEngine
+from aiconnex_agent.telemetry import trace_span
 from contracts.discovery.discovery_contract import DatasetDiscoveryArtifact
 from contracts.intent.intent_contract import IntentContract
 from contracts.segmentation.segmentation_contract import SegmentationProposal
@@ -70,54 +71,57 @@ class JaneCopilot:
         """
         Normalize raw user goal into IntentContract using strict 2-tier local LLM.
         """
-        intent = self.local_engine.generate_intent(
-            user_goal=state["user_goal"],
-            tenant_uid=state["tenant_uid"],
-            user_uid=state["user_uid"],
-            site_scope=state.get("site_scope"),
-            asset_scope=state.get("asset_scope"),
-            raw_asset_ids=state.get("raw_asset_ids", []),
-            autonomy_requested=state.get("autonomy_requested", "HITL")
-        )
+        with trace_span("jane_copilot.intake_node", {"user_goal": state["user_goal"]}):
+            intent = self.local_engine.generate_intent(
+                user_goal=state["user_goal"],
+                tenant_uid=state["tenant_uid"],
+                user_uid=state["user_uid"],
+                site_scope=state.get("site_scope"),
+                asset_scope=state.get("asset_scope"),
+                raw_asset_ids=state.get("raw_asset_ids", []),
+                autonomy_requested=state.get("autonomy_requested", "HITL")
+            )
 
-        return {
-            "intent_contract": intent,
-            "status": "INTENT_PARSED"
-        }
+            return {
+                "intent_contract": intent,
+                "status": "INTENT_PARSED"
+            }
 
     def _scout_discovery_node(self, state: MasterAgentState) -> dict[str, Any]:
         """
         Scout discovery inspection step.
         """
-        raw_assets = state.get("raw_asset_ids", [])
-        asset_id = raw_assets[0] if raw_assets else "asset-default"
+        with trace_span("jane_copilot.scout_discovery_node"):
+            raw_assets = state.get("raw_asset_ids", [])
+            asset_id = raw_assets[0] if raw_assets else "asset-default"
 
-        discovery = DatasetDiscoveryArtifact(
-            asset_id=asset_id,
-            archive_type="none",
-            member_inventory=[f"{asset_id}.csv"],
-            member_sizes={f"{asset_id}.csv": 1024},
-            detected_formats=["csv"]
-        )
+            discovery = DatasetDiscoveryArtifact(
+                asset_id=asset_id,
+                archive_type="none",
+                member_inventory=[f"{asset_id}.csv"],
+                member_sizes={f"{asset_id}.csv": 1024},
+                detected_formats=["csv"]
+            )
 
-        return {
-            "discovery_artifact": discovery,
-            "status": "DISCOVERY_COMPLETE"
-        }
+            return {
+                "discovery_artifact": discovery,
+                "status": "DISCOVERY_COMPLETE"
+            }
 
     def _hitl_clarification_node(self, state: MasterAgentState) -> dict[str, Any]:
         """
         Evaluate confidence & check if HITL clarification is required.
         """
-        intent = state.get("intent_contract")
-        confidence = 0.90 if intent and intent.asset_scope else 0.75
-        requires_hitl = confidence < 0.85 or (intent and intent.autonomy_requested == "HITL")
+        with trace_span("jane_copilot.hitl_clarification_node"):
+            intent = state.get("intent_contract")
+            confidence = 0.90 if intent and intent.asset_scope else 0.75
+            requires_hitl = confidence < 0.85 or (intent and intent.autonomy_requested == "HITL")
 
-        return {
-            "confidence_score": confidence,
-            "requires_hitl": requires_hitl,
-            "status": "HITL_CHECKED"
-        }
+            return {
+                "confidence_score": confidence,
+                "requires_hitl": requires_hitl,
+                "status": "HITL_CHECKED"
+            }
 
     def _route_after_hitl(self, state: MasterAgentState) -> str:
         if state.get("requires_hitl", False):
@@ -128,10 +132,12 @@ class JaneCopilot:
         """
         Quality gate verification node.
         """
-        return {
-            "quality_passed": True,
-            "status": "QUALITY_VERIFIED"
-        }
+        with trace_span("jane_copilot.quality_gate_node"):
+            return {
+                "quality_passed": True,
+                "status": "QUALITY_VERIFIED"
+            }
+
 
     def run(
         self,

@@ -83,6 +83,28 @@ services:
       timeout: 5s
       retries: 5
 
+  prometheus:
+    image: prom/prometheus:v2.50.0
+    container_name: aiconnex-prometheus
+    restart: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./scripts/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+
+  grafana:
+    image: grafana/grafana:10.3.1
+    container_name: aiconnex-grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./scripts/grafana_dashboard.json:/etc/grafana/provisioning/dashboards/dashboard.json
+
 volumes:
   postgres_kb_data:
     external: true
@@ -92,3 +114,8 @@ volumes:
     external: true
   minio_kb_data:
     external: true
+  prometheus_data:
+    name: prometheus_data
+  grafana_data:
+    name: grafana_data
+
