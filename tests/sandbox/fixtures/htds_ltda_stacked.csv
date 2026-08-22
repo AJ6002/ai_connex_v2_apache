@@ -1,0 +1,14 @@
+# HTDS & LTDA Stacked Multi-Table Dataset
+# SECTION 1: High-Temperature Data Stream (HTDS)
+# Metadata: Facility=Plant-A, Sensor_Type=HTDS-9000
+timestamp,device_id,temperature_c,pressure_bar,status
+2026-08-22T00:00:00Z,HTDS-01,850.5,12.4,OPERATIONAL
+2026-08-22T00:05:00Z,HTDS-01,852.1,12.5,OPERATIONAL
+2026-08-22T00:10:00Z,HTDS-02,849.8,12.3,WARNING
+
+# SECTION 2: Low-Temperature Data Stream (LTDA)
+# Metadata: Facility=Plant-A, Sensor_Type=LTDA-3000
+date_time,asset_tag,ambient_temp_c,humidity_pct,system_state
+2026-08-22T00:00:00Z,LTDA-01,18.2,45.1,NORMAL
+2026-08-22T00:05:00Z,LTDA-01,18.4,44.8,NORMAL
+2026-08-22T00:10:00Z,LTDA-02,19.0,46.2,ALERT

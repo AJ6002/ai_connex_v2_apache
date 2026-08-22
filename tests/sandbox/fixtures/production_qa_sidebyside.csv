@@ -1,0 +1,5 @@
+# Production and QA Side-by-Side Table Fixture
+timestamp,prod_batch_id,prod_units_made,prod_efficiency,qa_batch_id,qa_pass_rate,qa_defects
+2026-08-22T00:00:00Z,BATCH-101,1500,0.98,QA-101,0.99,15
+2026-08-22T01:00:00Z,BATCH-102,1480,0.96,QA-102,0.97,44
+2026-08-22T02:00:00Z,BATCH-103,1520,0.99,QA-103,0.98,30

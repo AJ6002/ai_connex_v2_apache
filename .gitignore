@@ -6,10 +6,16 @@ workspace_data/
 testing_ds/
 *.zip
 *.rar
+*.tar.gz
 *.csv
 *.mat
 *.parquet
 *.h5
+
+# Allow test fixtures
+!tests/*/fixtures/*
+!tests/**/fixtures/*
+
 
 # ==========================================
 # 2. Model Binaries & Heavy Artifacts
@@ -25,7 +31,7 @@ models/*
 backend/models/*.gguf
 
 # ==========================================
-# 3. Scratch & Temporary Log Directories
+# 3. Scratch, Logs & Tooling Residues
 # ==========================================
 scratch/
 graphify-out/
@@ -37,31 +43,57 @@ logs/
 mlruns/
 outputs/
 context_log.md
-
+HANDOFF.md
+*handoff*.md
 
 # ==========================================
-# 4. Python & Node Environment & Caches
+# 4. Test Runners, Coverage & Linters
+# ==========================================
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.hypothesis/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+*.lprof
+.eslintcache
+.vitest_cache/
+playwright-report/
+test-results/
+tmp/
+temp/
+
+# ==========================================
+# 5. Python & Node Environment & Caches
 # ==========================================
 __pycache__/
 *.py[cod]
-*$py.class
+*.class
 .venv/
 .venv311/
 venv/
 env/
-.pytest_cache/
-.ruff_cache/
 mlflow.db*
 *.db
 *.sqlite
 *.sqlite3
 backend/data/
 .env
+.env.*
+!.env.example
 node_modules/
 dist/
+.next/
+.turbo/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
 # ==========================================
-# 5. IDE & Tooling Local Metadata
+# 6. IDE & Tooling Local Metadata
 # ==========================================
 .vscode/
 .idea/
@@ -73,14 +105,14 @@ guardrails-temp/
 .kiro/
 
 # ==========================================
-# 6. Security-Sensitive Credentials
+# 7. Security-Sensitive Credentials
 # ==========================================
 credentials/
 *.pem
 *.key
 
 # ==========================================
-# 7. Obsolete Snapshots & Reference Repos
+# 8. Obsolete Snapshots & Reference Repos
 # ==========================================
 archive_legacy/
 14AUG/
@@ -95,4 +127,3 @@ h2o-3/
 h2o_ref/
 platform_llmaindex/
 langui/
-
