@@ -2,9 +2,9 @@
 Integration tests for CSV, XLSX, and Parquet parser sandbox workers.
 """
 
-import pytest
 import shutil
 from pathlib import Path
+
 from sandbox.workers.csv_worker import process_csv
 from sandbox.workers.parquet_worker import process_parquet
 

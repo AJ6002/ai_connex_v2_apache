@@ -3,14 +3,12 @@ End-to-End Level 4 Sandbox Verification Test Suite.
 Validates all 13 exit criteria specified in Section 4.13.
 """
 
-import pytest
 import shutil
 from pathlib import Path
 
-from sandbox.docker_job_manager import DockerJobManager
-from sandbox.workers.discovery_worker import run_discovery
-from sandbox.workers.csv_worker import process_csv
 from sandbox.workers.compile_worker import process_compile
+from sandbox.workers.csv_worker import process_csv
+from sandbox.workers.discovery_worker import run_discovery
 
 
 def test_full_sandbox_e2e_pipeline(tmp_path: Path, fixtures_dir: Path, monkeypatch):

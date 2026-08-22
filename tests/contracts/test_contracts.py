@@ -2,24 +2,12 @@
 Automated Contract Validation Test Suite - Verifies all 18 Pydantic v2 Contract Schemas.
 """
 
-import pytest
-from datetime import datetime
-from contracts.intent.intent_contract import IntentContract
-from contracts.tenant.tenant_contract import TenantContract
-from contracts.dataset.dataset_contract import DatasetContract
 from contracts.discovery.discovery_contract import DatasetDiscoveryArtifact
+from contracts.intent.intent_contract import IntentContract
 from contracts.manifest.manifest_contract import ManifestContract
-from contracts.profile.profile_contract import ProfileContract
-from contracts.dag.dag_contract import DAGContract
 from contracts.recipe.recipe_contract import RecipeContract, RecipeStep
-from contracts.prepare.prepare_contract import PrepareContract
-from contracts.feature.feature_contract import FeatureContract
-from contracts.model.model_contract import ModelContract
-from contracts.agent.agent_spec_contract import AgentSPECContract
-from contracts.tool.tool_contract import ToolContract
-from contracts.telemetry.telemetry_contract import TelemetryContract
-from contracts.deployment.deployment_contract import DeploymentContract
-from contracts.audit.audit_contract import AuditContract
+from contracts.tenant.tenant_contract import TenantContract
+
 
 def test_intent_contract():
     contract = IntentContract(

@@ -2,11 +2,11 @@
 Integration tests for parser-compile DataFusion worker.
 """
 
-import pytest
 import shutil
 from pathlib import Path
-from sandbox.workers.csv_worker import process_csv
+
 from sandbox.workers.compile_worker import process_compile
+from sandbox.workers.csv_worker import process_csv
 
 
 def test_compile_worker_standalone(tmp_path: Path, fixtures_dir: Path, monkeypatch):
