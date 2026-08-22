@@ -1,18 +1,28 @@
 # AI-Connex Single-Purpose CSV Parser Container Image
 FROM python:3.11-slim@sha256:9c900dea9e8fb7e16277c179b555cc72d29a352dbc33cff48ad5a0412fd5bfc7
 
-# Create isolated non-root app user
-RUN groupadd -g 10001 appgroup && \
-    useradd -u 10001 -g appgroup -s /bin/sh -m appuser
+RUN groupadd -g 10001 sandboxgroup && \
+    useradd -u 10001 -g sandboxgroup -s /bin/sh -m sandboxuser
 
-WORKDIR /home/appuser/app
+RUN mkdir -p /sandbox/input /sandbox/output /sandbox/contracts /sandbox/workers && \
+    chown -R 10001:10001 /sandbox
 
-# Install minimal columnar dependencies
-RUN pip install --no-cache-dir pyarrow pandas
+WORKDIR /sandbox
 
-# Copy parser worker script
-COPY data-studio/parser-workers/csv_worker.py /home/appuser/app/csv_worker.py
+RUN pip install --no-cache-dir \
+    pydantic==2.6.0 \
+    pyarrow==19.0.1 \
+    polars==1.43.2 \
+    orjson==3.9.15
+
+COPY contracts/ /sandbox/contracts/
+COPY sandbox/workers/csv_worker.py /sandbox/workers/csv_worker.py
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/sandbox \
+    SANDBOX_INPUT_DIR=/sandbox/input \
+    SANDBOX_OUTPUT_DIR=/sandbox/output
 
 USER 10001:10001
 
-ENTRYPOINT ["python", "/home/appuser/app/csv_worker.py"]
+ENTRYPOINT ["python", "/sandbox/workers/csv_worker.py"]

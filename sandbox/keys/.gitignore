@@ -1,0 +1,4 @@
+# Ignore cosign private keys, allow public keys and gitignore
+*.key
+!cosign.pub
+!.gitignore

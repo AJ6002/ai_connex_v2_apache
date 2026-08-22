@@ -1,0 +1,8 @@
+name: inner_join_by_keys
+description: Parameterized inner join across two tables by exact key match
+operation: join
+type: inner
+join_keys: []
+schema_alignment:
+  cast_types: true
+  align_timestamps: true

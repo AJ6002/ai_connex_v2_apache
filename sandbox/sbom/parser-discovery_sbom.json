@@ -1,0 +1,7 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "image": "parser-discovery",
+  "digest": "sha256:a2f2383596655861ca3254624f4bd14b266a44f143b6a5214e51c70bdc82a75d",
+  "timestamp": "2026-08-22T08:34:36.290194"
+}

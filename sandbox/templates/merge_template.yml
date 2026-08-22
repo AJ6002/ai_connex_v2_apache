@@ -1,0 +1,6 @@
+name: merge_upsert_by_id
+description: Parameterized merge/upsert by primary entity ID and timestamp
+operation: merge
+primary_key: id
+timestamp_key: timestamp
+deduplicate: true

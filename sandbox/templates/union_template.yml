@@ -1,0 +1,5 @@
+name: union_by_name
+description: Parameterized schema-harmonized union across stacked tables
+operation: union
+by_name: true
+fill_missing_columns: true

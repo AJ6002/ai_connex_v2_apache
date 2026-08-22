@@ -1,9 +1,8 @@
-"""
-Discovery Contract - Safe lightweight dataset inspection discovery artifact.
-"""
-
 from typing import List, Dict, Optional
 from pydantic import BaseModel, Field
+
+from contracts.segmentation.segmentation_contract import SegmentationProposal
+
 
 class DatasetDiscoveryArtifact(BaseModel):
     asset_id: str = Field(..., description="Target upload asset ID")
@@ -15,4 +14,6 @@ class DatasetDiscoveryArtifact(BaseModel):
     candidate_identifier_fields: List[str] = Field(default_factory=list, description="Discovered asset/entity ID columns")
     sample_headers: Dict[str, List[str]] = Field(default_factory=dict, description="Header column names per member file")
     security_findings: List[str] = Field(default_factory=list, description="Security warnings (e.g. symlink detected, traversal rejected)")
+    segmentation_proposal: Optional[SegmentationProposal] = Field(None, description="Typed segmentation proposal for candidate region boundaries")
     is_safe: bool = Field(default=True, description="Whether discovery passed security checks")
+

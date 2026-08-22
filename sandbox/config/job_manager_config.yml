@@ -1,0 +1,35 @@
+registry: ghcr.io/aj6002/ai_connex_v2_apache
+cosign_public_key: sandbox/keys/cosign.pub
+quarantine_dir: sandbox/quarantine
+
+images:
+  parser-discovery:
+    image: parser-discovery:latest
+    capabilities: [discovery, segmentation, inspection]
+    cpus: "1.0"
+    memory: "512m"
+    timeout_seconds: 120
+  parser-csv:
+    image: parser-csv:latest
+    capabilities: [csv, tsv, txt]
+    cpus: "2.0"
+    memory: "2g"
+    timeout_seconds: 300
+  parser-xlsx:
+    image: parser-xlsx:latest
+    capabilities: [xlsx, xls]
+    cpus: "2.0"
+    memory: "2g"
+    timeout_seconds: 300
+  parser-parquet:
+    image: parser-parquet:latest
+    capabilities: [parquet, pq]
+    cpus: "1.0"
+    memory: "1g"
+    timeout_seconds: 180
+  parser-compile:
+    image: parser-compile:latest
+    capabilities: [compile, join, merge, union]
+    cpus: "4.0"
+    memory: "4g"
+    timeout_seconds: 600

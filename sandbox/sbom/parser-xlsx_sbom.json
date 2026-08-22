@@ -1,0 +1,7 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "image": "parser-xlsx",
+  "digest": "sha256:bce94b2bfdd5ba92844295cb681461c1f216995d6e560e94e81703e3791eaa1b",
+  "timestamp": "2026-08-22T08:36:44.277935"
+}
