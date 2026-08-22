@@ -2,14 +2,15 @@
 # 1. API Gateway & Contracts
 fastapi==0.110.0
 uvicorn==0.28.0
-pydantic==2.6.0
+pydantic==2.8.0
 jsonschema==4.26.0
 python-multipart==0.0.9
 python-dotenv==1.0.0
 packaging==23.2
 pyyaml==6.0.1
-langchain==0.3.19
-great_expectations==0.18.12
+langchain-core==0.3.45
+great-expectations==1.21.0
+
 
 
 
