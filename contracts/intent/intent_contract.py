@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 class IntentContract(BaseModel):
     intent_uid: str = Field(..., description="Unique immutable identifier for this intent")
     tenant_uid: str = Field(..., description="Authenticated tenant ID")
+    schema_version: str = Field(default="1.0.0", description="Contract schema version")
     user_uid: str = Field(..., description="Authenticated user ID")
     site_scope: str | None = Field(None, description="Industrial site/facility identifier")
     asset_scope: str | None = Field(None, description="Industrial asset scope (e.g. compressor, turbine)")

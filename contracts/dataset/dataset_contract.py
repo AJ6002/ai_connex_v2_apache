@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 class DatasetContract(BaseModel):
     asset_id: str = Field(..., description="Unique dataset asset identifier")
     tenant_uid: str = Field(..., description="Owner tenant ID")
+    schema_version: str = Field(default="1.0.0", description="Contract schema version")
     site_uid: str | None = Field(None, description="Industrial site ID")
     asset_name: str = Field(..., description="Original asset/filename")
     storage_uri: str = Field(..., description="Storage URI (e.g. s3://... or file://...)")

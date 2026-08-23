@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 
 class ProfileContract(BaseModel):
     manifest_id: str = Field(..., description="Target manifest ID")
+    schema_version: str = Field(default="1.0.0", description="Contract schema version")
     row_count: int = Field(..., description="Total row count")
     column_count: int = Field(..., description="Total column count")
     columns: list[str] = Field(default_factory=list, description="List of column names")
@@ -30,6 +31,7 @@ class ColumnSummaryContract(BaseModel):
 
 class ProfileSummaryContract(BaseModel):
     manifest_id: str = Field(..., description="Target manifest ID")
+    schema_version: str = Field(default="1.0.0", description="Contract schema version")
     dataset_ref: str = Field(..., description="Associated dataset asset ID or reference")
     dataset_name: str = Field(..., description="Human readable dataset name")
     row_count: int = Field(..., description="Total row count")

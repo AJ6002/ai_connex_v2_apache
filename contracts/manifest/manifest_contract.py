@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 class ManifestContract(BaseModel):
     manifest_id: str = Field(..., description="Universal lifecycle join key (UUID)")
     tenant_uid: str = Field(..., description="Tenant organization ID")
+    schema_version: str = Field(default="1.0.0", description="Contract schema version")
     intent_uid: str = Field(..., description="Associated Intent Envelope ID")
     run_id: str = Field(..., description="Execution run directory ID")
     status: str = Field(default="MACHINE_READY", description="Lifecycle status: MACHINE_READY, READY_FOR_PROFILER, COMPILED, FEATURES_READY, TRAINED, EVALUATED, DEPLOYED")

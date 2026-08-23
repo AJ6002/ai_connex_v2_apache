@@ -6,6 +6,7 @@ from contracts.segmentation.segmentation_contract import SegmentationProposal
 
 class DatasetDiscoveryArtifact(BaseModel):
     asset_id: str = Field(..., description="Target upload asset ID")
+    schema_version: str = Field(default="1.0.0", description="Contract schema version")
     archive_type: str | None = Field(None, description="Archive extension (zip, tar, gz, none)")
     member_inventory: list[str] = Field(default_factory=list, description="List of archive member paths")
     member_sizes: dict[str, int] = Field(default_factory=dict, description="Uncompressed member sizes")

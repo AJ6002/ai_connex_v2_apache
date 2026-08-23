@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 class FeatureContract(BaseModel):
     feature_set_id: str = Field(..., description="Unique feature set ID")
     tenant_uid: str = Field(..., description="Tenant organization ID")
+    schema_version: str = Field(default="1.0.0", description="Contract schema version")
     manifest_id: str = Field(..., description="Target manifest ID")
     feature_names: list[str] = Field(default_factory=list, description="Names of engineered features")
     time_domain_features: list[str] = Field(default_factory=list, description="Time domain signal features")

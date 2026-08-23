@@ -14,6 +14,7 @@ class RecipeStep(BaseModel):
 
 class RecipeContract(BaseModel):
     recipe_id: str = Field(..., description="Unique recipe version ID")
+    schema_version: str = Field(default="1.0.0", description="Contract schema version")
     recipe_name: str = Field(..., description="Human readable recipe title")
     domain: str = Field(default="industrial_telemetry", description="Industrial domain classification")
     target_task: str = Field(..., description="Target task type (e.g. regression_rul, anomaly_detection)")
