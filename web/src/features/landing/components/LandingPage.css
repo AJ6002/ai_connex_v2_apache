@@ -633,33 +633,42 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 24px;
-  align-items: start;
+  align-items: stretch;
 }
 
 @media (min-width: 900px) {
   .hp--platform-tabs.w-tabs {
-    grid-template-columns: 320px 1fr;
-    gap: 40px;
+    grid-template-columns: 300px 1fr;
+    gap: 24px;
+    align-items: stretch;
   }
+}
+
+.hp--platform-tabs-content.w-tab-content {
+  height: 100%;
 }
 
 .hp--platform-tabs-menu.w-tab-menu {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  height: 100%;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .hp--platform-tabs-link {
+  flex: 1;
+  min-height: 80px;
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
-  padding: 18px 24px !important;
+  padding: 22px 28px !important;
   border-radius: 4px !important;
-  background-color: #f8f8f8 !important;
-  background: #f8f8f8 !important;
-  border: 1px solid #eeeeee !important;
+  background-color: #f4f4f4 !important;
+  background: #f4f4f4 !important;
+  border: none !important;
   box-shadow: none !important;
-  color: #757575 !important;
+  color: #606060 !important;
   cursor: pointer !important;
   text-align: left !important;
   text-decoration: none !important;
@@ -667,14 +676,14 @@
 }
 
 .hp--platform-tabs-link:hover {
-  background-color: #f0f0f0 !important;
+  background-color: #ebebeb !important;
   color: #0f0f0f !important;
 }
 
 .hp--platform-tabs-link.w--current {
-  background-color: #ededed !important;
-  background: #ededed !important;
-  border: 1px solid #e0e0e0 !important;
+  background-color: #e5e5e5 !important;
+  background: #e5e5e5 !important;
+  border: none !important;
   box-shadow: none !important;
   color: #0f0f0f !important;
   font-weight: 600 !important;
@@ -719,12 +728,14 @@
 
 /* Right Tab Content Pane */
 .hp--platform-tabs-pane {
-  background-color: #fafafa;
-  border: 1px solid #ececec;
+  background-color: #eeeeee;
+  border: 1px solid #e2e2e2;
   border-radius: 16px;
-  padding: 32px;
+  padding: 36px;
+  height: 100%;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 }
 
 .hp--platform-tabs-header {
