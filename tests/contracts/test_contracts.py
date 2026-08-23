@@ -103,6 +103,7 @@ def test_job_contract():
     from contracts.job.job_contract import JobContract, JobStageContract, JobStageStatus, JobStatus
     job = JobContract(
         job_id="JOB-8294",
+        tenant_uid="tenant-123",
         intent_uid="intent-001",
         status=JobStatus.RUNNING,
         stages=[
@@ -111,9 +112,45 @@ def test_job_contract():
         ]
     )
     assert job.job_id == "JOB-8294"
+    assert job.tenant_uid == "tenant-123"
     assert job.status == JobStatus.RUNNING
     assert len(job.stages) == 2
     assert job.stages[1].status == JobStageStatus.RUNNING
+
+
+def test_model_contract():
+    from contracts.model.model_contract import ModelContract
+    model = ModelContract(
+        model_id="model-001",
+        tenant_uid="tenant-123",
+        manifest_id="manifest-999",
+        algorithm_name="XGBoost",
+        task_type="TimeSeries"
+    )
+    assert model.model_id == "model-001"
+    assert model.tenant_uid == "tenant-123"
+
+
+def test_agent_spec_contract():
+    from contracts.agent.agent_spec_contract import AgentSPECContract
+    agent = AgentSPECContract(
+        agent_id="agent-001",
+        tenant_uid="tenant-123",
+        agent_name="Jane"
+    )
+    assert agent.agent_id == "agent-001"
+    assert agent.tenant_uid == "tenant-123"
+
+
+def test_feature_contract():
+    from contracts.feature.feature_contract import FeatureContract
+    feat = FeatureContract(
+        feature_set_id="feat-001",
+        tenant_uid="tenant-123",
+        manifest_id="manifest-999"
+    )
+    assert feat.feature_set_id == "feat-001"
+    assert feat.tenant_uid == "tenant-123"
 
 
 def test_profile_summary_contract():

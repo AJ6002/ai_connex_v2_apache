@@ -1,6 +1,7 @@
 export const modelsFixture = [
   {
     modelId: 'CHURN-V3',
+    tenantUid: 'tenant_demo_0001',
     name: 'Customer Churn V3',
     version: 'v1.2.4',
     framework: 'XGBoost',

@@ -33,6 +33,10 @@ jobs:
         run: |
           mypy contracts --ignore-missing-imports
 
+      - name: Verify Tenant Scope Contract Gate
+        run: |
+          python scripts/check_tenant_uid.py --strict
+
       - name: Run Contract Unit Tests with Coverage
         run: |
           pytest tests/ --cov=contracts -v
