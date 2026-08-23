@@ -36,6 +36,7 @@ export interface DiscoverySegment {
 export interface Dataset {
   datasetId: string;
   tenantUid: string;
+  schemaVersion?: string;
   name: string;
   parquetRef: string;
   rowCount?: number;

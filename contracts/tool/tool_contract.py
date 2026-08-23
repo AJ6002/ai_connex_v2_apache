@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 
 class ToolContract(BaseModel):
     tool_id: str = Field(..., description="Unique tool identifier")
+    schema_version: str = Field(default="1.0.0", description="Contract schema version")
     capability_name: str = Field(..., description="Capability method name")
     input_schema: dict[str, Any] = Field(default_factory=dict, description="JSON Schema for inputs")
     output_schema: dict[str, Any] = Field(default_factory=dict, description="JSON Schema for outputs")

@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 
 class DAGContract(BaseModel):
     dag_id: str = Field(..., description="Unique DAG strategy identifier (e.g. DAG_514)")
+    schema_version: str = Field(default="1.0.0", description="Contract schema version")
     dag_name: str = Field(..., description="Human readable strategy name")
     description: str = Field(..., description="Computational strategy summary")
     nodes: list[str] = Field(default_factory=list, description="Ordered pipeline node IDs")

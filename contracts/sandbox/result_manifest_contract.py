@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 
 class ParserResultManifest(BaseModel):
     job_id: str = Field(..., description="Unique host Job Manager job identifier")
+    schema_version: str = Field(default="1.0.0", description="Contract schema version")
     image_name: str = Field(..., description="Container image name used (e.g. parser-csv)")
     image_digest: str = Field(..., description="Immutable image sha256 digest")
     input_file: str = Field(..., description="Name or relative path of input file processed")

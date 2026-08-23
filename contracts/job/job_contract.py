@@ -36,6 +36,7 @@ class JobStageContract(BaseModel):
 class JobContract(BaseModel):
     job_id: str = Field(..., description="Unique job execution ID (e.g. JOB-8294)")
     tenant_uid: str = Field(..., description="Tenant organization ID")
+    schema_version: str = Field(default="1.0.0", description="Contract schema version")
     intent_uid: str = Field(..., description="Associated Intent Envelope ID")
     status: JobStatus = Field(default=JobStatus.QUEUED, description="Job status")
     stages: list[JobStageContract] = Field(default_factory=list, description="Ordered pipeline execution stages")

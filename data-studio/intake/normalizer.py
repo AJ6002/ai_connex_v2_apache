@@ -43,6 +43,7 @@ def normalize_user_intent(
     return IntentContract(
         intent_uid=f"intent-{uuid.uuid4().hex[:8]}",
         tenant_uid=tenant_uid,
+        schema_version="1.0.0",
         user_uid=user_uid,
         site_scope=site_scope,
         asset_scope=asset_scope,

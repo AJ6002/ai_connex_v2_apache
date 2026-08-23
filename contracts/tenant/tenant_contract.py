@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 
 class TenantContract(BaseModel):
     tenant_id: str = Field(..., description="Unique tenant organization ID")
+    schema_version: str = Field(default="1.0.0", description="Contract schema version")
     tenant_name: str = Field(..., description="Human readable organization name")
     user_id: str = Field(..., description="Authenticated user identifier")
     roles: list[str] = Field(default_factory=lambda: ["operator"], description="Assigned user roles")

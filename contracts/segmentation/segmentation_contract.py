@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 
 class CandidateRegion(BaseModel):
     source_file: str = Field(..., description="Path or name of the source file being segmented")
+    schema_version: str = Field(default="1.0.0", description="Contract schema version")
     row_start: int = Field(..., ge=0, description="0-indexed starting row of region")
     row_end: int = Field(..., ge=0, description="0-indexed ending row of region (inclusive)")
     col_start: int = Field(..., ge=0, description="0-indexed starting column of region")
@@ -22,6 +23,7 @@ class CandidateRegion(BaseModel):
 
 class SegmentationProposal(BaseModel):
     asset_id: str = Field(..., description="Target dataset/upload asset ID")
+    schema_version: str = Field(default="1.0.0", description="Contract schema version")
     pipeline_version: str = Field(default="1.0.0", description="Pipeline contract version")
     regions: list[CandidateRegion] = Field(default_factory=list, description="Discovered candidate data regions")
     requires_adjudication: bool = Field(default=False, description="Flag indicating if low confidence requires human/LLM review")

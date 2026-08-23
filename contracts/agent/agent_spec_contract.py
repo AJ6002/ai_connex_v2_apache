@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 class AgentSPECContract(BaseModel):
     agent_id: str = Field(..., description="Unique agent SPEC ID")
     tenant_uid: str = Field(..., description="Tenant organization ID")
+    schema_version: str = Field(default="1.0.0", description="Contract schema version")
     agent_name: str = Field(..., description="Agent name (e.g. Jane, DiagnosticAgent)")
     allowed_capabilities: list[str] = Field(default_factory=list, description="Allow-listed capabilities")
     autonomy_level: str = Field(default="HITL", description="HITL, AUTO, BOUNDED")
