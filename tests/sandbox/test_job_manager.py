@@ -2,8 +2,6 @@
 Integration tests for DockerJobManager host orchestration security controls.
 """
 
-import pytest
-import shutil
 from pathlib import Path
 
 from sandbox.docker_job_manager import DockerJobManager

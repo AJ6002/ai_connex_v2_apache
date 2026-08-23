@@ -1,0 +1,10 @@
+export const agentsFixture = [
+  {
+    agentId: 'AGT-001',
+    name: 'Jane Agent',
+    role: 'Autonomous Industrial Assistant',
+    status: 'SYSTEM_READY' as const,
+    capabilities: [{ name: 'Intake Inspection', description: 'Inspects raw files', version: '1.0' }],
+    lastActive: new Date().toISOString(),
+  },
+];

@@ -1,0 +1,58 @@
+services:
+  airflow-postgres:
+    image: postgres:15-alpine
+    container_name: aiconnex-airflow-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${AIRFLOW_DB_USER:-airflow}
+      POSTGRES_PASSWORD: ${AIRFLOW_DB_PASS:-airflow}
+      POSTGRES_DB: ${AIRFLOW_DB_NAME:-airflow_db}
+    ports:
+      - "5433:5432"
+    volumes:
+      - airflow_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airflow -d airflow_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  airflow-webserver:
+    image: apache/airflow:2.8.1-python3.11
+    container_name: aiconnex-airflow-webserver
+    restart: always
+    depends_on:
+      airflow-postgres:
+        condition: service_healthy
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${AIRFLOW_DB_USER:-airflow}:${AIRFLOW_DB_PASS:-airflow}@airflow-postgres:5432/${AIRFLOW_DB_NAME:-airflow_db}
+      AIRFLOW__CORE__FERNET_KEY: ''
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./orchestration/dags:/opt/airflow/dags
+      - ./mlruns:/opt/airflow/mlruns
+    command: webserver
+
+  airflow-scheduler:
+    image: apache/airflow:2.8.1-python3.11
+    container_name: aiconnex-airflow-scheduler
+    restart: always
+    depends_on:
+      airflow-postgres:
+        condition: service_healthy
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${AIRFLOW_DB_USER:-airflow}:${AIRFLOW_DB_PASS:-airflow}@airflow-postgres:5432/${AIRFLOW_DB_NAME:-airflow_db}
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+    volumes:
+      - ./orchestration/dags:/opt/airflow/dags
+      - ./mlruns:/opt/airflow/mlruns
+    command: scheduler
+
+volumes:
+  airflow_postgres_data:
+    name: airflow_postgres_data

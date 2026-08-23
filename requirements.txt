@@ -2,17 +2,33 @@
 # 1. API Gateway & Contracts
 fastapi==0.110.0
 uvicorn==0.28.0
-pydantic==2.6.0
+pydantic==2.8.0
 jsonschema==4.26.0
 python-multipart==0.0.9
 python-dotenv==1.0.0
 packaging==23.2
+pyyaml==6.0.1
+langchain-core==0.3.45
+langgraph==0.3.5
+langchain==0.3.19
+great-expectations==1.21.0
+prometheus-fastapi-instrumentator==7.0.0
+opentelemetry-instrumentation-fastapi==0.45b0
+opentelemetry-api==1.24.0
+opentelemetry-sdk==1.24.0
+
+
+
+
+
+
+
 
 # 2. Columnar Data Plane (Zero-Copy Engine)
 pyarrow==19.0.1
 datafusion==54.0.0
 polars==1.43.2
-numpy==2.4.6
+numpy==1.26.4
 pandas==2.2.0
 openpyxl==3.1.2
 

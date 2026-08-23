@@ -3,16 +3,15 @@ XLSX Parser Worker - Defusedxml-safe Excel sheet processing & region extraction 
 Executes inside parser-xlsx sandbox container under non-root 10001:10001 with read-only rootfs.
 """
 
-import sys
-import os
 import hashlib
+import os
+import sys
 from datetime import datetime
 from pathlib import Path
 
 import defusedxml
 import openpyxl
 import polars as pl
-import pyarrow as pa
 import pyarrow.parquet as pq
 
 from contracts.sandbox.result_manifest_contract import ParserResultManifest
@@ -105,7 +104,7 @@ def process_xlsx():
         print(f"XLSX Parser successfully generated Parquet artifact: {output_parquet_path} ({row_count} rows)")
 
     except Exception as e:
-        print(f"XLSX Parser Error: {str(e)}", file=sys.stderr)
+        print(f"XLSX Parser Error: {e!s}", file=sys.stderr)
         sys.exit(1)
 
 

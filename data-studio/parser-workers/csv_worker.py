@@ -2,11 +2,13 @@
 CSV Parser Worker Container Entrypoint - Parses CSV into Parquet & metadata JSON.
 """
 
-import sys
-import os
 import json
+import os
+import sys
+
 import pyarrow.csv as pv
 import pyarrow.parquet as pq
+
 
 def parse_csv(input_csv_path: str, output_dir: str):
     """

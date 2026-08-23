@@ -1,0 +1,31 @@
+.progress-root { display: flex; flex-direction: column; gap: 4px; }
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.progress-label { color: var(--fg-muted); }
+.progress-value { color: var(--fg); }
+
+.progress-track {
+  width: 100%;
+  background-color: var(--bg-surface-high);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progress-track--sm { height: 3px; }
+.progress-track--md { height: 6px; }
+
+.progress-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width 0.3s ease;
+}
+
+.progress-fill--lime  { background-color: var(--color-assistant-identity); }
+.progress-fill--blue  { background-color: var(--status-running); }
+.progress-fill--amber { background-color: var(--status-clarification); }
+.progress-fill--red   { background-color: var(--status-failed); }

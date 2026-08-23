@@ -2,24 +2,12 @@
 Automated Contract Validation Test Suite - Verifies all 18 Pydantic v2 Contract Schemas.
 """
 
-import pytest
-from datetime import datetime
-from contracts.intent.intent_contract import IntentContract
-from contracts.tenant.tenant_contract import TenantContract
-from contracts.dataset.dataset_contract import DatasetContract
 from contracts.discovery.discovery_contract import DatasetDiscoveryArtifact
+from contracts.intent.intent_contract import IntentContract
 from contracts.manifest.manifest_contract import ManifestContract
-from contracts.profile.profile_contract import ProfileContract
-from contracts.dag.dag_contract import DAGContract
 from contracts.recipe.recipe_contract import RecipeContract, RecipeStep
-from contracts.prepare.prepare_contract import PrepareContract
-from contracts.feature.feature_contract import FeatureContract
-from contracts.model.model_contract import ModelContract
-from contracts.agent.agent_spec_contract import AgentSPECContract
-from contracts.tool.tool_contract import ToolContract
-from contracts.telemetry.telemetry_contract import TelemetryContract
-from contracts.deployment.deployment_contract import DeploymentContract
-from contracts.audit.audit_contract import AuditContract
+from contracts.tenant.tenant_contract import TenantContract
+
 
 def test_intent_contract():
     contract = IntentContract(
@@ -73,8 +61,13 @@ def test_discovery_contract():
     assert len(artifact.member_inventory) == 2
 
 def test_job_manager_security_bounds():
-    import importlib
-    job_mgr_mod = importlib.import_module("data-studio.job-manager.manager")
+    import importlib.util
+    from pathlib import Path
+    fpath = Path(__file__).resolve().parent.parent.parent / "data-studio" / "job-manager" / "manager.py"
+    spec = importlib.util.spec_from_file_location("manager_mod", fpath)
+    assert spec is not None and spec.loader is not None
+    job_mgr_mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(job_mgr_mod)
     DockerJobManager = job_mgr_mod.DockerJobManager
     manager = DockerJobManager(default_memory_limit="1g", default_cpu_limit="2.0")
     cmd = manager.build_container_command(
@@ -87,8 +80,13 @@ def test_job_manager_security_bounds():
     assert "--user" in cmd and "10001:10001" in cmd
 
 def test_intent_normalizer():
-    import importlib
-    norm_mod = importlib.import_module("data-studio.intake.normalizer")
+    import importlib.util
+    from pathlib import Path
+    fpath = Path(__file__).resolve().parent.parent.parent / "data-studio" / "intake" / "normalizer.py"
+    spec = importlib.util.spec_from_file_location("norm_mod", fpath)
+    assert spec is not None and spec.loader is not None
+    norm_mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(norm_mod)
     normalize_user_intent = norm_mod.normalize_user_intent
 
     intent = normalize_user_intent(
@@ -99,6 +97,46 @@ def test_intent_normalizer():
     assert intent.requires_model is True
     assert intent.intent_type == "time_series_forecast"
     assert intent.tenant_uid == "tenant-99"
+
+
+def test_job_contract():
+    from contracts.job.job_contract import JobContract, JobStageContract, JobStageStatus, JobStatus
+    job = JobContract(
+        job_id="JOB-8294",
+        intent_uid="intent-001",
+        status=JobStatus.RUNNING,
+        stages=[
+            JobStageContract(key="INTAKE", label="Intake", status=JobStageStatus.DONE),
+            JobStageContract(key="PROFILER", label="Profiler", status=JobStageStatus.RUNNING, progress_pct=64.0)
+        ]
+    )
+    assert job.job_id == "JOB-8294"
+    assert job.status == JobStatus.RUNNING
+    assert len(job.stages) == 2
+    assert job.stages[1].status == JobStageStatus.RUNNING
+
+
+def test_profile_summary_contract():
+    from contracts.profile.profile_contract import ColumnSummaryContract, ProfileSummaryContract
+    summary = ProfileSummaryContract(
+        manifest_id="manifest-100",
+        dataset_ref="ds-001",
+        dataset_name="transactions_main",
+        row_count=24000,
+        column_count=12,
+        columns=[
+            ColumnSummaryContract(name="timestamp", dtype="datetime", null_ratio=0.0, distinct_count=24000),
+            ColumnSummaryContract(name="temp_c", dtype="float", null_ratio=0.01, distinct_count=8123)
+        ],
+        recommended_dag_id="DAG_906",
+        algorithm_family="Time-Series Regression",
+        narrative="Time-indexed multi-sensor telemetry suitable for RUL profiling."
+    )
+    assert summary.dataset_name == "transactions_main"
+    assert len(summary.columns) == 2
+    assert summary.columns[0].dtype == "datetime"
+
+
 
 
 

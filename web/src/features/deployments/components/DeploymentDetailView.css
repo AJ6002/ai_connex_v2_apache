@@ -1,0 +1,49 @@
+/** Deployment detail (active) — faithful to STITCH-Design/ai_connex_deployment_detail_active. */
+.depd { max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+
+.depd__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--color-grid-line); }
+.depd__badge-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.depd__env { color: var(--color-on-surface-variant); font-size: 18px; }
+.depd__title { font-size: 44px; font-weight: 700; letter-spacing: -0.03em; color: var(--color-on-surface); display: inline-flex; align-items: center; gap: 12px; }
+.depd__copy { background: none; border: none; cursor: pointer; color: var(--color-on-surface-variant); display: flex; }
+.depd__copy:hover { color: var(--color-assistant-identity); }
+.depd__actions { display: flex; gap: 12px; }
+
+.depd__grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 24px; align-items: start; }
+.depd__panel { background-color: var(--color-surface); border: 1px solid var(--color-grid-line); border-radius: var(--radius-lg); padding: 24px; }
+.depd__panel-head { display: flex; align-items: center; justify-content: space-between; color: var(--color-on-surface); margin-bottom: 20px; }
+.depd__panel-icon { color: var(--color-on-surface-variant); font-size: 18px; }
+
+.depd__field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px; }
+.depd__field .label-mono { color: var(--color-on-surface-variant); }
+.depd__field strong { color: var(--color-on-surface); font-size: 16px; }
+.depd__field-row { display: flex; gap: 32px; }
+.depd__endpoint { display: flex; align-items: center; justify-content: space-between; gap: 10px; border: 1px solid var(--color-grid-line); border-radius: var(--radius-md); padding: 10px 14px; }
+.depd__endpoint span { font-family: var(--font-mono); font-size: 13px; color: var(--color-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.depd__endpoint button { background: none; border: none; cursor: pointer; color: var(--color-on-surface-variant); display: flex; }
+
+.depd__health { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding-bottom: 20px; }
+.depd__health-metric { display: flex; flex-direction: column; gap: 6px; border-left: 2px solid var(--color-assistant-identity); padding-left: 12px; }
+.depd__health-metric .label-mono { color: var(--color-on-surface-variant); }
+.depd__health-metric strong { font-size: 24px; color: var(--color-on-surface); }
+.depd__chart { margin-top: 8px; border: 1px solid var(--color-grid-line); border-radius: var(--radius-md); background-color: var(--color-surface-container-low); padding: 8px; }
+.depd__spark { width: 100%; height: 200px; display: block; }
+
+.depd__history { width: 100%; border-collapse: collapse; }
+.depd__history th { text-align: left; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; color: var(--color-on-surface-variant); padding: 10px 8px; }
+.depd__history th:last-child, .depd__history td:last-child { text-align: right; }
+.depd__history td { padding: 16px 8px; border-top: 1px solid var(--color-grid-line); font-size: 14px; color: var(--color-on-surface); }
+.depd__mono { font-family: var(--font-mono); }
+.depd__hstatus { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+.depd__hstatus .material-symbols-outlined { font-size: 16px; }
+.depd__hstatus--active { color: var(--color-status-completed); }
+.depd__hstatus--inactive { color: var(--color-on-surface-variant); }
+.depd__hstatus--failed { color: var(--color-status-failed); }
+.depd__action a { color: var(--color-secondary); text-decoration: none; font-weight: 600; }
+.depd__action a:hover { text-decoration: underline; }
+.depd__action--off { color: var(--color-on-surface-variant); opacity: 0.5; }
+
+@media (max-width: 1024px) {
+  .depd__grid { grid-template-columns: 1fr; }
+  .depd__header { flex-direction: column; }
+}

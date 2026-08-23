@@ -1,0 +1,50 @@
+/** New deployment configuration form — light theme. */
+.depc { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+.depc__title { font-size: var(--text-headline-lg-size); line-height: 1.1; letter-spacing: -0.03em; font-weight: 700; color: var(--color-on-surface); }
+.depc__sub { color: var(--color-on-surface-variant); margin-top: 8px; }
+
+.depc__panel { background-color: var(--color-surface); border: 1px solid var(--color-grid-line); border-radius: var(--radius-lg); padding: 28px; }
+.depc__panel-title { color: var(--color-on-surface); display: block; margin-bottom: 24px; }
+
+.depc__field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+.depc__field .label-mono { color: var(--color-on-surface-variant); }
+.depc__field-row { display: grid; grid-template-columns: 1fr 1fr 100px; gap: 16px; }
+
+.depc__select { position: relative; }
+.depc__select select {
+  width: 100%;
+  appearance: none;
+  background-color: var(--color-surface-container-low);
+  border: 1px solid var(--color-grid-line);
+  border-radius: var(--radius-md);
+  color: var(--color-on-surface);
+  font-family: var(--font-sans);
+  font-size: var(--text-body-md-size);
+  padding: 12px 36px 12px 14px;
+  cursor: pointer;
+}
+.depc__select .material-symbols-outlined { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--color-on-surface-variant); pointer-events: none; }
+
+.depc__segmented { display: flex; gap: 8px; }
+.depc__seg {
+  flex: 1;
+  background-color: var(--color-surface-container-low);
+  border: 1px solid var(--color-grid-line);
+  border-radius: var(--radius-md);
+  color: var(--color-on-surface-variant);
+  padding: 12px;
+  cursor: pointer;
+}
+.depc__seg--active { color: var(--color-on-surface); border-color: var(--color-assistant-identity); background-color: var(--color-surface); }
+
+.depc__input input {
+  width: 100%;
+  background-color: var(--color-surface-container-low);
+  border: 1px solid var(--color-grid-line);
+  border-radius: var(--radius-md);
+  color: var(--color-on-surface);
+  font-family: var(--font-sans);
+  font-size: var(--text-body-md-size);
+  padding: 12px 14px;
+}
+.depc__actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 12px; }

@@ -2,9 +2,9 @@
 Integration tests for parser-discovery sandbox worker.
 """
 
-import pytest
 import shutil
 from pathlib import Path
+
 from sandbox.workers.discovery_worker import run_discovery
 
 

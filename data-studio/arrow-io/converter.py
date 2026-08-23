@@ -2,11 +2,12 @@
 PyArrow Columnar Memory Converter - In-memory schema and Arrow table conversion.
 """
 
-from typing import Dict, Optional
+
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-def create_arrow_table_from_schema(data_dict: Dict[str, list], schema_map: Optional[Dict[str, str]] = None) -> pa.Table:
+
+def create_arrow_table_from_schema(data_dict: dict[str, list], schema_map: dict[str, str] | None = None) -> pa.Table:
     """
     Convert dictionary of lists into a PyArrow columnar Table.
     """

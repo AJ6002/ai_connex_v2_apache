@@ -1,0 +1,34 @@
+/** New Workspace — faithful layout to STITCH-Design/ai_connex_new_workspace (light). */
+.nws { max-width: 560px; margin: 40px auto; display: flex; flex-direction: column; gap: 20px; }
+.nws__panel { background-color: var(--color-surface); border: 1px solid var(--color-grid-line); border-radius: var(--radius-lg); padding: 32px; }
+.nws__title { font-size: 28px; font-weight: 700; color: var(--color-on-surface); letter-spacing: -0.02em; margin-bottom: 6px; }
+.nws__sub { color: var(--color-on-surface-variant); margin-bottom: 28px; }
+.nws__field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+.nws__field .label-mono { color: var(--color-on-surface-variant); }
+.nws__field input {
+  background-color: var(--color-surface-container-low);
+  border: 1px solid var(--color-grid-line);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  color: var(--color-on-surface);
+  font-family: var(--font-sans);
+  font-size: 15px;
+}
+.nws__select { position: relative; }
+.nws__select select {
+  width: 100%;
+  appearance: none;
+  background-color: var(--color-surface-container-low);
+  border: 1px solid var(--color-grid-line);
+  border-radius: var(--radius-md);
+  padding: 12px 36px 12px 14px;
+  color: var(--color-on-surface);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  cursor: pointer;
+}
+.nws__select .material-symbols-outlined { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--color-on-surface-variant); pointer-events: none; }
+.nws__segmented { display: flex; gap: 8px; }
+.nws__seg { flex: 1; background-color: var(--color-surface-container-low); border: 1px solid var(--color-grid-line); border-radius: var(--radius-md); padding: 12px; cursor: pointer; color: var(--color-on-surface-variant); }
+.nws__seg--active { color: var(--color-on-surface); border-color: var(--color-assistant-identity); background-color: var(--color-surface); }
+.nws__actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px; }

@@ -1,0 +1,243 @@
+/**
+ * Job detail — faithful to STITCH-Design/ai_connex_job_detail_* (all states).
+ * Token-driven only.
+ */
+.job {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.job__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+.job__id-row { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
+.job__id { color: var(--color-on-surface-variant); }
+.job__title {
+  font-size: var(--text-headline-lg-size);
+  line-height: var(--text-headline-lg-lh);
+  letter-spacing: var(--text-headline-lg-ls);
+  font-weight: 700;
+  color: var(--color-primary);
+  max-width: 640px;
+}
+.job__actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+.job__cancel {
+  background-color: var(--color-status-failed);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 8px 18px;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+.job__cancel:hover { opacity: 0.9; }
+
+/* ── Stat cards ──────────────────────────────────────────────────────────── */
+.job__stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.job-stat {
+  background-color: var(--color-surface-container);
+  border: 1px solid var(--color-grid-line);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.job-stat__label { color: var(--color-on-surface-variant); }
+.job-stat__value {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-on-surface);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.job-stat__value .material-symbols-outlined { font-size: 18px; color: var(--color-on-surface-variant); }
+.job-stat__value--accent { color: var(--color-assistant-identity); font-family: var(--font-mono); font-size: 15px; }
+
+/* ── Failure banner ──────────────────────────────────────────────────────── */
+.job__failure {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background-color: var(--color-error-container);
+  border: 1px solid var(--color-status-failed);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  color: var(--color-on-error-container);
+}
+.job__failure .material-symbols-outlined { color: var(--color-status-failed); font-size: 28px; }
+.job__failure > div { flex: 1; }
+.job__failure .label-mono { color: var(--color-status-failed); }
+.job__failure p { margin-top: 4px; color: var(--color-on-surface); }
+
+/* ── Clarification banner ────────────────────────────────────────────────── */
+.job__clarify {
+  background-color: var(--color-surface-container);
+  border: 1px solid var(--color-intent-clarification);
+  border-radius: var(--radius-md);
+  padding: 20px;
+}
+.job__clarify-head { color: var(--color-intent-clarification); display: inline-flex; align-items: center; gap: 8px; }
+.job__clarify-head .material-symbols-outlined { font-size: 16px; }
+.job__clarify p { margin: 12px 0 16px; color: var(--color-on-surface); }
+.job__clarify-options { display: flex; gap: 10px; flex-wrap: wrap; }
+.job__clarify-opt {
+  background-color: var(--color-surface-container-high);
+  border: 1px solid var(--color-intent-clarification);
+  color: var(--color-intent-clarification);
+  border-radius: 999px;
+  padding: 8px 18px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.job__clarify-opt:hover { background-color: var(--color-surface-container-highest); }
+.job__clarify-opt:disabled { opacity: 0.5; cursor: default; }
+
+/* ── Pipeline + logs grid ────────────────────────────────────────────────── */
+.job__grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 24px; align-items: start; }
+.job__section-title {
+  color: var(--color-on-surface-variant);
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-grid-line);
+  margin-bottom: 20px;
+}
+
+/* stepper */
+.job__stages { list-style: none; }
+.job-stage {
+  position: relative;
+  padding-left: 28px;
+  padding-bottom: 24px;
+}
+.job-stage:not(.job-stage--last)::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 16px;
+  bottom: 0;
+  width: 1px;
+  background-color: var(--color-grid-line);
+}
+.job-stage__dot {
+  position: absolute;
+  left: 0;
+  top: 3px;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  border: 2px solid var(--color-background-pitch);
+}
+.job-stage__dot--done { background-color: var(--color-status-completed); }
+.job-stage__dot--running { background-color: var(--color-status-running); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25); }
+.job-stage__dot--failed { background-color: var(--color-status-failed); }
+.job-stage__dot--pending { background-color: var(--color-status-queued); }
+
+.job-stage__row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.job-stage__label { font-weight: 700; color: var(--color-on-surface); }
+.job-stage__status { font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; }
+.job-stage__status--done { color: var(--color-status-completed); }
+.job-stage__status--running { color: var(--color-status-running); }
+.job-stage__status--failed { color: var(--color-status-failed); }
+.job-stage__status--pending { color: var(--color-on-surface-variant); }
+
+.job-stage--active .job-stage__body {
+  border: 1px solid var(--color-status-running);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  background-color: var(--color-surface-container);
+  margin-top: -6px;
+}
+.job-stage__detail {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-on-surface-variant);
+  margin-top: 10px;
+}
+.job-stage__pct { color: var(--color-status-running); }
+.job-stage__bar {
+  height: 4px;
+  background-color: var(--color-surface-container-highest);
+  border-radius: 999px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+.job-stage__bar > div { height: 100%; background-color: var(--color-status-running); }
+
+/* ── Logs console ────────────────────────────────────────────────────────── */
+.job__right { display: flex; flex-direction: column; gap: 20px; }
+.job__logs {
+  border: 1px solid var(--color-grid-line);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.job__logs-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-grid-line);
+  background-color: var(--color-surface-container);
+}
+.job__logs-head .label-mono { color: var(--color-on-surface); display: inline-flex; align-items: center; gap: 8px; }
+.job__logs-head .material-symbols-outlined { font-size: 16px; }
+.job__streaming { color: var(--color-status-running); display: inline-flex; align-items: center; gap: 6px; }
+.job__streaming-dot { width: 7px; height: 7px; border-radius: 999px; background-color: var(--color-status-running); }
+
+.job__console {
+  background-color: var(--color-surface-container-lowest);
+  padding: 16px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.7;
+  min-height: 360px;
+  max-height: 460px;
+  overflow-y: auto;
+  color: var(--color-on-surface-variant);
+}
+.job__log--error { color: var(--color-status-failed); font-weight: 700; }
+.job__log--active { color: var(--color-assistant-identity); font-weight: 700; }
+.job__cursor {
+  display: inline-block;
+  width: 8px;
+  height: 14px;
+  background-color: var(--color-assistant-identity);
+  vertical-align: middle;
+  animation: job-blink 1s steps(2, start) infinite;
+}
+@keyframes job-blink { to { opacity: 0; } }
+
+/* ── Artifacts ───────────────────────────────────────────────────────────── */
+.job__artifacts {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border: 1px solid var(--color-grid-line);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  background-color: var(--color-surface-container);
+}
+.job__artifacts--empty { justify-content: center; text-align: center; flex-direction: column; gap: 8px; color: var(--color-on-surface-variant); }
+.job__artifacts-icon { font-size: 28px; color: var(--color-on-surface-variant); }
+.job__artifacts > div { flex: 1; }
+.job__artifacts--empty > div { flex: none; }
+.job__artifacts-title { font-family: var(--font-mono); font-weight: 700; letter-spacing: 0.08em; color: var(--color-on-surface); font-size: 13px; }
+.job__artifacts p { margin-top: 4px; font-size: 14px; color: var(--color-on-surface-variant); }
+
+@media (max-width: 1024px) {
+  .job__grid { grid-template-columns: 1fr; }
+  .job__stats { grid-template-columns: repeat(2, 1fr); }
+}

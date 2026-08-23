@@ -1,0 +1,78 @@
+/** Model Registry — faithful to STITCH-Design/ai_connex_model_registry (light). */
+.models { max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+
+.models__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
+.models__title { font-size: var(--text-headline-lg-size); line-height: 1.1; letter-spacing: -0.03em; font-weight: 700; color: var(--color-on-surface); }
+.models__sub { color: var(--color-on-surface-variant); margin-top: 8px; }
+.models__actions { display: flex; gap: 12px; }
+
+.models__grid { display: grid; grid-template-columns: 1fr 260px; gap: 24px; align-items: start; }
+
+.models__table-wrap {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-grid-line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.models__table { width: 100%; border-collapse: collapse; }
+.models__table th {
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--color-on-surface-variant);
+  padding: 16px;
+  border-bottom: 1px solid var(--color-grid-line);
+}
+.models__table td { padding: 18px 16px; border-bottom: 1px solid var(--color-grid-line); font-size: 14px; color: var(--color-on-surface); vertical-align: middle; }
+.models__table tr:last-child td { border-bottom: none; }
+.models__check-col { width: 44px; }
+.models__id a { font-family: var(--font-mono); font-weight: 700; color: var(--color-on-surface); text-decoration: none; }
+.models__id a:hover { color: var(--color-assistant-identity); }
+.models__mono { font-family: var(--font-mono); font-size: 13px; }
+.models__link { color: var(--color-secondary); text-decoration: none; font-family: var(--font-mono); }
+.models__link:hover { text-decoration: underline; }
+.models__deploy { display: flex; align-items: center; gap: 8px; color: var(--color-on-surface-variant); }
+.models__deploy-dot { width: 7px; height: 7px; border-radius: 999px; background-color: var(--color-assistant-identity); }
+
+.models-status {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+}
+.models-status--promoted { background-color: var(--color-primary-container); color: var(--color-on-primary-fixed); }
+.models-status--evaluating { background-color: var(--color-secondary-container); color: #fff; }
+.models-status--training { background-color: var(--color-surface-container-high); color: var(--color-on-surface); }
+.models-status--failed { background-color: var(--color-error-container); color: var(--color-on-error-container); }
+.models-status--deprecated { background-color: var(--color-surface-container-high); color: var(--color-on-surface-variant); }
+
+.models__active {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-grid-line);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.models__active-title { color: var(--color-on-surface-variant); }
+.models__active-thumb {
+  height: 120px;
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface-container-high);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 8px 0;
+}
+.models__active-thumb .material-symbols-outlined { font-size: 40px; color: var(--color-on-surface-variant); }
+.models__active-src { color: var(--color-on-surface-variant); }
+.models__active-name { font-family: var(--font-mono); font-weight: 700; color: var(--color-on-surface); }
+
+@media (max-width: 1024px) {
+  .models__grid { grid-template-columns: 1fr; }
+}

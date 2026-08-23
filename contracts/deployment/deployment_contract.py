@@ -4,6 +4,7 @@ Deployment Contract - Production serving deployment policy and endpoint contract
 
 from pydantic import BaseModel, Field
 
+
 class DeploymentContract(BaseModel):
     deployment_id: str = Field(..., description="Unique deployment ID")
     model_id: str = Field(..., description="Target model artifact ID")
@@ -12,4 +13,4 @@ class DeploymentContract(BaseModel):
     min_replicas: int = Field(default=1)
     max_replicas: int = Field(default=5)
     serving_engine: str = Field(default="ONNXRuntime", description="ONNXRuntime, FastAPI, Triton")
-    status: str = Field(default="HEALTHY", description="HEALTHY, DEGRADED, STOPPED")
+    status: str = Field(default="ACTIVE", description="PENDING, ACTIVE, HEALTHY, DEGRADED, STOPPED, FAILED")

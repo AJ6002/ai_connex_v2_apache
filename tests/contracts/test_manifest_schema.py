@@ -4,8 +4,8 @@ Validates that the manifest.json produced by Node 1 always contains
 the required contract keys regardless of the data values.
 """
 import json
-import pandas as pd
 
+import pandas as pd
 
 # ---------------------------------------------------------------------------
 # Helpers

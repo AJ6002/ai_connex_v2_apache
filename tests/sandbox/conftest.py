@@ -2,10 +2,9 @@
 Pytest configuration and fixtures for Level 4 Sandbox integration tests.
 """
 
-import pytest
-import shutil
-import tempfile
 from pathlib import Path
+
+import pytest
 
 from sandbox.docker_job_manager import DockerJobManager
 

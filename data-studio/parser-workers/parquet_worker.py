@@ -2,10 +2,12 @@
 Parquet Inspection Worker Container Entrypoint.
 """
 
-import sys
-import os
 import json
+import os
+import sys
+
 import pyarrow.parquet as pq
+
 
 def parse_parquet(input_parquet_path: str, output_dir: str):
     if not os.path.exists(input_parquet_path):

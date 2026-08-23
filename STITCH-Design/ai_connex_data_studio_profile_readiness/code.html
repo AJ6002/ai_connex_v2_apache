@@ -1,0 +1,438 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>AI-ConneX - Data Studio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "grid-line": "#2a2d32",
+                      "on-secondary": "#002d6f",
+                      "tertiary-container": "#ffd8e8",
+                      "on-secondary-fixed-variant": "#00429b",
+                      "tertiary-fixed": "#ffd8e8",
+                      "surface-container-high": "#2a2a2a",
+                      "on-tertiary-container": "#b52681",
+                      "on-secondary-fixed": "#001945",
+                      "secondary-fixed": "#d9e2ff",
+                      "primary-fixed-dim": "#b3d338",
+                      "secondary-fixed-dim": "#b0c6ff",
+                      "on-background": "#e5e2e1",
+                      "on-secondary-container": "#fefcff",
+                      "surface-bright": "#393939",
+                      "surface-tint": "#b3d338",
+                      "on-surface": "#e5e2e1",
+                      "assistant-identity": "#d4f658",
+                      "surface-container": "#201f1f",
+                      "surface-variant": "#353534",
+                      "intent-clarification": "#ffb900",
+                      "surface-container-highest": "#353534",
+                      "on-primary": "#2a3500",
+                      "surface": "#131313",
+                      "on-primary-fixed": "#171e00",
+                      "on-error": "#690005",
+                      "surface-dim": "#131313",
+                      "outline": "#8f937c",
+                      "on-surface-variant": "#c5c9b0",
+                      "inverse-primary": "#536600",
+                      "error-container": "#93000a",
+                      "on-primary-fixed-variant": "#3e4c00",
+                      "primary": "#ffffff",
+                      "outline-variant": "#454936",
+                      "action-proposed": "#00f0ff",
+                      "on-tertiary-fixed": "#3d0027",
+                      "primary-container": "#cff053",
+                      "surface-container-lowest": "#0e0e0e",
+                      "background": "#131313",
+                      "secondary": "#b0c6ff",
+                      "tertiary": "#ffffff",
+                      "on-tertiary-fixed-variant": "#8a005f",
+                      "on-tertiary": "#620042",
+                      "tertiary-fixed-dim": "#ffafd5",
+                      "surface-slate": "#16181c",
+                      "inverse-on-surface": "#313030",
+                      "on-error-container": "#ffdad6",
+                      "background-pitch": "#000000",
+                      "error": "#ffb4ab",
+                      "on-primary-container": "#586c00",
+                      "inverse-surface": "#e5e2e1",
+                      "surface-container-low": "#1c1b1b",
+                      "primary-fixed": "#cff053",
+                      "secondary-container": "#006df7"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "unit": "4px",
+                      "docked-width": "380px",
+                      "chat-gap": "16px",
+                      "gutter": "24px",
+                      "margin-safe": "32px"
+              },
+              "fontFamily": {
+                      "headline-lg-mobile": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "body-md": ["Inter"],
+                      "assistant-msg": ["Inter"],
+                      "label-mono": ["JetBrains Mono"],
+                      "body-lg": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "display-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-lg-mobile": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                      "headline-lg": ["40px", { "lineHeight": "1.2", "letterSpacing": "-0.03em", "fontWeight": "700" }],
+                      "body-md": ["16px", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }],
+                      "assistant-msg": ["15px", { "lineHeight": "1.5", "letterSpacing": "0.01em", "fontWeight": "400" }],
+                      "label-mono": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.1em", "fontWeight": "700" }],
+                      "body-lg": ["18px", { "lineHeight": "1.6", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+                      "headline-md": ["32px", { "lineHeight": "1.3", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                      "display-lg": ["64px", { "lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "700" }]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .tech-grid-bg {
+            background-image: radial-gradient(#2a2d32 1px, transparent 1px);
+            background-size: 16px 16px;
+        }
+        /* Custom scrollbar for minimalist look */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #353534; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #454936; }
+    </style>
+</head>
+<body class="bg-background-pitch dark:bg-background-pitch text-on-surface antialiased overflow-hidden w-screen h-screen flex relative tech-grid-bg">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full flex items-center justify-between px-gutter z-30 w-full h-16 border-b border-grid-line bg-background-pitch dark:bg-background-pitch pl-[calc(5rem+24px)] pr-[calc(380px+24px)]">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-bold text-assistant-identity tracking-tighter">AI-ConneX</span>
+<span class="font-label-mono text-label-mono text-outline px-2 py-1 bg-surface-container rounded-sm border border-grid-line ml-4 hidden md:inline-block">/ STUDIO / PROFILING</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center text-on-surface-variant hover:text-assistant-identity transition-colors cursor-pointer">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</div>
+<div class="flex items-center text-on-surface-variant hover:text-assistant-identity transition-colors cursor-pointer">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+</div>
+<div class="flex items-center text-on-surface-variant hover:text-assistant-identity transition-colors cursor-pointer">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">help</span>
+</div>
+<div class="h-8 w-8 rounded-full bg-surface-variant border border-grid-line overflow-hidden ml-2 cursor-pointer">
+<img alt="User Profile" class="w-full h-full object-cover grayscale opacity-80 hover:opacity-100 hover:grayscale-0 transition-all" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDeN6HuGKEmb-BD-0vRXBZfItd6nnFX9lTcAKHfgqHyHRCQ2fJQnXKx3sIkkR5EBzrhCwQqY3mgOoHBUhzAAXyKrvi9WF53T1wqe65ZbDJVpEpUkKTUWeB0N1lDSRtbhnnQmE2BwNX-3NkCGbnR_eAAwAqGaeUCZOwUQ3arVrrjiv45UshdT3sck1fsChvsDtYFG3a3CWdub0uit3xxDYdEGFV-GjFdzPI3mv0z0JHoe9OnOhEgbEtSeg">
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-full z-40 h-full w-20 flex flex-col border-r border-grid-line bg-background-pitch dark:bg-background-pitch py-6 items-center">
+<div class="mb-12 h-10 w-10 bg-surface-container-high rounded border border-grid-line flex items-center justify-center font-headline-md text-headline-md text-assistant-identity tracking-tighter overflow-hidden">
+<span class="material-symbols-outlined text-assistant-identity">hexagon</span>
+</div>
+<div class="flex flex-col gap-6 w-full">
+<!-- Workspace: Inactive -->
+<a class="flex flex-col items-center justify-center gap-1 w-full text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors py-3 scale-95 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined text-[24px]">grid_view</span>
+<span class="font-label-mono text-label-mono text-[10px] opacity-70 mt-1">Workspace</span>
+</a>
+<!-- Datasets: Active -->
+<a class="flex flex-col items-center justify-center gap-1 w-full text-assistant-identity border-l-2 border-assistant-identity bg-surface-container-low transition-colors py-3 scale-95 active:scale-90 transition-transform relative before:absolute before:inset-0 before:bg-assistant-identity/5 before:pointer-events-none" href="#">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">database</span>
+<span class="font-label-mono text-label-mono text-[10px] mt-1">Datasets</span>
+</a>
+<!-- Models: Inactive -->
+<a class="flex flex-col items-center justify-center gap-1 w-full text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors py-3 scale-95 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined text-[24px]">model_training</span>
+<span class="font-label-mono text-label-mono text-[10px] opacity-70 mt-1">Models</span>
+</a>
+<!-- Admin: Inactive -->
+<a class="flex flex-col items-center justify-center gap-1 w-full text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors py-3 scale-95 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined text-[24px]">admin_panel_settings</span>
+<span class="font-label-mono text-label-mono text-[10px] opacity-70 mt-1">Admin</span>
+</a>
+</div>
+<div class="mt-auto flex flex-col items-center opacity-40">
+<span class="font-label-mono text-label-mono text-[9px] mb-2">v2.4.0</span>
+</div>
+</nav>
+<!-- Main Canvas Content -->
+<main class="flex-1 mt-16 ml-20 mr-docked-width p-gutter overflow-y-auto z-10 relative">
+<div class="max-w-6xl mx-auto h-full flex flex-col">
+<!-- Header Section -->
+<div class="flex items-end justify-between border-b border-grid-line pb-6 mb-6">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-primary mb-2">customer_churn_q3.parquet</h1>
+<div class="flex items-center gap-4">
+<span class="font-label-mono text-label-mono text-outline uppercase">Dataset Profile</span>
+<div class="flex items-center gap-2 bg-assistant-identity/10 border border-assistant-identity text-assistant-identity px-3 py-1 rounded-sm">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+<span class="font-label-mono text-label-mono">MACHINE-READY</span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<div class="font-label-mono text-label-mono text-on-surface-variant mb-1">ROWS / COLS</div>
+<div class="font-headline-md text-headline-md text-primary">1.2M <span class="text-outline mx-2">/</span> 42</div>
+</div>
+</div>
+<!-- Bento Grid Dashboard -->
+<div class="grid grid-cols-12 gap-6 flex-1">
+<!-- Data Types Summary (Left Column) -->
+<div class="col-span-12 lg:col-span-3 flex flex-col gap-6">
+<div class="bg-surface/80 border border-grid-line rounded-lg p-5 backdrop-blur-sm flex-1 flex flex-col">
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-label-mono text-label-mono text-primary">SCHEMA SUMMARY</h3>
+<span class="material-symbols-outlined text-outline text-[18px]">account_tree</span>
+</div>
+<ul class="space-y-4 mt-2">
+<li class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-action-proposed"></div>
+<span class="font-body-md text-body-md text-on-surface-variant">Numeric</span>
+</div>
+<span class="font-label-mono text-label-mono text-primary">28</span>
+</li>
+<li class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-intent-clarification"></div>
+<span class="font-body-md text-body-md text-on-surface-variant">Categorical</span>
+</div>
+<span class="font-label-mono text-label-mono text-primary">12</span>
+</li>
+<li class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></div>
+<span class="font-body-md text-body-md text-on-surface-variant">Datetime</span>
+</div>
+<span class="font-label-mono text-label-mono text-primary">2</span>
+</li>
+</ul>
+<div class="mt-auto pt-6">
+<div class="h-2 w-full bg-grid-line rounded-full flex overflow-hidden">
+<div class="h-full bg-action-proposed" style="width: 66%"></div>
+<div class="h-full bg-intent-clarification" style="width: 29%"></div>
+<div class="h-full bg-tertiary-fixed-dim" style="width: 5%"></div>
+</div>
+</div>
+</div>
+<!-- Missing Values Mini-Heatmap -->
+<div class="bg-surface/80 border border-grid-line rounded-lg p-5 backdrop-blur-sm h-48 flex flex-col">
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-label-mono text-label-mono text-primary">SPARSITY MATRIX</h3>
+<span class="font-label-mono text-label-mono text-assistant-identity">99.8% COMPLETE</span>
+</div>
+<div class="flex-1 grid grid-cols-6 grid-rows-4 gap-1 opacity-80">
+<!-- Simulated Heatmap cells -->
+<div class="bg-surface-variant rounded-sm"></div>
+<div class="bg-surface-variant rounded-sm"></div>
+<div class="bg-surface-variant rounded-sm"></div>
+<div class="bg-error/40 rounded-sm"></div>
+<div class="bg-surface-variant rounded-sm"></div>
+<div class="bg-surface-variant rounded-sm"></div>
+<div class="bg-surface-variant rounded-sm"></div>
+<div class="bg-surface-variant rounded-sm"></div>
+<div class="bg-surface-variant rounded-sm"></div>
+<div class="bg-surface-variant rounded-sm"></div>
+<div class="bg-surface-variant rounded-sm"></div>
+<div class="bg-surface-variant rounded-sm"></div>
+<div class="bg-surface-variant rounded-sm"></div>
+<div class="bg-error/20 rounded-sm"></div>
+<div class="bg-surface-variant rounded-sm"></div>
+<div class="bg-surface-variant rounded-sm"></div>
+<div class="bg-surface-variant rounded-sm"></div>
+<div class="bg-surface-variant rounded-sm"></div>
+<div class="bg-surface-variant rounded-sm"></div>
+<div class="bg-surface-variant rounded-sm"></div>
+<div class="bg-surface-variant rounded-sm"></div>
+<div class="bg-surface-variant rounded-sm"></div>
+<div class="bg-surface-variant rounded-sm"></div>
+<div class="bg-surface-variant rounded-sm"></div>
+</div>
+</div>
+</div>
+<!-- Feature Distributions (Middle Area) -->
+<div class="col-span-12 lg:col-span-6 bg-surface/80 border border-grid-line rounded-lg p-6 backdrop-blur-sm flex flex-col">
+<div class="flex items-center justify-between border-b border-grid-line pb-4 mb-4">
+<h3 class="font-label-mono text-label-mono text-primary">FEATURE DISTRIBUTIONS</h3>
+<div class="flex gap-2">
+<button class="px-2 py-1 bg-surface-variant text-on-surface font-label-mono text-[10px] rounded hover:text-primary transition-colors">TOP 5</button>
+<button class="px-2 py-1 text-on-surface-variant font-label-mono text-[10px] rounded hover:bg-surface-variant transition-colors">ALL</button>
+</div>
+</div>
+<div class="flex-1 flex flex-col gap-6 overflow-y-auto pr-2">
+<!-- Feature 1 -->
+<div>
+<div class="flex justify-between mb-2">
+<span class="font-label-mono text-label-mono text-secondary-fixed">tenure_months</span>
+<span class="font-label-mono text-label-mono text-outline text-[10px]">INT64</span>
+</div>
+<div class="h-12 w-full flex items-end gap-[2px] opacity-70">
+<div class="w-full bg-secondary h-[20%]"></div>
+<div class="w-full bg-secondary h-[35%]"></div>
+<div class="w-full bg-secondary h-[45%]"></div>
+<div class="w-full bg-secondary h-[60%]"></div>
+<div class="w-full bg-secondary h-[80%]"></div>
+<div class="w-full bg-secondary h-[100%]"></div>
+<div class="w-full bg-secondary h-[85%]"></div>
+<div class="w-full bg-secondary h-[70%]"></div>
+<div class="w-full bg-secondary h-[50%]"></div>
+<div class="w-full bg-secondary h-[30%]"></div>
+</div>
+</div>
+<!-- Feature 2 -->
+<div>
+<div class="flex justify-between mb-2">
+<span class="font-label-mono text-label-mono text-secondary-fixed">monthly_charges</span>
+<span class="font-label-mono text-label-mono text-outline text-[10px]">FLOAT64</span>
+</div>
+<div class="h-12 w-full flex items-end gap-[2px] opacity-70">
+<div class="w-full bg-secondary h-[100%]"></div>
+<div class="w-full bg-secondary h-[90%]"></div>
+<div class="w-full bg-secondary h-[80%]"></div>
+<div class="w-full bg-secondary h-[60%]"></div>
+<div class="w-full bg-secondary h-[50%]"></div>
+<div class="w-full bg-secondary h-[40%]"></div>
+<div class="w-full bg-secondary h-[30%]"></div>
+<div class="w-full bg-secondary h-[20%]"></div>
+<div class="w-full bg-secondary h-[10%]"></div>
+<div class="w-full bg-secondary h-[15%]"></div>
+</div>
+</div>
+<!-- Feature 3 -->
+<div>
+<div class="flex justify-between mb-2">
+<span class="font-label-mono text-label-mono text-secondary-fixed">contract_type</span>
+<span class="font-label-mono text-label-mono text-outline text-[10px]">CATEGORY</span>
+</div>
+<div class="h-12 w-full flex items-end gap-2 opacity-80">
+<div class="w-1/2 bg-intent-clarification h-[100%] flex items-end p-1 justify-center"><span class="text-[9px] text-background-pitch font-bold hidden md:inline">M-T-M</span></div>
+<div class="w-1/3 bg-intent-clarification h-[60%] flex items-end p-1 justify-center"><span class="text-[9px] text-background-pitch font-bold hidden md:inline">1 YR</span></div>
+<div class="w-1/4 bg-intent-clarification h-[40%] flex items-end p-1 justify-center"><span class="text-[9px] text-background-pitch font-bold hidden md:inline">2 YR</span></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Panel (Right Column) -->
+<div class="col-span-12 lg:col-span-3 flex flex-col gap-6">
+<!-- Proposed Action Container -->
+<div class="border border-action-proposed bg-action-proposed/5 rounded-lg p-5 shadow-[0_0_10px_theme(colors.action-proposed)/10] relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-action-proposed/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="relative z-10">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-action-proposed text-[18px]">bolt</span>
+<h3 class="font-label-mono text-label-mono text-action-proposed">NEXT ACTION</h3>
+</div>
+<p class="font-body-md text-body-md text-primary mb-6">Profile successfully validated. Dataset is ready for model training pipeline.</p>
+<button class="w-full bg-action-proposed text-background-pitch font-label-mono text-label-mono py-3 px-4 rounded hover:bg-primary transition-colors flex justify-center items-center gap-2 group-hover:shadow-[0_0_15px_theme(colors.action-proposed)/40]">
+<span>TRAIN MODEL</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Secondary Actions -->
+<div class="bg-surface/50 border border-grid-line rounded-lg p-4 flex flex-col gap-2">
+<button class="w-full flex items-center justify-between p-3 rounded border border-transparent hover:border-grid-line hover:bg-surface-variant transition-colors text-left group">
+<div>
+<div class="font-label-mono text-label-mono text-primary group-hover:text-assistant-identity transition-colors">Export Artifact</div>
+<div class="font-body-md text-[12px] text-on-surface-variant mt-1">Save to centralized registry</div>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-assistant-identity transition-colors text-[18px]">download</span>
+</button>
+<div class="h-[1px] w-full bg-grid-line my-1"></div>
+<button class="w-full flex items-center justify-between p-3 rounded border border-transparent hover:border-grid-line hover:bg-surface-variant transition-colors text-left group">
+<div>
+<div class="font-label-mono text-label-mono text-primary group-hover:text-assistant-identity transition-colors">Create Version</div>
+<div class="font-body-md text-[12px] text-on-surface-variant mt-1">Snapshot current schema</div>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-assistant-identity transition-colors text-[18px]">history</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- NavigationDrawer (Jane) - Expanded State -->
+<aside class="fixed right-0 top-0 h-full z-50 flex flex-col docked right-0 w-docked-width border-l border-grid-line bg-surface-slate dark:bg-surface-slate shadow-[0_0_10px_rgba(212,246,88,0.05)] transition-all duration-200 ease-in-out">
+<!-- Header -->
+<div class="h-16 border-b border-grid-line px-6 flex items-center justify-between bg-surface-slate">
+<div>
+<h2 class="font-label-mono text-label-mono text-assistant-identity uppercase tracking-widest">JANE_AI</h2>
+<div class="font-label-mono text-[9px] text-outline mt-1 tracking-widest">SYSTEM_READY</div>
+</div>
+<button class="text-outline hover:text-assistant-identity transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">collapse_content</span>
+</button>
+</div>
+<!-- Tabs -->
+<div class="flex border-b border-grid-line">
+<!-- INTENT (Active) -->
+<button class="flex-1 py-3 flex items-center justify-center gap-2 text-assistant-identity border-b border-assistant-identity bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined text-[16px]">psychology</span>
+<span class="font-label-mono text-[10px]">INTENT</span>
+</button>
+<!-- JOBS (Inactive) -->
+<button class="flex-1 py-3 flex items-center justify-center gap-2 text-outline hover:bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined text-[16px]">analytics</span>
+<span class="font-label-mono text-[10px]">JOBS</span>
+</button>
+<!-- ACTIONS (Inactive) -->
+<button class="flex-1 py-3 flex items-center justify-center gap-2 text-outline hover:bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined text-[16px]">bolt</span>
+<span class="font-label-mono text-[10px]">ACTIONS</span>
+</button>
+</div>
+<!-- Chat Container -->
+<div class="flex-1 p-6 overflow-y-auto flex flex-col gap-chat-gap">
+<!-- Context Injection / System message -->
+<div class="flex flex-col gap-unit items-center mb-4">
+<div class="font-label-mono text-[9px] text-outline uppercase tracking-widest bg-surface-variant px-2 py-1 rounded border border-grid-line">CONTEXT: DATASET PROFILING</div>
+</div>
+<!-- User Message -->
+<div class="self-end max-w-[85%] border border-grid-line rounded py-3 px-4 font-assistant-msg text-assistant-msg text-primary">
+                Analyze the schema for <span class="font-label-mono text-secondary-fixed">customer_churn_q3.parquet</span>
+</div>
+<!-- Assistant Message -->
+<div class="self-start max-w-[90%] flex gap-3 group relative">
+<!-- Status Line -->
+<div class="w-[2px] bg-assistant-identity shadow-[0_0_8px_theme(colors.assistant-identity)/60]"></div>
+<div class="py-2">
+<p class="font-assistant-msg text-assistant-msg text-on-surface leading-relaxed">
+                        Initial scan confirms schema match. The dataset contains 1.2M rows and 42 columns with 99.8% completeness.
+                    </p>
+<p class="font-assistant-msg text-assistant-msg text-on-surface leading-relaxed mt-3">
+                        Preparing drift analysis against <span class="font-label-mono text-[11px] text-outline">baseline_model_v2</span>. I have flagged <span class="font-label-mono text-[11px] text-intent-clarification">monthly_charges</span> for potential distribution shift.
+                    </p>
+<div class="mt-4 flex gap-2">
+<button class="border border-grid-line bg-surface-variant hover:border-assistant-identity hover:text-assistant-identity text-on-surface-variant font-label-mono text-[10px] py-1.5 px-3 rounded transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">visibility</span> VIEW DRIFT REPORT
+                        </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Input Area -->
+<div class="border-t border-grid-line p-4 bg-surface-slate relative">
+<div class="absolute -top-[1px] left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-assistant-identity/30 to-transparent"></div>
+<div class="relative flex items-center bg-background-pitch border border-grid-line rounded focus-within:border-assistant-identity focus-within:shadow-[0_0_8px_theme(colors.assistant-identity)/20] transition-all">
+<span class="material-symbols-outlined text-outline ml-3 text-[18px]">terminal</span>
+<input class="w-full bg-transparent border-none text-primary font-label-mono text-label-mono placeholder:text-outline/50 focus:ring-0 py-3 px-3" placeholder="READY_FOR_INPUT_" type="text">
+<button class="mr-2 text-outline hover:text-assistant-identity p-2 transition-colors">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">send</span>
+</button>
+</div>
+</div>
+</aside>
+</body></html>

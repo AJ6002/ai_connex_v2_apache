@@ -3,12 +3,13 @@ Unit tests for Level 4 Sandbox & Segmentation contracts.
 """
 
 from datetime import datetime
+
 import pytest
 from pydantic import ValidationError
 
-from contracts.segmentation import CandidateRegion, SegmentationProposal
-from contracts.sandbox import ParserResultManifest
 from contracts.discovery import DatasetDiscoveryArtifact
+from contracts.sandbox import ParserResultManifest
+from contracts.segmentation import CandidateRegion, SegmentationProposal
 
 
 def test_candidate_region_valid():

@@ -1,0 +1,65 @@
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-weight: var(--text-label-mono-fw);
+  letter-spacing: var(--text-label-mono-ls);
+  text-transform: uppercase;
+  border-radius: var(--radius-full);
+  border: 1px solid transparent;
+}
+
+.status-badge--sm { font-size: 10px; padding: 2px 8px; }
+.status-badge--md { font-size: var(--text-label-mono-size); padding: 4px 10px; }
+
+/* ── Variants ────────────────────────────────────────────────────────────── */
+.status-badge--running {
+  color: var(--status-running);
+  background-color: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+.status-badge--completed, .status-badge--ready {
+  color: var(--status-completed);
+  background-color: rgba(212, 246, 88, 0.12);
+  border-color: rgba(212, 246, 88, 0.3);
+}
+.status-badge--failed {
+  color: var(--status-failed);
+  background-color: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+.status-badge--queued {
+  color: var(--status-queued);
+  background-color: rgba(107, 114, 128, 0.12);
+  border-color: rgba(107, 114, 128, 0.3);
+}
+.status-badge--clarification {
+  color: var(--status-clarification);
+  background-color: rgba(255, 185, 0, 0.12);
+  border-color: rgba(255, 185, 0, 0.3);
+}
+.status-badge--quarantined {
+  color: var(--status-quarantined);
+  background-color: rgba(249, 115, 22, 0.12);
+  border-color: rgba(249, 115, 22, 0.3);
+}
+.status-badge--warnings {
+  color: var(--status-warnings);
+  background-color: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+/* ── Dot indicator ───────────────────────────────────────────────────────── */
+.status-badge__dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: currentColor;
+  flex-shrink: 0;
+}
+
+.status-badge--running .status-badge__dot {
+  animation: blink 1.2s ease-in-out infinite;
+}

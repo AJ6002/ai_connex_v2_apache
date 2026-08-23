@@ -1,0 +1,17 @@
+title = "AI-ConneX Gitleaks Configuration"
+
+[allowlist]
+description = "Allowlist for mock UI fixtures, test setup, and external HTML design reference dumps"
+paths = [
+  '''web/src/mocks/.*''',
+  '''web/src/test/.*''',
+  '''STITCH-Design/.*''',
+  '''Untitled - August 18, 2026\.txt'''
+]
+
+regexes = [
+  '''ak_prod_.*''',
+  '''api-key-ci-cd''',
+  '''hutk''',
+  '''hubspotutk'''
+]

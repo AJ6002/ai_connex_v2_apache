@@ -4,18 +4,15 @@ Executes inside parser-compile sandbox container under non-root 10001:10001 with
 Strictly prohibits arbitrary/agent-generated SQL strings; uses pre-validated YAML compilation templates.
 """
 
-import sys
-import os
-import glob
 import hashlib
+import os
+import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, List
 
+import datafusion
 import pyarrow as pa
 import pyarrow.parquet as pq
-import datafusion
-import yaml
 
 from contracts.sandbox.result_manifest_contract import ParserResultManifest
 
@@ -70,9 +67,27 @@ def process_compile():
 
         # Write compiled results out to Parquet
         arrow_table = df.to_arrow_table()
-        row_count = arrow_table.num_rows
 
+        # DataFusion 54.x returns string_view typed columns which PyArrow's
+        # Parquet writer cannot serialize. Cast all string_view columns to
+        # large_utf8 (Parquet binary-compatible) before writing.
+        new_columns = []
+        new_fields = []
+        for i, field in enumerate(arrow_table.schema):
+            col = arrow_table.column(i)
+            if pa.types.is_large_binary(field.type) or str(field.type) == "string_view":
+                col = col.cast(pa.large_utf8())
+                field = field.with_type(pa.large_utf8())
+            new_columns.append(col)
+            new_fields.append(field)
+        arrow_table = pa.table(
+            {field.name: col for field, col in zip(new_fields, new_columns)},
+            schema=pa.schema(new_fields),
+        )
+
+        row_count = arrow_table.num_rows
         pq.write_table(arrow_table, output_parquet_path, compression="snappy")
+
         output_hash = compute_sha256(output_parquet_path)
 
         schema_def = {col: str(dtype) for col, dtype in zip(arrow_table.schema.names, arrow_table.schema.types)}
@@ -106,7 +121,7 @@ def process_compile():
         print(f"Compile Parser successfully built Parquet artifact: {output_parquet_path} ({row_count} rows)")
 
     except Exception as e:
-        print(f"Compile Parser Error: {str(e)}", file=sys.stderr)
+        print(f"Compile Parser Error: {e!s}", file=sys.stderr)
         sys.exit(1)
 
 

@@ -1,0 +1,69 @@
+/** Workspace Overview — faithful to STITCH-Design/ai_connex_workspace_overview (light). */
+.wov { max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+
+.wov__top { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 20px; }
+.wov__panel { background-color: var(--color-surface); border: 1px solid var(--color-grid-line); border-radius: var(--radius-lg); padding: 22px; }
+.wov__panel-head { display: flex; align-items: center; justify-content: space-between; color: var(--color-on-surface-variant); margin-bottom: 16px; }
+.wov__panel-head .material-symbols-outlined { font-size: 18px; color: var(--color-status-completed); }
+
+.wov__actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.wov__action {
+  border: 1px solid var(--color-outline-variant);
+  border-radius: 999px;
+  padding: 12px 16px;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-on-surface);
+  text-align: left;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+.wov__action:hover { border-color: var(--color-assistant-identity); background-color: var(--color-surface-container-low); }
+
+.wov__stat-value { font-size: 40px; font-weight: 700; color: var(--color-on-surface); letter-spacing: -0.02em; }
+.wov__stat-unit { font-size: 16px; color: var(--color-on-surface-variant); margin-left: 6px; }
+.wov__stat-sub { color: var(--color-status-completed); font-family: var(--font-mono); font-size: 13px; margin-top: 8px; display: block; }
+
+.wov__alert { display: flex; align-items: center; gap: 16px; background-color: var(--color-error-container); border: 1px solid var(--color-status-failed); border-radius: var(--radius-lg); padding: 16px 20px; }
+.wov__alert .material-symbols-outlined { color: var(--color-status-failed); font-size: 24px; }
+.wov__alert-text { flex: 1; font-family: var(--font-mono); font-size: 13px; color: var(--color-on-error-container); }
+
+.wov__grid { display: grid; grid-template-columns: 1fr 340px; gap: 20px; align-items: start; }
+
+.wov__jobs-table { width: 100%; border-collapse: collapse; }
+.wov__jobs-table th { text-align: left; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; color: var(--color-on-surface-variant); padding: 10px 0; border-bottom: 1px solid var(--color-grid-line); }
+.wov__jobs-table td { padding: 16px 0; border-bottom: 1px solid var(--color-grid-line); font-size: 14px; color: var(--color-on-surface); }
+.wov__jobs-table tr:last-child td { border-bottom: none; }
+.wov__jobs-table tr.wov__row--clarify { background-color: var(--color-error-container); }
+.wov__job-id { font-family: var(--font-mono); font-weight: 700; }
+
+.wov__job-status { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid transparent; }
+.wov__job-status--running { color: var(--color-status-running); border-color: var(--color-status-running); }
+.wov__job-status--clarification { color: var(--color-status-failed); border-color: var(--color-status-failed); }
+.wov__job-status--completed { color: var(--color-status-completed); }
+.wov__job-status--queued { color: var(--color-on-surface-variant); }
+.wov__job-status-dot { width: 6px; height: 6px; border-radius: 999px; background: currentColor; }
+
+.wov__progress { height: 6px; width: 120px; border-radius: 999px; background-color: var(--color-surface-container-highest); overflow: hidden; }
+.wov__progress > div { height: 100%; }
+.wov__progress--running > div { background-color: var(--color-status-running); }
+.wov__progress--clarification > div { background-color: var(--color-status-failed); }
+.wov__progress--completed > div { background-color: var(--color-assistant-identity); }
+
+.wov__datasets { display: flex; flex-direction: column; gap: 14px; }
+.wov__dataset-card { border: 1px solid var(--color-grid-line); border-radius: var(--radius-md); padding: 14px 16px; }
+.wov__dataset-card--failed { border-color: var(--color-status-failed); background-color: var(--color-error-container); }
+.wov__dataset-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.wov__dataset-name { font-family: var(--font-mono); font-weight: 700; color: var(--color-on-surface); }
+.wov__dataset-card--failed .wov__dataset-name { color: var(--color-status-failed); }
+.wov__dataset-chip { font-family: var(--font-mono); font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 999px; }
+.wov__dataset-chip--active { background-color: var(--color-secondary-container); color: #fff; }
+.wov__dataset-chip--processed { background-color: var(--color-surface-container-high); color: var(--color-on-surface-variant); }
+.wov__dataset-chip--failed { background-color: var(--color-status-failed); color: #fff; }
+.wov__dataset-meta { display: flex; justify-content: space-between; color: var(--color-on-surface-variant); font-size: 13px; }
+
+@media (max-width: 1100px) {
+  .wov__top { grid-template-columns: 1fr; }
+  .wov__grid { grid-template-columns: 1fr; }
+}

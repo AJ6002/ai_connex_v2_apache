@@ -1,0 +1,479 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>AI-ConneX - Jane Assistant Expanded</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "on-tertiary": "#620042",
+                "surface-container-highest": "#353534",
+                "tertiary-fixed-dim": "#ffafd5",
+                "surface-container-high": "#2a2a2a",
+                "primary-fixed": "#cff053",
+                "surface-tint": "#b3d338",
+                "primary-fixed-dim": "#b3d338",
+                "on-secondary-fixed": "#001945",
+                "on-secondary-container": "#fefcff",
+                "surface-container-lowest": "#0e0e0e",
+                "on-primary": "#2a3500",
+                "secondary": "#b0c6ff",
+                "on-tertiary-fixed-variant": "#8a005f",
+                "surface": "#131313",
+                "tertiary-container": "#ffd8e8",
+                "secondary-fixed": "#d9e2ff",
+                "surface-slate": "#16181c",
+                "grid-line": "#2a2d32",
+                "surface-container-low": "#1c1b1b",
+                "background": "#131313",
+                "on-tertiary-fixed": "#3d0027",
+                "assistant-identity": "#d4f658",
+                "tertiary-fixed": "#ffd8e8",
+                "surface-variant": "#353534",
+                "on-error-container": "#ffdad6",
+                "primary-container": "#cff053",
+                "inverse-surface": "#e5e2e1",
+                "on-background": "#e5e2e1",
+                "tertiary": "#ffffff",
+                "intent-clarification": "#ffb900",
+                "surface-bright": "#393939",
+                "inverse-on-surface": "#313030",
+                "on-primary-container": "#586c00",
+                "on-surface-variant": "#c5c9b0",
+                "on-primary-fixed-variant": "#3e4c00",
+                "on-tertiary-container": "#b52681",
+                "outline-variant": "#454936",
+                "secondary-container": "#006df7",
+                "error": "#ffb4ab",
+                "inverse-primary": "#536600",
+                "on-surface": "#e5e2e1",
+                "secondary-fixed-dim": "#b0c6ff",
+                "on-secondary-fixed-variant": "#00429b",
+                "error-container": "#93000a",
+                "background-pitch": "#000000",
+                "on-primary-fixed": "#171e00",
+                "action-proposed": "#00f0ff",
+                "surface-container": "#201f1f",
+                "outline": "#8f937c",
+                "primary": "#ffffff",
+                "on-error": "#690005",
+                "surface-dim": "#131313",
+                "on-secondary": "#002d6f"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+        },
+        "spacing": {
+                "margin-safe": "32px",
+                "gutter": "24px",
+                "unit": "4px",
+                "docked-width": "380px",
+                "chat-gap": "16px"
+        },
+        "fontFamily": {
+                "display-lg": [
+                        "Inter"
+                ],
+                "body-md": [
+                        "Inter"
+                ],
+                "label-mono": [
+                        "JetBrains Mono"
+                ],
+                "headline-lg": [
+                        "Inter"
+                ],
+                "headline-lg-mobile": [
+                        "Inter"
+                ],
+                "body-lg": [
+                        "Inter"
+                ],
+                "assistant-msg": [
+                        "Inter"
+                ],
+                "headline-md": [
+                        "Inter"
+                ]
+        },
+        "fontSize": {
+                "display-lg": [
+                        "64px",
+                        {
+                                "lineHeight": "1.1",
+                                "letterSpacing": "-0.04em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-md": [
+                        "16px",
+                        {
+                                "lineHeight": "1.6",
+                                "letterSpacing": "0",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-mono": [
+                        "12px",
+                        {
+                                "lineHeight": "1.2",
+                                "letterSpacing": "0.1em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "headline-lg": [
+                        "40px",
+                        {
+                                "lineHeight": "1.2",
+                                "letterSpacing": "-0.03em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "headline-lg-mobile": [
+                        "32px",
+                        {
+                                "lineHeight": "1.2",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-lg": [
+                        "18px",
+                        {
+                                "lineHeight": "1.6",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "400"
+                        }
+                ],
+                "assistant-msg": [
+                        "15px",
+                        {
+                                "lineHeight": "1.5",
+                                "letterSpacing": "0.01em",
+                                "fontWeight": "400"
+                        }
+                ],
+                "headline-md": [
+                        "32px",
+                        {
+                                "lineHeight": "1.3",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "600"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+        /* Technical Grid Floor */
+        .bg-tech-grid {
+            background-size: 24px 24px;
+            background-image: radial-gradient(circle, #2a2d32 1px, transparent 1px);
+        }
+        
+        /* Neon Glows via box-shadow matching config colors */
+        .glow-assistant { box-shadow: 0 0 12px 0px rgba(212, 246, 88, 0.15); }
+        .glow-action { box-shadow: 0 0 12px 0px rgba(0, 240, 255, 0.15); }
+        .glow-intent { box-shadow: 0 0 12px 0px rgba(255, 185, 0, 0.15); }
+
+        /* Assistant panel technical slide entry */
+        @keyframes slideInRight {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+        .animate-panel-enter {
+            animation: slideInRight 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Hide scrollbar for clean UI */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #2a2d32; }
+    </style>
+</head>
+<body class="bg-background-pitch text-on-background font-body-md text-body-md h-screen w-full flex overflow-hidden antialiased selection:bg-assistant-identity selection:text-background-pitch">
+<!-- 1. SideNavBar (Anchored to JSON Blueprint) -->
+<nav class="fixed left-0 top-0 h-full w-[280px] flex flex-col py-margin-safe bg-surface-slate dark:bg-surface-slate border-r border-grid-line z-50">
+<!-- Header -->
+<div class="px-gutter mb-8">
+<h1 class="text-headline-md font-headline-md text-primary flex items-center gap-3">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">terminal</span>
+                AI-ConneX
+            </h1>
+<p class="text-label-mono font-label-mono text-on-surface-variant mt-2 tracking-widest uppercase">Terminal v4.2</p>
+</div>
+<!-- Primary Actions -->
+<div class="px-gutter mb-6">
+<button class="w-full py-3 px-4 border border-assistant-identity text-assistant-identity font-label-mono text-label-mono hover:bg-assistant-identity/10 transition-colors flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-sm">add</span>
+                NEW_PROJECT
+            </button>
+</div>
+<!-- Navigation Tabs -->
+<ul class="flex flex-col gap-2 flex-1 px-4">
+<li>
+<a class="flex items-center gap-4 px-4 py-3 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-primary transition-all duration-200 ease-in-out font-label-mono text-label-mono" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-3 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-primary transition-all duration-200 ease-in-out font-label-mono text-label-mono" href="#">
+<span class="material-symbols-outlined">database</span>
+                    Datasets
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-3 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-primary transition-all duration-200 ease-in-out font-label-mono text-label-mono" href="#">
+<span class="material-symbols-outlined">memory</span>
+                    Models
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-3 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-primary transition-all duration-200 ease-in-out font-label-mono text-label-mono" href="#">
+<span class="material-symbols-outlined">rocket_launch</span>
+                    Deployments
+                </a>
+</li>
+<!-- Active Tab -->
+<li>
+<a class="flex items-center gap-4 px-4 py-3 text-assistant-identity border-l-2 border-assistant-identity bg-surface-container-low transition-all duration-200 ease-in-out font-label-mono text-label-mono glow-assistant" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">terminal</span>
+                    Jane AI
+                </a>
+</li>
+</ul>
+<!-- Footer Navigation -->
+<ul class="flex flex-col gap-2 px-4 mt-auto">
+<li>
+<a class="flex items-center gap-4 px-4 py-3 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-primary transition-all duration-200 ease-in-out font-label-mono text-label-mono" href="#">
+<span class="material-symbols-outlined">settings</span>
+                    Settings
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-3 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-primary transition-all duration-200 ease-in-out font-label-mono text-label-mono" href="#">
+<span class="material-symbols-outlined">help_outline</span>
+                    Support
+                </a>
+</li>
+</ul>
+</nav>
+<!-- Main Wrapper to handle layout compression -->
+<div class="flex-1 ml-[280px] mr-[480px] flex flex-col relative h-full transition-all duration-300">
+<!-- 2. TopAppBar (Anchored to JSON) -->
+<header class="fixed top-0 w-[calc(100%-280px-480px)] z-40 flex justify-between items-center px-gutter h-16 bg-background-pitch dark:bg-background-pitch border-b border-grid-line">
+<div class="flex items-center gap-4 text-on-surface-variant font-label-mono text-label-mono">
+<span class="text-primary font-bold">Workspace Overview</span>
+<span class="text-grid-line">/</span>
+<span>Active Region: us-east-1</span>
+</div>
+<div class="flex items-center gap-6">
+<!-- Search Bar on Right as per JSON -->
+<div class="relative flex items-center border-b border-grid-line pb-1">
+<span class="material-symbols-outlined text-on-surface-variant mr-2 text-sm">search</span>
+<input class="bg-transparent border-none text-label-mono font-label-mono text-primary focus:ring-0 focus:outline-none placeholder:text-on-surface-variant/50 w-48" placeholder="QUERY_SYSTEM..." type="text">
+</div>
+<!-- Trailing Icons -->
+<div class="flex items-center gap-4 text-on-surface-variant dark:text-on-surface-variant">
+<button class="hover:text-assistant-identity transition-colors duration-200 active:scale-95 transition-transform"><span class="material-symbols-outlined">smart_toy</span></button>
+<button class="hover:text-assistant-identity transition-colors duration-200 active:scale-95 transition-transform relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-assistant-identity rounded-full"></span>
+</button>
+<button class="hover:text-assistant-identity transition-colors duration-200 active:scale-95 transition-transform"><span class="material-symbols-outlined">account_circle</span></button>
+</div>
+</div>
+</header>
+<!-- Main Canvas Area (Workspace Overview background) -->
+<main class="flex-1 pt-16 bg-tech-grid relative overflow-hidden flex flex-col">
+<!-- Simulated background content to show the "compressed" state -->
+<div class="p-gutter grid grid-cols-2 gap-6 opacity-40">
+<div class="border border-grid-line bg-surface-slate h-64 p-6 flex flex-col justify-between">
+<h3 class="font-label-mono text-label-mono text-on-surface-variant">NODE_METRICS</h3>
+<div class="w-full h-32 bg-background border border-grid-line relative">
+<div class="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-assistant-identity/20 to-transparent"></div>
+</div>
+</div>
+<div class="border border-grid-line bg-surface-slate h-64 p-6 flex flex-col justify-between">
+<h3 class="font-label-mono text-label-mono text-on-surface-variant">ACTIVE_DATASETS</h3>
+<ul class="space-y-4">
+<li class="h-4 w-3/4 bg-grid-line"></li>
+<li class="h-4 w-1/2 bg-grid-line"></li>
+<li class="h-4 w-5/6 bg-grid-line"></li>
+</ul>
+</div>
+</div>
+<!-- Overlay indication of focus -->
+<div class="absolute inset-0 bg-background-pitch/60 backdrop-blur-[2px] z-10 flex items-center justify-center pointer-events-none">
+<span class="font-label-mono text-label-mono text-assistant-identity bg-background-pitch px-4 py-2 border border-assistant-identity glow-assistant">SYS.FOCUS == JANE_ASSISTANT</span>
+</div>
+</main>
+</div>
+<!-- 3. Jane Assistant Expanded Panel -->
+<aside class="fixed right-0 top-0 h-full w-[480px] bg-surface-slate border-l border-grid-line z-50 flex flex-col animate-panel-enter shadow-[-10px_0_30px_rgba(0,0,0,0.5)]">
+<!-- Panel Header -->
+<div class="h-16 flex items-center justify-between px-gutter border-b border-grid-line shrink-0">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-assistant-identity" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+<span class="font-label-mono text-label-mono text-primary tracking-widest">JANE_AI_TERMINAL</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant font-label-mono text-label-mono text-[10px]">
+<span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-assistant-identity"></span> ONLINE</span>
+<span class="px-2 border-l border-grid-line ml-2 pl-2">v4.2.1</span>
+<button class="ml-4 hover:text-primary transition-colors"><span class="material-symbols-outlined text-lg">close</span></button>
+</div>
+</div>
+<!-- Chat Feed Area -->
+<div class="flex-1 overflow-y-auto p-gutter flex flex-col gap-chat-gap relative">
+<!-- System Initializer -->
+<div class="text-center font-label-mono text-label-mono text-on-surface-variant opacity-50 my-4">
+                &gt; SESSION_INITIALIZED_AT: 14:02:45 UTC
+            </div>
+<!-- Message 1: User Request -->
+<div class="self-end max-w-[85%] flex flex-col gap-unit">
+<div class="text-right text-[10px] font-label-mono text-on-surface-variant">USER_OP</div>
+<div class="border border-grid-line p-4 text-primary font-assistant-msg text-assistant-msg bg-background-pitch/50 relative">
+                    "Jane, analyze the drift in the 'customer_churn_v3' dataset and prepare a profiling job."
+                    <!-- Corner accent -->
+<div class="absolute top-0 right-0 w-2 h-2 border-t border-r border-on-surface-variant"></div>
+</div>
+</div>
+<!-- Message 2: Jane Normal Response -->
+<div class="self-start max-w-[90%] flex flex-col gap-unit mt-2">
+<div class="text-left text-[10px] font-label-mono text-assistant-identity flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]">smart_toy</span> SYS_RESPONSE
+                </div>
+<div class="border-l-[2px] border-assistant-identity pl-4 py-1 text-on-surface font-assistant-msg text-assistant-msg glow-assistant relative">
+<p>Acknowledged. Locating dataset <span class="font-label-mono text-assistant-identity bg-assistant-identity/10 px-1 py-0.5 border border-assistant-identity/30">customer_churn_v3</span> in the primary registry.</p>
+<p class="mt-2 text-on-surface-variant">Initial scan confirms schema match. Preparing drift analysis pipeline sequence.</p>
+</div>
+</div>
+<!-- Message 3: Jane Clarification Request -->
+<div class="self-start max-w-[90%] flex flex-col gap-unit mt-4">
+<div class="text-left text-[10px] font-label-mono text-intent-clarification flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]">help</span> INTENT_CLARIFICATION
+                </div>
+<div class="border-l-[2px] border-intent-clarification pl-4 py-1 text-on-surface font-assistant-msg text-assistant-msg glow-intent">
+                    Which environment should I pull the baseline from? Staging or Production?
+                </div>
+<!-- Clarification Quick Actions -->
+<div class="flex gap-2 pl-5 mt-1">
+<button class="px-3 py-1.5 border border-grid-line bg-background-pitch font-label-mono text-label-mono text-on-surface-variant hover:text-intent-clarification hover:border-intent-clarification transition-colors">STAGING</button>
+<button class="px-3 py-1.5 border border-intent-clarification bg-intent-clarification/10 font-label-mono text-label-mono text-intent-clarification glow-intent">PRODUCTION</button>
+</div>
+</div>
+<!-- Simulated User Choice (for flow context) -->
+<div class="self-end max-w-[85%] flex flex-col gap-unit mt-4 opacity-70">
+<div class="border border-grid-line p-3 text-primary font-assistant-msg text-assistant-msg bg-background-pitch/50 text-right">
+                    &gt; Select: PRODUCTION
+                </div>
+</div>
+<!-- Message 4: Jane Proposed Action Card -->
+<div class="self-start w-full flex flex-col gap-unit mt-4">
+<div class="text-left text-[10px] font-label-mono text-action-proposed flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]">build</span> ACTION_PROPOSED
+                </div>
+<div class="border-l-[2px] border-action-proposed pl-4 py-1 w-full glow-action">
+<!-- Action Card Container -->
+<div class="border border-action-proposed bg-action-proposed/5 p-5 flex flex-col gap-4 relative overflow-hidden">
+<!-- BG accent -->
+<div class="absolute -right-10 -top-10 w-32 h-32 bg-action-proposed/10 rounded-full blur-2xl"></div>
+<div class="flex justify-between items-start">
+<div>
+<h4 class="font-label-mono text-label-mono text-action-proposed tracking-widest uppercase mb-1">Data Profiling Job</h4>
+<p class="font-body-md text-body-md text-on-surface text-sm">Target: customer_churn_v3 • Baseline: Production</p>
+</div>
+<span class="material-symbols-outlined text-action-proposed opacity-70">analytics</span>
+</div>
+<!-- Parameters Table -->
+<div class="border border-action-proposed/30 bg-background-pitch/50 p-3 flex flex-col gap-2 font-label-mono text-[10px] text-on-surface-variant">
+<div class="flex justify-between border-b border-grid-line pb-1">
+<span>COMPUTE_NODE</span>
+<span class="text-primary">instance-m5-large</span>
+</div>
+<div class="flex justify-between border-b border-grid-line pb-1">
+<span>DRIFT_THRESHOLD</span>
+<span class="text-primary">0.05 (K-S test)</span>
+</div>
+<div class="flex justify-between">
+<span>TIMEOUT</span>
+<span class="text-primary">3600s</span>
+</div>
+</div>
+<!-- Action Button -->
+<button class="w-full py-2.5 bg-action-proposed text-background-pitch font-label-mono text-label-mono font-bold hover:bg-opacity-90 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[16px]">play_arrow</span>
+                            EXECUTE_JOB
+                        </button>
+</div>
+</div>
+</div>
+<!-- Simulated User Execute (for flow context) -->
+<div class="self-end max-w-[85%] flex flex-col gap-unit mt-4 opacity-70">
+<div class="border border-grid-line p-3 text-primary font-assistant-msg text-assistant-msg bg-background-pitch/50 text-right">
+                    &gt; Trigger: EXECUTE_JOB
+                </div>
+</div>
+<!-- Message 5: Job Started Status & Context Cards -->
+<div class="self-start w-full flex flex-col gap-unit mt-4 mb-8">
+<div class="text-left text-[10px] font-label-mono text-assistant-identity flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]">check_circle</span> SYS_STATUS
+                </div>
+<div class="border-l-[2px] border-assistant-identity pl-4 py-1 w-full flex flex-col gap-4 glow-assistant">
+<p class="font-assistant-msg text-assistant-msg text-primary">Execution sequence initiated. The profiling job has been queued.</p>
+<!-- Contextual Cards Container -->
+<div class="grid grid-cols-2 gap-3">
+<!-- Job Card -->
+<div class="border border-assistant-identity/50 bg-background-pitch p-3 flex flex-col justify-between min-h-[100px] relative overflow-hidden group hover:border-assistant-identity transition-colors cursor-pointer">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-mono text-[10px] text-assistant-identity">JOB-9102</span>
+<span class="flex items-center gap-1 font-label-mono text-[9px] text-primary bg-surface-container-high px-1.5 py-0.5 rounded-sm">
+<span class="w-1.5 h-1.5 bg-assistant-identity rounded-full animate-pulse"></span> RUNNING
+                                </span>
+</div>
+<div>
+<h5 class="font-label-mono text-label-mono text-primary mb-1">Drift_Analysis</h5>
+<p class="text-[10px] text-on-surface-variant font-label-mono truncate">MACHINE_READY intent fired.</p>
+</div>
+<div class="absolute bottom-0 left-0 h-[2px] bg-assistant-identity w-1/3"></div>
+</div>
+<!-- Dataset Card -->
+<div class="border border-grid-line bg-background-pitch p-3 flex flex-col justify-between min-h-[100px] group hover:border-primary/50 transition-colors cursor-pointer">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-mono text-[10px] text-on-surface-variant">DATASET_REF</span>
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant group-hover:text-primary transition-colors">database</span>
+</div>
+<div>
+<h5 class="font-label-mono text-label-mono text-primary truncate mb-1">customer_churn_v3</h5>
+<p class="text-[10px] text-on-surface-variant font-label-mono">1.2M Rows • Prod Env</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom spacer to prevent input bar overlap -->
+<div class="h-12 w-full"></div>
+</div>
+<!-- Assistant Input Area -->
+<div class="h-16 shrink-0 border-t border-grid-line bg-surface-slate relative">
+<div class="absolute top-0 left-0 h-[1px] w-1/4 bg-assistant-identity"></div>
+<div class="h-full flex items-center px-gutter gap-4">
+<span class="font-label-mono text-assistant-identity text-lg animate-pulse">&gt;</span>
+<input class="flex-1 bg-transparent border-none text-primary font-label-mono text-label-mono focus:ring-0 focus:outline-none placeholder:text-on-surface-variant/40 placeholder:tracking-widest" placeholder="READY_FOR_INPUT..." type="text">
+<button class="text-on-surface-variant hover:text-assistant-identity transition-colors">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</div>
+</aside>
+</body></html>

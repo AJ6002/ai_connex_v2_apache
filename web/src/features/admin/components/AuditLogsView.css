@@ -1,0 +1,39 @@
+/** Audit Logs — faithful to STITCH-Design/ai_connex_admin_audit_logs. */
+.audit { display: flex; flex-direction: column; gap: 20px; }
+.audit__crumb { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.06em; color: var(--color-on-surface-variant); }
+.audit__crumb strong { color: var(--color-on-surface); }
+.audit__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
+.audit__title { font-size: var(--text-headline-lg-size); line-height: 1.1; letter-spacing: -0.03em; font-weight: 700; color: var(--color-on-surface); }
+.audit__sub { color: var(--color-on-surface-variant); margin-top: 8px; max-width: 620px; }
+.audit__header-actions { display: flex; gap: 12px; }
+
+.audit__filters { display: grid; grid-template-columns: 1fr 200px 200px; gap: 16px; background-color: var(--color-surface); border: 1px solid var(--color-grid-line); border-radius: var(--radius-lg); padding: 20px; }
+.audit__field { display: flex; flex-direction: column; gap: 8px; }
+.audit__field .label-mono { color: var(--color-on-surface-variant); }
+.audit__search { display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-grid-line); border-radius: var(--radius-md); padding: 10px 14px; background-color: var(--color-surface-container-low); }
+.audit__search .material-symbols-outlined { color: var(--color-on-surface-variant); font-size: 18px; }
+.audit__search input { flex: 1; background: none; border: none; outline: none; color: var(--color-on-surface); font-family: var(--font-mono); font-size: 13px; }
+.audit__select { position: relative; }
+.audit__select select { width: 100%; appearance: none; background-color: var(--color-surface-container-low); border: 1px solid var(--color-grid-line); border-radius: var(--radius-md); padding: 10px 32px 10px 12px; color: var(--color-on-surface); font-family: var(--font-sans); font-size: 14px; }
+.audit__select .material-symbols-outlined { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 18px; color: var(--color-on-surface-variant); pointer-events: none; }
+
+.audit__table-wrap { background-color: var(--color-surface); border: 1px solid var(--color-grid-line); border-radius: var(--radius-lg); overflow: hidden; }
+.audit__table { width: 100%; border-collapse: collapse; }
+.audit__table th { text-align: left; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; color: var(--color-on-surface-variant); padding: 14px 20px; border-bottom: 1px solid var(--color-grid-line); }
+.audit__table td { padding: 16px 20px; border-bottom: 1px solid var(--color-grid-line); font-size: 13px; color: var(--color-on-surface); }
+.audit__table tr:last-child td { border-bottom: none; }
+.audit__row--failure { background-color: var(--color-error-container); }
+.audit__ts { font-family: var(--font-mono); color: var(--color-on-surface-variant); }
+.audit__principal { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono); }
+.audit__principal .material-symbols-outlined { font-size: 16px; color: var(--color-on-surface-variant); }
+.audit__action { font-family: var(--font-mono); font-size: 11px; background-color: var(--color-surface-container-high); color: var(--color-on-surface-variant); padding: 4px 8px; border-radius: var(--radius-md); }
+.audit__entity { font-family: var(--font-mono); color: var(--color-secondary); }
+.audit__status { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 0.06em; }
+.audit__status-dot { width: 7px; height: 7px; border-radius: 999px; background: currentColor; }
+.audit__status--success { color: var(--color-status-completed); }
+.audit__status--failure { color: var(--color-status-failed); }
+
+.audit__footer { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; color: var(--color-on-surface-variant); }
+.audit__pager { display: flex; gap: 8px; }
+.audit__pager button { width: 32px; height: 32px; border-radius: 999px; border: 1px solid var(--color-grid-line); background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--color-on-surface-variant); }
+.audit__pager button:hover { color: var(--color-on-surface); }

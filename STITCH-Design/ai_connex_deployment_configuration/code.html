@@ -1,0 +1,314 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>AI-ConneX - New Deployment</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-tint": "#536600",
+                        "secondary-fixed": "#d9e2ff",
+                        "inverse-primary": "#b3d338",
+                        "on-primary-container": "#5b7000",
+                        "primary-fixed": "#cff053",
+                        "pitch-charcoal": "#0F1012",
+                        "primary-container": "#d4f658",
+                        "surface-variant": "#e1e3e4",
+                        "muted-body": "#666666",
+                        "on-tertiary-fixed": "#3d0027",
+                        "inverse-on-surface": "#f0f1f2",
+                        "secondary-container": "#006df8",
+                        "secondary-fixed-dim": "#b0c6ff",
+                        "on-secondary-fixed": "#001945",
+                        "on-secondary-container": "#fefcff",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-error-container": "#93000a",
+                        "tertiary-container": "#ffe0ec",
+                        "on-background": "#191c1d",
+                        "background": "#f8f9fa",
+                        "error-container": "#ffdad6",
+                        "on-primary": "#ffffff",
+                        "primary": "#536600",
+                        "tertiary-fixed": "#ffd8e8",
+                        "dot-grid": "#E2E4E6",
+                        "outline-variant": "#c5c9b0",
+                        "slate-gray": "#16181C",
+                        "surface": "#f8f9fa",
+                        "pure-white": "#FFFFFF",
+                        "secondary": "#0056c6",
+                        "error": "#ba1a1a",
+                        "tertiary": "#ad1e7a",
+                        "on-secondary-fixed-variant": "#00429c",
+                        "surface-container-high": "#e7e8e9",
+                        "pure-black": "#000000",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-low": "#f3f4f5",
+                        "on-tertiary-fixed-variant": "#8a005f",
+                        "on-surface": "#191c1d",
+                        "surface-container": "#edeeef",
+                        "on-secondary": "#ffffff",
+                        "inverse-surface": "#2e3132",
+                        "tertiary-fixed-dim": "#ffafd5",
+                        "primary-fixed-dim": "#b3d338",
+                        "on-tertiary-container": "#ba2a84",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface-variant": "#454936",
+                        "outline": "#757964",
+                        "surface-dim": "#d9dadb",
+                        "on-primary-fixed": "#171e00",
+                        "on-error": "#ffffff",
+                        "surface-bright": "#f8f9fa",
+                        "on-primary-fixed-variant": "#3e4c00"
+                    },
+                    borderRadius: {
+                        DEFAULT: "1rem",
+                        lg: "2rem",
+                        xl: "3rem",
+                        full: "9999px"
+                    },
+                    spacing: {
+                        "container-max": "1280px",
+                        "margin-safe": "32px",
+                        "section-gap": "120px",
+                        "unit": "4px",
+                        "gutter": "24px"
+                    },
+                    fontFamily: {
+                        "headline-lg-mobile": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-mono": ["JetBrains Mono"]
+                    },
+                    fontSize: {
+                        "headline-lg-mobile": ["32px", { lineHeight: "1.2", fontWeight: "700" }],
+                        "display-lg": ["64px", { lineHeight: "1.1", letterSpacing: "-0.04em", fontWeight: "700" }],
+                        "body-lg": ["18px", { lineHeight: "1.6", letterSpacing: "-0.01em", fontWeight: "400" }],
+                        "headline-lg": ["40px", { lineHeight: "1.2", letterSpacing: "-0.03em", fontWeight: "700" }],
+                        "body-md": ["16px", { lineHeight: "1.6", letterSpacing: "0", fontWeight: "400" }],
+                        "headline-md": ["32px", { lineHeight: "1.3", letterSpacing: "-0.02em", fontWeight: "600" }],
+                        "label-mono": ["12px", { lineHeight: "1.2", letterSpacing: "0.1em", fontWeight: "700" }]
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "url(\"data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='%23E2E4E6' /%3E%3C/svg%3E\")"
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen bg-grid-pattern overflow-x-hidden selection:bg-primary-container selection:text-pure-black">
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 w-[calc(100%-16rem)] h-16 bg-pitch-charcoal/80 backdrop-blur-md border-b border-outline-variant/30 flex items-center justify-between px-gutter w-full z-50">
+<div class="flex items-center gap-4">
+<span class="font-label-mono text-label-mono uppercase tracking-widest text-primary">AI-ConneX</span>
+</div>
+<div class="flex items-center gap-6">
+<span class="text-on-surface-variant font-label-mono text-label-mono hover:text-primary-fixed-dim transition-colors cursor-pointer">Global Context</span>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary hover:text-primary-fixed-dim transition-colors cursor-pointer" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-primary hover:text-primary-fixed-dim transition-colors cursor-pointer" data-icon="help_outline">help_outline</span>
+<button class="flex items-center gap-2 bg-pitch-charcoal text-primary border border-primary px-4 py-1.5 rounded-full hover:bg-surface-variant/10 transition-colors font-label-mono text-label-mono">
+                    Ask Jane
+                </button>
+<img alt="User Profile" class="w-8 h-8 rounded-full border border-outline-variant/30 object-cover" data-alt="A professional minimalist avatar illustration of Jane AI Agent in a sleek, light mode environment. Clean lines, subtle neon lime accents, representing enterprise AI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjjArfUcwkjc4bwxKy77Tl0KlYn48jfgxa634cNIbBBEdNd-zZZ5KA8AilwFtn--xndos2mshjkodgYbjy4wYOshVtJLtM-5e8IXOP7fpx7Cl-7gD6IvrbJO2SVf3NX3h6Z-kSExwtLW2ezoFEoXSWmbT33H-FxPjXw9RHqOOOW4C3rH-Gq8ryL5K2VfqinIuxdc1q-x0ABF51fVUjEurYhuCmJ0DS9tsN37tM5iliu34bNCNgqC_96w">
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<nav class="bg-pitch-charcoal h-screen w-64 fixed left-0 top-0 border-r border-outline-variant/30 flex flex-col h-full py-margin-safe z-40">
+<div class="px-6 mb-8 flex flex-col gap-2">
+<h1 class="font-headline-md text-headline-md font-bold text-primary">AI-ConneX</h1>
+<span class="font-label-mono text-label-mono text-muted-body">Enterprise MLOps</span>
+</div>
+<div class="px-6 mb-6">
+<button class="w-full bg-primary-container text-pure-black font-label-mono text-label-mono py-3 px-4 rounded-full flex items-center justify-center gap-2 hover:bg-primary-fixed-dim transition-colors border-2 border-transparent">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                New Project
+            </button>
+</div>
+<div class="flex-1 overflow-y-auto px-4 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-muted-body hover:text-on-surface hover:bg-surface-variant/10 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="space_dashboard">space_dashboard</span>
+<span class="font-label-mono text-label-mono">Workspace</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-muted-body hover:text-on-surface hover:bg-surface-variant/10 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="database">database</span>
+<span class="font-label-mono text-label-mono">Datasets</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-muted-body hover:text-on-surface hover:bg-surface-variant/10 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="biotech">biotech</span>
+<span class="font-label-mono text-label-mono">Data Studio</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-muted-body hover:text-on-surface hover:bg-surface-variant/10 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+<span class="font-label-mono text-label-mono">Jobs</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-muted-body hover:text-on-surface hover:bg-surface-variant/10 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="model_training">model_training</span>
+<span class="font-label-mono text-label-mono">Models</span>
+</a>
+<!-- Active State -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-primary font-bold border-r-2 border-primary bg-surface-variant/10 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="rocket_launch">rocket_launch</span>
+<span class="font-label-mono text-label-mono">Deployments</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-muted-body hover:text-on-surface hover:bg-surface-variant/10 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-mono text-label-mono">Settings</span>
+</a>
+</div>
+<div class="px-4 mt-auto pt-4 border-t border-outline-variant/30 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-muted-body hover:text-on-surface hover:bg-surface-variant/10 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-mono text-label-mono">System Health</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-muted-body hover:text-on-surface hover:bg-surface-variant/10 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+<span class="font-label-mono text-label-mono">Documentation</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-16 min-h-screen w-[calc(100%-16rem)]">
+<div class="px-gutter py-margin-safe max-w-container-max mx-auto h-full flex gap-8">
+<!-- Configuration Area -->
+<div class="flex-1 flex flex-col gap-8">
+<div class="mb-4">
+<h2 class="font-headline-lg text-headline-lg mb-2">New Deployment</h2>
+<p class="text-muted-body font-body-md">Configure and initialize a new model deployment target.</p>
+</div>
+<!-- Step 1: Model Selection -->
+<section class="border border-outline-variant/30 bg-pure-white p-6 relative">
+<div class="absolute -left-[1px] top-4 w-[2px] h-8 bg-primary"></div>
+<h3 class="font-headline-md text-headline-md text-[20px] mb-6 flex items-center gap-3">
+<span class="font-label-mono text-label-mono bg-surface-variant px-2 py-1 rounded text-muted-body">01</span>
+                        Model &amp; Version
+                    </h3>
+<div class="grid grid-cols-2 gap-6">
+<div class="flex flex-col gap-2">
+<label class="font-label-mono text-label-mono text-muted-body">Model Source</label>
+<input class="bg-surface-container-low border-b border-outline-variant/30 px-0 py-2 font-body-md focus:outline-none focus:border-secondary transition-colors" readonly="" type="text" value="opt-66b-instruct">
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-mono text-label-mono text-muted-body">Version Tag</label>
+<select class="bg-surface-container-low border-b border-outline-variant/30 px-0 py-2 font-body-md focus:outline-none focus:border-secondary transition-colors appearance-none">
+<option>v2.4.1 (Latest)</option>
+<option>v2.4.0</option>
+<option>v2.3.5-stable</option>
+</select>
+</div>
+</div>
+</section>
+<!-- Step 2: Environment -->
+<section class="border border-outline-variant/30 bg-pure-white p-6 relative">
+<div class="absolute -left-[1px] top-4 w-[2px] h-8 bg-outline-variant"></div>
+<h3 class="font-headline-md text-headline-md text-[20px] mb-6 flex items-center gap-3">
+<span class="font-label-mono text-label-mono bg-surface-variant px-2 py-1 rounded text-muted-body">02</span>
+                        Target Environment
+                    </h3>
+<div class="grid grid-cols-3 gap-4">
+<button class="border border-outline-variant/30 p-4 text-left hover:border-primary focus:border-primary transition-colors bg-surface-container-low group">
+<span class="material-symbols-outlined text-muted-body mb-2 group-focus:text-primary">science</span>
+<div class="font-label-mono text-label-mono mb-1">Staging</div>
+<div class="text-[12px] text-muted-body">Pre-production testing env</div>
+</button>
+<button class="border border-primary p-4 text-left hover:border-primary focus:border-primary transition-colors bg-primary-container/10 group">
+<span class="material-symbols-outlined text-primary mb-2">rocket</span>
+<div class="font-label-mono text-label-mono mb-1 text-primary">Production</div>
+<div class="text-[12px] text-muted-body">Live traffic cluster</div>
+</button>
+<button class="border border-outline-variant/30 p-4 text-left hover:border-primary focus:border-primary transition-colors bg-surface-container-low group">
+<span class="material-symbols-outlined text-muted-body mb-2 group-focus:text-primary">router</span>
+<div class="font-label-mono text-label-mono mb-1">Edge</div>
+<div class="text-[12px] text-muted-body">Distributed endpoint</div>
+</button>
+</div>
+</section>
+<!-- Step 3: Resources -->
+<section class="border border-outline-variant/30 bg-pure-white p-6 relative">
+<div class="absolute -left-[1px] top-4 w-[2px] h-8 bg-outline-variant"></div>
+<h3 class="font-headline-md text-headline-md text-[20px] mb-6 flex items-center gap-3">
+<span class="font-label-mono text-label-mono bg-surface-variant px-2 py-1 rounded text-muted-body">03</span>
+                        Resource Allocation
+                    </h3>
+<div class="flex flex-col gap-6">
+<div class="flex items-center gap-4 border-b border-outline-variant/30 pb-4">
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="text-primary focus:ring-primary h-4 w-4" name="resource_mode" type="radio">
+<span class="font-label-mono text-label-mono">Automatic (Auto-scaling)</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input class="text-primary focus:ring-primary h-4 w-4" name="resource_mode" type="radio">
+<span class="font-label-mono text-label-mono">Manual Provisioning</span>
+</label>
+</div>
+<div class="grid grid-cols-2 gap-6">
+<div class="flex flex-col gap-2">
+<label class="font-label-mono text-label-mono text-muted-body">Min Replicas</label>
+<input class="bg-surface-container-low border-b border-outline-variant/30 px-0 py-2 font-body-md focus:outline-none focus:border-secondary transition-colors" type="number" value="2">
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-mono text-label-mono text-muted-body">Max Replicas</label>
+<input class="bg-surface-container-low border-b border-outline-variant/30 px-0 py-2 font-body-md focus:outline-none focus:border-secondary transition-colors" type="number" value="10">
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Deployment Summary Sidebar -->
+<div class="w-80 flex-shrink-0">
+<div class="sticky top-24 border border-outline-variant/30 bg-pure-white p-6">
+<h4 class="font-label-mono text-label-mono mb-6 uppercase tracking-wider border-b border-outline-variant/30 pb-2">Deployment Summary</h4>
+<div class="flex flex-col gap-4 mb-8">
+<div class="flex justify-between items-center">
+<span class="text-muted-body font-body-md text-[14px]">Target</span>
+<span class="font-label-mono text-label-mono">Production</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-muted-body font-body-md text-[14px]">Instance Type</span>
+<span class="font-label-mono text-label-mono">g4dn.2xlarge</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-muted-body font-body-md text-[14px]">Est. Cold Start</span>
+<span class="font-label-mono text-label-mono text-error">~45s</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-muted-body font-body-md text-[14px]">Health Check</span>
+<span class="font-label-mono text-label-mono text-primary">/v1/health</span>
+</div>
+</div>
+<button class="w-full bg-primary-container text-pure-black font-label-mono text-label-mono py-4 px-4 rounded-full flex items-center justify-center gap-2 hover:bg-primary-fixed-dim transition-colors">
+                        INITIALIZE DEPLOYMENT
+                        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-pitch-charcoal fixed bottom-0 right-0 w-[calc(100%-16rem)] h-8 border-t border-outline-variant/30 flex items-center justify-between px-gutter z-50 font-label-mono text-label-mono">
+<div class="text-muted-body cursor-pointer hover:text-on-surface transition-colors">v2.4.0-stable</div>
+<div class="flex items-center gap-6">
+<span class="text-muted-body cursor-pointer hover:text-on-surface transition-colors">System Status: Operational</span>
+<span class="text-muted-body cursor-pointer hover:text-on-surface transition-colors">API Docs</span>
+<span class="text-muted-body cursor-pointer hover:text-on-surface transition-colors">Privacy</span>
+</div>
+</footer>
+</body></html>

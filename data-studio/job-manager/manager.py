@@ -5,7 +5,8 @@ Manages container lifecycles with strict resource limits and network isolation.
 
 import os
 import subprocess
-from typing import Dict, Any, List
+from typing import Any
+
 
 class DockerJobManager:
     def __init__(self, default_memory_limit: str = "1g", default_cpu_limit: str = "2.0"):
@@ -19,7 +20,7 @@ class DockerJobManager:
         output_host_dir: str,
         container_input_path: str = "/home/appuser/app/input_file",
         container_output_dir: str = "/home/appuser/app/output"
-    ) -> List[str]:
+    ) -> list[str]:
         """
         Build isolated docker run command arguments.
         """
@@ -41,13 +42,13 @@ class DockerJobManager:
         ]
         return cmd
 
-    def run_parser_job(self, image_tag: str, input_path: str, output_dir: str, timeout_seconds: int = 120) -> Dict[str, Any]:
+    def run_parser_job(self, image_tag: str, input_path: str, output_dir: str, timeout_seconds: int = 120) -> dict[str, Any]:
         """
         Execute single-purpose container job within security sandbox.
         """
         cmd = self.build_container_command(image_tag, input_path, output_dir)
         try:
-            res = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_seconds)
+            res = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_seconds, check=False)
             return {
                 "success": res.returncode == 0,
                 "exit_code": res.returncode,
@@ -60,9 +61,10 @@ class DockerJobManager:
                 "exit_code": -1,
                 "error": f"Job execution timed out after {timeout_seconds}s"
             }
-        except Exception as e:
+        except (OSError, RuntimeError) as e:
             return {
                 "success": False,
                 "exit_code": -1,
                 "error": str(e)
             }
+

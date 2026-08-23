@@ -3,28 +3,28 @@ Discovery Worker - Stage 1-5 safe dataset inspection and structural segmentation
 Executes inside the parser-discovery sandbox container under user 10001:10001 with read-only rootfs.
 """
 
-import sys
-import os
 import json
-import zipfile
+import os
+import sys
 import tarfile
-import hashlib
+import zipfile
 from datetime import datetime
 from pathlib import Path
-from typing import List, Dict, Any, Tuple, Optional
 
-import polars as pl
-
-# Import contracts from sandbox context
-from contracts.segmentation.segmentation_contract import CandidateRegion, SegmentationProposal
 from contracts.discovery.discovery_contract import DatasetDiscoveryArtifact
 
+# Import contracts from sandbox context
+from contracts.segmentation.segmentation_contract import (
+    CandidateRegion,
+    SegmentationProposal,
+)
 
-def inspect_archive(input_path: Path) -> Tuple[Optional[str], List[str], Dict[str, int]]:
+
+def inspect_archive(input_path: Path) -> tuple[str | None, list[str], dict[str, int]]:
     """Stage 1: Archive inspection with security zip-slip & traversal safeguards."""
-    member_inventory: List[str] = []
-    member_sizes: Dict[str, int] = {}
-    archive_type: Optional[str] = None
+    member_inventory: list[str] = []
+    member_sizes: dict[str, int] = {}
+    archive_type: str | None = None
 
     if zipfile.is_zipfile(input_path):
         archive_type = "zip"
@@ -51,9 +51,9 @@ def inspect_archive(input_path: Path) -> Tuple[Optional[str], List[str], Dict[st
     return archive_type, member_inventory, member_sizes
 
 
-def load_vocabularies() -> List[str]:
+def load_vocabularies() -> list[str]:
     """Load standard industrial vocabulary from registries."""
-    vocab: List[str] = ["timestamp", "datetime", "date", "id", "device_id", "value", "status", "production", "qa", "htds", "ltda"]
+    vocab: list[str] = ["timestamp", "datetime", "date", "id", "device_id", "value", "status", "production", "qa", "htds", "ltda"]
     registry_dir = Path("/sandbox/registries")
     if not registry_dir.exists():
         registry_dir = Path(__file__).parent.parent.parent / "registries"
@@ -72,9 +72,9 @@ def load_vocabularies() -> List[str]:
     return list(set(vocab))
 
 
-def analyze_tabular_structure(file_path: Path, vocab: List[str]) -> List[CandidateRegion]:
+def analyze_tabular_structure(file_path: Path, vocab: list[str]) -> list[CandidateRegion]:
     """Stages 2–5: Structural segmentation, header detection, metadata row detection, semantic column matching."""
-    regions: List[CandidateRegion] = []
+    regions: list[CandidateRegion] = []
     
     if file_path.suffix.lower() in [".csv", ".txt", ".tsv"]:
         try:
@@ -89,7 +89,7 @@ def analyze_tabular_structure(file_path: Path, vocab: List[str]) -> List[Candida
             metadata_rows = 0
             header_idx = 0
             best_vocab_score = 0
-            best_header: List[str] = []
+            best_header: list[str] = []
 
             for idx, line in enumerate(lines[:10]):
                 parts = [p.strip().strip('"').strip("'") for p in line.split(",") if p.strip()]
@@ -130,7 +130,7 @@ def analyze_tabular_structure(file_path: Path, vocab: List[str]) -> List[Candida
             )
             regions.append(region)
 
-        except Exception as e:
+        except Exception:
             pass
 
     return regions

@@ -3,17 +3,14 @@ CSV Parser Worker - High-performance chunked/streamed CSV to Arrow/Parquet conve
 Executes inside parser-csv sandbox container under non-root 10001:10001 with read-only rootfs.
 """
 
-import sys
-import os
 import hashlib
+import os
+import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any
 
-import pyarrow as pa
-import pyarrow.csv as csv
-import pyarrow.parquet as pq
 import polars as pl
+import pyarrow.parquet as pq
 
 from contracts.sandbox.result_manifest_contract import ParserResultManifest
 
@@ -83,7 +80,7 @@ def process_csv():
         print(f"CSV Parser successfully generated Parquet artifact: {output_parquet_path} ({row_count} rows)")
 
     except Exception as e:
-        print(f"CSV Parser Error: {str(e)}", file=sys.stderr)
+        print(f"CSV Parser Error: {e!s}", file=sys.stderr)
         sys.exit(1)
 
 

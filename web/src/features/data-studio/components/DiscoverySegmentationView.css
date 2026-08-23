@@ -1,0 +1,58 @@
+/** Discovery & Segmentation — faithful to STITCH-Design/ai_connex_discovery_segmentation_review. */
+.disco { max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+
+.disco__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; background-color: var(--color-surface); border: 1px solid var(--color-grid-line); border-radius: var(--radius-lg); padding: 22px 26px; }
+.disco__title { font-size: 32px; font-weight: 700; color: var(--color-on-surface); letter-spacing: -0.02em; }
+.disco__meta { color: var(--color-on-surface-variant); margin-top: 6px; }
+.disco__status { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.disco__status .label-mono { color: var(--color-on-surface-variant); }
+.disco__status-value { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--color-intent-clarification); }
+.disco__status-value--done { color: var(--color-status-completed); }
+.disco__status-dot { width: 7px; height: 7px; border-radius: 999px; background: currentColor; }
+
+/* Discovery map (kept as a dark "canvas" — schematic visualization, not chrome) */
+.disco__map { border: 1px solid var(--color-grid-line); border-radius: var(--radius-lg); overflow: hidden; }
+.disco__map-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background-color: var(--color-surface); border-bottom: 1px solid var(--color-grid-line); }
+.disco__map-head .label-mono { color: var(--color-on-surface-variant); }
+.disco__map-tools { display: flex; gap: 12px; color: var(--color-on-surface-variant); }
+.disco__map-tools .material-symbols-outlined { font-size: 18px; cursor: pointer; }
+.disco__map-canvas { background-color: #0f1012; padding: 24px; min-height: 420px; display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
+
+.disco__tile { width: 320px; border-radius: var(--radius-md); overflow: hidden; }
+.disco__tile--cyan { border: 1px solid var(--color-action-proposed); }
+.disco__tile--amber { border: 1px solid var(--color-intent-clarification); }
+.disco__tile--muted { border: 1px solid var(--color-outline-variant); opacity: 0.7; }
+.disco__tile-head { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 12px; font-weight: 700; padding: 10px 14px; }
+.disco__tile--cyan .disco__tile-head { background-color: rgba(0, 240, 255, 0.12); color: var(--color-action-proposed); }
+.disco__tile--amber .disco__tile-head { background-color: rgba(255, 185, 0, 0.12); color: var(--color-intent-clarification); }
+.disco__tile--muted .disco__tile-head { background-color: transparent; color: var(--color-on-surface-variant); }
+.disco__tile-body { margin: 0; padding: 12px 14px; font-family: var(--font-mono); font-size: 11px; line-height: 1.6; color: #c9c9c9; white-space: pre-wrap; min-height: 60px; }
+
+/* Review cards */
+.disco__reviews { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+.disco__review { background-color: var(--color-surface); border-radius: var(--radius-lg); padding: 20px; border: 1px solid var(--color-grid-line); border-left: 3px solid transparent; }
+.disco__review--cyan { border-left-color: var(--color-action-proposed); }
+.disco__review--amber { border-left-color: var(--color-intent-clarification); }
+.disco__review--decided { opacity: 0.75; }
+.disco__review-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.disco__review-head .label-mono { color: var(--color-on-surface-variant); }
+.disco__conf { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
+.disco__conf .material-symbols-outlined { font-size: 14px; }
+.disco__conf--cyan { color: var(--color-action-proposed); border: 1px solid var(--color-action-proposed); }
+.disco__conf--amber { color: var(--color-intent-clarification); border: 1px solid var(--color-intent-clarification); }
+.disco__review-name { font-size: 22px; font-weight: 700; color: var(--color-on-surface); margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--color-grid-line); }
+.disco__ambiguous { color: var(--color-on-surface-variant); font-weight: 400; font-size: 16px; }
+.disco__review-footer { display: flex; align-items: center; justify-content: space-between; }
+.disco__review-stats { color: var(--color-on-surface-variant); line-height: 1.6; }
+.disco__review-actions { display: flex; gap: 10px; }
+.disco__reject { font-family: var(--font-mono); font-size: 12px; font-weight: 700; padding: 10px 18px; border-radius: var(--radius-md); border: 1px solid var(--color-grid-line); background: none; cursor: pointer; color: var(--color-on-surface); }
+.disco__approve { font-family: var(--font-mono); font-size: 12px; font-weight: 700; padding: 10px 18px; border-radius: var(--radius-md); border: none; cursor: pointer; color: #001b1f; }
+.disco__approve--cyan { background-color: var(--color-action-proposed); }
+.disco__approve--amber { background-color: var(--color-intent-clarification); }
+.disco__decision { font-family: var(--font-mono); font-size: 12px; font-weight: 700; }
+.disco__decision--approved { color: var(--color-status-completed); }
+.disco__decision--rejected { color: var(--color-status-failed); }
+
+@media (max-width: 1024px) {
+  .disco__reviews { grid-template-columns: 1fr; }
+}

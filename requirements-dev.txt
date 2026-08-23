@@ -4,4 +4,6 @@ pytest-cov==4.1.0
 ruff==0.1.9
 mypy==2.3.1
 pip-tools==7.4.0
+bandit==1.7.7
+
 
