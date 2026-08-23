@@ -538,22 +538,31 @@
 }
 
 .eyebrow--text {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'JetBrains Mono', 'Inter', monospace, sans-serif;
   font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.32px;
+  letter-spacing: 0.08em;
   font-weight: 600;
   color: #454545;
 }
 
 .heading--h2 {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 3.25rem;
-  line-height: 1.1;
-  font-weight: 600;
-  letter-spacing: -0.66px;
-  color: #0f0f0f;
+  font-family: Georgia, "Times New Roman", "Palatino Linotype", serif;
+  font-size: 3.5rem;
+  line-height: 1.06;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #0b0b0b;
   margin: 0;
+}
+
+@media (max-width: 768px) {
+  .heading--h2 {
+    font-size: 2.5rem;
+  }
+  .lp__h2-br {
+    display: none;
+  }
 }
 
 .section--subtitle {
@@ -577,6 +586,7 @@
   border-top: 1px solid #e2e2e2;
   border-bottom: 1px solid #e2e2e2;
   margin-bottom: 48px;
+  background-color: transparent !important;
 }
 
 .text--body-large {
@@ -586,32 +596,36 @@
 }
 
 .hp--swiper-cta-button.electric-blue {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  background-color: #0c76fe;
-  color: #ffffff;
-  padding: 12px 24px;
-  border-radius: 9999px;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.875rem;
-  transition: background-color 0.2s ease, transform 0.2s ease;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  background-color: #0c76fe !important;
+  color: #ffffff !important;
+  padding: 12px 24px !important;
+  border-radius: 9999px !important;
+  text-decoration: none !important;
+  font-weight: 600 !important;
+  font-size: 0.85rem !important;
+  letter-spacing: 0.05em !important;
+  box-shadow: 0 2px 8px rgba(12, 118, 254, 0.25) !important;
+  transition: background-color 0.2s ease, transform 0.2s ease !important;
 }
 
 .hp--swiper-cta-button.electric-blue:hover {
-  background-color: #0b68df;
-  transform: translateY(-1px);
+  background-color: #0b68df !important;
+  transform: translateY(-1px) !important;
 }
 
-.caption--uppercase {
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+.hp--swiper-cta-button.electric-blue .caption--uppercase {
+  color: #ffffff !important;
+  text-transform: uppercase !important;
+  font-weight: 600 !important;
 }
 
-.svg-arrow {
-  width: 12px;
-  height: 12px;
+.hp--swiper-cta-button.electric-blue .svg-arrow {
+  width: 12px !important;
+  height: 12px !important;
+  fill: currentColor !important;
 }
 
 /* Tabs Grid */

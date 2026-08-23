@@ -128,7 +128,9 @@ export function PlatformShowcase() {
               </div>
               <div className="eyebrow--text">Our platform</div>
             </div>
-            <h2 className="heading--h2">Building blocks, not black boxes</h2>
+            <h2 className="heading--h2">
+              Building blocks, not black<br className="lp__h2-br" />boxes
+            </h2>
           </div>
           <div className="section--subtitle">
             <div className="text--body _800">
