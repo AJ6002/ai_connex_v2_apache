@@ -1,0 +1,89 @@
+.catalog {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.catalog__header {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 24px;
+}
+
+.catalog__title {
+  font-size: var(--text-headline-md-size);
+  color: var(--color-assistant-identity);
+  margin-bottom: 8px;
+}
+
+.catalog__subtitle {
+  color: var(--fg-muted);
+}
+
+.catalog__section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.catalog__section-title {
+  font-size: 10px;
+  color: var(--color-outline);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+}
+
+.catalog__row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.catalog__row--wrap {
+  flex-wrap: wrap;
+}
+
+.catalog__stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Color Swatches */
+.catalog__swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.catalog__swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 96px;
+}
+
+.catalog__swatch-color {
+  width: 64px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+
+.catalog__swatch-token {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--color-outline);
+  text-align: center;
+  word-break: break-all;
+}
+
+.catalog__swatch-label {
+  font-size: 10px;
+  color: var(--fg-muted);
+  text-align: center;
+}

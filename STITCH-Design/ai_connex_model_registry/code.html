@@ -1,0 +1,311 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>AI-ConneX - Models Registry</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#536600",
+                        "surface-container-high": "#e7e8e9",
+                        "outline": "#757964",
+                        "on-tertiary-fixed": "#3d0027",
+                        "slate-gray": "#16181C",
+                        "inverse-primary": "#b3d338",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed-variant": "#8a005f",
+                        "primary-fixed-dim": "#b3d338",
+                        "muted-body": "#666666",
+                        "on-surface-variant": "#454936",
+                        "on-secondary": "#ffffff",
+                        "background": "#f8f9fa",
+                        "on-primary-container": "#5b7000",
+                        "pure-white": "#FFFFFF",
+                        "tertiary-fixed": "#ffd8e8",
+                        "pitch-charcoal": "#0F1012",
+                        "tertiary-container": "#ffe0ec",
+                        "secondary-container": "#006df8",
+                        "dot-grid": "#E2E4E6",
+                        "surface-tint": "#536600",
+                        "pure-black": "#000000",
+                        "tertiary-fixed-dim": "#ffafd5",
+                        "primary-container": "#d4f658",
+                        "on-primary-fixed-variant": "#3e4c00",
+                        "inverse-on-surface": "#f0f1f2",
+                        "secondary": "#0056c6",
+                        "outline-variant": "#c5c9b0",
+                        "surface": "#f8f9fa",
+                        "error-container": "#ffdad6",
+                        "on-primary": "#ffffff",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-primary-fixed": "#171e00",
+                        "primary-fixed": "#cff053",
+                        "secondary-fixed-dim": "#b0c6ff",
+                        "surface-bright": "#f8f9fa",
+                        "on-tertiary": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "on-secondary-container": "#fefcff",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed": "#001945",
+                        "surface-dim": "#d9dadb",
+                        "surface-container": "#edeeef",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed-variant": "#00429c",
+                        "secondary-fixed": "#d9e2ff",
+                        "on-surface": "#191c1d",
+                        "on-tertiary-container": "#ba2a84",
+                        "on-error": "#ffffff",
+                        "tertiary": "#ad1e7a",
+                        "inverse-surface": "#2e3132",
+                        "surface-container-low": "#f3f4f5",
+                        "on-background": "#191c1d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "gutter": "24px",
+                        "section-gap": "120px",
+                        "margin-safe": "32px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-mono": ["JetBrains Mono"],
+                        "headline-lg-mobile": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", { "lineHeight": "1.6", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+                        "headline-lg": ["40px", { "lineHeight": "1.2", "letterSpacing": "-0.03em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }],
+                        "headline-md": ["32px", { "lineHeight": "1.3", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "display-lg": ["64px", { "lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "700" }],
+                        "label-mono": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.1em", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.background');
+            background-image: radial-gradient(theme('colors.dot-grid') 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        
+        .border-hairline {
+            border-width: 1px;
+            border-color: theme('colors.dot-grid');
+        }
+
+        .border-b-hairline {
+            border-bottom-width: 1px;
+            border-bottom-color: theme('colors.dot-grid');
+        }
+        
+        .border-r-hairline {
+            border-right-width: 1px;
+            border-right-color: theme('colors.dot-grid');
+        }
+
+        .border-l-hairline {
+            border-left-width: 1px;
+            border-left-color: theme('colors.dot-grid');
+        }
+    </style>
+</head>
+<body class="text-on-surface font-body-md min-h-screen flex">
+<!-- SideNavBar -->
+<nav class="bg-surface dark:bg-slate-gray text-primary dark:text-primary-fixed font-label-mono text-label-mono uppercase font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed h-screen w-64 flex flex-col border-r border-dot-grid dark:border-outline-variant flat no shadows fixed left-0 top-0 z-40 hidden md:flex transition-all duration-200 ease-in-out">
+<div class="p-gutter border-b border-dot-grid">
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed mb-1 tracking-tight">AI-ConneX</h1>
+<p class="font-label-mono text-label-mono text-on-surface-variant uppercase">Project Alpha</p>
+<p class="font-label-mono text-[10px] text-muted-body uppercase">Production Environment</p>
+</div>
+<div class="p-4">
+<button class="w-full bg-primary-container text-pure-black font-label-mono text-label-mono uppercase rounded-full py-2 px-4 flex items-center justify-between hover:bg-inverse-primary transition-colors border border-pure-black">
+<span>New Experiment</span>
+<span class="material-symbols-outlined font-light text-[18px]">add</span>
+</button>
+</div>
+<ul class="flex flex-col flex-grow py-4">
+<li class="px-4 py-2 hover:bg-surface-container-high dark:hover:bg-pitch-charcoal transition-all duration-200 ease-in-out cursor-pointer flex items-center gap-3 text-on-surface-variant dark:text-outline-variant">
+<span class="material-symbols-outlined font-light text-[20px]">dashboard</span>
+                Workspace
+            </li>
+<li class="px-4 py-2 hover:bg-surface-container-high dark:hover:bg-pitch-charcoal transition-all duration-200 ease-in-out cursor-pointer flex items-center gap-3 text-on-surface-variant dark:text-outline-variant">
+<span class="material-symbols-outlined font-light text-[20px]">database</span>
+                Datasets
+            </li>
+<li class="px-4 py-2 hover:bg-surface-container-high dark:hover:bg-pitch-charcoal transition-all duration-200 ease-in-out cursor-pointer flex items-center gap-3 text-on-surface-variant dark:text-outline-variant">
+<span class="material-symbols-outlined font-light text-[20px]">analytics</span>
+                Data Studio
+            </li>
+<li class="px-4 py-2 hover:bg-surface-container-high dark:hover:bg-pitch-charcoal transition-all duration-200 ease-in-out cursor-pointer flex items-center gap-3 text-on-surface-variant dark:text-outline-variant">
+<span class="material-symbols-outlined font-light text-[20px]">format_list_bulleted</span>
+                Jobs
+            </li>
+<li class="px-4 py-2 bg-primary-container dark:bg-primary-fixed-dim text-on-primary-container dark:text-on-primary-fixed font-bold border-l-4 border-primary hover:bg-surface-container-high dark:hover:bg-pitch-charcoal transition-all duration-200 ease-in-out cursor-pointer flex items-center gap-3">
+<span class="material-symbols-outlined font-light text-[20px]">account_tree</span>
+                Models
+            </li>
+<li class="px-4 py-2 hover:bg-surface-container-high dark:hover:bg-pitch-charcoal transition-all duration-200 ease-in-out cursor-pointer flex items-center gap-3 text-on-surface-variant dark:text-outline-variant">
+<span class="material-symbols-outlined font-light text-[20px]">rocket_launch</span>
+                Deployments
+            </li>
+<li class="px-4 py-2 hover:bg-surface-container-high dark:hover:bg-pitch-charcoal transition-all duration-200 ease-in-out cursor-pointer flex items-center gap-3 text-on-surface-variant dark:text-outline-variant mt-auto">
+<span class="material-symbols-outlined font-light text-[20px]">settings</span>
+                Settings
+            </li>
+</ul>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 flex flex-col min-h-screen pb-[32px]">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-slate-gray text-primary dark:text-primary-fixed font-body-md text-body-md font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed w-full h-16 border-b border-dot-grid dark:border-outline-variant flat no shadows flex justify-between items-center px-gutter w-full sticky top-0 z-30">
+<div class="flex items-center gap-4">
+<div class="relative hidden md:block">
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-muted-body font-light text-[18px]">search</span>
+<input class="pl-8 pr-4 py-1 bg-surface-container-lowest border border-dot-grid text-body-md font-body-md w-64 focus:outline-none focus:border-secondary focus:ring-0 transition-colors font-label-mono text-label-mono" placeholder="Search models, tags, metrics..." type="text">
+</div>
+</div>
+<div class="flex items-center gap-6">
+<a class="text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-low dark:hover:bg-pitch-charcoal transition-colors cursor-pointer active:scale-95 transition-transform flex items-center gap-2" href="#">
+<span class="material-symbols-outlined font-light">smart_toy</span>
+<span class="font-label-mono text-label-mono uppercase">Jane Agent</span>
+</a>
+<div class="flex items-center gap-4 border-l border-dot-grid pl-4">
+<button class="text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-low dark:hover:bg-pitch-charcoal transition-colors cursor-pointer active:scale-95 transition-transform">
+<span class="material-symbols-outlined font-light">notifications</span>
+</button>
+<button class="text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-low dark:hover:bg-pitch-charcoal transition-colors cursor-pointer active:scale-95 transition-transform">
+<span class="material-symbols-outlined font-light">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Page Canvas -->
+<div class="p-gutter flex-1 flex flex-col xl:flex-row gap-gutter overflow-hidden">
+<!-- Main Registry Area -->
+<div class="flex-1 flex flex-col min-w-0">
+<!-- Action Bar -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+<div>
+<h2 class="font-headline-lg text-headline-lg font-bold text-pure-black tracking-tight mb-1">Model Registry</h2>
+<p class="font-label-mono text-label-mono text-muted-body uppercase">142 Active Artifacts // 5 Production Targets</p>
+</div>
+<div class="flex gap-2 flex-wrap">
+<button class="bg-transparent text-pure-black font-label-mono text-label-mono uppercase rounded-full py-2 px-4 flex items-center gap-2 hover:bg-surface-container-high transition-colors border border-pure-black h-[36px]">
+<span>Compare Selected</span>
+</button>
+<button class="bg-primary-container text-pure-black font-label-mono text-label-mono uppercase rounded-full py-2 px-4 flex items-center gap-2 hover:bg-inverse-primary transition-colors border border-pure-black h-[36px]">
+<span>Register New Model</span>
+<span class="material-symbols-outlined font-light text-[18px]">arrow_outward</span>
+</button>
+</div>
+</div>
+<!-- Table Container -->
+<div class="bg-surface-container-lowest border border-dot-grid flex-1 overflow-auto">
+<table class="w-full text-left border-collapse min-w-[800px]">
+<thead>
+<tr class="border-b border-dot-grid bg-surface-container-lowest sticky top-0 z-10">
+<th class="p-4 font-label-mono text-label-mono text-muted-body uppercase border-r border-dot-grid w-12"><input class="border-dot-grid text-primary focus:ring-primary rounded-sm bg-transparent" type="checkbox"></th>
+<th class="p-4 font-label-mono text-label-mono text-muted-body uppercase border-r border-dot-grid">Model ID</th>
+<th class="p-4 font-label-mono text-label-mono text-muted-body uppercase border-r border-dot-grid">Version</th>
+<th class="p-4 font-label-mono text-label-mono text-muted-body uppercase border-r border-dot-grid">Status</th>
+<th class="p-4 font-label-mono text-label-mono text-muted-body uppercase border-r border-dot-grid">Metrics</th>
+<th class="p-4 font-label-mono text-label-mono text-muted-body uppercase border-r border-dot-grid">Training Run</th>
+<th class="p-4 font-label-mono text-label-mono text-muted-body uppercase">Deployment</th>
+</tr>
+</thead>
+<tbody class="font-label-mono text-[11px]">
+<!-- Row 1 -->
+<tr class="border-b border-dot-grid hover:bg-surface-container-low transition-colors group">
+<td class="p-4 border-r border-dot-grid"><input class="border-dot-grid text-primary focus:ring-primary rounded-sm bg-transparent" type="checkbox"></td>
+<td class="p-4 border-r border-dot-grid font-bold text-pure-black">CHURN-V3</td>
+<td class="p-4 border-r border-dot-grid text-muted-body">v1.2.4</td>
+<td class="p-4 border-r border-dot-grid">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary-container text-primary-fixed-variant border border-primary/20">
+                                        PROMOTED
+                                    </span>
+</td>
+<td class="p-4 border-r border-dot-grid text-muted-body">F1: <span class="text-pure-black font-bold">0.92</span> // Acc: 0.94</td>
+<td class="p-4 border-r border-dot-grid text-secondary hover:underline cursor-pointer">JOB-8294</td>
+<td class="p-4">
+<span class="inline-flex items-center gap-1 text-[10px] text-muted-body">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+                                        Staging (EU-WEST)
+                                    </span>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="border-b border-dot-grid hover:bg-surface-container-low transition-colors group bg-primary-container/5">
+<td class="p-4 border-r border-dot-grid"><input checked="" class="border-dot-grid text-primary focus:ring-primary rounded-sm bg-transparent" type="checkbox"></td>
+<td class="p-4 border-r border-dot-grid font-bold text-pure-black">NLP-SENTIMENT</td>
+<td class="p-4 border-r border-dot-grid text-muted-body">v2.0.1</td>
+<td class="p-4 border-r border-dot-grid">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-secondary-container text-on-secondary-container animate-pulse">
+                                        EVALUATING
+                                    </span>
+</td>
+<td class="p-4 border-r border-dot-grid text-muted-body">F1: <span class="text-pure-black font-bold">0.88</span> // Acc: 0.91</td>
+<td class="p-4 border-r border-dot-grid text-secondary hover:underline cursor-pointer">JOB-9102</td>
+<td class="p-4">
+<span class="text-muted-body">--</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Context Sidebar -->
+<div class="w-full xl:w-80 flex flex-col gap-6">
+<!-- Dataset Reference Card -->
+<div class="bg-surface-container-lowest border border-dot-grid flex flex-col">
+<div class="p-3 border-b border-dot-grid bg-surface-container-low flex justify-between items-center">
+<span class="font-label-mono text-label-mono uppercase text-muted-body">Active Dataset</span>
+<span class="material-symbols-outlined font-light text-[16px] text-muted-body">database</span>
+</div>
+<div class="p-4 flex flex-col gap-3">
+<div class="w-full aspect-[2.2] bg-surface-container-low border border-dot-grid overflow-hidden relative">
+<img alt="Dataset Visualization" class="w-full h-full object-cover opacity-80 mix-blend-multiply grayscale contrast-125" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvbtoIAhFiOhY9cceqkjh-VkaCyO_41s0dlqJ0FpLpL6QA09YkfbkW5iJq_MkSdrPQe_UdS6BGSgfBjJU83GYbvGXc41sy3yF3Q-gwH24LNA9iqnw-rQh192UiQ_v6TbvZVmpYvFOgHeBFQDfzLtvrNkpn7AGGYXNBCmX2if2bUexn8tuyje8h4xxiSPkOkO703ahT8RRX5EeHdV550z5zyYJSrQ4U8RUg3KyG8A-bdP1vFKtsiTnCjzyMIXg4hvqtoCA">
+<div class="absolute inset-0 border border-dot-grid pointer-events-none"></div>
+</div>
+<div class="flex justify-between items-end">
+<div>
+<p class="font-label-mono text-[10px] text-muted-body uppercase mb-1">Source</p>
+<p class="font-label-mono text-[12px] font-bold text-pure-black">USER_BEHAVIOR_Q3</p>
+</div>
+<span class="font-label-mono text-[10px] bg-surface-container-high px-1 border border-dot-grid text-muted-body">14.2M ROWS</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest dark:bg-pitch-charcoal text-secondary dark:text-secondary-fixed font-label-mono text-label-mono hidden fixed bottom-0 right-0 w-[calc(100%-16rem)] h-8 border-t border-dot-grid dark:border-outline-variant flat no shadows flex justify-between items-center px-4 py-1 md:flex z-40">
+<span class="text-muted-body dark:text-outline-variant">System Status: API Operational</span>
+<div class="flex gap-4">
+<a class="text-muted-body dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed opacity-80 hover:opacity-100 transition-opacity" href="#">v2.4.1-stable</a>
+<a class="text-muted-body dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed opacity-80 hover:opacity-100 transition-opacity" href="#">Support</a>
+</div>
+</footer>
+</body></html>

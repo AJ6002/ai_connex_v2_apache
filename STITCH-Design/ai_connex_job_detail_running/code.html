@@ -1,0 +1,480 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>AI-ConneX - Job Detail</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-container": "#fefcff",
+                    "tertiary-fixed": "#ffd8e8",
+                    "secondary-fixed-dim": "#b0c6ff",
+                    "error-container": "#ffdad6",
+                    "surface-bright": "#f8f9fa",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed-dim": "#ffafd5",
+                    "primary": "#536600",
+                    "surface-variant": "#e1e3e4",
+                    "surface-container-high": "#e7e8e9",
+                    "inverse-surface": "#2e3132",
+                    "on-primary-fixed": "#171e00",
+                    "inverse-on-surface": "#f0f1f2",
+                    "slate-gray": "#16181C",
+                    "on-surface": "#191c1d",
+                    "inverse-primary": "#b3d338",
+                    "secondary": "#0056c6",
+                    "on-primary-fixed-variant": "#3e4c00",
+                    "primary-container": "#d4f658",
+                    "primary-fixed": "#cff053",
+                    "surface-container-low": "#f3f4f5",
+                    "background": "#f8f9fa",
+                    "surface": "#f8f9fa",
+                    "on-secondary-fixed": "#001945",
+                    "muted-body": "#666666",
+                    "tertiary-container": "#ffe0ec",
+                    "on-secondary": "#ffffff",
+                    "tertiary": "#ad1e7a",
+                    "error": "#ba1a1a",
+                    "on-surface-variant": "#454936",
+                    "secondary-container": "#006df8",
+                    "secondary-fixed": "#d9e2ff",
+                    "pitch-charcoal": "#0F1012",
+                    "on-tertiary-container": "#ba2a84",
+                    "pure-black": "#000000",
+                    "pure-white": "#FFFFFF",
+                    "surface-tint": "#536600",
+                    "dot-grid": "#E2E4E6",
+                    "on-secondary-fixed-variant": "#00429c",
+                    "on-error-container": "#93000a",
+                    "outline": "#757964",
+                    "on-primary-container": "#5b7000",
+                    "outline-variant": "#c5c9b0",
+                    "on-primary": "#ffffff",
+                    "on-tertiary-fixed": "#3d0027",
+                    "surface-container": "#edeeef",
+                    "on-tertiary": "#ffffff",
+                    "primary-fixed-dim": "#b3d338",
+                    "surface-dim": "#d9dadb",
+                    "on-tertiary-fixed-variant": "#8a005f",
+                    "surface-container-highest": "#e1e3e4",
+                    "surface-container-lowest": "#ffffff",
+                    "on-background": "#191c1d"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "unit": "4px",
+                    "gutter": "24px",
+                    "section-gap": "120px",
+                    "container-max": "1280px",
+                    "margin-safe": "32px"
+            },
+            "fontFamily": {
+                    "body-lg": [
+                            "Inter"
+                    ],
+                    "headline-md": [
+                            "Inter"
+                    ],
+                    "headline-lg": [
+                            "Inter"
+                    ],
+                    "display-lg": [
+                            "Inter"
+                    ],
+                    "headline-lg-mobile": [
+                            "Inter"
+                    ],
+                    "label-mono": [
+                            "JetBrains Mono"
+                    ],
+                    "body-md": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-md": [
+                            "32px",
+                            {
+                                    "lineHeight": "1.3",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-lg": [
+                            "40px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "-0.03em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "display-lg": [
+                            "64px",
+                            {
+                                    "lineHeight": "1.1",
+                                    "letterSpacing": "-0.04em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "headline-lg-mobile": [
+                            "32px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "label-mono": [
+                            "12px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "0.1em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "letterSpacing": "0",
+                                    "fontWeight": "400"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        /* Blueprint Grid Pattern */
+        .bg-grid-pattern {
+            background-image: 
+                linear-gradient(to right, var(--tw-colors-dot-grid) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--tw-colors-dot-grid) 1px, transparent 1px);
+            background-size: 24px 24px;
+            background-position: center top;
+        }
+        
+        .dark .bg-grid-pattern {
+            background-image: 
+                linear-gradient(to right, #2A2D32 1px, transparent 1px),
+                linear-gradient(to bottom, #2A2D32 1px, transparent 1px);
+        }
+
+        /* Pulse Animation for Running Status */
+        @keyframes pulse-blue {
+            0% { box-shadow: 0 0 0 0 rgba(0, 109, 248, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(0, 109, 248, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 109, 248, 0); }
+        }
+        .animate-pulse-indicator {
+            animation: pulse-blue 2s infinite;
+        }
+        
+        /* Terminal Log Scrollbar */
+        .terminal-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+        .terminal-scroll::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .terminal-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-background dark:bg-slate-gray text-on-background dark:text-pure-white min-h-screen flex flex-col font-body-md antialiased bg-grid-pattern">
+<!-- TopNavBar -->
+<nav class="bg-surface dark:bg-slate-gray w-full h-16 border-b border-dot-grid dark:border-outline-variant flat no shadows flex justify-between items-center px-gutter w-full sticky top-0 z-50">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed cursor-pointer active:scale-95 transition-transform">AI-ConneX</span>
+</div>
+<div class="hidden md:flex flex-1 max-w-md mx-8">
+<!-- search_bar: on_left mapping (though search is usually right, standard nav often has it centrally or left-aligned next to brand) -->
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant dark:text-outline-variant" data-icon="search">search</span>
+<input class="w-full bg-surface-container-low dark:bg-pitch-charcoal border border-dot-grid dark:border-outline-variant rounded-full py-2 pl-10 pr-4 text-on-surface dark:text-pure-white font-body-md text-body-md focus:outline-none focus:border-secondary-container transition-colors" placeholder="Search..." type="text">
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex gap-4 h-full items-center">
+<a class="text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-low dark:hover:bg-pitch-charcoal transition-colors px-3 py-2 flex items-center font-body-md text-body-md h-full" href="#">Jane Agent</a>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant dark:text-outline-variant cursor-pointer active:scale-95 transition-transform hover:bg-surface-container-low dark:hover:bg-pitch-charcoal rounded-full p-2" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant dark:text-outline-variant cursor-pointer active:scale-95 transition-transform hover:bg-surface-container-low dark:hover:bg-pitch-charcoal rounded-full p-2" data-icon="account_circle">account_circle</span>
+</div>
+</div>
+</nav>
+<!-- SideNavBar & Main Content Wrapper -->
+<div class="flex flex-1">
+<!-- SideNavBar -->
+<aside class="bg-surface dark:bg-slate-gray h-screen w-64 flex flex-col border-r border-dot-grid dark:border-outline-variant flat no shadows fixed left-0 top-16 h-[calc(100vh-4rem)] flex flex-col z-40 hidden md:flex">
+<div class="p-6 border-b border-dot-grid dark:border-outline-variant">
+<h2 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed">Project Alpha</h2>
+<p class="font-label-mono text-label-mono uppercase text-on-surface-variant dark:text-outline-variant mt-2">Production Environment</p>
+<button class="mt-6 w-full bg-primary-container dark:bg-primary-container text-pure-black font-label-mono text-label-mono uppercase py-3 px-4 rounded-full flex items-center justify-between hover:opacity-90 transition-opacity">
+<span>New Experiment</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="arrow_upward">arrow_upward</span> <!-- closest to arrow-up-right without external icons if restricted -->
+</button>
+</div>
+<nav class="flex-1 py-4 overflow-y-auto">
+<ul class="flex flex-col gap-1">
+<li>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high dark:hover:bg-pitch-charcoal transition-all duration-200 ease-in-out font-label-mono text-label-mono uppercase" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Workspace</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high dark:hover:bg-pitch-charcoal transition-all duration-200 ease-in-out font-label-mono text-label-mono uppercase" href="#">
+<span class="material-symbols-outlined" data-icon="database">database</span>
+<span>Datasets</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high dark:hover:bg-pitch-charcoal transition-all duration-200 ease-in-out font-label-mono text-label-mono uppercase" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span>Data Studio</span>
+</a>
+</li>
+<li>
+<!-- ACTIVE TAB: Jobs -->
+<a class="flex items-center gap-3 px-6 py-3 bg-primary-container dark:bg-primary-fixed-dim text-on-primary-container dark:text-on-primary-fixed font-bold border-l-4 border-primary transition-all duration-200 ease-in-out font-label-mono text-label-mono uppercase" href="#">
+<span class="material-symbols-outlined" data-icon="format_list_bulleted">format_list_bulleted</span>
+<span>Jobs</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high dark:hover:bg-pitch-charcoal transition-all duration-200 ease-in-out font-label-mono text-label-mono uppercase" href="#">
+<span class="material-symbols-outlined" data-icon="account_tree">account_tree</span>
+<span>Models</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high dark:hover:bg-pitch-charcoal transition-all duration-200 ease-in-out font-label-mono text-label-mono uppercase" href="#">
+<span class="material-symbols-outlined" data-icon="rocket_launch">rocket_launch</span>
+<span>Deployments</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high dark:hover:bg-pitch-charcoal transition-all duration-200 ease-in-out font-label-mono text-label-mono uppercase" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</li>
+</ul>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 p-gutter pb-32">
+<!-- Page Header / Job Identity -->
+<header class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+<div>
+<div class="flex items-center gap-3 mb-2">
+<span class="font-label-mono text-label-mono text-on-surface-variant dark:text-outline-variant uppercase">Job ID: JOB-8294</span>
+<!-- Status Chip -->
+<div class="flex items-center gap-2 bg-[#001f4d] border border-secondary-container text-secondary-fixed-dim px-3 py-1 rounded-full font-label-mono text-[10px] uppercase tracking-wider">
+<div class="w-2 h-2 rounded-full bg-secondary-container animate-pulse-indicator"></div>
+                            RUNNING
+                        </div>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-pure-black dark:text-pure-white mb-1">Model Training: Customer Churn V3</h1>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-wrap gap-3">
+<button class="bg-transparent border border-outline dark:border-outline-variant text-pure-black dark:text-pure-white font-label-mono text-label-mono uppercase py-2 px-4 rounded-full hover:bg-surface-container-low dark:hover:bg-pitch-charcoal transition-colors">
+                        View Dataset
+                    </button>
+<button class="bg-transparent border border-outline dark:border-outline-variant text-pure-black dark:text-pure-white font-label-mono text-label-mono uppercase py-2 px-4 rounded-full hover:bg-surface-container-low dark:hover:bg-pitch-charcoal transition-colors">
+                        System Health
+                    </button>
+<button class="bg-error text-pure-white border border-error font-label-mono text-label-mono uppercase py-2 px-4 rounded-full hover:opacity-90 transition-opacity">
+                        Cancel Job
+                    </button>
+</div>
+</header>
+<!-- Metadata Grid (Bento style approach for info) -->
+<section class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+<!-- Meta Card 1 -->
+<div class="bg-surface-bright dark:bg-[#1C1E22] border border-dot-grid dark:border-outline-variant p-5 rounded-none flex flex-col justify-between">
+<span class="font-label-mono text-label-mono text-on-surface-variant dark:text-outline-variant uppercase mb-2">Started At</span>
+<span class="font-body-lg text-body-lg text-pure-black dark:text-pure-white">10:42 AM</span>
+</div>
+<!-- Meta Card 2 -->
+<div class="bg-surface-bright dark:bg-[#1C1E22] border border-dot-grid dark:border-outline-variant p-5 rounded-none flex flex-col justify-between">
+<span class="font-label-mono text-label-mono text-on-surface-variant dark:text-outline-variant uppercase mb-2">Duration</span>
+<span class="font-body-lg text-body-lg text-pure-black dark:text-pure-white flex items-center gap-2">
+                        14m 22s 
+                        <span class="material-symbols-outlined text-[16px] text-secondary-container animate-spin" data-icon="sync">sync</span>
+</span>
+</div>
+<!-- Meta Card 3 -->
+<div class="bg-surface-bright dark:bg-[#1C1E22] border border-dot-grid dark:border-outline-variant p-5 rounded-none flex flex-col justify-between">
+<span class="font-label-mono text-label-mono text-on-surface-variant dark:text-outline-variant uppercase mb-2">Initiated By</span>
+<span class="font-body-lg text-body-lg text-pure-black dark:text-pure-white flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="person">person</span>
+                        Jane Agent
+                    </span>
+</div>
+<!-- Meta Card 4 -->
+<div class="bg-surface-bright dark:bg-[#1C1E22] border border-dot-grid dark:border-outline-variant p-5 rounded-none flex flex-col justify-between">
+<span class="font-label-mono text-label-mono text-on-surface-variant dark:text-outline-variant uppercase mb-2">Dataset Reference</span>
+<span class="font-label-mono text-label-mono text-primary-container dark:text-primary-container truncate" title="customer_interactions_v4.parquet">customer_interactions_v4.parquet</span>
+</div>
+</section>
+<!-- Main Layout: Timeline + Logs -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Left Column: Execution Timeline -->
+<div class="lg:col-span-1">
+<h3 class="font-label-mono text-label-mono text-on-surface-variant dark:text-outline-variant uppercase mb-6 border-b border-dot-grid dark:border-outline-variant pb-2">Execution Pipeline</h3>
+<div class="relative pl-4 border-l border-dot-grid dark:border-outline-variant ml-2 space-y-8">
+<!-- Stage 1 -->
+<div class="relative">
+<div class="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-primary-fixed border border-pitch-charcoal"></div>
+<div class="flex justify-between items-start mb-1">
+<span class="font-label-mono text-label-mono text-pure-black dark:text-pure-white">1. Intake</span>
+<span class="font-label-mono text-[10px] text-primary-fixed uppercase">Completed</span>
+</div>
+</div>
+<!-- Stage 2 -->
+<div class="relative">
+<div class="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-primary-fixed border border-pitch-charcoal"></div>
+<div class="flex justify-between items-start mb-1">
+<span class="font-label-mono text-label-mono text-pure-black dark:text-pure-white">2. Profiling</span>
+<span class="font-label-mono text-[10px] text-primary-fixed uppercase">Completed</span>
+</div>
+</div>
+<!-- Stage 3 -->
+<div class="relative">
+<div class="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-primary-fixed border border-pitch-charcoal"></div>
+<div class="flex justify-between items-start mb-1">
+<span class="font-label-mono text-label-mono text-pure-black dark:text-pure-white">3. Feature Eng</span>
+<span class="font-label-mono text-[10px] text-primary-fixed uppercase">Completed</span>
+</div>
+</div>
+<!-- Stage 4 (Active) -->
+<div class="relative bg-surface-container-low dark:bg-[#1C1E22] border border-secondary-container p-4 -ml-4 rounded-none shadow-[2px_2px_0px_0px_rgba(0,109,248,1)]">
+<div class="absolute -left-[21px] top-5 w-2.5 h-2.5 rounded-full bg-secondary-container border border-pitch-charcoal animate-pulse-indicator"></div>
+<div class="flex justify-between items-start mb-3">
+<span class="font-label-mono text-label-mono text-pure-black dark:text-pure-white">4. Model Training</span>
+<span class="font-label-mono text-[10px] text-secondary-container uppercase">Running</span>
+</div>
+<!-- Progress Bar -->
+<div class="w-full bg-surface-variant dark:bg-slate-gray h-1 mb-2">
+<div class="bg-secondary-container h-1 w-[64%]"></div>
+</div>
+<div class="flex justify-between items-center mt-2">
+<span class="font-label-mono text-[10px] text-on-surface-variant dark:text-outline-variant">Epoch 12/20 - Loss: 0.042</span>
+<span class="font-label-mono text-[10px] text-secondary-fixed-dim">64%</span>
+</div>
+</div>
+<!-- Stage 5 -->
+<div class="relative">
+<div class="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-surface-variant dark:bg-outline-variant border border-pitch-charcoal"></div>
+<div class="flex justify-between items-start mb-1 opacity-50">
+<span class="font-label-mono text-label-mono text-pure-black dark:text-pure-white">5. Evaluation</span>
+<span class="font-label-mono text-[10px] text-on-surface-variant dark:text-outline-variant uppercase">Queued</span>
+</div>
+</div>
+<!-- Stage 6 -->
+<div class="relative">
+<div class="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-surface-variant dark:bg-outline-variant border border-pitch-charcoal"></div>
+<div class="flex justify-between items-start mb-1 opacity-50">
+<span class="font-label-mono text-label-mono text-pure-black dark:text-pure-white">6. Deployment</span>
+<span class="font-label-mono text-[10px] text-on-surface-variant dark:text-outline-variant uppercase">Queued</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Live Logs & Artifacts -->
+<div class="lg:col-span-2 flex flex-col gap-6">
+<!-- Live Logs -->
+<div class="flex-1 flex flex-col border border-dot-grid dark:border-outline-variant bg-pitch-charcoal rounded-none">
+<div class="border-b border-[#2A2D32] p-3 flex justify-between items-center bg-[#16181C]">
+<div class="flex items-center gap-2 text-pure-white">
+<span class="material-symbols-outlined text-[16px]" data-icon="terminal">terminal</span>
+<span class="font-label-mono text-label-mono uppercase">Live Execution Logs (FastAPI)</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-secondary-container animate-pulse-indicator"></div>
+<span class="font-label-mono text-[10px] text-secondary-fixed-dim uppercase">Streaming</span>
+</div>
+</div>
+<div class="p-4 font-label-mono text-[12px] text-surface-variant dark:text-outline-variant h-80 overflow-y-auto terminal-scroll leading-relaxed">
+<div class="text-[#8a8c8e]">[10:42:01] INFO: Initializing job JOB-8294 container environment...</div>
+<div class="text-[#8a8c8e]">[10:42:05] INFO: Mounting dataset customer_interactions_v4.parquet...</div>
+<div class="text-[#8a8c8e]">[10:42:12] SUCCESS: Dataset mounted successfully. (Rows: 1,420,950)</div>
+<div class="text-[#8a8c8e]">[10:42:15] INFO: Starting Stage 1: Intake...</div>
+<div class="text-[#8a8c8e]">[10:43:50] INFO: Stage 1 Completed.</div>
+<div class="text-[#8a8c8e]">[10:43:52] INFO: Starting Stage 2: Profiling...</div>
+<div class="text-[#8a8c8e]">[10:46:10] INFO: Stage 2 Completed. Found 32 features.</div>
+<div class="text-[#8a8c8e]">[10:46:12] INFO: Starting Stage 3: Feature Engineering...</div>
+<div class="text-secondary-fixed-dim">[10:48:05] WARN: Column 'last_login_date' contains 1.2% null values. Imputing median...</div>
+<div class="text-[#8a8c8e]">[10:50:30] INFO: Stage 3 Completed.</div>
+<div class="text-[#8a8c8e]">[10:50:35] INFO: Starting Stage 4: Model Training (XGBoost)...</div>
+<div class="text-[#8a8c8e]">[10:51:00] INFO: Epoch 1/20 - Loss: 0.891</div>
+<div class="text-[#8a8c8e]">[10:51:45] INFO: Epoch 2/20 - Loss: 0.612</div>
+<div class="text-[#8a8c8e]">[10:52:30] INFO: Epoch 3/20 - Loss: 0.405</div>
+<div class="text-[#8a8c8e]">[10:53:15] INFO: Epoch 4/20 - Loss: 0.289</div>
+<div class="text-[#8a8c8e]">[10:54:00] INFO: Epoch 5/20 - Loss: 0.190</div>
+<div class="text-pure-white">[10:54:45] INFO: Epoch 6/20 - Loss: 0.122</div>
+<div class="text-pure-white">[10:55:30] INFO: Epoch 7/20 - Loss: 0.095</div>
+<div class="text-pure-white">[10:56:15] INFO: Epoch 8/20 - Loss: 0.081</div>
+<div class="text-pure-white">[10:57:00] INFO: Epoch 9/20 - Loss: 0.065</div>
+<div class="text-pure-white">[10:57:45] INFO: Epoch 10/20 - Loss: 0.058</div>
+<div class="text-pure-white">[10:58:30] INFO: Epoch 11/20 - Loss: 0.051</div>
+<div class="text-primary-container">[10:59:15] INFO: Epoch 12/20 - Loss: 0.042 - Active...</div>
+<!-- Cursor blink simulation -->
+<div class="w-2 h-4 bg-primary-container inline-block animate-pulse mt-1"></div>
+</div>
+</div>
+<!-- Artifacts Area (Empty State) -->
+<div class="border border-dot-grid dark:border-outline-variant bg-surface-bright dark:bg-[#1C1E22] p-6 rounded-none flex items-center justify-center min-h-[120px]">
+<div class="text-center">
+<span class="material-symbols-outlined text-[24px] text-on-surface-variant dark:text-outline-variant mb-2" data-icon="inventory_2">inventory_2</span>
+<p class="font-label-mono text-label-mono text-on-surface-variant dark:text-outline-variant uppercase">No artifacts produced yet</p>
+<p class="font-body-md text-[12px] text-muted-body mt-1">Model binaries and evaluation reports will appear here upon completion.</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest dark:bg-pitch-charcoal fixed bottom-0 right-0 w-[calc(100%-16rem)] h-8 border-t border-dot-grid dark:border-outline-variant flat no shadows flex justify-between items-center px-4 py-1 z-50">
+<span class="font-label-mono text-label-mono text-secondary dark:text-secondary-fixed">System Status: API Operational</span>
+<div class="flex gap-4">
+<a class="font-label-mono text-label-mono text-muted-body dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed opacity-80 hover:opacity-100 transition-colors" href="#">v2.4.1-stable</a>
+<a class="font-label-mono text-label-mono text-muted-body dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed opacity-80 hover:opacity-100 transition-colors" href="#">Support</a>
+</div>
+</footer>
+<!-- JS for auto-scrolling terminal log -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const terminal = document.querySelector('.terminal-scroll');
+            if(terminal) {
+                terminal.scrollTop = terminal.scrollHeight;
+            }
+        });
+    </script>
+</body></html>

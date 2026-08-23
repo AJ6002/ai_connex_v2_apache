@@ -1,0 +1,315 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>AI-ConneX | Application States</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=JetBrains+Mono:wght@100..900&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary": "#002d6f",
+                        "surface-slate": "#16181c",
+                        "primary-container": "#cff053",
+                        "inverse-on-surface": "#313030",
+                        "secondary-fixed-dim": "#b0c6ff",
+                        "tertiary-fixed-dim": "#ffafd5",
+                        "on-secondary-fixed": "#001945",
+                        "background": "#131313",
+                        "secondary": "#b0c6ff",
+                        "primary": "#ffffff",
+                        "surface-container-low": "#1c1b1b",
+                        "on-primary-fixed": "#171e00",
+                        "outline": "#8f937c",
+                        "on-error": "#690005",
+                        "secondary-container": "#006df7",
+                        "on-primary": "#2a3500",
+                        "surface-bright": "#393939",
+                        "on-primary-container": "#586c00",
+                        "inverse-surface": "#e5e2e1",
+                        "on-tertiary-container": "#b52681",
+                        "action-proposed": "#00f0ff",
+                        "grid-line": "#2a2d32",
+                        "surface": "#131313",
+                        "surface-container-highest": "#353534",
+                        "primary-fixed-dim": "#b3d338",
+                        "on-surface-variant": "#c5c9b0",
+                        "outline-variant": "#454936",
+                        "on-tertiary-fixed-variant": "#8a005f",
+                        "on-background": "#e5e2e1",
+                        "on-error-container": "#ffdad6",
+                        "assistant-identity": "#d4f658",
+                        "inverse-primary": "#536600",
+                        "on-tertiary-fixed": "#3d0027",
+                        "primary-fixed": "#cff053",
+                        "tertiary-fixed": "#ffd8e8",
+                        "tertiary-container": "#ffd8e8",
+                        "on-secondary-fixed-variant": "#00429b",
+                        "surface-container-high": "#2a2a2a",
+                        "tertiary": "#ffffff",
+                        "on-secondary-container": "#fefcff",
+                        "error": "#ffb4ab",
+                        "surface-container": "#201f1f",
+                        "surface-tint": "#b3d338",
+                        "intent-clarification": "#ffb900",
+                        "surface-dim": "#131313",
+                        "error-container": "#93000a",
+                        "surface-variant": "#353534",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-surface": "#e5e2e1",
+                        "secondary-fixed": "#d9e2ff",
+                        "on-tertiary": "#620042",
+                        "on-primary-fixed-variant": "#3e4c00",
+                        "background-pitch": "#000000"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "docked-width": "380px",
+                        "margin-safe": "32px",
+                        "chat-gap": "16px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "assistant-msg": ["Inter"],
+                        "label-mono": ["JetBrains Mono"],
+                        "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg-mobile": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["64px", { "lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }],
+                        "assistant-msg": ["15px", { "lineHeight": "1.5", "letterSpacing": "0.01em", "fontWeight": "400" }],
+                        "label-mono": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.1em", "fontWeight": "700" }],
+                        "headline-lg": ["40px", { "lineHeight": "1.2", "letterSpacing": "-0.03em", "fontWeight": "700" }],
+                        "headline-md": ["32px", { "lineHeight": "1.3", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.background-pitch');
+            background-image: radial-gradient(theme('colors.grid-line') 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+    </style>
+</head>
+<body class="text-on-surface font-body-md min-h-screen overflow-x-hidden">
+<!-- Top Navigation -->
+<nav class="fixed top-0 right-0 w-full md:w-[calc(100%-16rem)] h-16 bg-background-pitch/80 backdrop-blur-md flex items-center justify-between px-gutter border-b border-outline-variant/30 z-50">
+<div class="flex items-center gap-4">
+<span class="font-label-mono text-label-mono uppercase tracking-widest text-primary">AI-ConneX</span>
+<span class="text-on-surface-variant font-label-mono text-label-mono hidden md:inline-block border-l border-outline-variant pl-4 ml-2">Global Context</span>
+</div>
+<div class="flex items-center gap-6">
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors cursor-pointer" data-icon="search">search</span>
+<div class="flex items-center gap-2 px-3 py-1.5 border border-outline-variant rounded hover:border-primary-container transition-colors cursor-pointer bg-surface-slate">
+<span class="font-label-mono text-label-mono text-primary-container">Ask Jane</span>
+<img class="w-6 h-6 rounded-full object-cover" data-alt="A futuristic, high-contrast digital avatar representing an AI assistant named Jane. The avatar is rendered in sharp, geometric lines with a glowing cyan and lime color palette against a deep black background. The style is technical and precise, reflecting a powerful enterprise AI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuALrTrmNnUlJlFYSPUp4qdaQaVicZOKkQb0eiX52DvIYrKUNk3q-w2Hzb83NQHoQvuS3I_hxALXmvjeIyTxxz6DkSmqmwhfKBjy8PRtbckWzdky6p9rMb6EiScavEJT33Ro5CPpd4sSTkDUkDBr6m0pwZnll1VCs2aEd3DWLEw4BOrq5oL3wJVhcQjz9KMh66ymlmYqP5nF9gOyQqjnCxMgeKgoYN_iONPIOAGquHUPo9mNU2XBC8Ey7A">
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant">
+<span class="material-symbols-outlined hover:text-primary transition-colors cursor-pointer" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined hover:text-primary transition-colors cursor-pointer" data-icon="help_outline">help_outline</span>
+</div>
+</div>
+</nav>
+<!-- Side Navigation -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-background-pitch border-r border-outline-variant/30 flex flex-col py-margin-safe z-40 hidden md:flex">
+<div class="px-6 mb-8 flex items-center gap-3">
+<img class="w-10 h-10 rounded-full border border-outline-variant" data-alt="A stark, minimalist profile picture representing a system administrator or lead engineer. The portrait is high-contrast black and white with a subtle digital glitch effect, reinforcing a cyberpunk, highly technical aesthetic. The lighting is dramatic and directional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_htfMHVXhpuGa0gDL04pcPmpMaAn_ltAFVt96aUSHrs_iBUDy8KmmH9Frcpf0xOpPMxYU6B_nUDmxB_o7xHYArBso30RXu18q90Fgc2oXmMEEuW3SpIoIs9eZi3TdB6_DTNrAYg8XEcqY9lRkBhu3wse0qWOd0pz7En8vMTo_jfkSVW96vehjp5yNA34Bg-IHVF_ZYDYTDtUsNDNG9iM_339Cf9735aFlFHILup_ksODWCF0druo5Gg">
+<div>
+<div class="font-headline-md text-headline-md font-bold text-primary text-sm">AI-ConneX</div>
+<div class="font-label-mono text-label-mono text-on-surface-variant text-[10px]">Enterprise MLOps</div>
+</div>
+</div>
+<div class="px-4 mb-6">
+<button class="w-full py-2 bg-primary-container text-on-primary-container font-label-mono text-label-mono rounded hover:bg-primary-fixed-dim transition-colors">New Project</button>
+</div>
+<div class="flex-1 overflow-y-auto px-4 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded text-muted-body hover:bg-surface-variant/10 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="space_dashboard">space_dashboard</span>
+<span class="font-label-mono text-label-mono">Workspace</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-primary font-bold border-l-2 border-primary bg-surface-variant/10 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="terminal">terminal</span>
+<span class="font-label-mono text-label-mono">Jobs</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-muted-body hover:bg-surface-variant/10 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="biotech">biotech</span>
+<span class="font-label-mono text-label-mono">Data Studio</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-muted-body hover:bg-surface-variant/10 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="database">database</span>
+<span class="font-label-mono text-label-mono">Datasets</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-muted-body hover:bg-surface-variant/10 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="model_training">model_training</span>
+<span class="font-label-mono text-label-mono">Models</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-muted-body hover:bg-surface-variant/10 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="rocket_launch">rocket_launch</span>
+<span class="font-label-mono text-label-mono">Deployments</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-muted-body hover:bg-surface-variant/10 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="settings">settings</span>
+<span class="font-label-mono text-label-mono">Settings</span>
+</a>
+</div>
+<div class="px-4 mt-auto space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded text-muted-body hover:bg-surface-variant/10 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="analytics">analytics</span>
+<span class="font-label-mono text-label-mono">System Health</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-muted-body hover:bg-surface-variant/10 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="menu_book">menu_book</span>
+<span class="font-label-mono text-label-mono">Documentation</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="md:ml-64 pt-16 pb-8 min-h-screen p-gutter">
+<header class="mb-8 border-b border-outline-variant/30 pb-4">
+<h1 class="font-headline-md text-headline-md font-bold text-primary">System States &amp; Errors</h1>
+<p class="font-label-mono text-label-mono text-on-surface-variant mt-2">DIAGNOSTIC_OVERVIEW_V2.4</p>
+</header>
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+<!-- State 9: Validation Failure -->
+<section class="bg-surface-slate border border-error/50 rounded-lg p-6 relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-1 h-full bg-error"></div>
+<div class="flex items-start justify-between mb-4">
+<div class="flex items-center gap-3 text-error">
+<span class="material-symbols-outlined" data-icon="warning">warning</span>
+<h2 class="font-label-mono text-label-mono uppercase tracking-widest">Validation Failure</h2>
+</div>
+<span class="font-label-mono text-label-mono text-error/70">ERR_SCHEMA_MISMATCH</span>
+</div>
+<div class="font-body-md text-on-surface mb-4">
+                    Data corruption detected during ingestion phase. Schema validation failed for dataset `customer_metrics_q3`.
+                </div>
+<div class="bg-background-pitch border border-outline-variant p-4 rounded font-label-mono text-label-mono text-on-surface-variant overflow-x-auto">
+<div class="text-error mb-2">&gt; VALIDATION_LOG:</div>
+<div class="text-on-surface-variant">Line 4092: Expected type INT64 for column 'revenue', got STRING ("N/A").</div>
+<div class="text-on-surface-variant">Line 5110: Null value found in non-nullable column 'user_id'.</div>
+<div class="text-error mt-2">&gt; ACTION_REQUIRED: FIX_DATA_OR_UPDATE_SCHEMA</div>
+</div>
+<div class="mt-4 flex gap-3">
+<button class="px-4 py-2 border border-error text-error font-label-mono text-label-mono rounded hover:bg-error/10 transition-colors">VIEW_FULL_LOG</button>
+<button class="px-4 py-2 bg-error text-on-error font-label-mono text-label-mono rounded hover:bg-error/90 transition-colors">ABORT_JOB</button>
+</div>
+</section>
+<!-- State 10: Quarantined Asset -->
+<section class="bg-surface-slate border border-intent-clarification/50 rounded-lg p-6 relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-intent-clarification"></div>
+<div class="flex items-start justify-between mb-4">
+<div class="flex items-center gap-3 text-intent-clarification">
+<span class="material-symbols-outlined" data-icon="policy">policy</span>
+<h2 class="font-label-mono text-label-mono uppercase tracking-widest">Asset Quarantined</h2>
+</div>
+<span class="font-label-mono text-label-mono text-intent-clarification/70">SEC_LOCKDOWN_0x9A</span>
+</div>
+<div class="font-body-md text-on-surface mb-4">
+                    This asset has been automatically quarantined due to policy violations. Access is restricted to compliance administrators.
+                </div>
+<div class="bg-background-pitch border border-outline-variant p-4 rounded flex items-start gap-4">
+<span class="material-symbols-outlined text-intent-clarification text-2xl" data-icon="gpp_bad">gpp_bad</span>
+<div>
+<div class="font-label-mono text-label-mono text-intent-clarification mb-1">REASON: PII_DETECTED</div>
+<div class="font-label-mono text-label-mono text-on-surface-variant">Unmasked Social Security Numbers detected in Column A (`ssn_raw`). Asset blocked pending review or masking pipeline execution.</div>
+</div>
+</div>
+<div class="mt-4 flex gap-3">
+<button class="px-4 py-2 bg-surface-container-high text-on-surface font-label-mono text-label-mono rounded border border-outline-variant hover:bg-surface-variant transition-colors">REQUEST_REVIEW</button>
+<button class="px-4 py-2 bg-intent-clarification text-surface-slate font-label-mono text-label-mono rounded hover:brightness-110 transition-colors">TRIGGER_MASKING</button>
+</div>
+</section>
+<!-- State 11: Permission Denied -->
+<section class="bg-surface-slate border border-outline-variant rounded-lg p-6 relative flex flex-col justify-center items-center text-center">
+<span class="material-symbols-outlined text-6xl text-on-surface-variant mb-4" data-icon="block">block</span>
+<h2 class="font-headline-md text-headline-md font-bold text-primary mb-2">403 Forbidden</h2>
+<div class="font-body-md text-on-surface-variant max-w-md mb-6">
+                    You do not have the required IAM roles (`mlops.models.deploy`) to perform this action on the current resource cluster.
+                </div>
+<div class="flex gap-3">
+<button class="px-4 py-2 border border-outline-variant text-on-surface-variant font-label-mono text-label-mono rounded hover:bg-surface-variant/50 transition-colors">BACK_TO_SAFETY</button>
+<button class="px-4 py-2 bg-primary-container text-on-primary-container font-label-mono text-label-mono rounded flex items-center gap-2 hover:bg-primary-fixed-dim transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="escalator_warning">escalator_warning</span>
+                        ESCALATION_PROTOCOL
+                    </button>
+</div>
+</section>
+<!-- State 12: Backend Unavailable -->
+<section class="bg-surface-slate border border-outline-variant rounded-lg p-6 flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-3 text-on-surface-variant mb-6">
+<span class="material-symbols-outlined" data-icon="cloud_off">cloud_off</span>
+<h2 class="font-label-mono text-label-mono uppercase tracking-widest">Service Unavailable</h2>
+</div>
+<div class="font-display-lg text-display-lg text-primary mb-2">503</div>
+<div class="font-body-md text-on-surface-variant mb-6">
+                        The compute cluster `gpu-pool-alpha` is currently unreachable.
+                    </div>
+</div>
+<div class="bg-background-pitch border border-outline-variant rounded p-4">
+<div class="flex items-center justify-between font-label-mono text-label-mono mb-2">
+<span class="text-on-surface-variant">System Health:</span>
+<span class="text-intent-clarification flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-intent-clarification animate-pulse"></span>
+                            DEGRADED
+                        </span>
+</div>
+<div class="w-full bg-surface-container h-1 rounded overflow-hidden">
+<div class="bg-intent-clarification h-full w-1/3 animate-[pulse_2s_ease-in-out_infinite]"></div>
+</div>
+<div class="mt-4 font-label-mono text-label-mono text-primary text-center">
+                        RETRYING_IN: 00:14
+                    </div>
+</div>
+</section>
+<!-- State 13: No Search Results -->
+<section class="bg-surface-slate border border-outline-variant border-dashed rounded-lg p-12 flex flex-col items-center justify-center text-center col-span-1 xl:col-span-2">
+<span class="material-symbols-outlined text-4xl text-on-surface-variant mb-4" data-icon="search_off">search_off</span>
+<h2 class="font-headline-md text-headline-md font-bold text-primary mb-2">0 Entities Found</h2>
+<div class="font-body-md text-on-surface-variant max-w-lg mb-6">
+                    No models, datasets, or jobs match your current query parameters in the selected workspace.
+                </div>
+<div class="flex flex-wrap justify-center gap-2">
+<span class="font-label-mono text-label-mono text-on-surface-variant py-2 px-3">SUGGESTED_FILTERS:</span>
+<button class="px-3 py-1 border border-outline-variant text-on-surface-variant font-label-mono text-label-mono rounded-full hover:border-primary hover:text-primary transition-colors">CLEAR_DATE_RANGE</button>
+<button class="px-3 py-1 border border-outline-variant text-on-surface-variant font-label-mono text-label-mono rounded-full hover:border-primary hover:text-primary transition-colors">INCLUDE_ARCHIVED</button>
+<button class="px-3 py-1 border border-outline-variant text-on-surface-variant font-label-mono text-label-mono rounded-full hover:border-primary hover:text-primary transition-colors">FUZZY_MATCH</button>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer -->
+<footer class="fixed bottom-0 right-0 w-full md:w-[calc(100%-16rem)] h-8 bg-background-pitch border-t border-outline-variant/30 flex items-center justify-between px-gutter z-50">
+<div class="font-label-mono text-label-mono text-on-surface-variant flex gap-6">
+<span class="flex items-center gap-2 cursor-pointer hover:text-on-surface transition-colors">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+                System Status: Operational
+            </span>
+</div>
+<div class="font-label-mono text-label-mono text-on-surface-variant flex gap-6">
+<span class="cursor-pointer hover:text-on-surface transition-colors">API Docs</span>
+<span class="cursor-pointer hover:text-on-surface transition-colors">Privacy</span>
+<span class="text-muted-body">v2.4.0-stable</span>
+</div>
+</footer>
+</body></html>

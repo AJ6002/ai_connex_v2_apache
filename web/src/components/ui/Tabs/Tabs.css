@@ -1,0 +1,113 @@
+.tabs { display: flex; }
+.tabs--horizontal { flex-direction: column; }
+.tabs--vertical   { flex-direction: row; gap: 0; }
+
+/* ── Tab List ────────────────────────────────────────────────────────────── */
+.tab-list {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.tab-list--horizontal {
+  flex-direction: row;
+  border-bottom: 1px solid var(--border);
+  gap: 0;
+  overflow-x: auto;
+}
+
+.tab-list--vertical {
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+  width: 200px;
+  gap: 0;
+}
+
+/* ── Tab Trigger ─────────────────────────────────────────────────────────── */
+.tab-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: var(--text-label-mono-size);
+  font-weight: var(--text-label-mono-fw);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--fg-muted);
+  position: relative;
+  transition: color 0.15s ease, background-color 0.15s ease;
+  white-space: nowrap;
+}
+
+/* Horizontal layout */
+.tab-list--horizontal .tab-trigger {
+  padding: 12px 16px;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.tab-list--horizontal .tab-trigger--active {
+  color: var(--color-assistant-identity);
+  border-bottom-color: var(--color-assistant-identity);
+}
+
+.tab-list--horizontal .tab-trigger:hover:not(:disabled):not(.tab-trigger--active) {
+  color: var(--fg);
+  background-color: var(--bg-surface-low);
+}
+
+/* Vertical layout (STITCH: left tab rail in Data Studio & Intake) */
+.tab-list--vertical .tab-trigger {
+  padding: 14px 16px;
+  width: 100%;
+  justify-content: flex-start;
+  border-right: 2px solid transparent;
+  margin-right: -1px;
+}
+
+.tab-list--vertical .tab-trigger--active {
+  color: var(--fg);
+  background-color: var(--bg-surface-high);
+  border-right-color: var(--color-assistant-identity);
+}
+
+.tab-list--vertical .tab-trigger:hover:not(:disabled):not(.tab-trigger--active) {
+  color: var(--fg);
+  background-color: var(--bg-surface-low);
+}
+
+.tab-trigger:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.tab-trigger__icon {
+  font-size: 16px;
+  opacity: 0.7;
+}
+
+.tab-trigger__label {
+  flex: 1;
+  text-align: left;
+}
+
+/* Arrow indicator for vertical active (STITCH shows → on active tab) */
+.tab-list--vertical .tab-trigger--active .tab-trigger__indicator::after {
+  content: '→';
+  color: var(--color-assistant-identity);
+  font-size: 12px;
+  margin-left: auto;
+}
+.tab-list--vertical .tab-trigger--active .tab-trigger__indicator {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+/* ── Tab Panel ───────────────────────────────────────────────────────────── */
+.tab-panel {
+  flex: 1;
+  min-width: 0;
+}

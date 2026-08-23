@@ -1,0 +1,156 @@
+/**
+ * AI-ConneX Design Tokens
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Source: STITCH-Design &lt;screen&gt;/code.html — Material-3-style token palette.
+ * This is the ONE place where color, spacing, typography, and radius values
+ * are declared. Nothing else in the app is allowed to use raw hex or px values.
+ *
+ * Sprint 2 — Design System Foundation.
+ */
+
+:root {
+  /* ── Background & Surface ──────────────────────────────────────────────── */
+  --color-background:               #131313;   /* app canvas */
+  --color-background-pitch:         #000000;   /* deepest bg / sidebar */
+  --color-surface:                  #131313;   /* card surface (same as bg) */
+  --color-surface-dim:              #131313;   /* dim variant */
+  --color-surface-bright:           #393939;   /* elevated surface */
+  --color-surface-container-lowest: #0e0e0e;
+  --color-surface-container-low:    #1c1b1b;
+  --color-surface-container:        #201f1f;   /* default card */
+  --color-surface-container-high:   #2a2a2a;   /* raised card */
+  --color-surface-container-highest:#353534;   /* highest elevation */
+  --color-surface-variant:          #353534;
+  --color-surface-slate:            #16181c;   /* sidebar rail */
+
+  /* ── On-Surface / Text ─────────────────────────────────────────────────── */
+  --color-on-surface:               #e5e2e1;   /* primary text */
+  --color-on-surface-variant:       #c5c9b0;   /* secondary/muted text */
+  --color-on-background:            #e5e2e1;
+  --color-inverse-surface:          #e5e2e1;
+  --color-inverse-on-surface:       #313030;
+
+  /* ── Primary / Brand ────────────────────────────────────────────────────── */
+  --color-primary:                  #ffffff;   /* white headlines */
+  --color-primary-container:        #cff053;   /* lime container */
+  --color-primary-fixed:            #cff053;
+  --color-primary-fixed-dim:        #b3d338;
+  --color-on-primary:               #2a3500;   /* text on primary */
+  --color-on-primary-container:     #586c00;
+  --color-on-primary-fixed:         #171e00;
+  --color-on-primary-fixed-variant: #3e4c00;
+  --color-inverse-primary:          #536600;
+  --color-surface-tint:             #b3d338;
+
+  /* ── Secondary ──────────────────────────────────────────────────────────── */
+  --color-secondary:                #b0c6ff;   /* soft blue */
+  --color-secondary-container:      #006df7;   /* vivid blue */
+  --color-secondary-fixed:          #d9e2ff;
+  --color-secondary-fixed-dim:      #b0c6ff;
+  --color-on-secondary:             #002d6f;
+  --color-on-secondary-container:   #fefcff;
+  --color-on-secondary-fixed:       #001945;
+  --color-on-secondary-fixed-variant: #00429b;
+
+  /* ── Tertiary ───────────────────────────────────────────────────────────── */
+  --color-tertiary:                 #ffffff;
+  --color-tertiary-container:       #ffd8e8;
+  --color-tertiary-fixed:           #ffd8e8;
+  --color-tertiary-fixed-dim:       #ffafd5;
+  --color-on-tertiary:              #620042;
+  --color-on-tertiary-container:    #b52681;
+  --color-on-tertiary-fixed:        #3d0027;
+  --color-on-tertiary-fixed-variant:#8a005f;
+
+  /* ── Error ──────────────────────────────────────────────────────────────── */
+  --color-error:                    #ffb4ab;
+  --color-error-container:          #93000a;
+  --color-on-error:                 #690005;
+  --color-on-error-container:       #ffdad6;
+
+  /* ── Semantic / Accent ──────────────────────────────────────────────────── */
+  --color-assistant-identity:       #d4f658;   /* lime — Jane AI / active CTA */
+  --color-action-proposed:          #00f0ff;   /* cyan — AI-proposed actions */
+  --color-intent-clarification:     #ffb900;   /* amber — clarification state */
+
+  /* ── Outline / Border ───────────────────────────────────────────────────── */
+  --color-outline:                  #8f937c;
+  --color-outline-variant:          #454936;
+  --color-grid-line:                #2a2d32;   /* subtle grid / divider */
+
+  /* ── Status ─────────────────────────────────────────────────────────────── */
+  --color-status-running:           #3b82f6;   /* blue */
+  --color-status-completed:         #d4f658;   /* lime */
+  --color-status-failed:            #ef4444;   /* red */
+  --color-status-queued:            #6b7280;   /* gray */
+  --color-status-clarification:     #ffb900;   /* amber */
+  --color-status-quarantined:       #f97316;   /* orange */
+  --color-status-machine-ready:     #d4f658;   /* lime */
+  --color-status-warnings:          #f59e0b;   /* yellow */
+
+  /* ── Typography ─────────────────────────────────────────────────────────── */
+  --font-sans:                "Inter", system-ui, sans-serif;
+  --font-mono:                "JetBrains Mono", "Fira Code", monospace;
+
+  /* Size scale — from STITCH code.html */
+  --text-display-lg-size:     64px;
+  --text-display-lg-lh:       1.1;
+  --text-display-lg-ls:       -0.04em;
+  --text-display-lg-fw:       700;
+
+  --text-headline-lg-size:    40px;
+  --text-headline-lg-lh:      1.2;
+  --text-headline-lg-ls:      -0.03em;
+  --text-headline-lg-fw:      700;
+
+  --text-headline-lg-mobile-size: 32px;
+  --text-headline-lg-mobile-lh:   1.2;
+  --text-headline-lg-mobile-fw:   700;
+
+  --text-headline-md-size:    32px;
+  --text-headline-md-lh:      1.3;
+  --text-headline-md-ls:      -0.02em;
+  --text-headline-md-fw:      600;
+
+  --text-body-lg-size:        18px;
+  --text-body-lg-lh:          1.6;
+  --text-body-lg-ls:          -0.01em;
+  --text-body-lg-fw:          400;
+
+  --text-body-md-size:        16px;
+  --text-body-md-lh:          1.6;
+  --text-body-md-ls:          0;
+  --text-body-md-fw:          400;
+
+  --text-assistant-msg-size:  15px;
+  --text-assistant-msg-lh:    1.5;
+  --text-assistant-msg-ls:    0.01em;
+  --text-assistant-msg-fw:    400;
+
+  --text-label-mono-size:     12px;
+  --text-label-mono-lh:       1.2;
+  --text-label-mono-ls:       0.1em;
+  --text-label-mono-fw:       700;
+
+  /* ── Border Radius ──────────────────────────────────────────────────────── */
+  --radius-sm:    0.125rem;   /* 2px  — tight elements */
+  --radius-md:    0.25rem;    /* 4px  — default cards/inputs */
+  --radius-lg:    0.5rem;     /* 8px  — modals/dropdowns */
+  --radius-full:  0.75rem;    /* 12px — pills / badges */
+
+  /* ── Spacing ─────────────────────────────────────────────────────────────── */
+  --space-unit:         4px;
+  --space-chat-gap:     16px;
+  --space-gutter:       24px;
+  --space-margin-safe:  32px;
+  --space-docked-width: 380px;  /* Jane AI docked sidebar */
+
+  /* ── Shadows / Glows ─────────────────────────────────────────────────────── */
+  --glow-lime:          0 0 4px rgba(212, 246, 88, 0.4);
+  --glow-cyan:          0 0 6px rgba(0, 240, 255, 0.35);
+
+  /* ── Layout ──────────────────────────────────────────────────────────────── */
+  --sidebar-width:      80px;    /* icon-only left rail */
+  --header-height:      64px;
+  --status-bar-height:  32px;
+}

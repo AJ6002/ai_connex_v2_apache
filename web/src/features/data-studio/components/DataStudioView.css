@@ -1,0 +1,167 @@
+/**
+ * Data Studio — faithful to STITCH-Design/ai_connex_data_studio_profiling.
+ * Rendered in the priority light theme via tokens.
+ */
+.ds {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ── Stage stepper ───────────────────────────────────────────────────────── */
+.ds__stages { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.ds__stage {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.ds__stage .material-symbols-outlined { font-size: 16px; }
+.ds__stage--done { color: var(--color-assistant-identity); }
+.ds__stage--active { color: var(--color-on-surface); }
+.ds__stage--locked { color: var(--color-on-surface-variant); opacity: 0.7; }
+.ds__stage-sep { color: var(--color-outline-variant); font-size: 18px !important; margin: 0 4px; }
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.ds__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
+.ds__title { font-size: var(--text-headline-lg-size); line-height: 1.1; letter-spacing: -0.03em; font-weight: 700; color: var(--color-on-surface); }
+.ds__meta { display: flex; gap: 20px; margin-top: 10px; color: var(--color-on-surface-variant); flex-wrap: wrap; }
+.ds__meta span { display: inline-flex; align-items: center; gap: 6px; }
+.ds__meta .material-symbols-outlined { font-size: 15px; }
+
+/* ── Grid ────────────────────────────────────────────────────────────────── */
+.ds__grid { display: grid; grid-template-columns: 300px 1fr; gap: 24px; align-items: start; }
+
+/* ── Resolved tables ─────────────────────────────────────────────────────── */
+.ds__tables { display: flex; flex-direction: column; gap: 12px; }
+.ds__tables-title { color: var(--color-on-surface-variant); padding-bottom: 12px; border-bottom: 1px solid var(--color-grid-line); }
+.ds__table {
+  text-align: left;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-grid-line);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-color 0.15s ease;
+}
+.ds__table:hover { border-color: var(--color-outline-variant); }
+.ds__table--active { border-color: var(--color-assistant-identity); box-shadow: var(--glow-lime); }
+.ds__table-row { display: flex; align-items: center; justify-content: space-between; }
+.ds__table-name { font-family: var(--font-mono); font-weight: 700; color: var(--color-on-surface); }
+.ds__table .material-symbols-outlined { color: var(--color-on-surface-variant); font-size: 18px; }
+.ds__table-check { color: var(--color-assistant-identity) !important; }
+
+/* ── Main ────────────────────────────────────────────────────────────────── */
+.ds__main { display: flex; flex-direction: column; gap: 20px; }
+
+/* Score banner */
+.ds__score {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-grid-line);
+  border-radius: var(--radius-lg);
+  padding: 24px 28px;
+}
+.ds__score-ring {
+  width: 72px;
+  height: 72px;
+  border-radius: 999px;
+  background-color: #0f1012;
+  color: var(--color-primary-container);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.ds__score-text { flex: 1; }
+.ds__score-text h2 { font-size: 28px; font-weight: 700; color: var(--color-on-surface); letter-spacing: -0.02em; }
+.ds__score-text p { color: var(--color-on-surface-variant); max-width: 380px; margin-top: 4px; }
+.ds__score-metric { text-align: right; display: flex; flex-direction: column; gap: 4px; padding-left: 24px; border-left: 1px solid var(--color-grid-line); }
+.ds__score-metric .label-mono { color: var(--color-on-surface-variant); }
+.ds__score-metric strong { font-size: 22px; color: var(--color-on-surface); }
+
+/* Panels grid */
+.ds__panels { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.ds__panel {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-grid-line);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+.ds__panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.ds__panel-head .label-mono { color: var(--color-on-surface); }
+.ds__panel-meta { color: var(--color-on-surface-variant) !important; }
+
+/* Structural table */
+.ds__fields { width: 100%; border-collapse: collapse; }
+.ds__fields th {
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--color-on-surface-variant);
+  padding: 8px 0;
+  border-bottom: 1px solid var(--color-grid-line);
+}
+.ds__fields td { padding: 12px 0; border-bottom: 1px solid var(--color-grid-line); font-size: 14px; color: var(--color-on-surface); }
+.ds__fields td:first-child { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); }
+.ds__fields td:first-child .material-symbols-outlined { font-size: 16px; color: var(--color-on-surface-variant); }
+.ds__type {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background-color: var(--color-surface-container-high);
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  color: var(--color-on-surface-variant);
+}
+
+/* Semantic */
+.ds__semantic { display: flex; flex-direction: column; gap: 12px; }
+.ds__sem-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--color-grid-line);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+}
+.ds__sem-left { display: flex; align-items: center; gap: 10px; font-weight: 500; color: var(--color-on-surface); }
+.ds__sem-left .material-symbols-outlined { font-size: 20px; color: var(--color-action-proposed); }
+.ds__sem-chip { padding: 4px 10px; border-radius: var(--radius-full); }
+.ds__sem-chip--pink { background-color: #ffe0ec; color: #ba2a84; }
+.ds__sem-chip--muted { background-color: var(--color-surface-container-high); color: var(--color-on-surface-variant); }
+
+/* Charts */
+.ds__chart { display: flex; align-items: flex-end; justify-content: space-between; gap: 6px; height: 160px; padding-top: 12px; }
+.ds__bar { flex: 1; background-color: var(--color-surface-container-highest); border-radius: 3px 3px 0 0; min-height: 4px; }
+.ds__bar--hi { background-color: var(--color-primary-fixed-dim); }
+.ds__bar--peak { background-color: var(--color-inverse-primary); }
+.ds__bar--anomaly { background-color: var(--color-status-failed); }
+.ds__chart--temporal .ds__bar { border-radius: 2px; }
+.ds__stats-row { display: flex; justify-content: space-between; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--color-grid-line); }
+.ds__stats-row div { display: flex; flex-direction: column; gap: 4px; }
+.ds__stats-row .label-mono { color: var(--color-on-surface-variant); }
+.ds__stats-row strong { font-size: 18px; color: var(--color-on-surface); }
+.ds__axis { display: flex; justify-content: space-between; margin-top: 12px; color: var(--color-on-surface-variant); }
+
+@media (max-width: 1100px) {
+  .ds__grid { grid-template-columns: 1fr; }
+  .ds__panels { grid-template-columns: 1fr; }
+}
+.ds__stage-link { color: inherit; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+.ds__stage-link:hover { text-decoration: underline; }

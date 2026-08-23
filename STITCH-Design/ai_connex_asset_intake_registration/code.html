@@ -1,0 +1,419 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>AI-ConneX - Intake</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "grid-line": "#2a2d32",
+                      "on-secondary": "#002d6f",
+                      "tertiary-container": "#ffd8e8",
+                      "on-secondary-fixed-variant": "#00429b",
+                      "tertiary-fixed": "#ffd8e8",
+                      "surface-container-high": "#2a2a2a",
+                      "on-tertiary-container": "#b52681",
+                      "on-secondary-fixed": "#001945",
+                      "secondary-fixed": "#d9e2ff",
+                      "primary-fixed-dim": "#b3d338",
+                      "secondary-fixed-dim": "#b0c6ff",
+                      "on-background": "#e5e2e1",
+                      "on-secondary-container": "#fefcff",
+                      "surface-bright": "#393939",
+                      "surface-tint": "#b3d338",
+                      "on-surface": "#e5e2e1",
+                      "assistant-identity": "#d4f658",
+                      "surface-container": "#201f1f",
+                      "surface-variant": "#353534",
+                      "intent-clarification": "#ffb900",
+                      "surface-container-highest": "#353534",
+                      "on-primary": "#2a3500",
+                      "surface": "#131313",
+                      "on-primary-fixed": "#171e00",
+                      "on-error": "#690005",
+                      "surface-dim": "#131313",
+                      "outline": "#8f937c",
+                      "on-surface-variant": "#c5c9b0",
+                      "inverse-primary": "#536600",
+                      "error-container": "#93000a",
+                      "on-primary-fixed-variant": "#3e4c00",
+                      "primary": "#ffffff",
+                      "outline-variant": "#454936",
+                      "action-proposed": "#00f0ff",
+                      "on-tertiary-fixed": "#3d0027",
+                      "primary-container": "#cff053",
+                      "surface-container-lowest": "#0e0e0e",
+                      "background": "#131313",
+                      "secondary": "#b0c6ff",
+                      "tertiary": "#ffffff",
+                      "on-tertiary-fixed-variant": "#8a005f",
+                      "on-tertiary": "#620042",
+                      "tertiary-fixed-dim": "#ffafd5",
+                      "surface-slate": "#16181c",
+                      "inverse-on-surface": "#313030",
+                      "on-error-container": "#ffdad6",
+                      "background-pitch": "#000000",
+                      "error": "#ffb4ab",
+                      "on-primary-container": "#586c00",
+                      "inverse-surface": "#e5e2e1",
+                      "surface-container-low": "#1c1b1b",
+                      "primary-fixed": "#cff053",
+                      "secondary-container": "#006df7"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "unit": "4px",
+                      "docked-width": "380px",
+                      "chat-gap": "16px",
+                      "gutter": "24px",
+                      "margin-safe": "32px"
+              },
+              "fontFamily": {
+                      "headline-lg-mobile": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "assistant-msg": [
+                              "Inter"
+                      ],
+                      "label-mono": [
+                              "JetBrains Mono"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg-mobile": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-lg": [
+                              "40px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.03em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "letterSpacing": "0",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "assistant-msg": [
+                              "15px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "letterSpacing": "0.01em",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-mono": [
+                              "12px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "0.1em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-md": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "64px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.04em",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        body {
+            background-color: #000000;
+            background-image: radial-gradient(#2a2d32 1px, transparent 0);
+            background-size: 20px 20px;
+        }
+        
+        .glow-lime {
+            box-shadow: 0 0 4px rgba(212, 246, 88, 0.4);
+        }
+        
+        .status-line-lime {
+            border-left: 2px solid #d4f658;
+        }
+        
+        .status-line-cyan {
+            border-left: 2px solid #00f0ff;
+        }
+
+        /* Custom Scrollbar for dark theme */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #131313;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #353534;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8f937c;
+        }
+    </style>
+</head>
+<body class="text-on-surface bg-background-pitch h-screen w-full overflow-hidden flex font-body-md">
+<!-- SideNavBar (JSON Component) -->
+<nav class="fixed left-0 top-0 h-full z-40 w-20 flex flex-col border-r border-grid-line bg-background-pitch">
+<div class="h-16 flex items-center justify-center border-b border-grid-line w-full">
+<span class="font-headline-md text-headline-md text-assistant-identity tracking-tighter cursor-default select-none" title="AI-ConneX v2.4.0-STABLE">ACX</span>
+</div>
+<div class="flex-1 flex flex-col items-center py-6 gap-6 w-full">
+<!-- Active: Datasets (Intake maps to Datasets) -->
+<button class="w-12 h-12 flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors rounded scale-95 active:scale-90" title="Workspace">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">grid_view</span>
+</button>
+<button class="w-12 h-12 flex items-center justify-center text-assistant-identity border-l-2 border-assistant-identity bg-surface-container-low transition-colors rounded scale-95 active:scale-90 glow-lime" title="Datasets">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">database</span>
+</button>
+<button class="w-12 h-12 flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors rounded scale-95 active:scale-90" title="Models">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">model_training</span>
+</button>
+<button class="w-12 h-12 flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors rounded scale-95 active:scale-90" title="Admin">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">admin_panel_settings</span>
+</button>
+</div>
+<div class="pb-6 w-full flex justify-center border-t border-grid-line pt-6">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center border border-grid-line">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">business</span>
+</div>
+</div>
+</nav>
+<!-- TopAppBar (JSON Component) -->
+<header class="fixed top-0 left-0 w-full flex items-center justify-between px-gutter z-30 h-16 border-b border-grid-line bg-background-pitch pl-28 pr-[calc(380px+24px)]">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-bold text-assistant-identity">AI-ConneX</span>
+<span class="font-label-mono text-label-mono text-on-surface-variant mt-2">/ INTAKE</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4 text-on-surface-variant">
+<button class="hover:text-assistant-identity transition-colors cursor-pointer scale-95 active:scale-90"><span class="material-symbols-outlined">notifications</span></button>
+<button class="hover:text-assistant-identity transition-colors cursor-pointer scale-95 active:scale-90"><span class="material-symbols-outlined">settings</span></button>
+<button class="hover:text-assistant-identity transition-colors cursor-pointer scale-95 active:scale-90"><span class="material-symbols-outlined">help</span></button>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface-variant border border-grid-line flex items-center justify-center overflow-hidden">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">person</span>
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 ml-20 mt-16 mr-docked-width h-[calc(100vh-64px)] overflow-y-auto p-margin-safe">
+<div class="max-w-6xl mx-auto flex flex-col gap-8 h-full">
+<!-- Header Section -->
+<div class="flex justify-between items-end mb-4">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-primary mb-2">Asset Registration</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Initialize and classify incoming data schemas for model training.</p>
+</div>
+<button class="px-6 py-2 bg-surface-container-high border border-grid-line text-primary font-label-mono text-label-mono hover:bg-surface-variant transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">add</span> BATCH IMPORT
+                </button>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-6 flex-1 min-h-0">
+<!-- Drag and Drop Zone (Left/Main) -->
+<div class="col-span-8 bg-surface border border-grid-line rounded flex flex-col relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-surface-container-low to-background opacity-50 z-0"></div>
+<div class="p-4 border-b border-grid-line bg-surface-container-low z-10 flex justify-between items-center">
+<span class="font-label-mono text-label-mono text-on-surface-variant tracking-widest">DROP_ZONE_ALPHA</span>
+<span class="material-symbols-outlined text-on-surface-variant text-sm">cloud_upload</span>
+</div>
+<div class="flex-1 flex flex-col items-center justify-center p-12 z-10 border-2 border-dashed border-grid-line m-6 rounded bg-surface-dim hover:border-assistant-identity transition-colors cursor-pointer relative">
+<div class="absolute inset-0 flex items-center justify-center opacity-5">
+<span class="material-symbols-outlined text-[120px] text-primary">database</span>
+</div>
+<span class="material-symbols-outlined text-4xl text-assistant-identity mb-4 animate-bounce">move_to_inbox</span>
+<h3 class="font-body-lg text-body-lg text-primary font-semibold mb-2">Drag &amp; Drop Assets</h3>
+<p class="font-body-md text-body-md text-on-surface-variant text-center max-w-md mb-6">Supports CSV, JSON, Parquet, and proprietary schema definitions up to 50GB.</p>
+<button class="px-8 py-3 bg-assistant-identity text-on-primary font-label-mono text-label-mono hover:bg-primary-fixed transition-colors glow-lime">
+                            BROWSE LOCAL FILES
+                        </button>
+</div>
+</div>
+<!-- Metadata & Config (Right Panel) -->
+<div class="col-span-4 flex flex-col gap-6">
+<!-- Metadata Form -->
+<div class="bg-surface border border-grid-line rounded p-6 flex-1">
+<h4 class="font-label-mono text-label-mono text-assistant-identity mb-6 border-b border-grid-line pb-2">METADATA_CONFIG</h4>
+<div class="space-y-5">
+<div>
+<label class="block font-label-mono text-label-mono text-on-surface-variant mb-2">SOURCE_ORIGIN</label>
+<select class="w-full bg-surface-container-high border border-grid-line text-primary font-body-md text-body-md p-2 rounded focus:border-assistant-identity focus:ring-1 focus:ring-assistant-identity outline-none">
+<option>Internal Telemetry</option>
+<option>Third-Party API</option>
+<option>Manual Upload</option>
+<option>Legacy DB Export</option>
+</select>
+</div>
+<div>
+<label class="block font-label-mono text-label-mono text-on-surface-variant mb-2">SENSITIVITY_LEVEL</label>
+<div class="grid grid-cols-3 gap-2">
+<button class="py-2 bg-surface-container-high border border-grid-line text-on-surface-variant font-label-mono text-[10px] hover:border-assistant-identity transition-colors">PUBLIC</button>
+<button class="py-2 bg-surface-variant border border-intent-clarification text-intent-clarification font-label-mono text-[10px] glow-amber">INTERNAL</button>
+<button class="py-2 bg-surface-container-high border border-grid-line text-on-surface-variant font-label-mono text-[10px] hover:border-assistant-identity transition-colors">RESTRICTED</button>
+</div>
+</div>
+<div>
+<label class="block font-label-mono text-label-mono text-on-surface-variant mb-2">DATA_OWNER_ID</label>
+<div class="flex items-center bg-surface-container-high border border-grid-line rounded px-3 py-2 focus-within:border-assistant-identity">
+<span class="material-symbols-outlined text-on-surface-variant text-sm mr-2">badge</span>
+<input class="bg-transparent border-none text-primary font-body-md text-body-md w-full focus:ring-0 p-0" readonly="" type="text" value="USR-9942-A">
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Intake Status -->
+<div class="bg-surface border border-grid-line rounded p-6">
+<h4 class="font-label-mono text-label-mono text-on-surface-variant mb-4 border-b border-grid-line pb-2 flex justify-between">
+<span>RECENT_INTAKE</span>
+<span class="text-assistant-identity">LIVE</span>
+</h4>
+<div class="space-y-3">
+<div class="p-3 border border-grid-line bg-surface-container-high rounded flex justify-between items-center relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-intent-clarification"></div>
+<div>
+<div class="font-label-mono text-label-mono text-primary mb-1">dataset_q3_rev.csv</div>
+<div class="font-body-md text-body-md text-[12px] text-intent-clarification">Scanning schemas... 45%</div>
+</div>
+<span class="material-symbols-outlined text-intent-clarification animate-spin text-sm">sync</span>
+</div>
+<div class="p-3 border border-grid-line bg-surface-container-high rounded flex justify-between items-center relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-action-proposed"></div>
+<div>
+<div class="font-label-mono text-label-mono text-primary mb-1">user_metrics_v2.json</div>
+<div class="font-body-md text-body-md text-[12px] text-action-proposed">Initializing pipeline...</div>
+</div>
+<span class="material-symbols-outlined text-action-proposed text-sm">settings_b_roll</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- NavigationDrawer (Jane AI) (JSON Component) -->
+<aside class="fixed right-0 top-0 h-full z-50 flex flex-col docked right-0 w-docked-width border-l border-grid-line bg-surface-slate shadow-[0_0_10px_rgba(212,246,88,0.05)] transition-all duration-200 ease-in-out">
+<!-- Drawer Header -->
+<div class="h-16 border-b border-grid-line flex items-center justify-between px-6 bg-surface-slate shrink-0">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-assistant-identity animate-pulse glow-lime"></div>
+<div>
+<h2 class="font-label-mono text-label-mono text-assistant-identity uppercase tracking-widest leading-tight">JANE_AI</h2>
+<span class="font-label-mono text-[10px] text-outline tracking-widest">SYSTEM_READY</span>
+</div>
+</div>
+<button class="text-outline hover:text-assistant-identity transition-colors font-label-mono text-[10px] tracking-widest border border-grid-line px-2 py-1 rounded">
+                EXPAND_VIEW
+            </button>
+</div>
+<!-- Drawer Tabs -->
+<div class="flex border-b border-grid-line shrink-0 bg-surface-slate">
+<button class="flex-1 py-3 flex items-center justify-center gap-2 text-outline hover:bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined text-sm">psychology</span>
+<span class="font-label-mono text-[10px] tracking-widest">INTENT</span>
+</button>
+<!-- Active Tab Contextual Logic -->
+<button class="flex-1 py-3 flex items-center justify-center gap-2 text-assistant-identity border-b-2 border-assistant-identity bg-surface-container-highest hover:bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined text-sm">analytics</span>
+<span class="font-label-mono text-[10px] tracking-widest">JOBS</span>
+</button>
+<button class="flex-1 py-3 flex items-center justify-center gap-2 text-outline hover:bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined text-sm">bolt</span>
+<span class="font-label-mono text-[10px] tracking-widest">ACTIONS</span>
+</button>
+</div>
+<!-- Chat Area -->
+<div class="flex-1 overflow-y-auto p-6 flex flex-col gap-chat-gap bg-surface-slate">
+<!-- Assistant Message -->
+<div class="flex flex-col gap-unit max-w-[85%] self-start">
+<div class="font-assistant-msg text-assistant-msg text-on-surface bg-transparent p-3 status-line-lime">
+                    System ready for data intake. Awaiting asset drops in the primary zone.
+                </div>
+<div class="font-label-mono text-[10px] text-outline ml-3">SYS_TIME: 14:02:44</div>
+</div>
+<!-- Action Proposed Card -->
+<div class="flex flex-col gap-unit max-w-[95%] self-start mt-4">
+<div class="border border-action-proposed bg-[rgba(0,240,255,0.05)] rounded p-4 flex flex-col gap-3">
+<div class="flex items-center gap-2 border-b border-[rgba(0,240,255,0.2)] pb-2">
+<span class="material-symbols-outlined text-action-proposed text-sm">memory</span>
+<span class="font-label-mono text-label-mono text-action-proposed">OPTIMIZATION_SUGGESTION</span>
+</div>
+<p class="font-assistant-msg text-assistant-msg text-on-surface text-sm">
+                         I detect 3 legacy datasets in your unassigned staging area. Would you like me to pre-process their schemas for the current intake batch?
+                     </p>
+<button class="mt-2 w-full py-2 bg-transparent border border-action-proposed text-action-proposed font-label-mono text-label-mono hover:bg-action-proposed hover:text-background-pitch transition-colors">
+                         EXECUTE PRE-PROCESS
+                     </button>
+</div>
+</div>
+</div>
+<!-- Input Area -->
+<div class="shrink-0 border-t border-grid-line bg-surface-slate p-4">
+<div class="flex items-center gap-3 border-b border-grid-line pb-2 focus-within:border-assistant-identity transition-colors">
+<span class="font-label-mono text-assistant-identity animate-pulse">_</span>
+<input class="w-full bg-transparent border-none text-primary font-label-mono text-label-mono focus:ring-0 p-0 placeholder-outline" placeholder="READY_FOR_INPUT..." type="text">
+<button class="text-outline hover:text-assistant-identity transition-colors">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</div>
+</aside>
+</body></html>

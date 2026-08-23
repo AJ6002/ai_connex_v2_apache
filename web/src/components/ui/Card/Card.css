@@ -1,0 +1,64 @@
+.card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.15s ease;
+}
+
+/* ── Elevation ───────────────────────────────────────────────────────────── */
+.card--low      { background-color: var(--bg-surface-low); }
+.card--default  { background-color: var(--bg-surface); }
+.card--high     { background-color: var(--bg-surface-high); }
+.card--highest  { background-color: var(--bg-surface-highest); }
+
+/* ── Padding ─────────────────────────────────────────────────────────────── */
+.card--pad-none { padding: 0; }
+.card--pad-sm   { padding: 12px; }
+.card--pad-md   { padding: 16px; }
+.card--pad-lg   { padding: 24px; }
+
+/* ── Accent Left Border (STITCH status-line pattern) ─────────────────────── */
+.card--accent-lime  { border-left: 2px solid var(--color-assistant-identity); }
+.card--accent-cyan  { border-left: 2px solid var(--color-action-proposed); }
+.card--accent-amber { border-left: 2px solid var(--color-intent-clarification); }
+.card--accent-red   { border-left: 2px solid var(--color-error); }
+.card--accent-blue  { border-left: 2px solid var(--color-status-running); }
+.card--accent-gray  { border-left: 2px solid var(--color-status-queued); }
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  gap: 12px;
+}
+
+.card-header__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.card-header__title {
+  color: var(--fg-muted);
+}
+
+.card-header__subtitle {
+  font-size: 11px;
+  color: var(--color-outline);
+}
+
+.card-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+/* ── Body ────────────────────────────────────────────────────────────────── */
+.card-body {
+  padding: 16px;
+}

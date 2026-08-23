@@ -1,0 +1,42 @@
+/** Access Control — faithful to STITCH-Design/ai_connex_admin_access_control. */
+.adm { display: flex; flex-direction: column; gap: 20px; }
+.adm__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
+.adm__title { font-size: var(--text-headline-lg-size); line-height: 1.1; letter-spacing: -0.03em; font-weight: 700; color: var(--color-on-surface); }
+.adm__sub { color: var(--color-on-surface-variant); margin-top: 8px; }
+.adm__header-actions { display: flex; gap: 12px; }
+
+.adm__grid { display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
+
+.adm__panel { background-color: var(--color-surface); border: 1px solid var(--color-grid-line); border-radius: var(--radius-lg); }
+.adm__panel-head { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; border-bottom: 1px solid var(--color-grid-line); }
+.adm__panel-head .label-mono { color: var(--color-on-surface); }
+.adm__panel-count { color: var(--color-on-surface-variant); }
+
+.adm__table { width: 100%; border-collapse: collapse; }
+.adm__table th { text-align: left; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; color: var(--color-on-surface-variant); padding: 14px 22px; }
+.adm__table td { padding: 16px 22px; border-top: 1px solid var(--color-grid-line); font-size: 14px; color: var(--color-on-surface); vertical-align: middle; }
+.adm__user-name { font-weight: 600; }
+.adm__user-id { display: block; font-family: var(--font-mono); font-size: 11px; color: var(--color-on-surface-variant); margin-top: 2px; }
+.adm__role { font-family: var(--font-mono); font-size: 12px; }
+.adm__status--active { color: var(--color-status-completed); }
+.adm__more { background: none; border: none; cursor: pointer; color: var(--color-on-surface-variant); }
+
+.adm__rbac { display: flex; flex-direction: column; gap: 20px; padding: 22px; }
+.adm__rbac-metric { display: flex; align-items: center; justify-content: space-between; }
+.adm__rbac-metric .label-mono { color: var(--color-on-surface-variant); }
+.adm__rbac-metric strong { font-size: 20px; color: var(--color-on-surface); }
+
+.adm__creds-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; padding: 22px; }
+.adm__cred-card { border: 1px solid var(--color-grid-line); border-radius: var(--radius-md); padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+.adm__cred-head { display: flex; align-items: center; justify-content: space-between; }
+.adm__cred-name { font-weight: 600; color: var(--color-on-surface); }
+.adm__cred-created { color: var(--color-on-surface-variant); }
+.adm__cred-key { display: flex; align-items: center; justify-content: space-between; gap: 8px; background-color: var(--color-surface-container-low); border: 1px solid var(--color-grid-line); border-radius: var(--radius-md); padding: 8px 12px; font-family: var(--font-mono); font-size: 13px; color: var(--color-on-surface); }
+.adm__cred-key button { background: none; border: none; cursor: pointer; color: var(--color-on-surface-variant); display: flex; }
+.adm__cred-perms { display: flex; gap: 8px; flex-wrap: wrap; }
+.adm__perm { font-family: var(--font-mono); font-size: 10px; background-color: var(--color-surface-container-high); color: var(--color-on-surface-variant); padding: 3px 8px; border-radius: var(--radius-full); }
+.adm__cred-used { color: var(--color-on-surface-variant); }
+
+@media (max-width: 1024px) {
+  .adm__grid { grid-template-columns: 1fr; }
+}

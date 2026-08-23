@@ -1,0 +1,52 @@
+/** System States & Errors — faithful to STITCH-Design application_states_* screens (light). */
+.states { display: flex; flex-direction: column; gap: 20px; }
+.states__header { padding-bottom: 16px; border-bottom: 1px solid var(--color-grid-line); }
+.states__title { font-size: var(--text-headline-lg-size); line-height: 1.1; letter-spacing: -0.03em; font-weight: 700; color: var(--color-on-surface); }
+.states__version { color: var(--color-on-surface-variant); margin-top: 6px; }
+
+.states__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+.states__card { background-color: var(--color-surface); border: 1px solid var(--color-grid-line); border-left: 3px solid var(--color-grid-line); border-radius: var(--radius-lg); padding: 22px; display: flex; flex-direction: column; gap: 16px; }
+.states__card--failure { border-left-color: var(--color-status-failed); }
+.states__card--warning { border-left-color: var(--color-intent-clarification); }
+.states__card--neutral { align-items: center; text-align: center; }
+.states__card--info { border-left-color: var(--color-status-running); }
+
+.states__card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; width: 100%; }
+.states__card-label { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 12px; font-weight: 700; letter-spacing: 0.06em; }
+.states__card-label .material-symbols-outlined { font-size: 18px; }
+.states__card--failure .states__card-label { color: var(--color-status-failed); }
+.states__card--warning .states__card-label { color: var(--color-intent-clarification); }
+.states__card-code { font-family: var(--font-mono); font-size: 11px; color: var(--color-on-surface-variant); }
+
+.states__body { color: var(--color-on-surface); font-size: 15px; }
+.states__log { background-color: var(--color-surface-container-lowest, #0e0e0e); background-color: #191c1d; color: #d4d4d4; border-radius: var(--radius-md); padding: 14px 16px; font-family: var(--font-mono); font-size: 12px; line-height: 1.7; }
+.states__log-action { color: var(--color-assistant-identity); font-weight: 700; }
+
+.states__reason { border: 1px solid var(--color-intent-clarification); border-radius: var(--radius-md); padding: 14px 16px; }
+.states__reason-head { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--color-intent-clarification); margin-bottom: 6px; }
+.states__reason-head .material-symbols-outlined { font-size: 16px; }
+.states__reason p { color: var(--color-on-surface); font-size: 14px; }
+
+.states__actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.states__btn { font-family: var(--font-mono); font-size: 12px; font-weight: 700; letter-spacing: 0.04em; padding: 10px 16px; border-radius: var(--radius-md); border: 1px solid var(--color-grid-line); background: none; cursor: pointer; color: var(--color-on-surface); }
+.states__btn--danger { border-color: var(--color-status-failed); color: var(--color-status-failed); }
+.states__btn--warning { background-color: var(--color-intent-clarification); border-color: var(--color-intent-clarification); color: #1a1200; }
+.states__btn--primary { background-color: var(--color-primary-container); border-color: var(--color-primary-container); color: var(--color-on-primary-fixed); }
+
+.states__icon-xl { font-size: 56px; color: var(--color-on-surface-variant); }
+.states__code-xl { font-size: 44px; font-weight: 700; color: var(--color-on-surface); letter-spacing: -0.02em; }
+.states__desc { color: var(--color-on-surface-variant); max-width: 380px; }
+
+.states__health-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.states__health-row .label-mono { color: var(--color-on-surface-variant); }
+.states__health-status { font-family: var(--font-mono); font-weight: 700; color: var(--color-intent-clarification); }
+.states__health-bar { height: 8px; border-radius: 999px; background-color: var(--color-surface-container-highest); overflow: hidden; margin-bottom: 10px; }
+.states__health-bar > div { height: 100%; background-color: var(--color-intent-clarification); }
+.states__retry { font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--color-on-surface); text-align: center; }
+
+.states__empty { background-color: var(--color-surface); border: 1px dashed var(--color-outline-variant); border-radius: var(--radius-lg); padding: 40px; grid-column: 1 / -1; }
+
+@media (max-width: 900px) {
+  .states__grid { grid-template-columns: 1fr; }
+}

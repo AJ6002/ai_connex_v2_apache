@@ -1,0 +1,286 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Failure/Quarantine</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "grid-line": "#2a2d32",
+                      "on-secondary": "#002d6f",
+                      "tertiary-container": "#ffd8e8",
+                      "on-secondary-fixed-variant": "#00429b",
+                      "tertiary-fixed": "#ffd8e8",
+                      "surface-container-high": "#2a2a2a",
+                      "on-tertiary-container": "#b52681",
+                      "on-secondary-fixed": "#001945",
+                      "secondary-fixed": "#d9e2ff",
+                      "primary-fixed-dim": "#b3d338",
+                      "secondary-fixed-dim": "#b0c6ff",
+                      "on-background": "#e5e2e1",
+                      "on-secondary-container": "#fefcff",
+                      "surface-bright": "#393939",
+                      "surface-tint": "#b3d338",
+                      "on-surface": "#e5e2e1",
+                      "assistant-identity": "#d4f658",
+                      "surface-container": "#201f1f",
+                      "surface-variant": "#353534",
+                      "intent-clarification": "#ffb900",
+                      "surface-container-highest": "#353534",
+                      "on-primary": "#2a3500",
+                      "surface": "#131313",
+                      "on-primary-fixed": "#171e00",
+                      "on-error": "#690005",
+                      "surface-dim": "#131313",
+                      "outline": "#8f937c",
+                      "on-surface-variant": "#c5c9b0",
+                      "inverse-primary": "#536600",
+                      "error-container": "#93000a",
+                      "on-primary-fixed-variant": "#3e4c00",
+                      "primary": "#ffffff",
+                      "outline-variant": "#454936",
+                      "action-proposed": "#00f0ff",
+                      "on-tertiary-fixed": "#3d0027",
+                      "primary-container": "#cff053",
+                      "surface-container-lowest": "#0e0e0e",
+                      "background": "#131313",
+                      "secondary": "#b0c6ff",
+                      "tertiary": "#ffffff",
+                      "on-tertiary-fixed-variant": "#8a005f",
+                      "on-tertiary": "#620042",
+                      "tertiary-fixed-dim": "#ffafd5",
+                      "surface-slate": "#16181c",
+                      "inverse-on-surface": "#313030",
+                      "on-error-container": "#ffdad6",
+                      "background-pitch": "#000000",
+                      "error": "#ffb4ab",
+                      "on-primary-container": "#586c00",
+                      "inverse-surface": "#e5e2e1",
+                      "surface-container-low": "#1c1b1b",
+                      "primary-fixed": "#cff053",
+                      "secondary-container": "#006df7"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "unit": "4px",
+                      "docked-width": "380px",
+                      "chat-gap": "16px",
+                      "gutter": "24px",
+                      "margin-safe": "32px"
+              },
+              "fontFamily": {
+                      "headline-lg-mobile": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "assistant-msg": [
+                              "Inter"
+                      ],
+                      "label-mono": [
+                              "JetBrains Mono"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg-mobile": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-lg": [
+                              "40px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.03em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "letterSpacing": "0",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "assistant-msg": [
+                              "15px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "letterSpacing": "0.01em",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-mono": [
+                              "12px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "0.1em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-md": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "64px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.04em",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+          body {
+              background-image: radial-gradient(#2a2d32 1px, transparent 1px);
+              background-size: 20px 20px;
+          }
+      </style>
+</head>
+<body class="bg-background-pitch text-on-background min-h-screen flex flex-col font-body-md overflow-x-hidden">
+<!-- TopAppBar Navigation Shell Suppressed due to Transactional/Error Intent -->
+<main class="flex-1 flex flex-col items-center justify-center p-gutter relative z-10 w-full max-w-[calc(100%-380px)] pr-docked-width transition-all duration-200">
+<div class="w-full max-w-4xl flex flex-col gap-6">
+<!-- Banner -->
+<div class="w-full border border-error bg-error-container/20 p-6 flex items-start gap-4 shadow-[0_0_15px_rgba(255,180,171,0.1)]">
+<span class="material-symbols-outlined text-error text-4xl" data-weight="fill" style="font-variation-settings: 'FILL' 1;">warning</span>
+<div class="flex-1">
+<h1 class="font-headline-lg text-headline-lg text-error mb-2 tracking-tighter">ASSET_QUARANTINED</h1>
+<p class="font-body-md text-body-md text-error/80">Critical policy violations detected during validation. Asset is locked pending resolution.</p>
+</div>
+</div>
+<!-- Details -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Validation Failure -->
+<div class="border border-grid-line bg-surface p-6 flex flex-col gap-4">
+<div class="flex items-center gap-2 text-outline">
+<span class="material-symbols-outlined">rule</span>
+<h2 class="font-label-mono text-label-mono uppercase tracking-widest">Validation Failure</h2>
+</div>
+<div class="font-headline-md text-headline-md text-on-surface-variant font-bold">ERR_SCHEMA_MISMATCH</div>
+<p class="font-body-md text-body-md text-on-surface-variant/70">The uploaded asset structure diverges significantly from the expected 'customer_profiles_v2' schema. 14 critical deviations found.</p>
+</div>
+<!-- PII Warning -->
+<div class="border border-intent-clarification bg-intent-clarification/5 p-6 flex flex-col gap-4 shadow-[0_0_10px_rgba(255,185,0,0.05)]">
+<div class="flex items-center gap-2 text-intent-clarification">
+<span class="material-symbols-outlined">security</span>
+<h2 class="font-label-mono text-label-mono uppercase tracking-widest text-intent-clarification">PII_DETECTED</h2>
+</div>
+<div class="font-headline-md text-headline-md text-intent-clarification font-bold">Unmasked Social Security Numbers</div>
+<p class="font-body-md text-body-md text-intent-clarification/70">High-risk sensitive data identified in columns 4 ('ssn') and 7 ('tax_id'). Automated masking policies require immediate enforcement.</p>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex gap-4 mt-4 border-t border-grid-line pt-6">
+<button class="bg-error hover:bg-error/90 text-on-error font-label-mono text-label-mono py-3 px-6 rounded-DEFAULT transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined">lock_person</span>
+                    TRIGGER MASKING
+                </button>
+<button class="border border-outline hover:bg-surface-container text-on-surface font-label-mono text-label-mono py-3 px-6 rounded-DEFAULT transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined">rate_review</span>
+                    REQUEST REVIEW
+                </button>
+</div>
+</div>
+</main>
+<!-- NavigationDrawer -->
+<aside class="fixed right-0 top-0 h-full w-docked-width z-50 flex flex-col border-l border-grid-line bg-surface-slate shadow-[0_0_10px_rgba(255,180,171,0.05)] transition-all duration-200 ease-in-out">
+<!-- Drawer Header -->
+<div class="p-6 border-b border-grid-line flex justify-between items-start">
+<div>
+<h2 class="font-label-mono text-label-mono text-error uppercase tracking-widest">JANE_AI</h2>
+<p class="font-label-mono text-label-mono text-error/70 mt-1">CRITICAL_ERROR</p>
+</div>
+<button class="text-error hover:text-error/80 transition-colors font-label-mono text-label-mono text-[10px]">EXPAND_VIEW</button>
+</div>
+<!-- Chat Area -->
+<div class="flex-1 overflow-y-auto p-6 flex flex-col gap-chat-gap">
+<!-- Assistant Message (Error State) -->
+<div class="flex gap-4 group">
+<div class="w-[2px] bg-error rounded-full shadow-[0_0_4px_rgba(255,180,171,0.6)]"></div>
+<div class="flex-1">
+<p class="font-assistant-msg text-assistant-msg text-on-surface">I've intercepted an upload attempting to bypass schema validation. Furthermore, a deep scan revealed unmasked Social Security Numbers.</p>
+</div>
+</div>
+<!-- Action Proposed Card -->
+<div class="border border-error bg-error/5 p-4 rounded-DEFAULT ml-4 flex flex-col gap-3">
+<div class="flex items-center gap-2 text-error font-label-mono text-label-mono">
+<span class="material-symbols-outlined text-[14px]">warning</span>
+                    RECOMMENDED_ACTION
+                </div>
+<p class="font-body-md text-body-md text-on-surface">Initiate automated masking protocols immediately to secure the data before proceeding with schema reconciliation.</p>
+<button class="bg-error/20 hover:bg-error/30 text-error border border-error/50 font-label-mono text-label-mono py-2 px-4 rounded-DEFAULT transition-colors mt-2 text-center">
+                    EXECUTE PROTOCOL
+                </button>
+</div>
+<!-- Tabs -->
+<div class="mt-auto border-t border-grid-line pt-4 flex justify-between">
+<!-- Intent Tab -->
+<button class="flex flex-col items-center gap-1 w-1/3 text-outline hover:bg-surface-container-highest transition-all py-2 border-b border-transparent">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-label-mono text-label-mono text-[10px]">INTENT</span>
+</button>
+<!-- Jobs Tab -->
+<button class="flex flex-col items-center gap-1 w-1/3 text-outline hover:bg-surface-container-highest transition-all py-2 border-b border-transparent">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-mono text-label-mono text-[10px]">JOBS</span>
+</button>
+<!-- Actions Tab (Active based on context) -->
+<button class="flex flex-col items-center gap-1 w-1/3 text-error border-b border-error hover:bg-surface-container-highest transition-all py-2">
+<span class="material-symbols-outlined">bolt</span>
+<span class="font-label-mono text-label-mono text-[10px]">ACTIONS</span>
+</button>
+</div>
+</div>
+<!-- Assistant Input -->
+<div class="border-t border-grid-line p-4">
+<input class="w-full bg-transparent border-none text-on-surface font-label-mono text-label-mono placeholder-on-surface-variant/50 focus:ring-0 focus:outline-none uppercase" placeholder="READY_FOR_INPUT" type="text">
+</div>
+</aside>
+</body></html>

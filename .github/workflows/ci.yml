@@ -38,7 +38,7 @@ jobs:
           pytest tests/ --cov=contracts -v
 
   frontend-build:
-    name: Frontend Shell Build & Verification
+    name: Legacy Frontend (deprecated) Build & Verification
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: "--max_old_space_size=4096"
@@ -54,12 +54,12 @@ jobs:
 
       - name: Install Frontend Dependencies
         run: |
-          cd frontend
+          cd frontend-deprecated
           npm ci --legacy-peer-deps || npm install --include=dev --legacy-peer-deps
 
       - name: Build React Production Shell
         run: |
-          cd frontend
+          cd frontend-deprecated
           npm run build
 
   container-build-scan:

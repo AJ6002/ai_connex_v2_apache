@@ -1,0 +1,160 @@
+/**
+ * AI-ConneX Theme
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Maps design tokens → semantic theme variables.
+ * The app is dark-mode first (matches all STITCH-Design screens).
+ * A light mode is reserved for future use but not activated yet.
+ */
+
+@import "./tokens.css";
+
+/* ── Dark mode (default — all STITCH screens are dark) ────────────────────── */
+:root,
+[data-theme="dark"] {
+  --bg:                  var(--color-background-pitch);
+  --bg-surface:          var(--color-surface-container);
+  --bg-surface-low:      var(--color-surface-container-low);
+  --bg-surface-high:     var(--color-surface-container-high);
+  --bg-surface-highest:  var(--color-surface-container-highest);
+  --bg-sidebar:          var(--color-background-pitch);
+  --bg-rail:             var(--color-surface-slate);
+
+  --fg:                  var(--color-on-surface);
+  --fg-muted:            var(--color-on-surface-variant);
+  --fg-inverted:         var(--color-on-primary);
+
+  --border:              var(--color-grid-line);
+  --border-subtle:       var(--color-outline-variant);
+  --border-focus:        var(--color-assistant-identity);
+
+  --accent:              var(--color-assistant-identity);      /* lime */
+  --accent-on:           var(--color-on-primary);             /* dark text on lime */
+  --accent-alt:          var(--color-action-proposed);        /* cyan */
+  --accent-warning:      var(--color-intent-clarification);   /* amber */
+  --accent-error:        var(--color-error);
+  --accent-error-bg:     var(--color-error-container);
+
+  --status-running:      var(--color-status-running);
+  --status-completed:    var(--color-status-completed);
+  --status-failed:       var(--color-status-failed);
+  --status-queued:       var(--color-status-queued);
+  --status-clarification:var(--color-status-clarification);
+  --status-quarantined:  var(--color-status-quarantined);
+  --status-ready:        var(--color-status-machine-ready);
+  --status-warnings:     var(--color-status-warnings);
+}
+
+/* ── Light mode (reserved — not currently active in the app) ─────────────── */
+[data-theme="light"] {
+  --bg:                  #f8f9fa;
+  --bg-surface:          #ffffff;
+  --bg-surface-low:      #f1f3f4;
+  --bg-surface-high:     #e8eaed;
+  --bg-surface-highest:  #dadce0;
+  --bg-sidebar:          #202124;
+  --bg-rail:             #303134;
+
+  --fg:                  #202124;
+  --fg-muted:            #5f6368;
+  --fg-inverted:         #ffffff;
+
+  --border:              #dadce0;
+  --border-subtle:       #e8eaed;
+  --border-focus:        #536600;
+
+  --accent:              #536600;
+  --accent-on:           #ffffff;
+  --accent-alt:          #0070f3;
+  --accent-warning:      #f29900;
+  --accent-error:        #c5221f;
+  --accent-error-bg:     #fce8e6;
+
+  --status-running:      #1a73e8;
+  --status-completed:    #188038;
+  --status-failed:       #c5221f;
+  --status-queued:       #80868b;
+  --status-clarification:#f29900;
+  --status-quarantined:  #e37400;
+  --status-ready:        #188038;
+  --status-warnings:     #f29900;
+}
+
+/**
+ * ─────────────────────────────────────────────────────────────────────────────
+ * LIGHT THEME — PRIORITY / DEFAULT
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Components consume the raw --color-* tokens directly, so we retarget those
+ * tokens to the light "Schematic Minimalist / Blueprint Tactical" palette
+ * (source: STITCH-Design light screens + landing/DESIGN.md). Because this block
+ * is imported after tokens.css at equal (:root) specificity, it wins — making
+ * the whole app light without touching any component. The landing page has its
+ * own scoped `--lp-*` palette and is unaffected.
+ */
+:root {
+  /* Background & surface */
+  --color-background:               #f8f9fa;
+  --color-background-pitch:         #f8f9fa;   /* sidebar / topbar / footer */
+  --color-surface:                  #ffffff;
+  --color-surface-dim:              #edeeef;
+  --color-surface-bright:           #ffffff;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low:    #f3f4f5;
+  --color-surface-container:        #ffffff;   /* default card */
+  --color-surface-container-high:   #edeeef;   /* hover / segmented */
+  --color-surface-container-highest:#e1e3e4;
+  --color-surface-variant:          #e1e3e4;
+  --color-surface-slate:            #f3f4f5;
+
+  /* Text */
+  --color-on-surface:               #191c1d;
+  --color-on-surface-variant:       #5f6368;
+  --color-on-background:            #191c1d;
+  --color-inverse-surface:          #2e3132;
+  --color-inverse-on-surface:       #f0f1f2;
+
+  /* Primary / brand */
+  --color-primary:                  #191c1d;   /* headlines = near-black */
+  --color-primary-container:        #d4f658;   /* lime CTA / active pill */
+  --color-primary-fixed:            #cff053;
+  --color-primary-fixed-dim:        #b3d338;
+  --color-on-primary:               #ffffff;
+  --color-on-primary-container:     #5b7000;
+  --color-on-primary-fixed:         #171e00;   /* dark text on lime */
+  --color-on-primary-fixed-variant: #3e4c00;
+  --color-inverse-primary:          #b3d338;
+  --color-surface-tint:             #536600;
+
+  /* Accent (Jane / brand mark / active text) */
+  --color-assistant-identity:       #536600;   /* olive-lime for contrast on white */
+  --color-action-proposed:          #006df8;   /* cobalt electric */
+  --color-intent-clarification:     #b06000;   /* amber (darker for light bg) */
+
+  /* Secondary */
+  --color-secondary:                #0056c6;
+  --color-secondary-container:      #006df8;
+
+  /* Outline / border */
+  --color-outline:                  #757964;
+  --color-outline-variant:          #c5c9b0;
+  --color-grid-line:                #e2e4e6;   /* hairline + dot grid */
+
+  /* Status */
+  --color-status-running:           #1a73e8;
+  --color-status-completed:         #188038;
+  --color-status-failed:            #c5221f;
+  --color-status-queued:            #80868b;
+  --color-status-clarification:     #b06000;
+  --color-status-quarantined:       #e37400;
+  --color-status-machine-ready:     #536600;
+  --color-status-warnings:          #b06000;
+
+  /* Error */
+  --color-error:                    #c5221f;
+  --color-error-container:          #fce8e6;
+  --color-on-error:                 #ffffff;
+  --color-on-error-container:       #93000a;
+
+  /* Softer glows for a light surface */
+  --glow-lime:                      0 0 0 3px rgba(207, 240, 83, 0.35);
+  --glow-cyan:                      0 0 0 2px rgba(0, 109, 248, 0.25);
+}

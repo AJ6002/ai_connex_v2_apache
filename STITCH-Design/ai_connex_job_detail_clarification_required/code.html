@@ -1,0 +1,299 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>AI-ConneX - Job Detail</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-container": "#fefcff",
+                        "tertiary-fixed": "#ffd8e8",
+                        "secondary-fixed-dim": "#b0c6ff",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#f8f9fa",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed-dim": "#ffafd5",
+                        "primary": "#536600",
+                        "surface-variant": "#e1e3e4",
+                        "surface-container-high": "#e7e8e9",
+                        "inverse-surface": "#2e3132",
+                        "on-primary-fixed": "#171e00",
+                        "inverse-on-surface": "#f0f1f2",
+                        "slate-gray": "#16181C",
+                        "on-surface": "#191c1d",
+                        "inverse-primary": "#b3d338",
+                        "secondary": "#0056c6",
+                        "on-primary-fixed-variant": "#3e4c00",
+                        "primary-container": "#d4f658",
+                        "primary-fixed": "#cff053",
+                        "surface-container-low": "#f3f4f5",
+                        "background": "#f8f9fa",
+                        "surface": "#f8f9fa",
+                        "on-secondary-fixed": "#001945",
+                        "muted-body": "#666666",
+                        "tertiary-container": "#ffe0ec",
+                        "on-secondary": "#ffffff",
+                        "tertiary": "#ad1e7a",
+                        "error": "#ba1a1a",
+                        "on-surface-variant": "#454936",
+                        "secondary-container": "#006df8",
+                        "secondary-fixed": "#d9e2ff",
+                        "pitch-charcoal": "#0F1012",
+                        "on-tertiary-container": "#ba2a84",
+                        "pure-black": "#000000",
+                        "pure-white": "#FFFFFF",
+                        "surface-tint": "#536600",
+                        "dot-grid": "#E2E4E6",
+                        "on-secondary-fixed-variant": "#00429c",
+                        "on-error-container": "#93000a",
+                        "outline": "#757964",
+                        "on-primary-container": "#5b7000",
+                        "outline-variant": "#c5c9b0",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed": "#3d0027",
+                        "surface-container": "#edeeef",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed-dim": "#b3d338",
+                        "surface-dim": "#d9dadb",
+                        "on-tertiary-fixed-variant": "#8a005f",
+                        "surface-container-highest": "#e1e3e4",
+                        "surface-container-lowest": "#ffffff",
+                        "on-background": "#191c1d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "gutter": "24px",
+                        "section-gap": "120px",
+                        "container-max": "1280px",
+                        "margin-safe": "32px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "label-mono": ["JetBrains Mono"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", { "lineHeight": "1.6", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+                        "headline-md": ["32px", { "lineHeight": "1.3", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "headline-lg": ["40px", { "lineHeight": "1.2", "letterSpacing": "-0.03em", "fontWeight": "700" }],
+                        "display-lg": ["64px", { "lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "label-mono": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.1em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .bg-grid-pattern {
+            background-image: radial-gradient(#E2E4E6 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex bg-grid-pattern antialiased">
+<!-- SideNavBar (Shared Component) -->
+<nav class="bg-surface text-primary font-label-mono text-label-mono uppercase h-screen w-64 flex flex-col border-r border-dot-grid fixed left-0 top-0 z-40 transition-all duration-200 ease-in-out">
+<div class="p-6 border-b border-dot-grid">
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Project Alpha</h1>
+<p class="text-on-surface-variant mt-2 normal-case tracking-normal">Production Environment</p>
+</div>
+<div class="px-4 py-6">
+<button class="w-full bg-primary-container text-pure-black font-label-mono text-label-mono py-3 px-4 rounded-full flex items-center justify-center gap-2 hover:bg-inverse-primary transition-colors border border-pure-black">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                New Experiment
+            </button>
+</div>
+<ul class="flex-1 overflow-y-auto py-2">
+<!-- Inactive -->
+<li><a class="flex items-center px-6 py-4 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#"><span class="material-symbols-outlined mr-4">dashboard</span>Workspace</a></li>
+<li><a class="flex items-center px-6 py-4 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#"><span class="material-symbols-outlined mr-4">database</span>Datasets</a></li>
+<li><a class="flex items-center px-6 py-4 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#"><span class="material-symbols-outlined mr-4">analytics</span>Data Studio</a></li>
+<!-- Active (Jobs) -->
+<li><a class="flex items-center px-6 py-4 bg-primary-container text-on-primary-container font-bold border-l-4 border-primary transition-colors" href="#"><span class="material-symbols-outlined mr-4">format_list_bulleted</span>Jobs</a></li>
+<!-- Inactive -->
+<li><a class="flex items-center px-6 py-4 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#"><span class="material-symbols-outlined mr-4">account_tree</span>Models</a></li>
+<li><a class="flex items-center px-6 py-4 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#"><span class="material-symbols-outlined mr-4">rocket_launch</span>Deployments</a></li>
+<li><a class="flex items-center px-6 py-4 text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#"><span class="material-symbols-outlined mr-4">settings</span>Settings</a></li>
+</ul>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="flex-1 flex flex-col ml-64">
+<!-- TopNavBar (Shared Component) -->
+<header class="bg-surface text-primary font-body-md text-body-md w-full h-16 border-b border-dot-grid flex justify-between items-center px-gutter sticky top-0 z-30">
+<div class="flex items-center gap-4">
+<div class="font-headline-md text-headline-md font-bold text-primary">AI-ConneX</div>
+<div class="h-6 w-[1px] bg-dot-grid mx-2"></div>
+<!-- Search Bar on left as requested, simplified for space -->
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[20px]">search</span>
+<input class="pl-10 pr-4 py-1.5 bg-surface-container-low border border-dot-grid rounded-DEFAULT text-sm focus:outline-none focus:border-primary transition-colors w-64" placeholder="Search resources..." type="text">
+</div>
+</div>
+<div class="flex items-center gap-6">
+<nav class="flex gap-6 h-full">
+<a class="flex items-center h-full text-on-surface-variant hover:bg-surface-container-low transition-colors px-2" href="#">Jane Agent</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors cursor-pointer active:scale-95"><span class="material-symbols-outlined">notifications</span></button>
+<button class="text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors cursor-pointer active:scale-95"><span class="material-symbols-outlined">account_circle</span></button>
+</div>
+</div>
+</header>
+<!-- Page Canvas -->
+<main class="flex-1 p-gutter max-w-container-max mx-auto w-full">
+<!-- Header Section -->
+<div class="mb-8 flex justify-between items-end">
+<div>
+<div class="font-label-mono text-label-mono text-on-surface-variant uppercase mb-2 flex items-center gap-2">
+<span>JOB-8293</span>
+<span class="w-1 h-1 bg-dot-grid rounded-full"></span>
+<span>Data Preparation: Raw Telemetry Batch</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-pure-black tracking-tight">Pipeline Execution</h2>
+</div>
+<div class="flex items-center gap-2 px-4 py-2 bg-error-container text-on-error-container border border-error rounded-DEFAULT font-label-mono text-label-mono uppercase">
+<span class="material-symbols-outlined text-[16px]">warning</span>
+                    Needs Clarification
+                </div>
+</div>
+<!-- 12-Column Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Main Activity Column (Span 8) -->
+<div class="md:col-span-8 flex flex-col gap-6">
+<!-- Schematic Card: Execution Timeline -->
+<div class="bg-surface border border-dot-grid rounded-none p-6">
+<h3 class="font-label-mono text-label-mono uppercase text-on-surface-variant mb-6 border-b border-dot-grid pb-2">Execution Timeline</h3>
+<div class="flex items-center w-full relative">
+<!-- Line connecting stages -->
+<div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-[1px] bg-dot-grid z-0"></div>
+<!-- Stage 1 -->
+<div class="relative z-10 flex flex-col items-center flex-1">
+<div class="w-8 h-8 rounded-full bg-surface border border-primary text-primary flex items-center justify-center mb-2 bg-surface-bright">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<span class="font-label-mono text-label-mono text-[10px] uppercase text-pure-black">Stage 1: Ingestion</span>
+</div>
+<!-- Stage 2 (Warning) -->
+<div class="relative z-10 flex flex-col items-center flex-1">
+<div class="w-8 h-8 rounded-full bg-error-container border-2 border-error text-error flex items-center justify-center mb-2 shadow-[0_0_0_4px_rgba(186,26,26,0.1)]">
+<span class="material-symbols-outlined text-[16px]">error</span>
+</div>
+<span class="font-label-mono text-label-mono text-[10px] uppercase text-error font-bold">Stage 2: Data Cleaning</span>
+</div>
+<!-- Stage 3 (Pending) -->
+<div class="relative z-10 flex flex-col items-center flex-1">
+<div class="w-8 h-8 rounded-full bg-surface border border-dot-grid text-on-surface-variant flex items-center justify-center mb-2 bg-surface-bright">
+<span class="material-symbols-outlined text-[16px]">hourglass_empty</span>
+</div>
+<span class="font-label-mono text-label-mono text-[10px] uppercase text-on-surface-variant">Stage 3: Normalization</span>
+</div>
+</div>
+</div>
+<!-- Actionable Clarification Card -->
+<div class="bg-surface border border-error border-l-4 rounded-none p-8 shadow-sm">
+<div class="flex items-start gap-4 mb-6">
+<span class="material-symbols-outlined text-error text-[32px]">schema</span>
+<div>
+<h3 class="font-headline-md text-headline-md-mobile text-pure-black mb-2">Ambiguous Schema Detected</h3>
+<p class="font-body-md text-body-md text-on-surface">
+                                    Field <code class="font-label-mono text-label-mono bg-surface-container px-1 py-0.5 border border-dot-grid text-error">timestamp</code> contains multiple ISO formats. Please select the primary format for normalization to proceed with Stage 3.
+                                </p>
+</div>
+</div>
+<!-- Context Snippet -->
+<div class="mb-8">
+<div class="font-label-mono text-label-mono text-[10px] uppercase text-on-surface-variant mb-2">Data Sample (Row 4,092 - 4,095)</div>
+<div class="bg-inverse-surface border border-pure-black rounded-DEFAULT p-4 overflow-x-auto">
+<pre class="font-label-mono text-label-mono text-inverse-on-surface leading-relaxed text-sm">{
+  "id": "evt_982374",
+  "source": "sensor_A",
+  <span class="text-error-container font-bold">"timestamp": "2023-10-27T14:32:00Z",</span> <span class="text-on-surface-variant">// ISO 8601</span>
+  "val": 42.5
+}
+{
+  "id": "evt_982375",
+  "source": "sensor_B",
+  <span class="text-error-container font-bold">"timestamp": "1698417125",</span> <span class="text-on-surface-variant">// Unix Epoch</span>
+  "val": 41.2
+}
+</pre>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-wrap gap-4 border-t border-dot-grid pt-6">
+<button class="bg-primary-container text-pure-black border border-pure-black px-6 py-2 rounded-full font-label-mono text-label-mono uppercase flex items-center gap-2 hover:bg-inverse-primary transition-colors">
+                                Select YYYY-MM-DD
+                                <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+<button class="bg-primary-container text-pure-black border border-pure-black px-6 py-2 rounded-full font-label-mono text-label-mono uppercase flex items-center gap-2 hover:bg-inverse-primary transition-colors">
+                                Select Unix Epoch
+                                <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+<div class="flex-1"></div>
+<button class="bg-transparent text-pure-black border border-pure-black px-6 py-2 rounded-full font-label-mono text-label-mono uppercase hover:bg-surface-container-low transition-colors">
+                                Ignore &amp; Continue
+                            </button>
+</div>
+</div>
+</div>
+<!-- Sidebar Column (Span 4) -->
+<div class="md:col-span-4 flex flex-col gap-6">
+<!-- Lineage Summary Card -->
+<div class="bg-surface border border-dot-grid rounded-none p-6">
+<h3 class="font-label-mono text-label-mono uppercase text-on-surface-variant mb-6 border-b border-dot-grid pb-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">account_tree</span>
+                            Lineage Summary
+                        </h3>
+<div class="flex flex-col gap-4">
+<div>
+<span class="font-label-mono text-label-mono text-[10px] uppercase text-on-surface-variant block mb-1">Origin Workspace</span>
+<div class="flex items-center gap-2 font-body-md text-sm text-pure-black bg-surface-container-low p-2 border border-dot-grid">
+<span class="material-symbols-outlined text-[16px] text-primary">folder</span>
+                                    /telemetry/raw/us-east
+                                </div>
+</div>
+<div class="flex justify-center text-dot-grid py-1">
+<span class="material-symbols-outlined">south</span>
+</div>
+<div>
+<span class="font-label-mono text-label-mono text-[10px] uppercase text-on-surface-variant block mb-1">Target Artifact</span>
+<div class="flex items-center gap-2 font-body-md text-sm text-pure-black bg-surface-container-low p-2 border border-dot-grid">
+<span class="material-symbols-outlined text-[16px] text-secondary">database</span>
+                                    warehouse.normalized_events
+                                </div>
+</div>
+</div>
+<div class="mt-8 border-t border-dot-grid pt-4">
+<div class="flex justify-between items-center mb-2">
+<span class="font-label-mono text-label-mono text-[10px] uppercase text-on-surface-variant">Job Priority</span>
+<span class="font-label-mono text-label-mono text-[10px] text-pure-black border border-pure-black px-2 py-0.5">HIGH</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-label-mono text-label-mono text-[10px] uppercase text-on-surface-variant">Time Elapsed</span>
+<span class="font-label-mono text-label-mono text-[10px] text-pure-black">00:14:22</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

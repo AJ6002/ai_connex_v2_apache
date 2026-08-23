@@ -1,0 +1,409 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>AI-ConneX - Job Detail</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "grid-line": "#2a2d32",
+                      "on-secondary": "#002d6f",
+                      "tertiary-container": "#ffd8e8",
+                      "on-secondary-fixed-variant": "#00429b",
+                      "tertiary-fixed": "#ffd8e8",
+                      "surface-container-high": "#2a2a2a",
+                      "on-tertiary-container": "#b52681",
+                      "on-secondary-fixed": "#001945",
+                      "secondary-fixed": "#d9e2ff",
+                      "primary-fixed-dim": "#b3d338",
+                      "secondary-fixed-dim": "#b0c6ff",
+                      "on-background": "#e5e2e1",
+                      "on-secondary-container": "#fefcff",
+                      "surface-bright": "#393939",
+                      "surface-tint": "#b3d338",
+                      "on-surface": "#e5e2e1",
+                      "assistant-identity": "#d4f658",
+                      "surface-container": "#201f1f",
+                      "surface-variant": "#353534",
+                      "intent-clarification": "#ffb900",
+                      "surface-container-highest": "#353534",
+                      "on-primary": "#2a3500",
+                      "surface": "#131313",
+                      "on-primary-fixed": "#171e00",
+                      "on-error": "#690005",
+                      "surface-dim": "#131313",
+                      "outline": "#8f937c",
+                      "on-surface-variant": "#c5c9b0",
+                      "inverse-primary": "#536600",
+                      "error-container": "#93000a",
+                      "on-primary-fixed-variant": "#3e4c00",
+                      "primary": "#ffffff",
+                      "outline-variant": "#454936",
+                      "action-proposed": "#00f0ff",
+                      "on-tertiary-fixed": "#3d0027",
+                      "primary-container": "#cff053",
+                      "surface-container-lowest": "#0e0e0e",
+                      "background": "#131313",
+                      "secondary": "#b0c6ff",
+                      "tertiary": "#ffffff",
+                      "on-tertiary-fixed-variant": "#8a005f",
+                      "on-tertiary": "#620042",
+                      "tertiary-fixed-dim": "#ffafd5",
+                      "surface-slate": "#16181c",
+                      "inverse-on-surface": "#313030",
+                      "on-error-container": "#ffdad6",
+                      "background-pitch": "#000000",
+                      "error": "#ffb4ab",
+                      "on-primary-container": "#586c00",
+                      "inverse-surface": "#e5e2e1",
+                      "surface-container-low": "#1c1b1b",
+                      "primary-fixed": "#cff053",
+                      "secondary-container": "#006df7"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "unit": "4px",
+                      "docked-width": "380px",
+                      "chat-gap": "16px",
+                      "gutter": "24px",
+                      "margin-safe": "32px"
+              },
+              "fontFamily": {
+                      "headline-lg-mobile": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "body-md": ["Inter"],
+                      "assistant-msg": ["Inter"],
+                      "label-mono": ["JetBrains Mono"],
+                      "body-lg": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "display-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-lg-mobile": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                      "headline-lg": ["40px", { "lineHeight": "1.2", "letterSpacing": "-0.03em", "fontWeight": "700" }],
+                      "body-md": ["16px", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }],
+                      "assistant-msg": ["15px", { "lineHeight": "1.5", "letterSpacing": "0.01em", "fontWeight": "400" }],
+                      "label-mono": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.1em", "fontWeight": "700" }],
+                      "body-lg": ["18px", { "lineHeight": "1.6", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+                      "headline-md": ["32px", { "lineHeight": "1.3", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                      "display-lg": ["64px", { "lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "700" }]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.background-pitch');
+            color: theme('colors.primary');
+            background-image: radial-gradient(theme('colors.grid-line') 1px, transparent 1px);
+            background-size: 24px 24px;
+            background-position: -11px -11px;
+        }
+        .glow-active {
+            box-shadow: 0 0 12px -2px theme('colors.assistant-identity');
+        }
+        .glow-action {
+            box-shadow: 0 0 12px -2px theme('colors.action-proposed');
+        }
+        .terminal-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+        .terminal-scroll::-webkit-scrollbar-track {
+            background: theme('colors.background-pitch');
+            border-left: 1px solid theme('colors.grid-line');
+        }
+        .terminal-scroll::-webkit-scrollbar-thumb {
+            background: theme('colors.surface-variant');
+        }
+        @keyframes pulse-bar {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        .animate-pulse-bar {
+            animation: pulse-bar 2s infinite;
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md antialiased overflow-hidden flex">
+<!-- SideNavBar (JSON) -->
+<nav class="fixed left-0 top-0 h-full w-20 flex flex-col border-r border-grid-line bg-background-pitch z-40">
+<div class="h-16 flex items-center justify-center border-b border-grid-line">
+<span class="material-symbols-outlined font-headline-md text-headline-md text-assistant-identity tracking-tighter cursor-pointer" data-icon="blur_on" style="font-variation-settings: 'FILL' 1;">blur_on</span>
+</div>
+<div class="flex-1 flex flex-col gap-4 py-6 items-center">
+<!-- Workspace (Active intent mapping for Jobs context) -->
+<button class="w-12 h-12 flex items-center justify-center rounded text-assistant-identity border-l-2 border-assistant-identity bg-surface-container-low transition-colors scale-95 active:scale-90 transition-transform group" title="Workspace">
+<span class="material-symbols-outlined" data-icon="grid_view">grid_view</span>
+</button>
+<button class="w-12 h-12 flex items-center justify-center rounded text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors scale-95 active:scale-90 transition-transform group" title="Datasets">
+<span class="material-symbols-outlined" data-icon="database">database</span>
+</button>
+<button class="w-12 h-12 flex items-center justify-center rounded text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors scale-95 active:scale-90 transition-transform group" title="Models">
+<span class="material-symbols-outlined" data-icon="model_training">model_training</span>
+</button>
+</div>
+<div class="py-6 flex items-center justify-center border-t border-grid-line">
+<button class="w-12 h-12 flex items-center justify-center rounded text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors scale-95 active:scale-90 transition-transform group" title="Admin">
+<span class="material-symbols-outlined" data-icon="admin_panel_settings">admin_panel_settings</span>
+</button>
+</div>
+</nav>
+<!-- TopAppBar (JSON) -->
+<header class="fixed top-0 left-0 w-full flex items-center justify-between px-gutter z-30 h-16 border-b border-grid-line bg-background-pitch pl-28 pr-[404px]">
+<div class="flex items-center gap-4">
+<h1 class="font-headline-md text-headline-md font-bold text-primary">AI-ConneX</h1>
+<div class="h-4 w-[1px] bg-grid-line mx-2"></div>
+<span class="font-label-mono text-label-mono text-on-surface-variant uppercase tracking-widest">Active Jobs</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative w-64 hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm" data-icon="search">search</span>
+<input class="w-full bg-surface-container-lowest border border-grid-line text-primary font-body-md text-body-md py-1.5 pl-9 pr-3 focus:outline-none focus:border-outline focus:ring-1 focus:ring-outline transition-colors placeholder:text-surface-variant" placeholder="Search operational context..." type="text">
+</div>
+<div class="flex items-center gap-3">
+<button class="text-on-surface-variant hover:text-assistant-identity transition-colors cursor-pointer p-1">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-assistant-identity transition-colors cursor-pointer p-1">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<button class="text-on-surface-variant hover:text-assistant-identity transition-colors cursor-pointer p-1">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+</div>
+<div class="w-8 h-8 rounded-full border border-grid-line bg-surface-container-high overflow-hidden ml-2 cursor-pointer">
+<img alt="User Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXDH1Q_Zqc-D4l1VH3kUwPNn5xzVIYHT08Ivng_O9r1bGbI6AdTk7gfYzzhX5o4Bar4pmI9C1rzYWOh5jxViuVOABH8y25ghU-gV6eJbwb3Kqba56tnjNsaCF87cPeFduRa9ENr7LlA5T73_qCmT7VThdqNSmew88uwxehr0ntFYcgXlE-vCjg_k9CZOWYlGbCaeyuBsDJSV9GDcE-zYPElwfH-IjjGx5Zsht3KdH0ke9yvrYPgr4bFQ">
+</div>
+</div>
+</header>
+<!-- NavigationDrawer / Jane AI (JSON) -->
+<aside class="fixed right-0 top-0 h-full w-docked-width flex flex-col border-l border-grid-line bg-surface-slate shadow-[0_0_10px_rgba(212,246,88,0.05)] z-50 transition-all duration-200 ease-in-out">
+<div class="h-16 flex items-center justify-between px-6 border-b border-grid-line shrink-0">
+<div>
+<h2 class="font-label-mono text-label-mono text-assistant-identity uppercase tracking-widest">JANE_AI</h2>
+<p class="font-label-mono text-[10px] text-on-surface-variant">SYSTEM_READY</p>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors text-xs font-label-mono tracking-widest flex items-center gap-1 group">
+                EXPAND_VIEW <span class="material-symbols-outlined text-[14px] group-hover:translate-x-0.5 transition-transform" data-icon="open_in_new">open_in_new</span>
+</button>
+</div>
+<div class="flex border-b border-grid-line shrink-0 bg-surface-container-lowest">
+<button class="flex-1 py-3 flex justify-center items-center gap-2 text-outline hover:bg-surface-container-highest transition-all font-label-mono text-label-mono text-[11px]">
+<span class="material-symbols-outlined text-[16px]" data-icon="psychology">psychology</span> INTENT
+            </button>
+<button class="flex-1 py-3 flex justify-center items-center gap-2 text-assistant-identity border-b border-assistant-identity bg-surface-slate font-label-mono text-label-mono text-[11px]">
+<span class="material-symbols-outlined text-[16px]" data-icon="analytics">analytics</span> JOBS
+            </button>
+<button class="flex-1 py-3 flex justify-center items-center gap-2 text-outline hover:bg-surface-container-highest transition-all font-label-mono text-label-mono text-[11px]">
+<span class="material-symbols-outlined text-[16px]" data-icon="bolt">bolt</span> ACTIONS
+            </button>
+</div>
+<div class="flex-1 overflow-y-auto p-4 flex flex-col gap-chat-gap">
+<!-- Assistant Context Setup -->
+<div class="flex flex-col gap-unit">
+<div class="flex items-center gap-2 text-assistant-identity mb-1">
+<span class="material-symbols-outlined text-sm" data-icon="center_focus_strong">center_focus_strong</span>
+<span class="font-label-mono text-label-mono text-[10px]">CONTEXT_LOCK: JOB_DETAIL</span>
+</div>
+<div class="pl-2 border-l-2 border-assistant-identity text-primary font-assistant-msg text-assistant-msg">
+                    Tracking profiling job active on <span class="font-label-mono text-label-mono bg-surface-container-high px-1 rounded text-primary">Dataset_Alpha</span>.
+                </div>
+<div class="pl-2 border-l-2 border-assistant-identity text-on-surface-variant font-assistant-msg text-assistant-msg">
+                    Current phase is tensor normalization. System resources are operating within acceptable thermal limits.
+                </div>
+</div>
+<!-- Action Proposed Card -->
+<div class="border border-action-proposed bg-[#00f0ff0a] p-3 mt-4">
+<div class="flex items-center gap-2 text-action-proposed mb-2 font-label-mono text-label-mono">
+<span class="material-symbols-outlined text-[14px]" data-icon="memory">memory</span>
+                    GPU_ALLOCATION_OPTIMIZATION
+                </div>
+<p class="font-assistant-msg text-[13px] text-primary mb-3">
+                    Detected idle VRAM on Node-B. Relocating tensor batches could reduce ETA by ~1m 45s.
+                </p>
+<button class="w-full bg-action-proposed/10 border border-action-proposed text-action-proposed font-label-mono text-label-mono py-1.5 hover:bg-action-proposed hover:text-background-pitch transition-colors">
+                    EXECUTE_RELOCATION
+                </button>
+</div>
+</div>
+<div class="shrink-0 border-t border-grid-line p-4 bg-surface-slate">
+<div class="flex items-center border border-grid-line bg-background-pitch focus-within:border-assistant-identity transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant p-2 text-sm" data-icon="terminal">terminal</span>
+<input class="w-full bg-transparent border-none text-primary font-label-mono text-label-mono placeholder:text-surface-variant focus:outline-none focus:ring-0 py-2" placeholder="READY_FOR_INPUT" type="text">
+<button class="p-2 text-assistant-identity hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="send">send</span>
+</button>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 h-full pl-20 pr-docked-width pt-16 overflow-y-auto">
+<div class="max-w-6xl mx-auto p-gutter min-h-full flex flex-col gap-6">
+<!-- Page Header / Top Control Strip -->
+<div class="flex items-end justify-between border-b border-grid-line pb-4">
+<div>
+<div class="flex items-center gap-3 mb-2">
+<div class="px-2 py-0.5 border border-assistant-identity text-assistant-identity font-label-mono text-label-mono glow-active bg-assistant-identity/10 flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-assistant-identity animate-pulse"></span>
+                            JOB_RUNNING
+                        </div>
+<span class="font-label-mono text-label-mono text-on-surface-variant">ID: PRF-8924-X</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight">Profiling: Dataset_Alpha</h2>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-4 py-2 border border-grid-line text-primary font-label-mono text-label-mono hover:bg-surface-container-high transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]" data-icon="pause">pause</span> HALT
+                    </button>
+<button class="px-4 py-2 border border-error text-error font-label-mono text-label-mono hover:bg-error/10 transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]" data-icon="stop">stop</span> TERMINATE
+                    </button>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1">
+<!-- Progress Block -->
+<div class="lg:col-span-1 border border-grid-line bg-surface-container-lowest p-6 flex flex-col justify-between relative overflow-hidden group">
+<!-- Subtle background decoration -->
+<div class="absolute -right-12 -top-12 text-grid-line opacity-20 pointer-events-none transition-transform group-hover:scale-110 duration-700">
+<span class="material-symbols-outlined text-[180px]" data-icon="data_usage" style="font-variation-settings: 'FILL' 1;">data_usage</span>
+</div>
+<div>
+<h3 class="font-label-mono text-label-mono text-on-surface-variant mb-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]" data-icon="timelapse">timelapse</span>
+                            COMPLETION_STATUS
+                        </h3>
+<p class="font-assistant-msg text-assistant-msg text-primary/70 mb-4">Phase 3/4: Tensor Normalization</p>
+</div>
+<div class="mt-8">
+<div class="flex items-baseline gap-2 mb-2">
+<span class="font-display-lg text-display-lg text-assistant-identity tracking-tighter glow-active" style="text-shadow: 0 0 20px rgba(212,246,88,0.3);">64</span>
+<span class="font-headline-md text-headline-md text-assistant-identity/50">%</span>
+</div>
+<div class="w-full h-1 bg-surface-container-high relative">
+<div class="absolute top-0 left-0 h-full bg-assistant-identity w-[64%] animate-pulse-bar">
+<div class="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-3 bg-primary glow-active"></div>
+</div>
+</div>
+<div class="flex justify-between mt-3 font-label-mono text-[10px] text-on-surface-variant">
+<span>ETA: 04M:12S</span>
+<span>ELAPSED: 12M:05S</span>
+</div>
+</div>
+</div>
+<!-- Compute Resources Block -->
+<div class="lg:col-span-2 border border-grid-line bg-surface-container-lowest p-6 flex flex-col justify-between relative">
+<h3 class="font-label-mono text-label-mono text-on-surface-variant mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]" data-icon="memory">memory</span>
+                        COMPUTE_ALLOCATION
+                    </h3>
+<div class="grid grid-cols-2 gap-x-12 gap-y-8 flex-1">
+<!-- GPU 0 -->
+<div class="flex flex-col justify-center">
+<div class="flex justify-between font-label-mono text-[11px] mb-2">
+<span class="text-primary">GPU_0 [A100_80GB]</span>
+<span class="text-assistant-identity">92%</span>
+</div>
+<div class="flex h-[18px] gap-[2px]">
+<!-- Segmented bar simulation -->
+<div class="flex-1 bg-assistant-identity"></div><div class="flex-1 bg-assistant-identity"></div><div class="flex-1 bg-assistant-identity"></div><div class="flex-1 bg-assistant-identity"></div><div class="flex-1 bg-assistant-identity"></div><div class="flex-1 bg-assistant-identity"></div><div class="flex-1 bg-assistant-identity"></div><div class="flex-1 bg-assistant-identity"></div><div class="flex-1 bg-assistant-identity"></div><div class="flex-1 bg-surface-container-high"></div>
+</div>
+<div class="flex justify-between font-label-mono text-[10px] text-on-surface-variant mt-1.5">
+<span>VRAM: 68/80GB</span>
+<span>TEMP: 72°C</span>
+</div>
+</div>
+<!-- GPU 1 -->
+<div class="flex flex-col justify-center">
+<div class="flex justify-between font-label-mono text-[11px] mb-2">
+<span class="text-primary">GPU_1 [A100_80GB]</span>
+<span class="text-assistant-identity">88%</span>
+</div>
+<div class="flex h-[18px] gap-[2px]">
+<div class="flex-1 bg-assistant-identity"></div><div class="flex-1 bg-assistant-identity"></div><div class="flex-1 bg-assistant-identity"></div><div class="flex-1 bg-assistant-identity"></div><div class="flex-1 bg-assistant-identity"></div><div class="flex-1 bg-assistant-identity"></div><div class="flex-1 bg-assistant-identity"></div><div class="flex-1 bg-assistant-identity"></div><div class="flex-1 bg-surface-container-high"></div><div class="flex-1 bg-surface-container-high"></div>
+</div>
+<div class="flex justify-between font-label-mono text-[10px] text-on-surface-variant mt-1.5">
+<span>VRAM: 64/80GB</span>
+<span>TEMP: 69°C</span>
+</div>
+</div>
+<!-- CPU -->
+<div class="flex flex-col justify-center">
+<div class="flex justify-between font-label-mono text-[11px] mb-2">
+<span class="text-primary">CPU_CLUSTER</span>
+<span class="text-primary">45%</span>
+</div>
+<div class="w-full h-[6px] bg-surface-container-high overflow-hidden border border-grid-line">
+<div class="h-full bg-outline-variant w-[45%]"></div>
+</div>
+</div>
+<!-- RAM -->
+<div class="flex flex-col justify-center">
+<div class="flex justify-between font-label-mono text-[11px] mb-2">
+<span class="text-primary">SYS_MEMORY</span>
+<span class="text-intent-clarification">78%</span>
+</div>
+<div class="w-full h-[6px] bg-surface-container-high overflow-hidden border border-grid-line">
+<div class="h-full bg-intent-clarification w-[78%]"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Diagnostics Terminal Block -->
+<div class="lg:col-span-3 border border-grid-line bg-background-pitch flex flex-col min-h-[320px] relative">
+<div class="h-10 border-b border-grid-line bg-surface-container-lowest flex items-center px-4 justify-between shrink-0">
+<h3 class="font-label-mono text-label-mono text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]" data-icon="terminal">terminal</span>
+                            DIAGNOSTICS_STREAM
+                        </h3>
+<div class="flex items-center gap-3 font-label-mono text-[10px]">
+<label class="flex items-center gap-1.5 text-primary cursor-pointer hover:text-assistant-identity transition-colors">
+<input checked="" class="rounded-sm bg-surface-container-high border-grid-line text-assistant-identity focus:ring-0 w-3 h-3" type="checkbox">
+                                AUTO_SCROLL
+                            </label>
+<span class="text-grid-line">|</span>
+<button class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]" data-icon="download">download</span> EXPORT
+                            </button>
+</div>
+</div>
+<div class="flex-1 p-4 overflow-y-auto terminal-scroll font-label-mono text-[13px] leading-relaxed relative">
+<!-- Simulated Log Lines -->
+<div class="text-on-surface-variant"><span class="text-outline mr-3">[14:32:01.042]</span> <span class="text-assistant-identity">INFO</span>  Initializing profiler agent for Dataset_Alpha...</div>
+<div class="text-on-surface-variant"><span class="text-outline mr-3">[14:32:01.105]</span> <span class="text-assistant-identity">INFO</span>  Pulling base image registry.internal/profiler:v2.4...</div>
+<div class="text-on-surface-variant"><span class="text-outline mr-3">[14:32:02.450]</span> <span class="text-assistant-identity">INFO</span>  Image pulled successfully. Hash: sha256:8f43c2...</div>
+<div class="text-on-surface-variant"><span class="text-outline mr-3">[14:32:02.800]</span> <span class="text-assistant-identity">INFO</span>  Mounting high-speed volumes (NVMe_Pool_1)...</div>
+<div class="text-on-surface-variant"><span class="text-outline mr-3">[14:32:03.112]</span> <span class="text-intent-clarification">WARN</span>  Volume mount latency spike detected (42ms). Compensating buffering.</div>
+<div class="text-on-surface-variant"><span class="text-outline mr-3">[14:32:05.000]</span> <span class="text-assistant-identity">INFO</span>  Executing Phase 1: Data Ingestion Pipeline...</div>
+<div class="text-primary"><span class="text-outline mr-3">[14:35:12.884]</span> <span class="text-assistant-identity">INFO</span>  Phase 1 complete. Processed 1.4B tokens.</div>
+<div class="text-on-surface-variant"><span class="text-outline mr-3">[14:35:13.010]</span> <span class="text-assistant-identity">INFO</span>  Executing Phase 2: Feature Extraction...</div>
+<div class="text-primary"><span class="text-outline mr-3">[14:40:22.551]</span> <span class="text-assistant-identity">INFO</span>  Phase 2 complete. Generated 4.2TB tensor map.</div>
+<div class="text-on-surface-variant"><span class="text-outline mr-3">[14:40:23.100]</span> <span class="text-assistant-identity">INFO</span>  Executing Phase 3: Tensor Normalization...</div>
+<div class="text-on-surface-variant"><span class="text-outline mr-3">[14:40:24.000]</span> <span class="text-assistant-identity">INFO</span>  Allocating CUDA cores across Node-A...</div>
+<div class="text-on-surface-variant"><span class="text-outline mr-3">[14:41:05.120]</span> <span class="text-assistant-identity">INFO</span>  Batch 001/100 normalized. <span class="text-outline">[Loss: 0.0421]</span></div>
+<div class="text-on-surface-variant"><span class="text-outline mr-3">[14:41:45.330]</span> <span class="text-assistant-identity">INFO</span>  Batch 002/100 normalized. <span class="text-outline">[Loss: 0.0398]</span></div>
+<div class="text-on-surface-variant"><span class="text-outline mr-3">[14:42:26.501]</span> <span class="text-assistant-identity">INFO</span>  Batch 003/100 normalized. <span class="text-outline">[Loss: 0.0381]</span></div>
+<div class="text-on-surface-variant flex items-center mt-1">
+<span class="text-outline mr-3">[14:43:10.000]</span> <span class="text-assistant-identity mr-2">RUNNING</span> Processing batch 004/100 <span class="inline-block w-2 h-4 bg-primary ml-1 animate-pulse"></span>
+</div>
+<!-- Fade overlay for top of terminal -->
+<div class="absolute top-0 left-0 w-full h-8 bg-gradient-to-b from-background-pitch to-transparent pointer-events-none"></div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

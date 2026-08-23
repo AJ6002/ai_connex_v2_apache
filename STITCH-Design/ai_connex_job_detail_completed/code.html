@@ -1,0 +1,340 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>AI-ConneX - Job Detail</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-container": "#fefcff",
+                        "tertiary-fixed": "#ffd8e8",
+                        "secondary-fixed-dim": "#b0c6ff",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#f8f9fa",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed-dim": "#ffafd5",
+                        "primary": "#536600",
+                        "surface-variant": "#e1e3e4",
+                        "surface-container-high": "#e7e8e9",
+                        "inverse-surface": "#2e3132",
+                        "on-primary-fixed": "#171e00",
+                        "inverse-on-surface": "#f0f1f2",
+                        "slate-gray": "#16181C",
+                        "on-surface": "#191c1d",
+                        "inverse-primary": "#b3d338",
+                        "secondary": "#0056c6",
+                        "on-primary-fixed-variant": "#3e4c00",
+                        "primary-container": "#d4f658",
+                        "primary-fixed": "#cff053",
+                        "surface-container-low": "#f3f4f5",
+                        "background": "#f8f9fa",
+                        "surface": "#f8f9fa",
+                        "on-secondary-fixed": "#001945",
+                        "muted-body": "#666666",
+                        "tertiary-container": "#ffe0ec",
+                        "on-secondary": "#ffffff",
+                        "tertiary": "#ad1e7a",
+                        "error": "#ba1a1a",
+                        "on-surface-variant": "#454936",
+                        "secondary-container": "#006df8",
+                        "secondary-fixed": "#d9e2ff",
+                        "pitch-charcoal": "#0F1012",
+                        "on-tertiary-container": "#ba2a84",
+                        "pure-black": "#000000",
+                        "pure-white": "#FFFFFF",
+                        "surface-tint": "#536600",
+                        "dot-grid": "#E2E4E6",
+                        "on-secondary-fixed-variant": "#00429c",
+                        "on-error-container": "#93000a",
+                        "outline": "#757964",
+                        "on-primary-container": "#5b7000",
+                        "outline-variant": "#c5c9b0",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed": "#3d0027",
+                        "surface-container": "#edeeef",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed-dim": "#b3d338",
+                        "surface-dim": "#d9dadb",
+                        "on-tertiary-fixed-variant": "#8a005f",
+                        "surface-container-highest": "#e1e3e4",
+                        "surface-container-lowest": "#ffffff",
+                        "on-background": "#191c1d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "gutter": "24px",
+                        "section-gap": "120px",
+                        "container-max": "1280px",
+                        "margin-safe": "32px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "label-mono": ["JetBrains Mono"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", { "lineHeight": "1.6", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+                        "headline-md": ["32px", { "lineHeight": "1.3", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "headline-lg": ["40px", { "lineHeight": "1.2", "letterSpacing": "-0.03em", "fontWeight": "700" }],
+                        "display-lg": ["64px", { "lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "label-mono": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.1em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .schematic-bg {
+            background-image: radial-gradient(#E2E4E6 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .hairline-border {
+            border: 1px solid #E2E4E6;
+        }
+        .hairline-border-b { border-bottom: 1px solid #E2E4E6; }
+        .hairline-border-r { border-right: 1px solid #E2E4E6; }
+        .hairline-border-t { border-top: 1px solid #E2E4E6; }
+        
+        /* Schematic styling overrides */
+        .schematic-box {
+            border-radius: 0;
+            border: 1px solid #E2E4E6;
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md schematic-bg min-h-screen overflow-x-hidden selection:bg-primary-container selection:text-pure-black">
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-full flex flex-col z-40 bg-surface dark:bg-slate-gray border-r border-dot-grid dark:border-outline-variant h-screen w-64 flex flex-col transition-all duration-200 ease-in-out">
+<div class="p-6 border-b border-dot-grid dark:border-outline-variant">
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed">Project Alpha</h1>
+<p class="font-label-mono text-label-mono uppercase text-on-surface-variant dark:text-outline-variant mt-2">Production Environment</p>
+</div>
+<div class="flex-1 overflow-y-auto py-4">
+<ul class="space-y-1">
+<!-- Inactive -->
+<li>
+<a class="flex items-center px-6 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high dark:hover:bg-pitch-charcoal font-label-mono text-label-mono uppercase" href="#">
+<span class="material-symbols-outlined mr-4" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+                        Workspace
+                    </a>
+</li>
+<li>
+<a class="flex items-center px-6 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high dark:hover:bg-pitch-charcoal font-label-mono text-label-mono uppercase" href="#">
+<span class="material-symbols-outlined mr-4" style="font-variation-settings: 'FILL' 0;">database</span>
+                        Datasets
+                    </a>
+</li>
+<li>
+<a class="flex items-center px-6 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high dark:hover:bg-pitch-charcoal font-label-mono text-label-mono uppercase" href="#">
+<span class="material-symbols-outlined mr-4" style="font-variation-settings: 'FILL' 0;">analytics</span>
+                        Data Studio
+                    </a>
+</li>
+<!-- Active -->
+<li>
+<a class="flex items-center px-6 py-3 bg-primary-container dark:bg-primary-fixed-dim text-on-primary-container dark:text-on-primary-fixed font-bold border-l-4 border-primary font-label-mono text-label-mono uppercase" href="#">
+<span class="material-symbols-outlined mr-4" style="font-variation-settings: 'FILL' 1;">format_list_bulleted</span>
+                        Jobs
+                    </a>
+</li>
+<li>
+<a class="flex items-center px-6 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high dark:hover:bg-pitch-charcoal font-label-mono text-label-mono uppercase" href="#">
+<span class="material-symbols-outlined mr-4" style="font-variation-settings: 'FILL' 0;">account_tree</span>
+                        Models
+                    </a>
+</li>
+<li>
+<a class="flex items-center px-6 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high dark:hover:bg-pitch-charcoal font-label-mono text-label-mono uppercase" href="#">
+<span class="material-symbols-outlined mr-4" style="font-variation-settings: 'FILL' 0;">rocket_launch</span>
+                        Deployments
+                    </a>
+</li>
+<li>
+<a class="flex items-center px-6 py-3 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high dark:hover:bg-pitch-charcoal font-label-mono text-label-mono uppercase" href="#">
+<span class="material-symbols-outlined mr-4" style="font-variation-settings: 'FILL' 0;">settings</span>
+                        Settings
+                    </a>
+</li>
+</ul>
+</div>
+<div class="p-6 border-t border-dot-grid dark:border-outline-variant">
+<button class="w-full py-2 px-4 border border-dot-grid bg-surface-bright text-pure-black font-label-mono text-label-mono uppercase hover:bg-surface-container-low transition-colors rounded-full flex justify-center items-center">
+<span class="material-symbols-outlined mr-2 text-[16px]">add</span> New Experiment
+            </button>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="ml-64 flex flex-col min-h-screen">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-slate-gray w-full h-16 border-b border-dot-grid dark:border-outline-variant flex justify-between items-center px-gutter w-full sticky top-0 z-30">
+<div class="flex items-center">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed mr-8">AI-ConneX</span>
+</div>
+<div class="flex items-center space-x-6">
+<a class="text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-low dark:hover:bg-pitch-charcoal transition-colors px-3 py-1 font-body-md text-body-md" href="#">Jane Agent</a>
+<div class="flex items-center space-x-4 border-l border-dot-grid pl-6 text-on-surface-variant dark:text-outline-variant">
+<button class="hover:bg-surface-container-low dark:hover:bg-pitch-charcoal transition-colors p-2 rounded-full cursor-pointer active:scale-95 transition-transform"><span class="material-symbols-outlined">notifications</span></button>
+<button class="hover:bg-surface-container-low dark:hover:bg-pitch-charcoal transition-colors p-2 rounded-full cursor-pointer active:scale-95 transition-transform"><span class="material-symbols-outlined">account_circle</span></button>
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 p-gutter max-w-container-max mx-auto w-full">
+<!-- Breadcrumbs & Status Header -->
+<div class="mb-12">
+<div class="flex items-center space-x-2 text-on-surface-variant mb-4 font-label-mono text-label-mono uppercase">
+<a class="hover:text-pure-black transition-colors" href="#">Jobs</a>
+<span class="text-dot-grid">/</span>
+<span class="text-pure-black">JOB-8290</span>
+</div>
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<h2 class="font-display-lg text-display-lg text-pure-black tracking-tighter mb-2">JOB-8290</h2>
+<p class="font-body-lg text-body-lg text-muted-body">Deployment: Global Edge Node 12</p>
+</div>
+<div class="flex flex-wrap items-center gap-4">
+<div class="bg-primary-container text-pure-black px-4 py-1.5 rounded-full font-label-mono text-label-mono uppercase flex items-center border border-primary-container">
+<span class="w-2 h-2 bg-pure-black rounded-full mr-2 animate-pulse"></span>
+                            MACHINE_READY
+                        </div>
+<button class="bg-primary-container text-pure-black border border-primary-container px-6 py-3 rounded-full font-label-mono text-label-mono uppercase flex items-center hover:opacity-90 transition-opacity">
+                            LAUNCH INFERENCE <span class="material-symbols-outlined ml-2 text-[18px]">arrow_outward</span>
+</button>
+<button class="bg-transparent border border-pure-black text-pure-black px-6 py-3 rounded-full font-label-mono text-label-mono uppercase hover:bg-surface-container-low transition-colors">
+                            View Metrics
+                        </button>
+</div>
+</div>
+</div>
+<!-- Bento Grid: Schematic Layout -->
+<div class="grid grid-cols-12 gap-gutter mb-12">
+<!-- Execution Summary (Span 4) -->
+<div class="col-span-12 md:col-span-4 schematic-box p-6 flex flex-col justify-between h-full">
+<h3 class="font-label-mono text-label-mono uppercase text-muted-body mb-6 border-b border-dot-grid pb-2">Execution Summary</h3>
+<div class="space-y-6">
+<div>
+<p class="font-label-mono text-[10px] text-muted-body uppercase mb-1">Completion</p>
+<p class="font-body-lg text-pure-black">Yesterday</p>
+</div>
+<div class="hairline-border-t pt-4">
+<p class="font-label-mono text-[10px] text-muted-body uppercase mb-1">Duration</p>
+<p class="font-body-lg text-pure-black">4m 12s</p>
+</div>
+<div class="hairline-border-t pt-4">
+<p class="font-label-mono text-[10px] text-muted-body uppercase mb-1">SLA Validation</p>
+<p class="font-body-lg text-primary-container bg-inverse-surface inline-block px-2 py-0.5 mt-1"><span class="font-bold">99.9%</span> Uptime Confirmed</p>
+</div>
+</div>
+</div>
+<!-- Lineage Graph (Span 8) -->
+<div class="col-span-12 md:col-span-8 schematic-box p-6 relative overflow-hidden flex flex-col">
+<h3 class="font-label-mono text-label-mono uppercase text-muted-body mb-6 border-b border-dot-grid pb-2 flex justify-between">
+<span>Lineage</span>
+<span class="material-symbols-outlined text-[16px]">account_tree</span>
+</h3>
+<div class="flex-1 flex items-center justify-center py-8 relative">
+<!-- Connecting Line -->
+<div class="absolute top-1/2 left-10 right-10 border-t border-dashed border-pure-black -translate-y-1/2 z-0 opacity-20"></div>
+<div class="flex w-full justify-between relative z-10 px-8">
+<!-- Node 1 -->
+<div class="flex flex-col items-center">
+<div class="w-16 h-16 bg-surface-bright border border-pure-black flex items-center justify-center rotate-45 mb-4 group hover:bg-surface-container-low transition-colors cursor-pointer">
+<span class="material-symbols-outlined -rotate-45 text-pure-black group-hover:scale-110 transition-transform">dataset</span>
+</div>
+<span class="font-label-mono text-[10px] uppercase bg-surface px-2">Dataset</span>
+<span class="font-label-mono text-[10px] text-muted-body mt-1">v4.2.1-raw</span>
+</div>
+<!-- Node 2 -->
+<div class="flex flex-col items-center">
+<div class="w-16 h-16 bg-pure-black border border-pure-black flex items-center justify-center rotate-45 mb-4">
+<span class="material-symbols-outlined -rotate-45 text-primary-container">memory</span>
+</div>
+<span class="font-label-mono text-[10px] uppercase bg-surface px-2 text-pure-black font-bold">JOB-8290</span>
+<span class="font-label-mono text-[10px] text-primary mt-1">Success</span>
+</div>
+<!-- Node 3 -->
+<div class="flex flex-col items-center">
+<div class="w-16 h-16 bg-primary-container border border-pure-black flex items-center justify-center rotate-45 mb-4 group hover:opacity-80 transition-opacity cursor-pointer">
+<span class="material-symbols-outlined -rotate-45 text-pure-black">package</span>
+</div>
+<span class="font-label-mono text-[10px] uppercase bg-surface px-2">Artifacts</span>
+<span class="font-label-mono text-[10px] text-muted-body mt-1">3 Generated</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Artifacts Section -->
+<div class="schematic-box">
+<div class="p-6 border-b border-dot-grid flex justify-between items-center bg-surface-bright">
+<h3 class="font-label-mono text-label-mono uppercase text-pure-black">Artifacts Produced</h3>
+<button class="text-pure-black border-b border-pure-black font-label-mono text-[10px] uppercase hover:text-muted-body transition-colors pb-0.5">
+                        Export Artifacts
+                    </button>
+</div>
+<div class="flex flex-col">
+<!-- Item 1 -->
+<div class="flex items-center justify-between p-4 px-6 hairline-border-b hover:bg-surface-bright transition-colors group">
+<div class="flex items-center space-x-4">
+<span class="material-symbols-outlined text-muted-body font-light">description</span>
+<span class="font-label-mono text-sm text-pure-black">model_weights_v2.bin</span>
+</div>
+<div class="flex items-center space-x-6">
+<span class="font-label-mono text-[10px] text-muted-body">1.4 GB</span>
+<div class="bg-primary-container text-pure-black px-2 py-0.5 rounded-full font-label-mono text-[10px] uppercase opacity-80 group-hover:opacity-100 transition-opacity">MACHINE_READY</div>
+<button class="text-muted-body hover:text-pure-black"><span class="material-symbols-outlined text-[18px]">download</span></button>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="flex items-center justify-between p-4 px-6 hairline-border-b hover:bg-surface-bright transition-colors group">
+<div class="flex items-center space-x-4">
+<span class="material-symbols-outlined text-muted-body font-light">code</span>
+<span class="font-label-mono text-sm text-pure-black">deployment_manifest.json</span>
+</div>
+<div class="flex items-center space-x-6">
+<span class="font-label-mono text-[10px] text-muted-body">24 KB</span>
+<div class="bg-primary-container text-pure-black px-2 py-0.5 rounded-full font-label-mono text-[10px] uppercase opacity-80 group-hover:opacity-100 transition-opacity">MACHINE_READY</div>
+<button class="text-muted-body hover:text-pure-black"><span class="material-symbols-outlined text-[18px]">download</span></button>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="flex items-center justify-between p-4 px-6 hover:bg-surface-bright transition-colors group">
+<div class="flex items-center space-x-4">
+<span class="material-symbols-outlined text-muted-body font-light">settings_ethernet</span>
+<span class="font-label-mono text-sm text-pure-black">edge_config.yaml</span>
+</div>
+<div class="flex items-center space-x-6">
+<span class="font-label-mono text-[10px] text-muted-body">12 KB</span>
+<div class="bg-primary-container text-pure-black px-2 py-0.5 rounded-full font-label-mono text-[10px] uppercase opacity-80 group-hover:opacity-100 transition-opacity">MACHINE_READY</div>
+<button class="text-muted-body hover:text-pure-black"><span class="material-symbols-outlined text-[18px]">download</span></button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

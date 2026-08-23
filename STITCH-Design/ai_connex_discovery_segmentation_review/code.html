@@ -1,0 +1,378 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>AI-ConneX - Discovery &amp; Segmentation</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "grid-line": "#2a2d32",
+                      "on-secondary": "#002d6f",
+                      "tertiary-container": "#ffd8e8",
+                      "on-secondary-fixed-variant": "#00429b",
+                      "tertiary-fixed": "#ffd8e8",
+                      "surface-container-high": "#2a2a2a",
+                      "on-tertiary-container": "#b52681",
+                      "on-secondary-fixed": "#001945",
+                      "secondary-fixed": "#d9e2ff",
+                      "primary-fixed-dim": "#b3d338",
+                      "secondary-fixed-dim": "#b0c6ff",
+                      "on-background": "#e5e2e1",
+                      "on-secondary-container": "#fefcff",
+                      "surface-bright": "#393939",
+                      "surface-tint": "#b3d338",
+                      "on-surface": "#e5e2e1",
+                      "assistant-identity": "#d4f658",
+                      "surface-container": "#201f1f",
+                      "surface-variant": "#353534",
+                      "intent-clarification": "#ffb900",
+                      "surface-container-highest": "#353534",
+                      "on-primary": "#2a3500",
+                      "surface": "#131313",
+                      "on-primary-fixed": "#171e00",
+                      "on-error": "#690005",
+                      "surface-dim": "#131313",
+                      "outline": "#8f937c",
+                      "on-surface-variant": "#c5c9b0",
+                      "inverse-primary": "#536600",
+                      "error-container": "#93000a",
+                      "on-primary-fixed-variant": "#3e4c00",
+                      "primary": "#ffffff",
+                      "outline-variant": "#454936",
+                      "action-proposed": "#00f0ff",
+                      "on-tertiary-fixed": "#3d0027",
+                      "primary-container": "#cff053",
+                      "surface-container-lowest": "#0e0e0e",
+                      "background": "#131313",
+                      "secondary": "#b0c6ff",
+                      "tertiary": "#ffffff",
+                      "on-tertiary-fixed-variant": "#8a005f",
+                      "on-tertiary": "#620042",
+                      "tertiary-fixed-dim": "#ffafd5",
+                      "surface-slate": "#16181c",
+                      "inverse-on-surface": "#313030",
+                      "on-error-container": "#ffdad6",
+                      "background-pitch": "#000000",
+                      "error": "#ffb4ab",
+                      "on-primary-container": "#586c00",
+                      "inverse-surface": "#e5e2e1",
+                      "surface-container-low": "#1c1b1b",
+                      "primary-fixed": "#cff053",
+                      "secondary-container": "#006df7"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "unit": "4px",
+                      "docked-width": "380px",
+                      "chat-gap": "16px",
+                      "gutter": "24px",
+                      "margin-safe": "32px"
+              },
+              "fontFamily": {
+                      "headline-lg-mobile": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "body-md": ["Inter"],
+                      "assistant-msg": ["Inter"],
+                      "label-mono": ["JetBrains Mono"],
+                      "body-lg": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "display-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-lg-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                      "headline-lg": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.03em", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                      "assistant-msg": ["15px", {"lineHeight": "1.5", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                      "label-mono": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.1em", "fontWeight": "700"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "-0.01em", "fontWeight": "400"}],
+                      "headline-md": ["32px", {"lineHeight": "1.3", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                      "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "700"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.primary');
+            background-image: radial-gradient(theme('colors.grid-line') 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        
+        .technical-glow-lime { box-shadow: 0 0 4px 1px theme('colors.assistant-identity'); }
+        .technical-glow-cyan { box-shadow: 0 0 4px 1px theme('colors.action-proposed'); }
+        .technical-glow-amber { box-shadow: 0 0 4px 1px theme('colors.intent-clarification'); }
+        
+        .status-line-lime { border-left: 2px solid theme('colors.assistant-identity'); }
+        .status-line-cyan { border-left: 2px solid theme('colors.action-proposed'); }
+
+        .slide-transition {
+            transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Custom Scrollbar for high-density UI */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: theme('colors.surface-variant'); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: theme('colors.outline'); }
+    </style>
+</head>
+<body class="overflow-hidden flex h-screen font-body-md text-body-md antialiased selection:bg-assistant-identity selection:text-background-pitch">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full flex items-center justify-between px-gutter z-30 w-full h-16 border-b border-grid-line bg-background-pitch dark:bg-background-pitch">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-bold text-assistant-identity">AI-ConneX</span>
+</div>
+<!-- Search Bar (on_right) -->
+<div class="flex items-center gap-4 ml-auto">
+<div class="relative hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" style="font-variation-settings: 'FILL' 0;">search</span>
+<input class="bg-surface-container-high border-grid-line text-primary placeholder:text-on-surface-variant font-label-mono text-label-mono h-8 pl-10 pr-4 rounded-none focus:ring-1 focus:ring-assistant-identity focus:border-assistant-identity w-64" placeholder="Search..." type="text">
+</div>
+<!-- Trailing Icons -->
+<div class="flex items-center gap-2">
+<button aria-label="notifications" class="p-2 text-on-surface-variant hover:text-assistant-identity transition-colors cursor-pointer">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+<button aria-label="settings" class="p-2 text-on-surface-variant hover:text-assistant-identity transition-colors cursor-pointer">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+</button>
+<button aria-label="help" class="p-2 text-on-surface-variant hover:text-assistant-identity transition-colors cursor-pointer">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">help</span>
+</button>
+</div>
+<!-- Profile -->
+<div class="h-8 w-8 rounded-full bg-surface-container-high border border-grid-line overflow-hidden ml-2 cursor-pointer hover:border-assistant-identity transition-colors">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A macro shot of a sleek, dark metallic server node with subtle neon green indicator lights glowing in a highly technical, brutalist data center environment. The lighting is low-key and dramatic, highlighting the precise geometry of the hardware." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsjhph9gn26_DOxn2Ic8UCixFunaT0uCNbycYZk9RikoSDTQGA_AIFE30SYhF1nBW5ZRrVcvk6EpaPPjOMI7COQDGCBQXW4vrI-AfGK2eVJQ5G6XGt0r8W0MjfjsIfJt5AD8xKeWfMchQKGhtfPQXUaN0n1XOu1lvnJ7z-7wWANoMzc5rF1Zfbz0aLkzClR59VePRCOwZuDN4iLBsH-rCV9cTsJoHejSGbV7hXe6O7Hue4NdG9sCONjA">
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-full z-40 h-full w-20 flex flex-col border-r border-grid-line border-r border-grid-line bg-background-pitch bg-background-pitch dark:bg-background-pitch pt-16">
+<div class="flex flex-col items-center py-6 gap-6 flex-1">
+<!-- Tab: Workspace -->
+<a aria-label="Workspace" class="w-12 h-12 flex flex-col items-center justify-center rounded-none group scale-95 active:scale-90 transition-transform text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 0;">grid_view</span>
+</a>
+<!-- Tab: Datasets (Active) -->
+<a aria-label="Datasets" class="w-12 h-12 flex flex-col items-center justify-center rounded-none group scale-95 active:scale-90 transition-transform text-assistant-identity border-l-2 border-assistant-identity bg-surface-container-low" href="#">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">database</span>
+</a>
+<!-- Tab: Models -->
+<a aria-label="Models" class="w-12 h-12 flex flex-col items-center justify-center rounded-none group scale-95 active:scale-90 transition-transform text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 0;">model_training</span>
+</a>
+<!-- Tab: Admin -->
+<a aria-label="Admin" class="w-12 h-12 flex flex-col items-center justify-center rounded-none group scale-95 active:scale-90 transition-transform text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 0;">admin_panel_settings</span>
+</a>
+</div>
+<div class="p-4 flex flex-col items-center border-t border-grid-line">
+<div class="w-10 h-10 rounded bg-surface-container-high border border-grid-line overflow-hidden mb-2">
+<img alt="Organization Logo" class="w-full h-full object-cover" data-alt="A stylized geometric logo resembling an interconnected network node, rendered in crisp white against a pure black background. The style is hyper-minimalist and technical." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqQDTVytmO_RxpYZAKjgyBb63TaHfUjFd7CgTg5fMXZ9af6uIudyYKMZuZOqZUbP27CmKRYAlGkluGOvOfBCoIW8MW32pN1nL7d9YS1nHtNgACBrx1Pn_y2Nfddo9eP4pFR2C8Lpb-bUkZksQ-_XK7noCQbXJnqwQlEW04CIZRWTT9a3oD3HCfwOwxeDLH1zs_750-r4tjAT6MYDryyg5hto9ABxd_1fLMmyRpx1EifrlWxXpo2CqGZA">
+</div>
+<span class="font-label-mono text-label-mono text-[10px] text-on-surface-variant text-center break-all">v2.4.0</span>
+</div>
+</nav>
+<!-- Main Canvas Area -->
+<!-- Content compresses to allow drawer space: pl-20 (nav) + pr-[380px] (drawer docked width) + pt-16 (header) -->
+<main class="flex-1 slide-transition pl-20 pr-docked-width pt-16 h-full flex flex-col relative">
+<!-- Header Section -->
+<div class="px-margin-safe py-6 border-b border-grid-line bg-background/80 backdrop-blur-sm z-10 sticky top-0">
+<div class="flex justify-between items-end">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-primary mb-1">Discovery &amp; Segmentation</h1>
+<p class="font-label-mono text-label-mono text-on-surface-variant uppercase">FILE: Q3_Financial_Export_RAW.csv | Size: 1.4GB</p>
+</div>
+<div class="flex gap-4">
+<div class="flex flex-col items-end">
+<span class="font-label-mono text-label-mono text-on-surface-variant uppercase mb-1">Status</span>
+<span class="font-label-mono text-label-mono text-assistant-identity flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-assistant-identity animate-pulse"></span>
+                             Awaiting Approval
+                         </span>
+</div>
+</div>
+</div>
+</div>
+<!-- Dashboard Canvas -->
+<div class="flex-1 overflow-y-auto p-margin-safe custom-scrollbar flex flex-col gap-6">
+<!-- Discovery Map Visualization -->
+<div class="bg-surface border border-grid-line flex flex-col relative h-[512px] min-h-[400px]">
+<div class="border-b border-grid-line bg-surface-container p-3 flex justify-between items-center">
+<span class="font-label-mono text-label-mono text-on-surface-variant">DISCOVERY_MAP_VIEW</span>
+<div class="flex gap-2">
+<button class="p-1 text-on-surface-variant hover:text-primary transition-colors border border-transparent hover:border-grid-line bg-surface-container-high rounded"><span class="material-symbols-outlined text-[18px]">zoom_in</span></button>
+<button class="p-1 text-on-surface-variant hover:text-primary transition-colors border border-transparent hover:border-grid-line bg-surface-container-high rounded"><span class="material-symbols-outlined text-[18px]">zoom_out</span></button>
+<button class="p-1 text-on-surface-variant hover:text-primary transition-colors border border-transparent hover:border-grid-line bg-surface-container-high rounded"><span class="material-symbols-outlined text-[18px]">center_focus_strong</span></button>
+</div>
+</div>
+<!-- Map Area Placeholder (Simulated Canvas) -->
+<div class="flex-1 relative overflow-hidden bg-background-pitch group">
+<!-- Background Grid -->
+<div class="absolute inset-0" style="background-image: radial-gradient(theme('colors.surface-variant') 1px, transparent 1px); background-size: 16px 16px; opacity: 0.5;"></div>
+<!-- Segment 1 (Highlighted - Action Required) -->
+<div class="absolute top-[15%] left-[10%] w-[35%] h-[40%] border-2 border-action-proposed bg-action-proposed/5 flex flex-col group-hover:border-action-proposed transition-colors z-10 technical-glow-cyan cursor-crosshair">
+<div class="bg-action-proposed/20 border-b border-action-proposed/50 px-2 py-1 flex justify-between items-center">
+<span class="font-label-mono text-label-mono text-action-proposed text-[10px]">SEG_01: Transaction_Log</span>
+<span class="font-label-mono text-label-mono text-action-proposed text-[10px]">CONF: 98%</span>
+</div>
+<div class="flex-1 p-2 overflow-hidden opacity-40 font-label-mono text-label-mono text-[8px] text-action-proposed leading-tight">
+                            tx_id,date,amount,currency,merchant_id<br>
+                            1001,2023-10-01,150.00,USD,M_492<br>
+                            1002,2023-10-01,25.50,USD,M_118<br>
+                            ...
+                        </div>
+</div>
+<!-- Segment 2 (Pending Review) -->
+<div class="absolute top-[20%] right-[10%] w-[30%] h-[60%] border border-intent-clarification bg-intent-clarification/5 flex flex-col transition-colors z-10 hover:technical-glow-amber cursor-crosshair">
+<div class="bg-intent-clarification/20 border-b border-intent-clarification/50 px-2 py-1 flex justify-between items-center">
+<span class="font-label-mono text-label-mono text-intent-clarification text-[10px]">SEG_02: User_Metadata</span>
+<span class="font-label-mono text-label-mono text-intent-clarification text-[10px]">CONF: 74%</span>
+</div>
+<div class="flex-1 p-2 overflow-hidden opacity-40 font-label-mono text-label-mono text-[8px] text-intent-clarification leading-tight">
+                            user_id,region,tier,signup_date<br>
+                            U_8492,NA,Premium,2021-05-12<br>
+                            U_1120,EU,Standard,2022-11-04<br>
+                            ...
+                        </div>
+</div>
+<!-- Segment 3 (Rejected/Low Confidence) -->
+<div class="absolute bottom-[10%] left-[15%] w-[40%] h-[20%] border border-grid-line bg-surface-container-lowest flex flex-col transition-colors z-0 opacity-50">
+<div class="border-b border-grid-line px-2 py-1 flex justify-between items-center">
+<span class="font-label-mono text-label-mono text-on-surface-variant text-[10px]">SEG_03: Unstructured_Notes</span>
+<span class="font-label-mono text-label-mono text-on-surface-variant text-[10px]">CONF: 22%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Segment Actions List -->
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+<!-- Card 1 -->
+<div class="bg-surface border border-action-proposed bg-action-proposed/5 p-4 flex flex-col gap-4">
+<div class="flex justify-between items-start border-b border-action-proposed/30 pb-2">
+<div>
+<h3 class="font-label-mono text-label-mono text-action-proposed uppercase mb-1">Segment 01</h3>
+<p class="font-body-md text-body-md text-primary">Transaction_Log</p>
+</div>
+<div class="flex items-center gap-1 bg-surface-container px-2 py-1 border border-action-proposed/30">
+<span class="material-symbols-outlined text-[14px] text-action-proposed">check_circle</span>
+<span class="font-label-mono text-label-mono text-action-proposed">98% CONF</span>
+</div>
+</div>
+<div class="flex justify-between items-end mt-auto">
+<div class="font-label-mono text-label-mono text-[10px] text-on-surface-variant">
+                            ROWS: ~1.2M<br>COLS: 5
+                        </div>
+<div class="flex gap-2">
+<button class="px-4 py-2 border border-grid-line text-on-surface-variant font-label-mono text-label-mono hover:bg-surface-container-high transition-colors">REJECT</button>
+<button class="px-4 py-2 bg-action-proposed text-background-pitch font-label-mono text-label-mono hover:bg-opacity-90 transition-colors">APPROVE</button>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface border border-intent-clarification bg-intent-clarification/5 p-4 flex flex-col gap-4">
+<div class="flex justify-between items-start border-b border-intent-clarification/30 pb-2">
+<div>
+<h3 class="font-label-mono text-label-mono text-intent-clarification uppercase mb-1">Segment 02</h3>
+<p class="font-body-md text-body-md text-primary">User_Metadata (Ambiguous)</p>
+</div>
+<div class="flex items-center gap-1 bg-surface-container px-2 py-1 border border-intent-clarification/30">
+<span class="material-symbols-outlined text-[14px] text-intent-clarification">warning</span>
+<span class="font-label-mono text-label-mono text-intent-clarification">74% CONF</span>
+</div>
+</div>
+<div class="flex justify-between items-end mt-auto">
+<div class="font-label-mono text-label-mono text-[10px] text-on-surface-variant">
+                            ROWS: ~45K<br>COLS: 4
+                        </div>
+<div class="flex gap-2">
+<button class="px-4 py-2 border border-grid-line text-on-surface-variant font-label-mono text-label-mono hover:bg-surface-container-high transition-colors">REJECT</button>
+<button class="px-4 py-2 bg-intent-clarification text-background-pitch font-label-mono text-label-mono hover:bg-opacity-90 transition-colors">APPROVE</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- NavigationDrawer (Jane AI) -->
+<aside class="fixed right-0 top-0 h-full z-50 flex flex-col docked right-0 w-docked-width h-full border-l border-grid-line border-l border-grid-line bg-surface-slate bg-surface-slate dark:bg-surface-slate shadow-[0_0_10px_rgba(212,246,88,0.05)] pt-16 slide-transition">
+<!-- Drawer Header -->
+<div class="p-4 border-b border-grid-line flex justify-between items-center bg-surface-slate">
+<div>
+<h2 class="font-label-mono text-label-mono text-assistant-identity uppercase tracking-widest font-label-mono text-label-mono text-assistant-identity uppercase tracking-widest">JANE_AI</h2>
+<div class="flex items-center gap-2 mt-1">
+<span class="w-1.5 h-1.5 rounded-full bg-assistant-identity animate-pulse"></span>
+<span class="font-label-mono text-label-mono text-[10px] text-on-surface-variant">SYSTEM_READY</span>
+</div>
+</div>
+<button class="px-3 py-1.5 border border-grid-line font-label-mono text-label-mono text-[10px] text-assistant-identity hover:bg-surface-container-highest transition-all transition-all duration-200 ease-in-out">
+                EXPAND_VIEW
+            </button>
+</div>
+<!-- Drawer Tabs -->
+<div class="flex border-b border-grid-line bg-surface-slate">
+<!-- INTENT (Active) -->
+<button class="flex-1 py-3 flex items-center justify-center gap-2 text-assistant-identity border-b border-assistant-identity transition-all duration-200 ease-in-out">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">psychology</span>
+<span class="font-label-mono text-label-mono text-[10px]">INTENT</span>
+</button>
+<!-- JOBS -->
+<button class="flex-1 py-3 flex items-center justify-center gap-2 text-outline hover:bg-surface-container-highest transition-all transition-all duration-200 ease-in-out">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">analytics</span>
+<span class="font-label-mono text-label-mono text-[10px]">JOBS</span>
+</button>
+<!-- ACTIONS -->
+<button class="flex-1 py-3 flex items-center justify-center gap-2 text-outline hover:bg-surface-container-highest transition-all transition-all duration-200 ease-in-out">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">bolt</span>
+<span class="font-label-mono text-label-mono text-[10px]">ACTIONS</span>
+</button>
+</div>
+<!-- Chat Area -->
+<div class="flex-1 overflow-y-auto p-4 flex flex-col gap-chat-gap custom-scrollbar">
+<!-- Assistant Message (Context) -->
+<div class="flex flex-col gap-unit pl-3 status-line-lime">
+<div class="font-label-mono text-label-mono text-assistant-identity text-[10px] uppercase">Jane_AI // Analysis Complete</div>
+<div class="font-assistant-msg text-assistant-msg text-primary bg-surface-slate p-3 rounded-none border border-grid-line">
+                    Initial file scan complete. I have identified 2 high-probability table segments and 1 low-confidence region within `Q3_Financial_Export_RAW.csv`.
+                </div>
+</div>
+<!-- Action Card Proposed by Assistant -->
+<div class="pl-3 mt-2">
+<div class="border border-action-proposed bg-action-proposed/5 p-3 flex flex-col gap-3 technical-glow-cyan">
+<div class="font-label-mono text-label-mono text-action-proposed text-[10px] uppercase border-b border-action-proposed/30 pb-1">Action Proposed</div>
+<div class="font-assistant-msg text-assistant-msg text-primary">
+                        Shall I proceed with schema profiling for these 2 detected segments to infer data types and constraints?
+                    </div>
+<button class="w-full py-2 bg-action-proposed text-background-pitch font-label-mono text-label-mono hover:bg-opacity-90 transition-colors mt-1">
+                        EXECUTE PROFILING
+                    </button>
+</div>
+</div>
+</div>
+<!-- Input Area -->
+<div class="p-4 border-t border-grid-line bg-surface-slate">
+<div class="relative flex items-center">
+<span class="font-label-mono text-label-mono text-assistant-identity mr-2">&gt;</span>
+<input class="w-full bg-transparent border-none text-primary font-label-mono text-label-mono placeholder:text-outline focus:ring-0 p-0 text-[12px]" placeholder="READY_FOR_INPUT..." type="text">
+<button class="ml-2 text-assistant-identity hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">send</span>
+</button>
+</div>
+</div>
+</aside>
+</body></html>
