@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 
 class ModelContract(BaseModel):
     model_id: str = Field(..., description="Unique model artifact ID")
+    tenant_uid: str = Field(..., description="Tenant organization ID")
     manifest_id: str = Field(..., description="Associated lifecycle manifest ID")
     algorithm_name: str = Field(..., description="Algorithm used (e.g. LightGBM, LSTM, XGBoost)")
     task_type: str = Field(..., description="Regression, Classification, TimeSeries, Anomaly")

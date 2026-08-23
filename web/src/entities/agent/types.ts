@@ -12,6 +12,7 @@ export interface AgentCapability {
 
 export interface AgentSpec {
   agentId: string;
+  tenantUid?: string;
   name: string; // e.g. "Jane Agent", "Data Intake Agent"
   role: string;
   status: AgentStatus;

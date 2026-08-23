@@ -29,6 +29,7 @@ export const artifactFixture: ArtifactPackage = {
 
 export const jobFixture: Job = {
   jobId: 'job_demo_0001',
+  tenantUid: intentFixture.tenantUid,
   intentUid: intentFixture.intentUid,
   status: 'COMPLETED',
   stages: [

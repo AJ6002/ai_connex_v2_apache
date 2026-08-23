@@ -13,6 +13,7 @@ export interface ModelMetric {
 
 export interface ModelSpec {
   modelId: string;
+  tenantUid?: string;
   name: string;
   version: string;
   framework: string; // e.g. "PyTorch", "XGBoost", "LightGBM", "ONNX"
