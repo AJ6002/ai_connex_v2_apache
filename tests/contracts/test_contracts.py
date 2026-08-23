@@ -245,6 +245,100 @@ def test_contract_schema_version_coverage():
         assert len(c.schema_version) > 0
 
 
+def test_missing_required_field_rejection():
+    """Task 1.1.3: Verify missing required field rejection across contracts."""
+    import pytest
+    from pydantic import ValidationError
+    from contracts.dataset.dataset_contract import DatasetContract
+    from contracts.model.model_contract import ModelContract
+    from contracts.intent.intent_contract import IntentContract
+
+    # Missing storage_uri
+    with pytest.raises(ValidationError):
+        DatasetContract(asset_id="ds1", tenant_uid="t1", asset_name="N", format="csv", size_bytes=10, sha256_hash="h")
+
+    # Missing algorithm_name
+    with pytest.raises(ValidationError):
+        ModelContract(model_id="m1", tenant_uid="t1", manifest_id="man1", task_type="TimeSeries")
+
+    # Missing goal
+    with pytest.raises(ValidationError):
+        IntentContract(intent_uid="i1", tenant_uid="t1", user_uid="u1", intent_type="upload")
+
+
+def test_wrong_type_rejection():
+    """Task 1.1.3: Verify wrong type field rejection across contracts."""
+    import pytest
+    from pydantic import ValidationError
+    from contracts.dataset.dataset_contract import DatasetContract
+    from contracts.telemetry.telemetry_contract import TelemetryContract
+
+    # Wrong type for size_bytes (dict instead of int)
+    with pytest.raises(ValidationError):
+        DatasetContract(
+            asset_id="ds1", tenant_uid="t1", asset_name="N", storage_uri="s3://",
+            format="csv", size_bytes={"invalid": "type"}, sha256_hash="h"
+        )
+
+    # Wrong type for value (string instead of float)
+    with pytest.raises(ValidationError):
+        TelemetryContract(sensor_id="s1", asset_id="a1", value="invalid_float_string", unit="C")
+
+
+def test_roundtrip_serialization_all_contracts():
+    """Task 1.1.3: Verify round-trip JSON serialization and deserialization across all contracts."""
+    from datetime import datetime
+    from contracts.agent.agent_spec_contract import AgentSPECContract
+    from contracts.audit.audit_contract import AuditContract
+    from contracts.dag.dag_contract import DAGContract
+    from contracts.dataset.dataset_contract import DatasetContract
+    from contracts.deployment.deployment_contract import DeploymentContract
+    from contracts.discovery.discovery_contract import DatasetDiscoveryArtifact
+    from contracts.feature.feature_contract import FeatureContract
+    from contracts.intent.intent_contract import IntentContract
+    from contracts.job.job_contract import JobContract
+    from contracts.manifest.manifest_contract import ManifestContract
+    from contracts.model.model_contract import ModelContract
+    from contracts.prepare.prepare_contract import PrepareContract
+    from contracts.profile.profile_contract import ProfileContract
+    from contracts.recipe.recipe_contract import RecipeContract
+    from contracts.sandbox.result_manifest_contract import ParserResultManifest
+    from contracts.segmentation.segmentation_contract import CandidateRegion, SegmentationProposal
+    from contracts.telemetry.telemetry_contract import TelemetryContract
+    from contracts.tenant.tenant_contract import TenantContract
+    from contracts.tool.tool_contract import ToolContract
+
+    now = datetime.utcnow()
+    instances = [
+        (AgentSPECContract, AgentSPECContract(agent_id="a1", tenant_uid="t1", agent_name="Jane", schema_version="1.0.0")),
+        (AuditContract, AuditContract(audit_id="au1", tenant_uid="t1", user_uid="u1", action="A", resource_type="R", resource_id="r1", timestamp=now)),
+        (DAGContract, DAGContract(dag_id="d1", dag_name="N", description="D", output_target="T")),
+        (DatasetContract, DatasetContract(asset_id="ds1", tenant_uid="t1", asset_name="N", storage_uri="s3://", format="csv", size_bytes=10, sha256_hash="h", created_at=now)),
+        (DeploymentContract, DeploymentContract(deployment_id="dep1", model_id="m1", tenant_uid="t1", endpoint_url="http://")),
+        (DatasetDiscoveryArtifact, DatasetDiscoveryArtifact(asset_id="asset1")),
+        (FeatureContract, FeatureContract(feature_set_id="f1", tenant_uid="t1", manifest_id="m1")),
+        (IntentContract, IntentContract(intent_uid="i1", tenant_uid="t1", user_uid="u1", goal="G", intent_type="T")),
+        (JobContract, JobContract(job_id="j1", tenant_uid="t1", intent_uid="i1", created_at=now, updated_at=now)),
+        (ManifestContract, ManifestContract(manifest_id="m1", tenant_uid="t1", intent_uid="i1", run_id="r1", created_at=now, updated_at=now)),
+        (ModelContract, ModelContract(model_id="mod1", tenant_uid="t1", manifest_id="m1", algorithm_name="XGB", task_type="T", created_at=now)),
+        (PrepareContract, PrepareContract(manifest_id="m1")),
+        (ProfileContract, ProfileContract(manifest_id="m1", row_count=10, column_count=2)),
+        (RecipeContract, RecipeContract(recipe_id="r1", recipe_name="N", target_task="T")),
+        (ParserResultManifest, ParserResultManifest(job_id="j1", image_name="img", image_digest="d", input_file="f", input_hash="h", output_parquet="p", output_hash="oh", row_count=5, started_at=now, completed_at=now)),
+        (CandidateRegion, CandidateRegion(source_file="f", row_start=0, row_end=1, col_start=0, col_end=1, confidence=0.9, proposed_table_name="t")),
+        (SegmentationProposal, SegmentationProposal(asset_id="ast1", created_at=now)),
+        (TelemetryContract, TelemetryContract(sensor_id="s1", asset_id="ast1", value=42.0, unit="C", timestamp=now)),
+        (TenantContract, TenantContract(tenant_id="t1", tenant_name="N", user_id="u1")),
+        (ToolContract, ToolContract(tool_id="tool1", capability_name="C")),
+    ]
+
+    for model_cls, original in instances:
+        json_data = original.model_dump_json()
+        deserialized = model_cls.model_validate_json(json_data)
+        assert deserialized.schema_version == original.schema_version
+
+
+
 
 
 
