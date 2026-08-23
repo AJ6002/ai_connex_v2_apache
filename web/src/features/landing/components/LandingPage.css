@@ -482,17 +482,18 @@
 }
 
 .component--head-row-2-col {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 32px;
-  margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 2.25rem;
+  column-gap: 2.25rem;
+  margin-bottom: 64px;
 }
 
 @media (min-width: 768px) {
   .component--head-row-2-col {
-    grid-template-columns: 1fr 1fr;
-    gap: 48px;
-    align-items: start;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
   }
 }
 
@@ -537,31 +538,33 @@
 }
 
 .eyebrow--text {
-  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 0.65rem;
+  font-family: Apkpraktikal, "Palatino Linotype", Georgia, serif;
+  font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  font-weight: 500;
-  color: #666666;
+  letter-spacing: 0.32px;
+  font-weight: 600;
+  color: #454545;
 }
 
 .heading--h2 {
-  font-family: Georgia, "Times New Roman", "Palatino Linotype", serif;
-  font-size: 3.75rem;
-  line-height: 1.05;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  color: #0a0a0a;
+  font-family: Apkpraktikal, "Palatino Linotype", Georgia, serif;
+  font-size: 3.25rem;
+  line-height: 1.1;
+  font-weight: 600;
+  letter-spacing: -0.66px;
+  color: #0f0f0f;
   margin: 0;
 }
 
 .section--subtitle {
-  padding-top: 12px;
+  padding-top: 0;
+  max-width: 480px;
 }
 
 .text--body._800 {
+  font-family: "Apk Galeria", Arial, sans-serif;
   font-size: 1.125rem;
-  line-height: 1.5;
+  line-height: 1.4;
   color: #4c4c4c;
 }
 
