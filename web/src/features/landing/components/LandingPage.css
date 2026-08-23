@@ -728,6 +728,21 @@
   transition: opacity 0.2s ease;
 }
 
+@keyframes tabPaneFadeIn {
+  from {
+    opacity: 0.5;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.lp__tab-pane-animate {
+  animation: tabPaneFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 /* Right Tab Content Pane */
 .hp--platform-tabs-pane {
   background-color: #eeeeee;

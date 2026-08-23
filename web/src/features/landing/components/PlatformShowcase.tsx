@@ -169,6 +169,7 @@ export function PlatformShowcase() {
                   type="button"
                   className={`hp--platform-tabs-link w-inline-block w-tab-link${isActive ? ' w--current' : ''}`}
                   onClick={() => setActiveTab(tab.id)}
+                  onMouseEnter={() => setActiveTab(tab.id)}
                   aria-selected={isActive}
                   role="tab"
                 >
@@ -200,7 +201,7 @@ export function PlatformShowcase() {
           </div>
 
           <div className="hp--platform-tabs-content w-tab-content">
-            <div className="hp--platform-tabs-pane w-tab-pane w--tab-active">
+            <div key={currentTab.id} className="hp--platform-tabs-pane w-tab-pane w--tab-active lp__tab-pane-animate">
               <div className="hp--platform-tabs-header">
                 <div>
                   <h3 className="hp--platform-tabs-h3">{currentTab.name}</h3>
