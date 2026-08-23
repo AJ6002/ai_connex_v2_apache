@@ -538,7 +538,7 @@
 }
 
 .eyebrow--text {
-  font-family: Apkpraktikal, "Palatino Linotype", Georgia, serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.32px;
@@ -547,7 +547,7 @@
 }
 
 .heading--h2 {
-  font-family: Apkpraktikal, "Palatino Linotype", Georgia, serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 3.25rem;
   line-height: 1.1;
   font-weight: 600;
@@ -562,7 +562,7 @@
 }
 
 .text--body._800 {
-  font-family: "Apk Galeria", Arial, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 1.125rem;
   line-height: 1.4;
   color: #4c4c4c;
@@ -718,7 +718,7 @@
 }
 
 .hp--platform-tabs-h3 {
-  font-family: Apkpraktikal, "Palatino Linotype", sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 2rem;
   font-weight: 600;
   color: #0f0f0f;
