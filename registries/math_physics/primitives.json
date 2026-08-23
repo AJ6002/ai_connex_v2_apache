@@ -5,21 +5,30 @@
       "name": "Root Mean Square Vibration",
       "formula": "sqrt(1/N * sum(x_i^2))",
       "standard": "ISO 10816",
-      "unit": "mm/s"
+      "unit": "mm/s",
+      "owner": "Domain Engineering Lead (ISO 10816 Technical Committee)",
+      "version": "v1.0.0",
+      "validation_status": "VERIFIED"
     },
     {
       "primitive_id": "fft_peak_frequency",
       "name": "Fast Fourier Transform Peak Frequency",
       "formula": "argmax(abs(FFT(x)))",
       "standard": "Spectral Analysis",
-      "unit": "Hz"
+      "unit": "Hz",
+      "owner": "Signal Processing Systems Lead",
+      "version": "v1.0.0",
+      "validation_status": "VERIFIED"
     },
     {
       "primitive_id": "temperature_delta",
       "name": "Differential Temperature",
       "formula": "T_out - T_in",
       "standard": "Thermodynamics",
-      "unit": "°C"
+      "unit": "°C",
+      "owner": "Thermodynamics Systems Lead",
+      "version": "v1.0.0",
+      "validation_status": "VERIFIED"
     }
   ]
 }
