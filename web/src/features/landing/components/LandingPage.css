@@ -538,7 +538,7 @@
 }
 
 .eyebrow--text {
-  font-family: 'JetBrains Mono', 'Inter', monospace, sans-serif;
+  font-family: 'JetBrains Mono', monospace, sans-serif;
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -547,18 +547,18 @@
 }
 
 .heading--h2 {
-  font-family: Georgia, "Times New Roman", "Palatino Linotype", serif;
-  font-size: 3.5rem;
-  line-height: 1.06;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  color: #0b0b0b;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 3.25rem;
+  line-height: 1.1;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: #0f0f0f;
   margin: 0;
 }
 
 @media (max-width: 768px) {
   .heading--h2 {
-    font-size: 2.5rem;
+    font-size: 2.25rem;
   }
   .lp__h2-br {
     display: none;
@@ -577,49 +577,51 @@
   color: #4c4c4c;
 }
 
-/* Walkthrough CTA link bar */
+/* Walkthrough CTA light-blue horizontal strip */
 .cta--link {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24px 0;
-  border-top: 1px solid #e2e2e2;
-  border-bottom: 1px solid #e2e2e2;
-  margin-bottom: 48px;
-  background-color: transparent !important;
+  padding: 18px 24px;
+  border: none !important;
+  border-radius: 4px;
+  background-color: #e8f2ff !important;
+  margin-bottom: 40px;
 }
 
 .text--body-large {
-  font-size: 1.25rem;
-  font-weight: 500;
+  font-size: 1rem;
+  font-weight: 600;
   color: #0f0f0f;
 }
 
 .hp--swiper-cta-button.electric-blue {
   display: inline-flex !important;
   align-items: center !important;
-  gap: 10px !important;
-  background-color: #0c76fe !important;
-  color: #ffffff !important;
-  padding: 12px 24px !important;
-  border-radius: 9999px !important;
-  text-decoration: none !important;
+  gap: 6px !important;
+  background-color: transparent !important;
+  background: transparent !important;
+  color: #0c76fe !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  text-decoration: underline !important;
   font-weight: 600 !important;
   font-size: 0.85rem !important;
   letter-spacing: 0.05em !important;
-  box-shadow: 0 2px 8px rgba(12, 118, 254, 0.25) !important;
-  transition: background-color 0.2s ease, transform 0.2s ease !important;
+  box-shadow: none !important;
+  transition: color 0.15s ease !important;
 }
 
 .hp--swiper-cta-button.electric-blue:hover {
-  background-color: #0b68df !important;
-  transform: translateY(-1px) !important;
+  color: #0b68df !important;
+  transform: none !important;
 }
 
 .hp--swiper-cta-button.electric-blue .caption--uppercase {
-  color: #ffffff !important;
+  color: #0c76fe !important;
   text-transform: uppercase !important;
   font-weight: 600 !important;
+  text-decoration: underline !important;
 }
 
 .hp--swiper-cta-button.electric-blue .svg-arrow {
