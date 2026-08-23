@@ -126,17 +126,17 @@ export function PlatformShowcase() {
                 <div className="pulsing-dot--static" />
                 <div className="pulsing-dot--animated" />
               </div>
-              <div className="eyebrow--text">Our platform</div>
+              <div className="eyebrow--text">AI CONNE X PLATFORM</div>
             </div>
             <h2 className="heading--h2">
-              Building blocks,<br className="lp__h2-br" />not black boxes
+              One platform.<br className="lp__h2-br" />Every AI workflow.
             </h2>
           </div>
           <div className="section--subtitle">
             <div className="text--body _800">
-              Deploy on your existing stack, configure for your operations, train on your data. Models get smarter as your business changes.
+              Jane connects your data, analytics, ML and agentic workflows in one governed system.
               <br /><br />
-              Infrastructure that evolves with AI, not software dated at rollout.&nbsp;
+              From exploration to deployment, the platform evolves with your workflow—not around it.
             </div>
           </div>
         </div>
