@@ -5,6 +5,9 @@
       "recipe_name": "Standard Industrial Vibration Preparation",
       "domain": "industrial_telemetry",
       "target_task": "vibration_profiling",
+      "inputs": ["timestamp", "vibration_rms"],
+      "outputs": ["vibration_clean_rms"],
+      "destructive_operations": false,
       "steps": [
         {
           "step_id": "s1",
@@ -28,6 +31,9 @@
       "recipe_name": "Turbofan RUL Pre-Processing Recipe",
       "domain": "aerospace",
       "target_task": "regression_rul",
+      "inputs": ["sensor_1", "sensor_2", "sensor_3"],
+      "outputs": ["scaled_features"],
+      "destructive_operations": false,
       "steps": [
         {
           "step_id": "s1",
