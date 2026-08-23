@@ -99,10 +99,6 @@ export function LandingPage() {
       {/* ── Hero ───────────────────────────────────────────────────────── */}
       <section className="lp__hero lp__grid-bg" id="top">
         <div className="lp__hero-inner lp__reveal">
-          <div className="lp__hero-eyebrow">
-            <span className="lp__eyebrow-dot" /> MEET JANE — YOUR AICONNEX COPILOT
-          </div>
-
           <h1 className="lp__hero-title">
             Turn <span className="lp__hero-title-muted">industrial data</span> into<br />
             <span className="lp__reel-viewport">
