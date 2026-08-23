@@ -106,7 +106,7 @@ export function LandingPage() {
         <nav className="lp__nav">
           <div className="lp__nav-left">
             <Link to="/" className="lp__logo">
-              <span className="lp__logo-mark material-symbols-outlined">hub</span>
+              <img src="/tas-logo.png" alt="TAS Logo" className="lp__logo-img" />
               <span className="lp__logo-text">AI Connex</span>
             </Link>
             <div className="lp__nav-links">
@@ -191,7 +191,7 @@ export function LandingPage() {
       </div>
 
       {/* ── Platform showcase ──────────────────────────────────────────── */}
-      <section className="lp__showcase lp__grid-bg" id="platform">
+      <section className="lp__showcase" id="platform">
         <div className="lp__showcase-head lp__reveal">
           <span className="lp__eyebrow">
             <span className="lp__eyebrow-dot" /> CORE INFRASTRUCTURE

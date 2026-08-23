@@ -13,4 +13,4 @@ class DeploymentContract(BaseModel):
     min_replicas: int = Field(default=1)
     max_replicas: int = Field(default=5)
     serving_engine: str = Field(default="ONNXRuntime", description="ONNXRuntime, FastAPI, Triton")
-    status: str = Field(default="HEALTHY", description="HEALTHY, DEGRADED, STOPPED")
+    status: str = Field(default="ACTIVE", description="PENDING, ACTIVE, HEALTHY, DEGRADED, STOPPED, FAILED")

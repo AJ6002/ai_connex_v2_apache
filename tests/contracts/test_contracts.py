@@ -99,5 +99,44 @@ def test_intent_normalizer():
     assert intent.tenant_uid == "tenant-99"
 
 
+def test_job_contract():
+    from contracts.job.job_contract import JobContract, JobStageContract, JobStageStatus, JobStatus
+    job = JobContract(
+        job_id="JOB-8294",
+        intent_uid="intent-001",
+        status=JobStatus.RUNNING,
+        stages=[
+            JobStageContract(key="INTAKE", label="Intake", status=JobStageStatus.DONE),
+            JobStageContract(key="PROFILER", label="Profiler", status=JobStageStatus.RUNNING, progress_pct=64.0)
+        ]
+    )
+    assert job.job_id == "JOB-8294"
+    assert job.status == JobStatus.RUNNING
+    assert len(job.stages) == 2
+    assert job.stages[1].status == JobStageStatus.RUNNING
+
+
+def test_profile_summary_contract():
+    from contracts.profile.profile_contract import ColumnSummaryContract, ProfileSummaryContract
+    summary = ProfileSummaryContract(
+        manifest_id="manifest-100",
+        dataset_ref="ds-001",
+        dataset_name="transactions_main",
+        row_count=24000,
+        column_count=12,
+        columns=[
+            ColumnSummaryContract(name="timestamp", dtype="datetime", null_ratio=0.0, distinct_count=24000),
+            ColumnSummaryContract(name="temp_c", dtype="float", null_ratio=0.01, distinct_count=8123)
+        ],
+        recommended_dag_id="DAG_906",
+        algorithm_family="Time-Series Regression",
+        narrative="Time-indexed multi-sensor telemetry suitable for RUL profiling."
+    )
+    assert summary.dataset_name == "transactions_main"
+    assert len(summary.columns) == 2
+    assert summary.columns[0].dtype == "datetime"
+
+
+
 
 

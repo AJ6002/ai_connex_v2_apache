@@ -12,7 +12,7 @@ class ManifestContract(BaseModel):
     tenant_uid: str = Field(..., description="Tenant organization ID")
     intent_uid: str = Field(..., description="Associated Intent Envelope ID")
     run_id: str = Field(..., description="Execution run directory ID")
-    status: str = Field(default="MACHINE_READY", description="Lifecycle status: MACHINE_READY, READY_FOR_PROFILER, COMPILED, TRAINED, DEPLOYED")
+    status: str = Field(default="MACHINE_READY", description="Lifecycle status: MACHINE_READY, READY_FOR_PROFILER, COMPILED, FEATURES_READY, TRAINED, EVALUATED, DEPLOYED")
     compiled_parquet_path: str | None = Field(None, description="Canonical compiled Parquet file path")
     schema_map: dict[str, str] = Field(default_factory=dict, description="Unified schema mapping")
     source_asset_ids: list[str] = Field(default_factory=list, description="Source dataset asset IDs")

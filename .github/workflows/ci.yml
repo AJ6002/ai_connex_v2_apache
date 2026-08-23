@@ -38,29 +38,14 @@ jobs:
           pytest tests/ --cov=contracts -v
 
   frontend-build:
-    name: Legacy Frontend (deprecated) Build & Verification
+    name: "[ARCHIVED] Legacy Frontend — Do Not Depend On"
     runs-on: ubuntu-latest
-    env:
-      NODE_OPTIONS: "--max_old_space_size=4096"
 
     steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js 20
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: Install Frontend Dependencies
+      - name: Sentinel Check (Archived)
         run: |
-          cd frontend-deprecated
-          npm ci --legacy-peer-deps || npm install --include=dev --legacy-peer-deps
-
-      - name: Build React Production Shell
-        run: |
-          cd frontend-deprecated
-          npm run build
+          echo "frontend-deprecated/ is archived and retired. Active UI is in web/."
+          exit 0
 
   container-build-scan:
     name: Container Build Verification

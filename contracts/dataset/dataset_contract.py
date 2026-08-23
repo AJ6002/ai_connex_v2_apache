@@ -20,4 +20,5 @@ class DatasetContract(BaseModel):
     row_count: int | None = Field(None, description="Total row count")
     column_count: int | None = Field(None, description="Total column count")
     status: str = Field(default="RECEIVED", description="Lifecycle status: RECEIVED, QUARANTINED, PARSED, PROMOTED")
+    promoted_at: datetime | None = Field(None, description="Timestamp when promoted to production dataset store")
     created_at: datetime = Field(default_factory=datetime.utcnow)
