@@ -51,6 +51,7 @@ def test_recipe_contract():
         schema_version="1.0.0",
         recipe_name="Vibration Cleaning",
         target_task="vibration_profiling",
+        destructive_operations=False,
         steps=[
             RecipeStep(step_id="s1", operation="unit_conversion", parameters={"to": "mm/s"})
         ]
@@ -231,7 +232,7 @@ def test_contract_schema_version_coverage():
         ModelContract(model_id="mod1", tenant_uid="t1", manifest_id="m1", algorithm_name="XGB", task_type="T", schema_version="1.0.0"),
         PrepareContract(manifest_id="m1", schema_version="1.0.0"),
         ProfileContract(manifest_id="m1", row_count=10, column_count=2, schema_version="1.0.0"),
-        RecipeContract(recipe_id="r1", recipe_name="N", target_task="T", schema_version="1.0.0"),
+        RecipeContract(recipe_id="r1", recipe_name="N", target_task="T", destructive_operations=False, schema_version="1.0.0"),
         ParserResultManifest(job_id="j1", image_name="img", image_digest="d", input_file="f", input_hash="h", output_parquet="p", output_hash="oh", row_count=5, started_at=datetime.utcnow(), completed_at=datetime.utcnow(), schema_version="1.0.0"),
         CandidateRegion(source_file="f", row_start=0, row_end=1, col_start=0, col_end=1, confidence=0.9, proposed_table_name="t", schema_version="1.0.0"),
         SegmentationProposal(asset_id="ast1", schema_version="1.0.0"),
@@ -323,7 +324,7 @@ def test_roundtrip_serialization_all_contracts():
         (ModelContract, ModelContract(model_id="mod1", tenant_uid="t1", manifest_id="m1", algorithm_name="XGB", task_type="T", created_at=now)),
         (PrepareContract, PrepareContract(manifest_id="m1")),
         (ProfileContract, ProfileContract(manifest_id="m1", row_count=10, column_count=2)),
-        (RecipeContract, RecipeContract(recipe_id="r1", recipe_name="N", target_task="T")),
+        (RecipeContract, RecipeContract(recipe_id="r1", recipe_name="N", target_task="T", destructive_operations=False)),
         (ParserResultManifest, ParserResultManifest(job_id="j1", image_name="img", image_digest="d", input_file="f", input_hash="h", output_parquet="p", output_hash="oh", row_count=5, started_at=now, completed_at=now)),
         (CandidateRegion, CandidateRegion(source_file="f", row_start=0, row_end=1, col_start=0, col_end=1, confidence=0.9, proposed_table_name="t")),
         (SegmentationProposal, SegmentationProposal(asset_id="ast1", created_at=now)),

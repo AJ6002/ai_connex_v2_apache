@@ -18,5 +18,8 @@ class RecipeContract(BaseModel):
     recipe_name: str = Field(..., description="Human readable recipe title")
     domain: str = Field(default="industrial_telemetry", description="Industrial domain classification")
     target_task: str = Field(..., description="Target task type (e.g. regression_rul, anomaly_detection)")
+    inputs: list[str] = Field(default_factory=list, description="Declared input schema requirements")
+    outputs: list[str] = Field(default_factory=list, description="Declared output feature artifacts")
+    destructive_operations: bool = Field(..., description="Safety flag: true if operation alters raw data irreversibly")
     steps: list[RecipeStep] = Field(default_factory=list, description="Ordered execution steps")
     version: str = Field(default="v1.0", description="Recipe version")
