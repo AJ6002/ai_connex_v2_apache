@@ -650,31 +650,34 @@
 }
 
 .hp--platform-tabs-link {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px;
-  border-radius: 12px;
-  background-color: transparent;
-  border: 1px solid transparent;
-  color: #4c4c4c;
-  cursor: pointer;
-  text-align: left;
-  text-decoration: none;
-  transition: all 0.2s ease;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 16px 20px !important;
+  border-radius: 14px !important;
+  background-color: transparent !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  box-shadow: none !important;
+  color: #4b5563 !important;
+  cursor: pointer !important;
+  text-align: left !important;
+  text-decoration: none !important;
+  transition: all 0.2s ease !important;
 }
 
 .hp--platform-tabs-link:hover {
-  background-color: #f4f4f4;
-  color: #0f0f0f;
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
 }
 
 .hp--platform-tabs-link.w--current {
-  background-color: #ffffff;
-  border-color: #ececec;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
-  color: #0f0f0f;
-  font-weight: 600;
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
+  color: #0f172a !important;
+  font-weight: 700 !important;
 }
 
 .hp--platform-tabs-link-label {
