@@ -646,38 +646,38 @@
 .hp--platform-tabs-menu.w-tab-menu {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
 }
 
 .hp--platform-tabs-link {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
-  padding: 16px 20px !important;
-  border-radius: 14px !important;
-  background-color: transparent !important;
-  background: transparent !important;
-  border: 1px solid transparent !important;
+  padding: 18px 24px !important;
+  border-radius: 4px !important;
+  background-color: #f8f8f8 !important;
+  background: #f8f8f8 !important;
+  border: 1px solid #eeeeee !important;
   box-shadow: none !important;
-  color: #4b5563 !important;
+  color: #757575 !important;
   cursor: pointer !important;
   text-align: left !important;
   text-decoration: none !important;
-  transition: all 0.2s ease !important;
+  transition: all 0.15s ease !important;
 }
 
 .hp--platform-tabs-link:hover {
-  background-color: #f8fafc !important;
-  color: #0f172a !important;
+  background-color: #f0f0f0 !important;
+  color: #0f0f0f !important;
 }
 
 .hp--platform-tabs-link.w--current {
-  background-color: #ffffff !important;
-  background: #ffffff !important;
-  border: 1px solid #e2e8f0 !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
-  color: #0f172a !important;
-  font-weight: 700 !important;
+  background-color: #ededed !important;
+  background: #ededed !important;
+  border: 1px solid #e0e0e0 !important;
+  box-shadow: none !important;
+  color: #0f0f0f !important;
+  font-weight: 600 !important;
 }
 
 .hp--platform-tabs-link-label {
