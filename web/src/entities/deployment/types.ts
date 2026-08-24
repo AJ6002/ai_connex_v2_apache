@@ -13,7 +13,8 @@ export interface DeploymentMetrics {
 
 export interface DeploymentSpec {
   deploymentId: string;
-  schemaVersion?: string;
+  tenantUid: string;
+  schemaVersion: string;
   name: string;
   modelRef: string;
   environment: string; // e.g. "PRODUCTION", "STAGING"

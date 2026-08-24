@@ -10,10 +10,15 @@ export type ArtifactStatus =
   | 'NEEDS_CLARIFICATION'
   | 'NEEDS_USER_CORRECTION'
   | 'QUARANTINED'
-  | 'FAILED';
+  | 'FAILED'
+  /** Blocked by registry policy — must render a distinct, non-dismissable treatment.
+   * See Frontend Phase 1.1.2. Never fall through to generic ErrorState. */
+  | 'BLOCK';
 
 export interface ArtifactPackage {
   artifactId: string;
+  tenantUid: string;
+  schemaVersion: string;
   status: ArtifactStatus;
   datasetRef?: string;
   schemaRef?: string;

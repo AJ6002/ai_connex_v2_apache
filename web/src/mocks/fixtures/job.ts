@@ -20,6 +20,8 @@ export const intentFixture: IntentEnvelope = {
 
 export const artifactFixture: ArtifactPackage = {
   artifactId: 'artifact_demo_0001',
+  tenantUid: 'tenant_demo',
+  schemaVersion: '1.0.0',
   status: 'READY_FOR_PROFILER',
   datasetRef: 'tenant_demo/site_a/dataset_demo',
   schemaRef: 'schema_demo_0001',
@@ -30,6 +32,7 @@ export const artifactFixture: ArtifactPackage = {
 export const jobFixture: Job = {
   jobId: 'job_demo_0001',
   tenantUid: intentFixture.tenantUid,
+  schemaVersion: '1.0.0',
   intentUid: intentFixture.intentUid,
   status: 'COMPLETED',
   stages: [
@@ -84,7 +87,9 @@ const trainingStages = (activeIndex: number, failedIndex = -1): Job['stages'] =>
   });
 };
 
-const baseDetail = {
+const baseDetail: Pick<Job, 'tenantUid' | 'schemaVersion' | 'title' | 'startedAt' | 'durationLabel' | 'initiatedBy' | 'datasetRef' | 'intentUid' | 'createdAt' | 'updatedAt'> = {
+  tenantUid: 'tenant_demo',
+  schemaVersion: '1.0.0',
   title: 'Model Training: Customer Churn V3',
   startedAt: '10:42 AM',
   durationLabel: '14m 22s',

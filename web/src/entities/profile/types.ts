@@ -11,6 +11,8 @@ export interface ColumnProfile {
 
 export interface ProfileSummary {
   datasetRef: string;
+  tenantUid: string;
+  schemaVersion: string;
   datasetName?: string;
   rowCount: number;
   columnCount?: number;

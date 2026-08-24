@@ -54,6 +54,8 @@ export interface TenantConfig {
 
 export interface WorkspaceSpec {
   workspaceId: string;
+  tenantUid: string;
+  schemaVersion: string;
   name: string;
   environment: string; // e.g. "PRODUCTION ENVIRONMENT"
   quotas: QuotaUsage;
