@@ -54,7 +54,8 @@ export interface JobStage {
 
 export interface Job {
   jobId: string;
-  tenantUid?: string;
+  tenantUid: string;
+  schemaVersion: string;
   intentUid: string;
   status: JobStatus;
   /** Only the stages the backend plan actually selected are present. */

@@ -2,6 +2,7 @@ export const modelsFixture = [
   {
     modelId: 'CHURN-V3',
     tenantUid: 'tenant_demo_0001',
+    schemaVersion: '1.0.0',
     name: 'Customer Churn V3',
     version: 'v1.2.4',
     framework: 'XGBoost',
@@ -22,6 +23,8 @@ export const modelsFixture = [
   },
   {
     modelId: 'NLP-SENTIMENT',
+    tenantUid: 'tenant_demo_0001',
+    schemaVersion: '1.0.0',
     name: 'NLP Sentiment',
     version: 'v2.0.1',
     framework: 'PyTorch',

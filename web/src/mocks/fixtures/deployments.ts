@@ -1,6 +1,8 @@
 export const deploymentsFixture = [
   {
     deploymentId: 'DEPLOY-772',
+    tenantUid: 'tenant_demo_0001',
+    schemaVersion: '1.0.0',
     name: 'Churn-Inference-Prod',
     modelRef: 'CHURN-V3 v1.2.4',
     environment: 'PRODUCTION',
@@ -16,6 +18,8 @@ export const deploymentsFixture = [
   },
   {
     deploymentId: 'DEPLOY-651',
+    tenantUid: 'tenant_demo_0001',
+    schemaVersion: '1.0.0',
     name: 'Sentiment-Staging',
     modelRef: 'NLP-SENTIMENT v2.0.1',
     environment: 'STAGING',

@@ -82,6 +82,7 @@ export function reviewDiscoverySegmentState(
 export const datasetFixture: Dataset = {
   datasetId: 'dataset_demo_0001',
   tenantUid: 'tenant_demo',
+  schemaVersion: '1.0.0',
   name: 'telemetry_demo',
   parquetRef: 'tenant_demo/site_a/dataset_demo/parsed/data.parquet',
   rowCount: 24000,

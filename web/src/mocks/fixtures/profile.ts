@@ -2,6 +2,8 @@ import type { ProfileSummary } from '@/entities/profile/types';
 
 export const profileSummaryFixture: ProfileSummary = {
   datasetRef: 'tenant_demo/site_a/dataset_demo',
+  tenantUid: 'tenant_demo',
+  schemaVersion: '1.0.0',
   datasetName: 'transactions_main',
   rowCount: 24000,
   columnCount: 12,

@@ -1,5 +1,7 @@
 export const workspaceFixture = {
   workspaceId: 'ws-prod-99x2a-bt4',
+  tenantUid: 'tenant_demo_0001',
+  schemaVersion: '1.0.0',
   name: 'Project Alpha - Prod',
   environment: 'PRODUCTION ENVIRONMENT',
   primaryRegion: 'us-east-1 (N. Virginia)',
