@@ -31,7 +31,7 @@ export function AppShell() {
       <aside className="shell__side">
         <div className="shell__brand">
           <NavLink to="/" className="shell__brand-name">
-            AI-ConneX
+            AIConnex
           </NavLink>
           <div className="shell__project">
             <span className="shell__project-name">Project Alpha</span>
