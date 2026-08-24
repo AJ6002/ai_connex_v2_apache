@@ -31,22 +31,15 @@ function LottiePlayer({ animationPath, className, loop = true, autoplay = true }
   return <div ref={containerRef} className={className} />;
 }
 
-const NAV_LINKS = ['Platform', 'Solutions', 'Agent Engine', 'Data Lab', 'Resources', 'Company'];
-
-const SHOWCASE_TABS = [
-  'Agent Workflows',
-  'Data Engine',
-  'Expert Network',
-  'Evals',
-  'RL Labs',
-] as const;
+import { LandingNavbar } from './LandingNavbar';
+import { PlatformShowcase } from './PlatformShowcase';
 
 const REEL_WORDS = [
-  'enterprise scale',
-  'insurance',
-  'life sciences',
-  'frontline enterprise',
-  'financial services',
+  'intelligent decisions.',
+  'predictive maintenance.',
+  'anomaly detection.',
+  'quality intelligence.',
+  'automated ML workflows.',
 ] as const;
 
 const MARQUEE_ITEMS = [
@@ -63,7 +56,6 @@ const MARQUEE_ITEMS = [
  * Scoped light tokens live in LandingPage.css under `.lp`.
  */
 export function LandingPage() {
-  const [activeTab, setActiveTab] = useState<(typeof SHOWCASE_TABS)[number]>('Agent Workflows');
   const [reelIndex, setReelIndex] = useState<number>(0);
 
   useEffect(() => {
@@ -95,50 +87,20 @@ export function LandingPage() {
     <div className="lp">
       {/* ── Announcement banner ────────────────────────────────────────── */}
       <div className="lp__banner">
-        <span>AI Connex 2.0 Released: Autonomous Agent Orchestration at Scale</span>
+        <span>AIConneX 2.0 Released: Autonomous Agent Orchestration at Scale</span>
         <a className="lp__banner-pill" href="#release">
           <span className="material-symbols-outlined">north_east</span> READ RELEASE
         </a>
       </div>
 
-      {/* ── Top nav (Sticky Glassmorphism) ──────────────────────────────── */}
-      <header className="lp__nav-sticky">
-        <nav className="lp__nav">
-          <div className="lp__nav-left">
-            <Link to="/" className="lp__logo">
-              <img src="/tas-logo.png" alt="TAS Logo" className="lp__logo-img" />
-              <span className="lp__logo-text">AI Connex</span>
-            </Link>
-            <div className="lp__nav-links">
-              {NAV_LINKS.map((label, i) => (
-                <a
-                  key={label}
-                  href="#platform"
-                  className={`lp__nav-link${i === 0 ? ' lp__nav-link--active' : ''}`}
-                >
-                  {label}
-                  {(label === 'Solutions' || label === 'Data Lab' || label === 'Resources' || label === 'Company') && (
-                    <span className="material-symbols-outlined lp__caret">expand_more</span>
-                  )}
-                </a>
-              ))}
-            </div>
-          </div>
-          <div className="lp__nav-right">
-            <span className="lp__expert">Expert Network</span>
-            <Link to="/intake" className="lp__cta-lime">
-              <span className="material-symbols-outlined">north_east</span> BOOK A DEMO
-            </Link>
-          </div>
-        </nav>
-      </header>
+      {/* ── Fixed Floating Navigation ──────────────────────────────────── */}
+      <LandingNavbar />
 
       {/* ── Hero ───────────────────────────────────────────────────────── */}
-      <section className="lp__hero lp__grid-bg">
+      <section className="lp__hero lp__grid-bg" id="top">
         <div className="lp__hero-inner lp__reveal">
           <h1 className="lp__hero-title">
-            Orchestrating Autonomous AI Workflows<br />
-            from <span className="lp__hero-title-muted">frontier intelligence</span> to<br />
+            Turn <span className="lp__hero-title-muted">industrial data</span> into<br />
             <span className="lp__reel-viewport">
               <span
                 className="lp__reel-track"
@@ -152,16 +114,17 @@ export function LandingPage() {
               </span>
             </span>
           </h1>
+
           <p className="lp__hero-sub">
-            AI Connex trains, deploys, and manages multi-agent systems and real-time data pipelines
-            with enterprise governance.
+            Talk to Jane to explore your data, understand what is happening, build ML workflows, and move results toward deployment.
           </p>
+
           <div className="lp__hero-ctas">
             <Link to="/intake" className="lp__cta-black">
               <span className="material-symbols-outlined">north_east</span> GET STARTED
             </Link>
             <a href="#demo" className="lp__cta-outline">
-              Watch Demo
+              WATCH DEMO
             </a>
           </div>
         </div>
@@ -191,57 +154,7 @@ export function LandingPage() {
       </div>
 
       {/* ── Platform showcase ──────────────────────────────────────────── */}
-      <section className="lp__showcase" id="platform">
-        <div className="lp__showcase-head lp__reveal">
-          <span className="lp__eyebrow">
-            <span className="lp__eyebrow-dot" /> CORE INFRASTRUCTURE
-          </span>
-          <h2 className="lp__h2">Building blocks, not black boxes</h2>
-        </div>
-
-        <div className="lp__showcase-grid lp__reveal">
-          <div className="lp__tabs">
-            {SHOWCASE_TABS.map((tab) => (
-              <button
-                key={tab}
-                type="button"
-                className={`lp__tab${activeTab === tab ? ' lp__tab--active' : ''}`}
-                onClick={() => setActiveTab(tab)}
-              >
-                {tab}
-                {activeTab === tab && <span className="material-symbols-outlined">arrow_forward</span>}
-              </button>
-            ))}
-          </div>
-
-          <div className="lp__canvas">
-            <div className="lp__canvas-dots">
-              <span /> <span /> <span />
-            </div>
-            <h3 className="lp__canvas-title">Axon Agent Pipeline</h3>
-            <p className="lp__canvas-sub">Build governed agents that mirror your workflows.</p>
-            <div className="lp__diagram">
-              <div className="lp__node">
-                <span className="lp__node-label">DATA INGEST</span>
-                <span className="lp__node-name">Raw Inputs</span>
-              </div>
-              <div className="lp__connector" />
-              <div className="lp__node lp__node--active">
-                <span className="lp__node-badge">
-                  <span className="lp__node-badge-dot" /> ACTIVE
-                </span>
-                <span className="lp__node-label">PROCESSING</span>
-                <span className="lp__node-name">{activeTab}</span>
-              </div>
-              <div className="lp__connector" />
-              <div className="lp__node">
-                <span className="lp__node-label">OUTPUT</span>
-                <span className="lp__node-name">Structured Data</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <PlatformShowcase />
 
       {/* ── Dark transition ────────────────────────────────────────────── */}
       <section className="lp__dark">
