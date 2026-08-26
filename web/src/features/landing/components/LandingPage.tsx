@@ -107,7 +107,8 @@ export function LandingPage() {
       <section className="lp__hero lp__grid-bg" id="top">
         <div className="lp__hero-inner lp__reveal">
           <h1 className="lp__hero-title">
-            Turn <span className="lp__hero-title-muted">industrial data</span> into<br />
+            Turn <span className="lp__hero-title-muted">industrial telemetry</span><br />
+            into real-time intelligence for<br />
             <span className="lp__reel-viewport">
               <span
                 className="lp__reel-track"
