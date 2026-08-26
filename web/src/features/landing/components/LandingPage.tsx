@@ -33,6 +33,10 @@ function LottiePlayer({ animationPath, className, loop = true, autoplay = true }
 
 import { LandingNavbar } from './LandingNavbar';
 import { PlatformShowcase } from './PlatformShowcase';
+import { WorkflowArchitecture } from './WorkflowArchitecture';
+import { CorePillars } from './CorePillars';
+import { DowntimeSimulator } from './DowntimeSimulator';
+import { KnowledgeSearchSection } from './KnowledgeSearchSection';
 
 const REEL_WORDS = [
   'intelligent decisions.',
@@ -155,6 +159,18 @@ export function LandingPage() {
 
       {/* ── Platform showcase ──────────────────────────────────────────── */}
       <PlatformShowcase />
+
+      {/* ── Dovetail-Inspired 4-Step Workflow Architecture ─────────────── */}
+      <WorkflowArchitecture />
+
+      {/* ── 4 Core Solution & Data Architecture Pillars ────────────────── */}
+      <CorePillars />
+
+      {/* ── Interactive Financial & Downtime Simulator ──────────────────── */}
+      <DowntimeSimulator />
+
+      {/* ── Knowledge Intelligence Engine / Search Section ─────────────── */}
+      <KnowledgeSearchSection />
 
       {/* ── Dark transition ────────────────────────────────────────────── */}
       <section className="lp__dark">
