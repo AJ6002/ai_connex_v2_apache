@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { SpecularCard } from './SpecularButton';
+import { VoicePoweredOrb } from '@/components/ui/voice-powered-orb';
 import {
   Sparkles,
   Calendar,
@@ -172,6 +173,7 @@ export const KnowledgeSearchSection: React.FC = () => {
           {/* Centered Mascot Character Header */}
           <div className="lp__ks-mascot-header">
             <div className="lp__ks-mascot-avatar">
+              <VoicePoweredOrb className="absolute inset-0 rounded-full overflow-hidden opacity-75" enableVoiceControl={false} hue={280} />
               <div className="lp__ks-mascot-ring" />
               <Sparkles className="lp__ks-sparkle-icon" />
               <span className="lp__ks-star">✦</span>
