@@ -1,8 +1,18 @@
 /* eslint-disable no-restricted-syntax */
-import React, { useState, Children, useRef, useLayoutEffect, ReactNode } from 'react';
+import React, { useState, Children, useRef, useLayoutEffect, ReactNode, isValidElement } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import './Stepper.css';
+
+export interface StepProps {
+  children: ReactNode;
+  title?: string;
+  className?: string;
+}
+
+export function Step({ children, className }: StepProps) {
+  return <div className={cn("step-default", className)}>{children}</div>;
+}
 
 export interface StepperProps {
   children: ReactNode;
@@ -23,6 +33,7 @@ export interface StepperProps {
     step: number;
     currentStep: number;
     onStepClick: (step: number) => void;
+    title?: string;
   }) => ReactNode;
   className?: string;
 }
@@ -89,9 +100,11 @@ export function Stepper({
     <div className={cn("stepper-outer-container", className)} {...rest}>
       <div className={`stepper-circle-container ${stepCircleContainerClassName}`}>
         <div className={`stepper-indicator-row ${stepContainerClassName}`}>
-          {stepsArray.map((_, index) => {
+          {stepsArray.map((child, index) => {
             const stepNumber = index + 1;
             const isNotLastStep = index < totalSteps - 1;
+            const stepTitle = isValidElement<StepProps>(child) ? child.props.title : undefined;
+
             return (
               <React.Fragment key={stepNumber}>
                 {renderStepIndicator ? (
@@ -102,10 +115,12 @@ export function Stepper({
                       setDirection(clicked > currentStep ? 1 : -1);
                       updateStep(clicked);
                     },
+                    title: stepTitle,
                   })
                 ) : (
                   <StepIndicator
                     step={stepNumber}
+                    title={stepTitle}
                     disableStepIndicators={disableStepIndicators}
                     currentStep={currentStep}
                     onClickStep={(clicked) => {
@@ -235,17 +250,15 @@ const stepVariants = {
   }),
 };
 
-export function Step({ children }: { children: ReactNode }) {
-  return <div className="step-default">{children}</div>;
-}
-
 function StepIndicator({
   step,
+  title,
   currentStep,
   onClickStep,
   disableStepIndicators,
 }: {
   step: number;
+  title?: string;
   currentStep: number;
   onClickStep: (step: number) => void;
   disableStepIndicators: boolean;
@@ -259,7 +272,7 @@ function StepIndicator({
   return (
     <motion.div
       onClick={handleClick}
-      className="stepper-indicator"
+      className="stepper-indicator-wrapper"
       style={disableStepIndicators ? { pointerEvents: 'none', opacity: 0.5 } : {}}
       animate={status}
       initial={false}
@@ -281,6 +294,7 @@ function StepIndicator({
           <span className="stepper-step-number">{step}</span>
         )}
       </motion.div>
+      {title && <span className={`stepper-label stepper-label--${status}`}>{title}</span>}
     </motion.div>
   );
 }

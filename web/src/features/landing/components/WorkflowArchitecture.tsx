@@ -159,7 +159,7 @@ export function WorkflowArchitecture() {
           className="lp__workflow-stepper-root"
         >
           {STEPS.map((step) => (
-            <Step key={step.stepNum}>
+            <Step key={step.stepNum} title={step.shortTitle}>
               <div className="lp__workflow-card">
                 <div className="lp__workflow-card-left">
                   <span className="lp__workflow-pill">{step.pillTag}</span>
