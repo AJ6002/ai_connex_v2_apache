@@ -46,6 +46,8 @@
   background-image: radial-gradient(#c5c8e6 2.5px, transparent 2.5px);
   background-size: 32px 32px;
   background-position: center;
+  border-top: none !important;
+  border-bottom: none !important;
 }
 
 .lp .material-symbols-outlined {
@@ -1035,7 +1037,6 @@
 /* ── Section General Layout ────────────────────────────────────────────── */
 .lp__section {
   padding: 100px 0;
-  border-top: 1px solid var(--lp-outline-variant, #e5e5e5);
 }
 
 .lp__section-header {
