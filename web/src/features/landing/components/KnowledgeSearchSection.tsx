@@ -172,7 +172,7 @@ export const KnowledgeSearchSection: React.FC = () => {
 
           {/* Centered Glowing Orb Header */}
           <div className="lp__ks-mascot-header">
-            <div className="w-14 h-14 mb-4 flex items-center justify-center relative">
+            <div className="w-8 h-8 mb-4 flex items-center justify-center relative">
               <GlowingOrb className="w-full h-full rounded-full overflow-hidden" hue={280} rotationSpeed={0.4} />
             </div>
 
