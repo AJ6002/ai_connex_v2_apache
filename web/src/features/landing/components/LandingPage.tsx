@@ -59,7 +59,10 @@ const MARQUEE_ITEMS = [
  * Light "Schematic Minimalist" theme; standalone (NOT inside the dark AppShell).
  * Scoped light tokens live in LandingPage.css under `.lp`.
  */
+import { useLocomotiveScroll } from '@/hooks/useLocomotiveScroll';
+
 export function LandingPage() {
+  useLocomotiveScroll();
   const [reelIndex, setReelIndex] = useState<number>(0);
 
   useEffect(() => {
