@@ -38,8 +38,8 @@ export function Stepper({
   footerClassName = '',
   backButtonProps = {},
   nextButtonProps = {},
-  backButtonText = 'Back',
-  nextButtonText = 'Continue',
+  backButtonText = 'Previous',
+  nextButtonText = 'Next',
   disableStepIndicators = false,
   activeStep: controlledStep,
   renderStepIndicator,
@@ -82,7 +82,7 @@ export function Stepper({
 
   const handleComplete = () => {
     setDirection(1);
-    updateStep(totalSteps + 1);
+    updateStep(1); // loop back to first step when complete
   };
 
   return (
@@ -146,7 +146,7 @@ export function Stepper({
                 className="stepper-next-btn"
                 {...nextButtonProps}
               >
-                {isLastStep ? 'Complete' : nextButtonText}
+                {isLastStep ? 'Restart' : nextButtonText}
               </button>
             </div>
           </div>
@@ -222,7 +222,7 @@ function SlideTransition({
 
 const stepVariants = {
   enter: (dir: number) => ({
-    x: dir >= 0 ? '50%' : '-50%',
+    x: dir >= 0 ? '60%' : '-60%',
     opacity: 0,
   }),
   center: {
@@ -230,7 +230,7 @@ const stepVariants = {
     opacity: 1,
   },
   exit: (dir: number) => ({
-    x: dir >= 0 ? '-50%' : '50%',
+    x: dir >= 0 ? '-60%' : '60%',
     opacity: 0,
   }),
 };
@@ -266,9 +266,9 @@ function StepIndicator({
     >
       <motion.div
         variants={{
-          inactive: { scale: 1, backgroundColor: '#222222', color: '#a3a3a3' },
-          active: { scale: 1, backgroundColor: '#d4f658', color: '#000000' },
-          complete: { scale: 1, backgroundColor: '#d4f658', color: '#000000' },
+          inactive: { scale: 1, backgroundColor: '#f0f2f4', color: '#666666' },
+          active: { scale: 1, backgroundColor: '#006df8', color: '#ffffff' },
+          complete: { scale: 1, backgroundColor: '#006df8', color: '#ffffff' },
         }}
         transition={{ duration: 0.3 }}
         className="stepper-indicator-inner"
@@ -288,7 +288,7 @@ function StepIndicator({
 function StepConnector({ isComplete }: { isComplete: boolean }) {
   const lineVariants = {
     incomplete: { width: 0, backgroundColor: 'transparent' },
-    complete: { width: '100%', backgroundColor: '#d4f658' },
+    complete: { width: '100%', backgroundColor: '#006df8' },
   };
 
   return (

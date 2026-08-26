@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import Stepper, { Step } from '@/components/ui/Stepper';
 
 interface StepData {
   stepNum: string;
@@ -8,7 +7,6 @@ interface StepData {
   heading: string;
   description: string;
   bullets: string[];
-  nextStepTitle?: string;
   engineHeader: string;
   rows: Array<{
     name: string;
@@ -32,7 +30,6 @@ const STEPS: StepData[] = [
       'Edge caching prevents packet drops during plant network outages',
       'Sub-millisecond serialization on high-frequency vibration streams',
     ],
-    nextStepTitle: 'ANALYZE & DETECT',
     engineHeader: 'AICONNEX_ENGINE // STREAM & UNIFY',
     rows: [
       {
@@ -62,7 +59,6 @@ const STEPS: StepData[] = [
       'Auto-adaptive baseline thresholds adjusting for seasonal plant load',
       'Zero false-positive suppression via automated signal filtering',
     ],
-    nextStepTitle: 'SYNTHESIZE WITH JANE',
     engineHeader: 'AICONNEX_ENGINE // ANALYZE & DETECT',
     rows: [
       {
@@ -92,7 +88,6 @@ const STEPS: StepData[] = [
       'Historical technician repair log synthesis and root-cause analysis',
       'Step-by-step mechanical remediation checklists with exact torque specs',
     ],
-    nextStepTitle: 'AUTOMATE & RESOLVE',
     engineHeader: 'AICONNEX_ENGINE // SYNTHESIZE WITH JANE',
     rows: [
       {
@@ -122,7 +117,6 @@ const STEPS: StepData[] = [
       'Automated spare part inventory reservation and technician dispatch',
       'Closed-loop post-repair telemetry verification before closing tickets',
     ],
-    nextStepTitle: 'STREAM & UNIFY',
     engineHeader: 'AICONNEX_ENGINE // AUTOMATE & RESOLVE',
     rows: [
       {
@@ -142,38 +136,7 @@ const STEPS: StepData[] = [
   },
 ];
 
-const cardVariants = {
-  enter: (dir: number) => ({
-    x: dir >= 0 ? 30 : -30,
-    opacity: 0,
-  }),
-  center: {
-    x: 0,
-    opacity: 1,
-  },
-  exit: (dir: number) => ({
-    x: dir >= 0 ? -30 : 30,
-    opacity: 0,
-  }),
-};
-
 export function WorkflowArchitecture() {
-  const [activeStepIndex, setActiveStepIndex] = useState<number>(0);
-  const [direction, setDirection] = useState<number>(1);
-
-  const currentStep = STEPS[activeStepIndex];
-
-  const handleStepSelect = (newIdx: number) => {
-    if (newIdx === activeStepIndex) return;
-    setDirection(newIdx > activeStepIndex ? 1 : -1);
-    setActiveStepIndex(newIdx);
-  };
-
-  const handleNextStep = () => {
-    setDirection(1);
-    setActiveStepIndex((prev) => (prev + 1) % STEPS.length);
-  };
-
   return (
     <section className="lp__section lp__workflow-section" id="workflow">
       <div className="container--1286">
@@ -188,107 +151,68 @@ export function WorkflowArchitecture() {
           </p>
         </div>
 
-        {/* ── 4-Step Animated Indicator Row (React Bits Stepper Style) ──────── */}
-        <div className="lp__workflow-tabs lp__reveal" role="tablist">
-          {STEPS.map((step, idx) => {
-            const isActive = activeStepIndex === idx;
-            return (
-              <button
-                key={step.stepNum}
-                type="button"
-                className={`lp__workflow-tab-btn${isActive ? ' lp__workflow-tab-btn--active' : ''}`}
-                onClick={() => handleStepSelect(idx)}
-                role="tab"
-                aria-selected={isActive}
-              >
-                {isActive && (
-                  <motion.div
-                    layoutId="activeWorkflowTabPill"
-                    className="lp__workflow-tab-pill-highlight"
-                    transition={{ type: 'spring', stiffness: 400, damping: 35 }}
-                  />
-                )}
-                <span className="lp__workflow-tab-step">{step.stepNum}</span>
-                <span className="lp__workflow-tab-title">{step.shortTitle}</span>
-              </button>
-            );
-          })}
-        </div>
+        {/* ── React Bits Stepper Visual Component ───────────────────────────── */}
+        <Stepper
+          initialStep={1}
+          backButtonText="Previous"
+          nextButtonText="Next"
+          className="lp__workflow-stepper-root"
+        >
+          {STEPS.map((step) => (
+            <Step key={step.stepNum}>
+              <div className="lp__workflow-card">
+                <div className="lp__workflow-card-left">
+                  <span className="lp__workflow-pill">{step.pillTag}</span>
+                  <h3 className="lp__workflow-heading">{step.heading}</h3>
+                  <p className="lp__workflow-desc">{step.description}</p>
 
-        {/* ── Animated Active Step Panel Container ───────────────────────── */}
-        <div className="lp__workflow-card-wrapper relative overflow-hidden">
-          <AnimatePresence initial={false} mode="wait" custom={direction}>
-            <motion.div
-              key={activeStepIndex}
-              custom={direction}
-              variants={cardVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.35, ease: 'easeInOut' }}
-              className="lp__workflow-card lp__reveal"
-            >
-              <div className="lp__workflow-card-left">
-                <span className="lp__workflow-pill">{currentStep.pillTag}</span>
-                <h3 className="lp__workflow-heading">{currentStep.heading}</h3>
-                <p className="lp__workflow-desc">{currentStep.description}</p>
+                  <ul className="lp__workflow-bullets">
+                    {step.bullets.map((bullet) => (
+                      <li key={bullet}>
+                        <span className="lp__bullet-check">✓</span>
+                        <span>{bullet}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
 
-                <ul className="lp__workflow-bullets">
-                  {currentStep.bullets.map((bullet) => (
-                    <li key={bullet}>
-                      <span className="lp__bullet-check">✓</span>
-                      <span>{bullet}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                {currentStep.nextStepTitle && (
-                  <button
-                    type="button"
-                    className="lp__workflow-next-btn"
-                    onClick={handleNextStep}
-                  >
-                    NEXT STEP: {currentStep.nextStepTitle} <span className="lp__arrow">→</span>
-                  </button>
-                )}
-              </div>
-
-              <div className="lp__workflow-card-right">
-                <div className="lp__engine-terminal">
-                  <div className="lp__engine-top">
-                    <div className="lp__engine-dots">
-                      <span className="lp__mockup-dot" />
-                      <span className="lp__mockup-dot" />
-                      <span className="lp__mockup-dot" />
+                <div className="lp__workflow-card-right">
+                  <div className="lp__engine-terminal">
+                    <div className="lp__engine-top">
+                      <div className="lp__engine-dots">
+                        <span className="lp__mockup-dot" />
+                        <span className="lp__mockup-dot" />
+                        <span className="lp__mockup-dot" />
+                      </div>
+                      <span className="lp__engine-title">{step.engineHeader}</span>
+                      <span className="lp__engine-badge">REALTIME PIPELINE</span>
                     </div>
-                    <span className="lp__engine-title">{currentStep.engineHeader}</span>
-                    <span className="lp__engine-badge">REALTIME PIPELINE</span>
-                  </div>
 
-                  <div className="lp__engine-rows">
-                    {currentStep.rows.map((row) => (
-                      <div key={row.name} className="lp__engine-row">
-                        <div className="lp__engine-row-left">
-                          <span className="material-symbols-outlined lp__engine-icon">memory</span>
-                          <div>
-                            <div className="lp__engine-node-name">{row.name}</div>
-                            <div className="lp__engine-node-sub">{row.sub}</div>
+                    <div className="lp__engine-rows">
+                      {step.rows.map((row) => (
+                        <div key={row.name} className="lp__engine-row">
+                          <div className="lp__engine-row-left">
+                            <span className="material-symbols-outlined lp__engine-icon">memory</span>
+                            <div>
+                              <div className="lp__engine-node-name">{row.name}</div>
+                              <div className="lp__engine-node-sub">{row.sub}</div>
+                            </div>
+                          </div>
+                          <div className="lp__engine-row-right">
+                            <div className="lp__engine-metric">{row.metric}</div>
+                            <div className="lp__engine-detail">{row.detail}</div>
                           </div>
                         </div>
-                        <div className="lp__engine-row-right">
-                          <div className="lp__engine-metric">{row.metric}</div>
-                          <div className="lp__engine-detail">{row.detail}</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
 
-                  <div className="lp__engine-footer">{currentStep.footerBanner}</div>
+                    <div className="lp__engine-footer">{step.footerBanner}</div>
+                  </div>
                 </div>
               </div>
-            </motion.div>
-          </AnimatePresence>
-        </div>
+            </Step>
+          ))}
+        </Stepper>
       </div>
     </section>
   );

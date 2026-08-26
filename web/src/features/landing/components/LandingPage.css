@@ -1137,11 +1137,11 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 40px;
-  padding: 40px;
-  border-radius: 20px;
-  border: 1px solid #e2e2e2;
-  background-color: #ffffff;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  padding: 0;
+  border-radius: 0;
+  border: none;
+  background-color: transparent;
+  box-shadow: none;
 }
 
 .lp__workflow-pill {
