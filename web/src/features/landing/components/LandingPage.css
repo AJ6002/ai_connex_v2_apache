@@ -6,7 +6,7 @@
  */
 .lp {
   /* scoped light tokens */
-  --lp-bg: #f4f4ff;
+  --lp-bg: rgb(255, 255, 255);
   --lp-white: #ffffff;
   --lp-black: #000000;
   --lp-primary: #536600;
@@ -19,7 +19,7 @@
   --lp-dot-grid: #c5c8e6;
   --lp-charcoal: #0f1012;
   --lp-slate: #16181c;
-  --lp-surface: #f4f4ff;
+  --lp-surface: rgb(255, 255, 255);
   --lp-surface-container-low: #f3f4f5;
 
   min-height: 100vh;
@@ -42,7 +42,7 @@
 }
 
 .lp__grid-bg {
-  background-color: #f4f4ff;
+  background-color: rgb(255, 255, 255);
   background-image: radial-gradient(#c5c8e6 2.5px, transparent 2.5px);
   background-size: 32px 32px;
   background-position: center;
@@ -304,7 +304,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 45%, rgba(244, 244, 255, 0.92) 0%, rgba(244, 244, 255, 0.2) 65%);
+  background: radial-gradient(circle at 50% 45%, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.2) 65%);
   pointer-events: none;
   z-index: 2;
 }
@@ -1037,7 +1037,7 @@
 /* ── Section General Layout ────────────────────────────────────────────── */
 .lp__section {
   padding: 100px 0;
-  background-color: var(--lp-bg, #f4f4ff);
+  background-color: var(--lp-bg, rgb(255, 255, 255));
   border: none !important;
 }
 
