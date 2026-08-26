@@ -160,15 +160,6 @@ export const KnowledgeSearchSection: React.FC = () => {
       <div className="container--1286">
         {/* Outer Browser/Canvas Card */}
         <div className="lp__ks-card lp__reveal">
-          {/* Top Window Control Dots (macOS style: Red, Yellow, Green) */}
-          <div className="lp__ks-top-bar">
-            <div className="lp__ks-dots">
-              <span className="lp__ks-dot lp__ks-dot--red" />
-              <span className="lp__ks-dot lp__ks-dot--yellow" />
-              <span className="lp__ks-dot lp__ks-dot--green" />
-            </div>
-            <span className="lp__ks-header-text">AIConneX Knowledge Intelligence Engine</span>
-          </div>
 
           {/* Centered Glowing Orb Header */}
           <div className="lp__ks-mascot-header">

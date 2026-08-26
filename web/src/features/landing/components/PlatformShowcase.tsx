@@ -230,11 +230,6 @@ export function PlatformShowcase() {
 
               {/* Interactive UI Mockup Preview Frame */}
               <div className="lp__mockup-window">
-                <div className="lp__mockup-topbar">
-                  <span className="lp__mockup-dot" />
-                  <span className="lp__mockup-dot" />
-                  <span className="lp__mockup-dot" />
-                </div>
 
                 <div className="lp__mockup-body">
                   <div className="lp__mockup-header">

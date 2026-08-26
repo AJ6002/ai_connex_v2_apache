@@ -179,11 +179,6 @@ export function WorkflowArchitecture() {
                 <div className="lp__workflow-card-right">
                   <div className="lp__engine-terminal">
                     <div className="lp__engine-top">
-                      <div className="lp__engine-dots">
-                        <span className="lp__mockup-dot" />
-                        <span className="lp__mockup-dot" />
-                        <span className="lp__mockup-dot" />
-                      </div>
                       <span className="lp__engine-title">{step.engineHeader}</span>
                       <span className="lp__engine-badge">REALTIME PIPELINE</span>
                     </div>
