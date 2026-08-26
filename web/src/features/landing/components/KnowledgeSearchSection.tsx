@@ -178,14 +178,11 @@ export const KnowledgeSearchSection: React.FC = () => {
 
           {/* Centered Glowing Orb Header */}
           <div className="lp__ks-mascot-header">
-            <div className="w-8 h-8 mb-4 flex items-center justify-center relative">
+            <div className="w-8 h-8 mb-2 flex items-center justify-center relative">
               <GlowingOrb className="w-full h-full rounded-full overflow-hidden" hue={280} rotationSpeed={0.4} />
             </div>
 
-            <h2 className="heading--h2 lp__ks-title">What do you want to know?</h2>
-            <p className="section--subtitle-text lp__ks-subtitle">
-              Ask anything across plant telemetry, maintenance work orders, sensor trends, and engineering handovers.
-            </p>
+            <h3 className="lp__ks-title">What do you want to know?</h3>
           </div>
 
           {/* Main Interactive Input Card */}
