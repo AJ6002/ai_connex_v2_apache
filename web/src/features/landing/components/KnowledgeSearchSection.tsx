@@ -191,8 +191,8 @@ export const KnowledgeSearchSection: React.FC = () => {
           <form onSubmit={handleFormSubmit} className="lp__ks-form">
             <SpecularCard
               radius={20}
-              lineColor="#191c1d"
-              baseColor="#b0b5ba"
+              lineColor="var(--lp-charcoal, #191c1d)"
+              baseColor="var(--lp-outline-variant, #b0b5ba)"
               intensity={2.2}
               shineSize={32}
               shineFade={55}
