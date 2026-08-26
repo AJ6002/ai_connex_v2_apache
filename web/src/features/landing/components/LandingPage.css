@@ -1074,6 +1074,7 @@
 }
 
 .lp__workflow-tab-btn {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1082,8 +1083,17 @@
   border: 1px solid #e2e2e2;
   background-color: #ffffff;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   text-align: left;
+  overflow: hidden;
+}
+
+.lp__workflow-tab-pill-highlight {
+  position: absolute;
+  inset: 0;
+  background-color: #0f1012;
+  border-radius: 12px;
+  z-index: 0;
 }
 
 .lp__workflow-tab-btn:hover {
@@ -1092,12 +1102,13 @@
 }
 
 .lp__workflow-tab-btn--active {
-  background-color: #0f1012 !important;
   border-color: #0f1012 !important;
   color: #ffffff !important;
 }
 
 .lp__workflow-tab-step {
+  position: relative;
+  z-index: 1;
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.75rem;
   letter-spacing: 0.08em;
@@ -1111,6 +1122,8 @@
 }
 
 .lp__workflow-tab-title {
+  position: relative;
+  z-index: 1;
   font-size: 1rem;
   font-weight: 600;
   color: #0f1012;
