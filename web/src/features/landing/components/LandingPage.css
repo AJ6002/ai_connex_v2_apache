@@ -1037,6 +1037,8 @@
 /* ── Section General Layout ────────────────────────────────────────────── */
 .lp__section {
   padding: 100px 0;
+  background-color: var(--lp-bg, #f4f4ff);
+  border: none !important;
 }
 
 .lp__section-header {

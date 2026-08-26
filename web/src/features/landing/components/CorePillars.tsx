@@ -65,7 +65,7 @@ const PILLARS: PillarCard[] = [
 
 export function CorePillars() {
   return (
-    <section className="lp__section lp__pillars-section lp__grid-bg" id="solutions">
+    <section className="lp__section lp__pillars-section" id="solutions">
       <div className="container--1286">
         <div className="lp__section-header lp__reveal">
           <div className="eyebrow-wrapper">
