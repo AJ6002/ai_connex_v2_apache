@@ -158,6 +158,21 @@ export const KnowledgeSearchSection: React.FC = () => {
   return (
     <section className="lp__section lp__ks-section" id="knowledge-search">
       <div className="container--1286">
+        {/* Section Header */}
+        <div className="lp__section-header lp__reveal" style={{ textAlign: 'center', marginBottom: '40px' }}>
+          <div className="eyebrow-wrapper" style={{ justifyContent: 'center' }}>
+            <span className="lp__eyebrow-dot" />
+            <span className="eyebrow--text">KNOWLEDGE & REASONING ENGINE</span>
+          </div>
+          <h2 className="heading--h2">
+            Instant intelligence from your<br />
+            entire industrial dataset.
+          </h2>
+          <p className="section--subtitle-text" style={{ maxWidth: '640px', margin: '12px auto 0' }}>
+            Ask Jane any question across your plant's P&ID schematics, SCADA logs, and historical OEM manuals.
+          </p>
+        </div>
+
         {/* Outer Browser/Canvas Card */}
         <div className="lp__ks-card lp__reveal">
 
