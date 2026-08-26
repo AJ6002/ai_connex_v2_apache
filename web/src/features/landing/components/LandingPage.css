@@ -1690,55 +1690,6 @@
   margin-bottom: 32px;
 }
 
-.lp__ks-mascot-avatar {
-  position: relative;
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background-color: #191c1d;
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 16px;
-}
-
-.lp__ks-mascot-ring {
-  position: absolute;
-  inset: 4px;
-  border-radius: 50%;
-  border: 1px dashed rgba(212, 246, 88, 0.4);
-}
-
-.lp__ks-sparkle-icon {
-  width: 24px;
-  height: 24px;
-  color: #d4f658;
-  z-index: 2;
-}
-
-.lp__ks-star {
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  font-size: 12px;
-  color: #d4f658;
-}
-
-.lp__ks-legs {
-  position: absolute;
-  bottom: -6px;
-  display: flex;
-  gap: 8px;
-}
-
-.lp__ks-legs span {
-  width: 4px;
-  height: 8px;
-  background-color: #191c1d;
-  border-radius: 2px;
-}
-
 .lp__ks-title {
   font-size: 2.25rem;
   line-height: 1.2;

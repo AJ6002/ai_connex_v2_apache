@@ -4,31 +4,20 @@ import { useEffect, useRef, FC } from "react";
 import { Renderer, Program, Mesh, Triangle, Vec3 } from "ogl";
 import { cn } from "@/lib/utils";
 
-interface VoicePoweredOrbProps {
+interface GlowingOrbProps {
   className?: string;
   hue?: number;
-  enableVoiceControl?: boolean;
-  voiceSensitivity?: number;
-  maxRotationSpeed?: number;
-  maxHoverIntensity?: number;
-  onVoiceDetected?: (detected: boolean) => void;
+  rotationSpeed?: number;
+  hoverIntensity?: number;
 }
 
-export const VoicePoweredOrb: FC<VoicePoweredOrbProps> = ({
+export const GlowingOrb: FC<GlowingOrbProps> = ({
   className,
   hue = 0,
-  enableVoiceControl = true,
-  voiceSensitivity = 1.5,
-  maxRotationSpeed = 1.2,
-  maxHoverIntensity = 0.8,
-  onVoiceDetected,
+  rotationSpeed = 0.4,
+  hoverIntensity = 0.2,
 }) => {
   const ctnDom = useRef<HTMLDivElement>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const analyserRef = useRef<AnalyserNode | null>(null);
-  const microphoneRef = useRef<MediaStreamAudioSourceNode | null>(null);
-  const dataArrayRef = useRef<Uint8Array | null>(null);
-  const mediaStreamRef = useRef<MediaStream | null>(null);
 
   const vert = /* glsl */ `
     precision highp float;
@@ -189,106 +178,6 @@ export const VoicePoweredOrb: FC<VoicePoweredOrbProps> = ({
     }
   `;
 
-  // Voice analysis function
-  const analyzeAudio = () => {
-    if (!analyserRef.current || !dataArrayRef.current) return 0;
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    analyserRef.current.getByteFrequencyData(dataArrayRef.current as any);
-
-    // Calculate RMS (Root Mean Square) for better voice detection
-    let sum = 0;
-    for (let i = 0; i < dataArrayRef.current.length; i++) {
-      const value = dataArrayRef.current[i] / 255;
-      sum += value * value;
-    }
-    const rms = Math.sqrt(sum / dataArrayRef.current.length);
-
-    // Apply sensitivity and boost the signal
-    const level = Math.min(rms * voiceSensitivity * 3.0, 1);
-
-    return level;
-  };
-
-  // Stop microphone and cleanup
-  const stopMicrophone = () => {
-    try {
-      // Stop all tracks in the media stream
-      if (mediaStreamRef.current) {
-        mediaStreamRef.current.getTracks().forEach(track => {
-          track.stop();
-        });
-        mediaStreamRef.current = null;
-      }
-
-      // Disconnect and cleanup audio nodes
-      if (microphoneRef.current) {
-        microphoneRef.current.disconnect();
-        microphoneRef.current = null;
-      }
-
-      if (analyserRef.current) {
-        analyserRef.current.disconnect();
-        analyserRef.current = null;
-      }
-
-      // Close audio context
-      if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
-        audioContextRef.current.close();
-        audioContextRef.current = null;
-      }
-
-      dataArrayRef.current = null;
-    } catch (error) {
-      console.warn('Error stopping microphone:', error);
-    }
-  };
-
-  // Initialize microphone access
-  const initMicrophone = async () => {
-    try {
-      // Clean up any existing microphone first
-      stopMicrophone();
-
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: false,
-          noiseSuppression: false,
-          autoGainControl: false,
-          sampleRate: 44100,
-        },
-      });
-
-      // Store the stream reference for cleanup
-      mediaStreamRef.current = stream;
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
-
-      // Resume audio context if needed
-      if (audioContextRef.current.state === 'suspended') {
-        await audioContextRef.current.resume();
-      }
-
-      analyserRef.current = audioContextRef.current.createAnalyser();
-      microphoneRef.current = audioContextRef.current.createMediaStreamSource(stream);
-
-      // Optimize for voice detection
-      analyserRef.current.fftSize = 512;
-      analyserRef.current.smoothingTimeConstant = 0.3;
-      analyserRef.current.minDecibels = -90;
-      analyserRef.current.maxDecibels = -10;
-
-      microphoneRef.current.connect(analyserRef.current);
-      dataArrayRef.current = new Uint8Array(analyserRef.current.frequencyBinCount);
-
-      return true;
-    } catch (error) {
-      console.warn("Microphone access denied or not available:", error);
-      return false;
-    }
-  };
-
   useEffect(() => {
     const container = ctnDom.current;
     if (!container) return;
@@ -307,13 +196,10 @@ export const VoicePoweredOrb: FC<VoicePoweredOrbProps> = ({
         dpr: window.devicePixelRatio || 1
       });
       glContext = rendererInstance.gl;
-      // Set clear color to transparent to avoid white flash
       glContext.clearColor(0, 0, 0, 0);
-      // Enable alpha blending for proper transparency
       glContext.enable(glContext.BLEND);
       glContext.blendFunc(glContext.SRC_ALPHA, glContext.ONE_MINUS_SRC_ALPHA);
 
-      // Clear any existing canvas
       while (container.firstChild) {
         container.removeChild(container.firstChild);
       }
@@ -334,9 +220,9 @@ export const VoicePoweredOrb: FC<VoicePoweredOrbProps> = ({
             ),
           },
           hue: { value: hue },
-          hover: { value: 0 },
+          hover: { value: 0.2 },
           rot: { value: 0 },
-          hoverIntensity: { value: 0 },
+          hoverIntensity: { value: hoverIntensity },
         },
       });
 
@@ -367,19 +253,6 @@ export const VoicePoweredOrb: FC<VoicePoweredOrbProps> = ({
 
       let lastTime = 0;
       let currentRot = 0;
-      let voiceLevel = 0;
-      const baseRotationSpeed = 0.3;
-      let isMicrophoneInitialized = false;
-
-      // Initialize or stop microphone based on voice control setting
-      if (enableVoiceControl) {
-        initMicrophone().then((success) => {
-          isMicrophoneInitialized = success;
-        });
-      } else {
-        stopMicrophone();
-        isMicrophoneInitialized = false;
-      }
 
       const update = (t: number) => {
         rafId = requestAnimationFrame(update);
@@ -390,30 +263,7 @@ export const VoicePoweredOrb: FC<VoicePoweredOrbProps> = ({
         program.uniforms.iTime.value = t * 0.001;
         program.uniforms.hue.value = hue;
 
-        // Handle voice input
-        if (enableVoiceControl && isMicrophoneInitialized) {
-          voiceLevel = analyzeAudio();
-
-          if (onVoiceDetected) {
-            onVoiceDetected(voiceLevel > 0.1);
-          }
-
-          const voiceRotationSpeed = baseRotationSpeed + (voiceLevel * maxRotationSpeed * 2.0);
-
-          if (voiceLevel > 0.05) {
-            currentRot += dt * voiceRotationSpeed;
-          }
-
-          program.uniforms.hover.value = Math.min(voiceLevel * 2.0, 1.0);
-          program.uniforms.hoverIntensity.value = Math.min(voiceLevel * maxHoverIntensity * 0.8, maxHoverIntensity);
-        } else {
-          program.uniforms.hover.value = 0;
-          program.uniforms.hoverIntensity.value = 0;
-          if (onVoiceDetected) {
-            onVoiceDetected(false);
-          }
-        }
-
+        currentRot += dt * rotationSpeed;
         program.uniforms.rot.value = currentRot;
 
         if (rendererInstance && glContext) {
@@ -439,15 +289,13 @@ export const VoicePoweredOrb: FC<VoicePoweredOrbProps> = ({
           }
         }
 
-        stopMicrophone();
-
         if (glContext) {
           glContext.getExtension("WEBGL_lose_context")?.loseContext();
         }
       };
 
     } catch (error) {
-      console.error("Error initializing Voice Powered Orb:", error);
+      console.error("Error initializing Glowing Orb:", error);
       if (container && container.firstChild) {
         container.removeChild(container.firstChild);
       }
@@ -455,40 +303,13 @@ export const VoicePoweredOrb: FC<VoicePoweredOrbProps> = ({
         window.removeEventListener("resize", () => {});
       };
     }
-  }, [
-    hue,
-    enableVoiceControl,
-    voiceSensitivity,
-    maxRotationSpeed,
-    maxHoverIntensity,
-    vert,
-    frag
-  ]);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const handleMicrophoneState = async () => {
-      if (enableVoiceControl) {
-        await initMicrophone();
-        if (!isMounted) return;
-      } else {
-        stopMicrophone();
-      }
-    };
-
-    handleMicrophoneState();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [enableVoiceControl]);
+  }, [hue, rotationSpeed, hoverIntensity, vert, frag]);
 
   return (
     <div
       ref={ctnDom}
       className={cn(
-        "w-full h-full relative",
+        "w-full h-full relative pointer-events-none",
         className
       )}
     />

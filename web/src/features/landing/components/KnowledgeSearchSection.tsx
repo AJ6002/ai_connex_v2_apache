@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { SpecularCard } from './SpecularButton';
-import { VoicePoweredOrb } from '@/components/ui/voice-powered-orb';
+import { GlowingOrb } from '@/components/ui/glowing-orb';
 import {
   Sparkles,
   Calendar,
@@ -170,17 +170,10 @@ export const KnowledgeSearchSection: React.FC = () => {
             <span className="lp__ks-header-text">AIConneX Knowledge Intelligence Engine</span>
           </div>
 
-          {/* Centered Mascot Character Header */}
+          {/* Centered Glowing Orb Header */}
           <div className="lp__ks-mascot-header">
-            <div className="lp__ks-mascot-avatar">
-              <VoicePoweredOrb className="absolute inset-0 rounded-full overflow-hidden opacity-75" enableVoiceControl={false} hue={280} />
-              <div className="lp__ks-mascot-ring" />
-              <Sparkles className="lp__ks-sparkle-icon" />
-              <span className="lp__ks-star">✦</span>
-              <div className="lp__ks-legs">
-                <span />
-                <span />
-              </div>
+            <div className="w-14 h-14 mb-4 flex items-center justify-center relative">
+              <GlowingOrb className="w-full h-full rounded-full overflow-hidden" hue={280} rotationSpeed={0.4} />
             </div>
 
             <h2 className="heading--h2 lp__ks-title">What do you want to know?</h2>
