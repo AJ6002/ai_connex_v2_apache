@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 interface PillarCard {
   featureTag: string;
   metricVal: string;
@@ -6,6 +8,7 @@ interface PillarCard {
   subtitle: string;
   bullets: string[];
   cardNumber: string;
+  keyword: string;
 }
 
 const PILLARS: PillarCard[] = [
@@ -21,6 +24,7 @@ const PILLARS: PillarCard[] = [
       'Edge-buffer failover for intermittent industrial plant network connectivity',
     ],
     cardNumber: '01 / 04',
+    keyword: 'ingestion',
   },
   {
     featureTag: 'FEATURE 02 // PREDICTIVE ML',
@@ -34,6 +38,7 @@ const PILLARS: PillarCard[] = [
       'Zero false-positive suppression via automated signal filtering',
     ],
     cardNumber: '02 / 04',
+    keyword: 'predictive ML',
   },
   {
     featureTag: 'FEATURE 03 // JANE COPILOT',
@@ -47,6 +52,7 @@ const PILLARS: PillarCard[] = [
       'Generates step-by-step mechanical remediation checklists with torque specs',
     ],
     cardNumber: '03 / 04',
+    keyword: 'reasoning',
   },
   {
     featureTag: 'FEATURE 04 // CLOSED-LOOP ORCHESTRATION',
@@ -60,10 +66,17 @@ const PILLARS: PillarCard[] = [
       'Closed-loop telemetry verification post-repair before closing work tickets',
     ],
     cardNumber: '04 / 04',
+    keyword: 'automation',
   },
 ];
 
+const TRIPLE_PILLARS = [...PILLARS, ...PILLARS, ...PILLARS];
+
 export function CorePillars() {
+  const [focusedIndex, setFocusedIndex] = useState<number>(0);
+
+  const activeCard = PILLARS[focusedIndex % PILLARS.length];
+
   return (
     <section className="lp__section lp__pillars-section" id="solutions">
       <div className="container--1286">
@@ -74,47 +87,62 @@ export function CorePillars() {
           </div>
           <h2 className="heading--h2">
             Engineered for the physical world.<br />
-            Built for mission-critical scale.
+            Built for <span className="lp__title-highlight-blue">{activeCard.keyword}</span> scale.
           </h2>
           <p className="section--subtitle-text">
-            Explore the 4 core pillars that turn raw industrial noise into high-confidence predictive maintenance decisions.
+            Explore the core pillars turning raw industrial telemetry into high-confidence autonomous maintenance decisions. Hover over any card to inspect.
           </p>
         </div>
+      </div>
 
-        {/* ── 2x2 Grid of Feature Pillar Cards ───────────────────────── */}
-        <div className="lp__pillars-grid lp__reveal">
-          {PILLARS.map((card) => (
-            <div key={card.featureTag} className="lp__pillar-card">
-              <div className="lp__pillar-header">
-                <span className="lp__pillar-tag">{card.featureTag}</span>
-                <div className="lp__pillar-metric-box">
-                  <div className="lp__pillar-metric-val">{card.metricVal}</div>
-                  <div className="lp__pillar-metric-label">{card.metricLabel}</div>
+      {/* ── Infinite Horizontal Scrolling Card Marquee Carousel ───────── */}
+      <div className="lp__pillars-marquee-wrapper lp__reveal">
+        <div className="lp__pillars-marquee-track">
+          {TRIPLE_PILLARS.map((card, idx) => {
+            const pillarIndex = idx % PILLARS.length;
+            const isFocused = pillarIndex === (focusedIndex % PILLARS.length);
+
+            return (
+              <div
+                key={`${card.featureTag}-${idx}`}
+                className={`lp__pillar-card ${
+                  isFocused ? 'lp__pillar-card--focused' : 'lp__pillar-card--unfocused'
+                }`}
+                onMouseEnter={() => setFocusedIndex(pillarIndex)}
+              >
+                <div className="lp__pillar-header">
+                  <span className="lp__pillar-tag">{card.featureTag}</span>
+                  <div className="lp__pillar-metric-box">
+                    <div className="lp__pillar-metric-val">{card.metricVal}</div>
+                    <div className="lp__pillar-metric-label">{card.metricLabel}</div>
+                  </div>
+                </div>
+
+                <h3 className="lp__pillar-title">{card.title}</h3>
+                <p className="lp__pillar-sub">{card.subtitle}</p>
+
+                <ul className="lp__pillar-bullets">
+                  {card.bullets.map((b) => (
+                    <li key={b}>
+                      <span className="lp__bullet-check">✓</span>
+                      <span>{b}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="lp__pillar-footer">
+                  <a href="#deep-dive" className="lp__pillar-link">
+                    DEEP DIVE ARCHITECTURE <span className="lp__arrow">↗</span>
+                  </a>
+                  <span className="lp__pillar-num">{card.cardNumber}</span>
                 </div>
               </div>
-
-              <h3 className="lp__pillar-title">{card.title}</h3>
-              <p className="lp__pillar-sub">{card.subtitle}</p>
-
-              <ul className="lp__pillar-bullets">
-                {card.bullets.map((b) => (
-                  <li key={b}>
-                    <span className="lp__bullet-check">✓</span>
-                    <span>{b}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <div className="lp__pillar-footer">
-                <a href="#deep-dive" className="lp__pillar-link">
-                  DEEP DIVE ARCHITECTURE <span className="lp__arrow">↗</span>
-                </a>
-                <span className="lp__pillar-num">{card.cardNumber}</span>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
   );
 }
+
+export default CorePillars;
