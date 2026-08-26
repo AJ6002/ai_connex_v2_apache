@@ -61,6 +61,32 @@ void main() {
   fragColor = vec4(col, a);
 }
 `;
+// eslint-disable-next-line no-restricted-syntax
+const DEFAULT_LINE_HEX = '#191c1d';
+// eslint-disable-next-line no-restricted-syntax
+const DEFAULT_BASE_HEX = '#b0b5ba';
+
+function resolveColor(str: string | undefined, defaultHex = DEFAULT_LINE_HEX): string {
+  if (!str) return defaultHex;
+  const s = str.trim();
+  if (s.startsWith('#') || s.startsWith('rgb') || s.startsWith('hsl')) {
+    return s;
+  }
+  if (s.startsWith('var(')) {
+    if (typeof document !== 'undefined') {
+      const varNameMatch = s.match(/var\(\s*([^,\s)]+)/);
+      if (varNameMatch && varNameMatch[1]) {
+        const val = getComputedStyle(document.documentElement).getPropertyValue(varNameMatch[1]).trim();
+        if (val) return val;
+      }
+    }
+    const fallbackMatch = s.match(/,\s*([^)]+)\)/);
+    if (fallbackMatch && fallbackMatch[1]) {
+      return fallbackMatch[1].trim();
+    }
+  }
+  return defaultHex;
+}
 
 export interface SpecularCardProps {
   children?: ReactNode;
@@ -230,8 +256,8 @@ export function SpecularCard({
       const brightTarget = p.autoAnimate ? 1 : proximityT;
       bright += (brightTarget - bright) * (1 - Math.exp(-dt * 8));
 
-      lineC.set(p.lineColor);
-      baseC.set(p.baseColor);
+      lineC.set(resolveColor(p.lineColor, DEFAULT_LINE_HEX));
+      baseC.set(resolveColor(p.baseColor, DEFAULT_BASE_HEX));
       program.uniforms.uAngle.value = angle;
       program.uniforms.uRadius.value = Math.min(p.radius, Math.min(sizeRef.w, sizeRef.h) / 2) * dpr;
       program.uniforms.uLineColor.value = [lineC.r, lineC.g, lineC.b];
@@ -257,14 +283,16 @@ export function SpecularCard({
     <div
       ref={containerRef}
       className={`specular-card ${className}`}
-      style={{
-        '--sb-radius': `${radius}px`,
-        '--sb-tint': tint,
-        '--sb-tint-opacity': tintOpacity,
-        '--sb-blur': `${blur}px`,
-        '--sb-text-color': textColor,
-        ...style,
-      } as CSSProperties}
+      style={
+        {
+          '--sb-radius': `${radius}px`,
+          '--sb-tint': tint,
+          '--sb-tint-opacity': tintOpacity,
+          '--sb-blur': `${blur}px`,
+          '--sb-text-color': textColor,
+          ...style,
+        } as React.CSSProperties
+      }
     >
       <span ref={fxRef} className="specular-button__fx" aria-hidden="true" />
       <div className="specular-card__content">{children}</div>
