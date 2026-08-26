@@ -188,23 +188,25 @@ export function LandingPage() {
 
       {/* ── Footer ─────────────────────────────────────────────────────── */}
       <footer className="lp__footer">
-        <div className="lp__footer-brand">
-          <span className="lp__footer-name">AI Connex</span>
-          <p className="lp__footer-copy">© 2024 AI Connex. All rights reserved.</p>
-        </div>
-        <div className="lp__footer-col">
-          <a href="#solutions">SOLUTIONS</a>
-          <a href="#platform">PLATFORM</a>
-          <a href="#datalab">DATA LAB</a>
-        </div>
-        <div className="lp__footer-col">
-          <a href="#resources">RESOURCES</a>
-          <a href="#company">COMPANY</a>
-        </div>
-        <div className="lp__footer-col">
-          <a href="#soc2">SOC 2</a>
-          <a href="#iso">ISO 27001</a>
-          <a href="#hipaa">HIPAA</a>
+        <div className="lp__footer-inner">
+          <div className="lp__footer-brand">
+            <span className="lp__footer-name">AI Connex</span>
+            <p className="lp__footer-copy">© 2024 AI Connex. All rights reserved.</p>
+          </div>
+          <div className="lp__footer-col">
+            <a href="#solutions">SOLUTIONS</a>
+            <a href="#platform">PLATFORM</a>
+            <a href="#datalab">DATA LAB</a>
+          </div>
+          <div className="lp__footer-col">
+            <a href="#resources">RESOURCES</a>
+            <a href="#company">COMPANY</a>
+          </div>
+          <div className="lp__footer-col">
+            <a href="#soc2">SOC 2</a>
+            <a href="#iso">ISO 27001</a>
+            <a href="#hipaa">HIPAA</a>
+          </div>
         </div>
       </footer>
     </div>
