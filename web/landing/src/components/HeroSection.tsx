@@ -11,15 +11,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onGetStarted, onWatchD
   return (
     <section className="relative overflow-hidden hero-dot-grid pt-14 sm:pt-24 pb-20 sm:pb-28 px-4 sm:px-6 lg:px-8 border-b border-[#E2E4E6]">
       <div className="max-w-5xl mx-auto text-center relative z-10">
-        {/* Animated Industrial Compressor GIF centered above headline */}
-        <div className="flex items-center justify-center mb-6 sm:mb-8">
-          <img
-            src="/compresser.gif"
-            alt="AIConneX Industrial Compressor Analytics"
-            className="max-w-[280px] sm:max-w-[340px] w-full h-auto rounded-2xl border border-[#E2E4E6] shadow-xs bg-white object-contain"
-          />
-        </div>
-
         {/* Main Headline */}
         <h1 className="text-4xl sm:text-6xl md:text-[68px] font-bold text-[#191c1d] tracking-tight leading-[1.08] sm:leading-[1.05] max-w-4xl mx-auto font-sans">
           Turn <span className="text-[#666666] font-normal">industrial data</span> into <br className="hidden sm:inline" />

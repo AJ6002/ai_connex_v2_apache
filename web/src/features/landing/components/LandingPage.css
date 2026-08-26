@@ -297,30 +297,6 @@
   z-index: 2;
 }
 .lp__hero-inner { max-width: 960px; margin: 0 auto; text-align: center; position: relative; z-index: 10; }
-
-.lp__hero-gif-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 28px auto;
-}
-
-.lp__hero-gif {
-  max-width: 320px;
-  width: 100%;
-  height: auto;
-  border-radius: 16px;
-  border: 1.5px solid #e2e4e6;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
-  object-fit: contain;
-  background-color: #ffffff;
-}
-
-@media (max-width: 640px) {
-  .lp__hero-gif {
-    max-width: 260px;
-  }
-}
 .lp__hero-eyebrow {
   display: inline-flex;
   align-items: center;

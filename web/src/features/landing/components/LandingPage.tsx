@@ -103,15 +103,6 @@ export function LandingPage() {
       {/* ── Hero ───────────────────────────────────────────────────────── */}
       <section className="lp__hero lp__grid-bg" id="top">
         <div className="lp__hero-inner lp__reveal">
-          {/* Animated Industrial Compressor GIF centered above headline */}
-          <div className="lp__hero-gif-container">
-            <img
-              src="/compresser.gif"
-              alt="AIConneX Industrial Compressor Analytics"
-              className="lp__hero-gif"
-            />
-          </div>
-
           <h1 className="lp__hero-title">
             Turn <span className="lp__hero-title-muted">industrial data</span> into<br />
             <span className="lp__reel-viewport">
