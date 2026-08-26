@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SpecularButton } from './SpecularButton';
+import { SpecularCard } from './SpecularButton';
 import {
   Sparkles,
   Calendar,
@@ -189,91 +189,97 @@ export const KnowledgeSearchSection: React.FC = () => {
 
           {/* Main Interactive Input Card */}
           <form onSubmit={handleFormSubmit} className="lp__ks-form">
-            <div className="lp__ks-input-box">
-              <input
-                type="text"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                placeholder="Ask your question..."
-                className="lp__ks-input"
-              />
+            <SpecularCard
+              radius={20}
+              lineColor="#191c1d"
+              baseColor="#b0b5ba"
+              intensity={2.2}
+              shineSize={32}
+              shineFade={55}
+              thickness={2.5}
+              followMouse={true}
+              proximity={500}
+              className="lp__ks-specular-card"
+            >
+              <div className="lp__ks-input-box">
+                <input
+                  type="text"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  placeholder="Ask your question..."
+                  className="lp__ks-input"
+                />
 
-              {/* Action Toolbar & Submit Button */}
-              <div className="lp__ks-toolbar">
-                <div className="lp__ks-toolbar-left">
-                  <button type="button" title="Attach file or OEM manual" className="lp__ks-tool-btn">
-                    <Plus className="w-4 h-4" />
-                  </button>
-                  <button type="button" title="Fast diagnostic" className="lp__ks-tool-btn">
-                    <Zap className="w-4 h-4" />
-                  </button>
-                  <button type="button" title="Tag equipment or team" className="lp__ks-tool-btn">
-                    <AtSign className="w-4 h-4" />
-                  </button>
-                  <button type="button" title="Link telemetry stream" className="lp__ks-tool-btn">
-                    <Link2 className="w-4 h-4" />
+                {/* Action Toolbar & Submit Button */}
+                <div className="lp__ks-toolbar">
+                  <div className="lp__ks-toolbar-left">
+                    <button type="button" title="Attach file or OEM manual" className="lp__ks-tool-btn">
+                      <Plus className="w-4 h-4" />
+                    </button>
+                    <button type="button" title="Fast diagnostic" className="lp__ks-tool-btn">
+                      <Zap className="w-4 h-4" />
+                    </button>
+                    <button type="button" title="Tag equipment or team" className="lp__ks-tool-btn">
+                      <AtSign className="w-4 h-4" />
+                    </button>
+                    <button type="button" title="Link telemetry stream" className="lp__ks-tool-btn">
+                      <Link2 className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={!inputValue.trim() || isProcessing}
+                    className="lp__ks-submit-btn"
+                    aria-label="Submit Question"
+                  >
+                    {isProcessing ? (
+                      <div className="lp__ks-spinner" />
+                    ) : (
+                      <ArrowUp className="w-5 h-5 stroke-[2.5]" />
+                    )}
                   </button>
                 </div>
 
-                <SpecularButton
-                  type="submit"
-                  disabled={!inputValue.trim() || isProcessing}
-                  size="sm"
-                  radius={12}
-                  lineColor="#ffffff"
-                  baseColor="#2c2c2c"
-                  tint="#ffffff"
-                  intensity={1.2}
-                  followMouse={true}
-                  proximity={300}
-                  className="lp__ks-submit-specular"
-                >
-                  {isProcessing ? (
-                    <div className="lp__ks-spinner" />
-                  ) : (
-                    <ArrowUp className="w-5 h-5 stroke-[2.5]" />
-                  )}
-                </SpecularButton>
+                {/* Bottom Filter Scope Pills */}
+                <div className="lp__ks-filters">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedMode(selectedMode === 'Auto' ? 'Strict' : 'Auto')}
+                    className="lp__ks-filter-pill"
+                  >
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>{selectedMode}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const ranges = ['Last 30 days', 'Last 3 months', 'Last 12 months'];
+                      const next = ranges[(ranges.indexOf(selectedTimeRange) + 1) % ranges.length];
+                      setSelectedTimeRange(next);
+                    }}
+                    className="lp__ks-filter-pill"
+                  >
+                    <Calendar className="w-3.5 h-3.5" />
+                    <span>{selectedTimeRange}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const modes = ['Normal', 'Deep Reason', 'Executive'];
+                      const next = modes[(modes.indexOf(selectedDepth) + 1) % modes.length];
+                      setSelectedDepth(next);
+                    }}
+                    className="lp__ks-filter-pill"
+                  >
+                    <Settings2 className="w-3.5 h-3.5" />
+                    <span>{selectedDepth}</span>
+                  </button>
+                </div>
               </div>
-
-              {/* Bottom Filter Scope Pills */}
-              <div className="lp__ks-filters">
-                <button
-                  type="button"
-                  onClick={() => setSelectedMode(selectedMode === 'Auto' ? 'Strict' : 'Auto')}
-                  className="lp__ks-filter-pill"
-                >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>{selectedMode}</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    const ranges = ['Last 30 days', 'Last 3 months', 'Last 12 months'];
-                    const next = ranges[(ranges.indexOf(selectedTimeRange) + 1) % ranges.length];
-                    setSelectedTimeRange(next);
-                  }}
-                  className="lp__ks-filter-pill"
-                >
-                  <Calendar className="w-3.5 h-3.5" />
-                  <span>{selectedTimeRange}</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    const modes = ['Normal', 'Deep Reason', 'Executive'];
-                    const next = modes[(modes.indexOf(selectedDepth) + 1) % modes.length];
-                    setSelectedDepth(next);
-                  }}
-                  className="lp__ks-filter-pill"
-                >
-                  <Settings2 className="w-3.5 h-3.5" />
-                  <span>{selectedDepth}</span>
-                </button>
-              </div>
-            </div>
+            </SpecularCard>
           </form>
 
           {/* Interactive Answer View if a question has been asked */}

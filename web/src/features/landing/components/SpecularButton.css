@@ -28,6 +28,21 @@
   transition: transform 0.15s ease;
 }
 
+.specular-card {
+  position: relative;
+  display: block;
+  width: 100%;
+  border-radius: var(--sb-radius, 20px);
+  background-color: #ffffff;
+}
+
+.specular-card__content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+}
+
 .specular-button:active {
   transform: scale(0.97);
 }
@@ -61,7 +76,7 @@
   padding: 18px 40px;
 }
 
-/* Canvas extends past the button so the rim glow can bleed outside the edge */
+/* Canvas extends past the container so the rim glow can bleed outside the edge */
 .specular-button__fx {
   position: absolute;
   inset: -20px;
