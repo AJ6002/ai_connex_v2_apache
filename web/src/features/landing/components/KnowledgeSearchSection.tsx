@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { SpecularButton } from './SpecularButton';
 import {
   Sparkles,
   Calendar,
@@ -214,18 +215,25 @@ export const KnowledgeSearchSection: React.FC = () => {
                   </button>
                 </div>
 
-                <button
+                <SpecularButton
                   type="submit"
                   disabled={!inputValue.trim() || isProcessing}
-                  className="lp__ks-submit-btn"
-                  aria-label="Submit Question"
+                  size="sm"
+                  radius={12}
+                  lineColor="#ffffff"
+                  baseColor="#2c2c2c"
+                  tint="#ffffff"
+                  intensity={1.2}
+                  followMouse={true}
+                  proximity={300}
+                  className="lp__ks-submit-specular"
                 >
                   {isProcessing ? (
                     <div className="lp__ks-spinner" />
                   ) : (
-                    <ArrowUp className="w-5 h-5" />
+                    <ArrowUp className="w-5 h-5 stroke-[2.5]" />
                   )}
-                </button>
+                </SpecularButton>
               </div>
 
               {/* Bottom Filter Scope Pills */}
