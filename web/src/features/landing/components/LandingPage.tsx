@@ -180,9 +180,11 @@ export function LandingPage() {
             <div className="lp__dark-icon-sq" />
           </div>
           <h2 className="lp__dark-title">
-            From people to process to platform, we solve the thing behind the thing.
+            From the cloud to the edge, intelligence where the machine needs it.
           </h2>
-          <p className="lp__dark-sub">Call it services-to-software. Or just call it done.</p>
+          <p className="lp__dark-sub">
+            Deploy validated AI models directly to industrial environments for faster decisions, lower latency, and resilient operation.
+          </p>
         </div>
       </section>
 
